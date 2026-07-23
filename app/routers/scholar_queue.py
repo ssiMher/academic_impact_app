@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.pdf.security import PdfValidationError
@@ -173,6 +173,48 @@ def enqueue_discover_pdfs_for_queue(
     return RedirectResponse(
         url=f"/scholar-sessions/{session_id}/queue?discover_task_id={task.id}",
         status_code=303,
+    )
+
+
+@router.get("/{session_id}/tasks/{task_id}/status")
+def scholar_task_status(
+    session_id: int,
+    task_id: int,
+    task_service: TaskService = Depends(get_task_service),
+):
+    task = task_service.get_task(task_id)
+    if (
+        task is None
+        or task.session_kind != SCHOLAR_ANALYSIS_SESSION_KIND
+        or task.session_id != session_id
+    ):
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    payload = _task_payload(task)
+    total = int(task.progress_total or 0)
+    current = int(task.progress_current or 0)
+    percent = round(min(max(current / total * 100, 0), 100), 1) if total else None
+    result_summary = payload.get("result_summary")
+    progress_summary = payload.get("progress_summary")
+    response_payload = {
+        "task_id": task.id,
+        "task_type": task.task_type,
+        "status": task.status,
+        "stage": task.stage,
+        "stage_message": task.stage_message,
+        "progress_current": current,
+        "progress_total": total,
+        "progress_percent": percent,
+        "error_message": _safe_task_error(task.error_message),
+        "result_summary": result_summary if isinstance(result_summary, dict) else None,
+        "progress_summary": (
+            progress_summary if isinstance(progress_summary, dict) else None
+        ),
+        "is_terminal": task.status in {"succeeded", "failed", "cancelled"},
+    }
+    return JSONResponse(
+        content=response_payload,
+        headers={"Cache-Control": "no-store"},
     )
 
 
@@ -373,14 +415,35 @@ def _resolve_pdf_download_task(
             tasks[0] if tasks else None,
         )
     if task is not None:
-        try:
-            payload = json.loads(task.payload_json or "{}")
-        except json.JSONDecodeError:
-            payload = {}
+        payload = _task_payload(task)
         task.result_summary = (
             payload.get("result_summary")
             if isinstance(payload, dict)
             and isinstance(payload.get("result_summary"), dict)
             else None
         )
+        task.progress_summary = (
+            payload.get("progress_summary")
+            if isinstance(payload, dict)
+            and isinstance(payload.get("progress_summary"), dict)
+            else None
+        )
     return task
+
+
+def _task_payload(task) -> dict:
+    try:
+        payload = json.loads(task.payload_json or "{}")
+    except (json.JSONDecodeError, TypeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _safe_task_error(error_message: Optional[str]) -> Optional[str]:
+    if not error_message:
+        return None
+    first_line = next(
+        (line.strip() for line in str(error_message).splitlines() if line.strip()),
+        "Task failed.",
+    )
+    return first_line[:1000]

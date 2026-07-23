@@ -754,3 +754,297 @@ def test_queue_page_shows_batch_pdf_download_summary_and_failure_reasons(
         assert "title_match_failed" in response.text
     finally:
         db.close()
+
+
+def test_task_status_endpoint_returns_progress_and_no_store(
+    db_session_factory,
+    client,
+    tmp_path,
+):
+    db = db_session_factory()
+    try:
+        session_id, _item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="discover_pdfs_for_queue",
+            status="running",
+            stage="downloading_pdfs",
+            stage_message="正在处理 7/22：A paper",
+            progress_current=7,
+            progress_total=22,
+            payload_json=json.dumps(
+                {
+                    "progress_summary": {
+                        "downloaded": 4,
+                        "ieee_downloaded": 4,
+                        "failed": 0,
+                    }
+                }
+            ),
+        )
+        db.add(task)
+        db.commit()
+
+        response = client.get(
+            f"/scholar-sessions/{session_id}/tasks/{task.id}/status"
+        )
+
+        assert response.status_code == 200
+        assert response.headers["cache-control"] == "no-store"
+        payload = response.json()
+        assert payload["task_id"] == task.id
+        assert payload["progress_current"] == 7
+        assert payload["progress_total"] == 22
+        assert payload["progress_percent"] == 31.8
+        assert payload["progress_summary"]["ieee_downloaded"] == 4
+        assert payload["is_terminal"] is False
+    finally:
+        db.close()
+
+
+def test_task_status_endpoint_rejects_other_session_task(
+    db_session_factory,
+    client,
+    tmp_path,
+):
+    db = db_session_factory()
+    try:
+        first_session_id, _ = seed_queue_item(db, tmp_path, pdf_ready=False)
+        second_session_id, _ = seed_queue_item(db, tmp_path, pdf_ready=False)
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=first_session_id,
+            task_type="discover_pdfs_for_queue",
+            status="running",
+        )
+        db.add(task)
+        db.commit()
+
+        response = client.get(
+            f"/scholar-sessions/{second_session_id}/tasks/{task.id}/status"
+        )
+
+        assert response.status_code == 404
+    finally:
+        db.close()
+
+
+def test_task_status_endpoint_returns_result_summary(
+    db_session_factory,
+    client,
+    tmp_path,
+):
+    db = db_session_factory()
+    try:
+        session_id, _ = seed_queue_item(db, tmp_path, pdf_ready=False)
+        summary = {
+            "downloaded": 9,
+            "ieee_downloaded": 9,
+            "requires_login": 4,
+            "no_pdf_found": 5,
+            "failed": 3,
+            "skipped": 1,
+            "failures": [],
+        }
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="discover_pdfs_for_queue",
+            status="succeeded",
+            progress_current=22,
+            progress_total=22,
+            payload_json=json.dumps({"result_summary": summary}),
+        )
+        db.add(task)
+        db.commit()
+
+        response = client.get(
+            f"/scholar-sessions/{session_id}/tasks/{task.id}/status"
+        )
+
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["result_summary"] == summary
+        assert payload["progress_percent"] == 100
+        assert payload["is_terminal"] is True
+    finally:
+        db.close()
+
+
+def test_batch_pdf_worker_commits_progress_per_item_and_current_title(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    db = db_session_factory()
+    try:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            pdf_ready=False,
+            title="Visible Current Paper",
+        )
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="discover_pdfs_for_queue",
+            status="running",
+        )
+        db.add(task)
+        db.commit()
+
+        class FakeDownloadService:
+            def __init__(self, _db):
+                pass
+
+            def download_pdf_for_queue_item(
+                self, queue_item_id, *, allow_restricted_browser=False, force=False
+            ):
+                from app.services.queue_pdf_download_service import PdfDownloadResult
+
+                assert queue_item_id == item_id
+                return PdfDownloadResult(
+                    queue_item_id,
+                    "downloaded",
+                    source="ieee_browser_helper",
+                    pdf_asset_id=1,
+                )
+
+        monkeypatch.setattr(
+            "app.tasks.handlers.discover_pdfs_for_queue.QueuePdfDownloadService",
+            FakeDownloadService,
+        )
+        commits = []
+        original_commit = db.commit
+
+        def tracking_commit():
+            commits.append(
+                (
+                    task.progress_current,
+                    task.progress_total,
+                    task.stage_message,
+                )
+            )
+            original_commit()
+
+        monkeypatch.setattr(db, "commit", tracking_commit)
+
+        handle_discover_pdfs_for_queue(db, task)
+
+        assert any(
+            current == 0
+            and total == 1
+            and "正在处理 1/1：Visible Current Paper" in (message or "")
+            for current, total, message in commits
+        )
+        assert any(
+            current == 1
+            and "已处理 1/1：Visible Current Paper" in (message or "")
+            for current, _total, message in commits
+        )
+        assert task.progress_current == task.progress_total == 1
+    finally:
+        db.close()
+
+
+def test_queue_page_contains_running_pdf_task_progress_and_disables_button(
+    db_session_factory,
+    client,
+    tmp_path,
+):
+    db = db_session_factory()
+    try:
+        session_id, _ = seed_queue_item(db, tmp_path, pdf_ready=False)
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="discover_pdfs_for_queue",
+            status="running",
+            stage="downloading_pdfs",
+            stage_message="正在处理 1/1：Visible Current Paper",
+            progress_current=0,
+            progress_total=1,
+        )
+        db.add(task)
+        db.commit()
+
+        response = client.get(f"/scholar-sessions/{session_id}/queue")
+
+        assert response.status_code == 200
+        assert 'id="pdf-task-progress"' in response.text
+        assert 'data-active="true"' in response.text
+        assert (
+            f'data-status-url="/scholar-sessions/{session_id}/tasks/{task.id}/status"'
+            in response.text
+        )
+        assert 'id="pdf-batch-download-button"' in response.text
+        assert "disabled" in response.text
+        assert "批量下载正在进行" in response.text
+    finally:
+        db.close()
+
+
+def test_queue_page_does_not_mark_terminal_task_for_polling(
+    db_session_factory,
+    client,
+    tmp_path,
+):
+    db = db_session_factory()
+    try:
+        session_id, _ = seed_queue_item(db, tmp_path, pdf_ready=False)
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="discover_pdfs_for_queue",
+            status="succeeded",
+            progress_current=1,
+            progress_total=1,
+        )
+        db.add(task)
+        db.commit()
+
+        response = client.get(
+            f"/scholar-sessions/{session_id}/queue?discover_task_id={task.id}"
+        )
+
+        assert response.status_code == 200
+        assert 'data-active="false"' in response.text
+        button_markup = response.text.split('id="pdf-batch-download-button"', 1)[1]
+        assert "批量下载正在进行" not in button_markup.split("</button>", 1)[0]
+    finally:
+        db.close()
+
+
+def test_duplicate_active_pdf_download_task_not_created(
+    db_session_factory,
+    client,
+    tmp_path,
+):
+    db = db_session_factory()
+    try:
+        session_id, _ = seed_queue_item(db, tmp_path, pdf_ready=False)
+    finally:
+        db.close()
+
+    first = client.post(
+        f"/scholar-sessions/{session_id}/queue/discover-pdfs",
+        follow_redirects=False,
+    )
+    second = client.post(
+        f"/scholar-sessions/{session_id}/queue/discover-pdfs",
+        follow_redirects=False,
+    )
+
+    assert first.status_code == 303
+    assert "discover_task_id=" in first.headers["location"]
+    assert second.status_code == 409
+
+
+def test_terminal_task_refreshes_once_in_polling_script():
+    script = Path("app/static/js/app.js").read_text(encoding="utf-8")
+
+    assert "window.sessionStorage.getItem(terminalReloadKey)" in script
+    assert "window.sessionStorage.setItem(terminalReloadKey, \"1\")" in script
+    assert "window.location.reload()" in script
+    assert 'panel.dataset.active !== "true"' in script

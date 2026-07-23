@@ -1,0 +1,99 @@
+{% from "components/status_badge.html" import status_badge %}
+
+{% set is_active = discover_task.status in ["pending", "running"] %}
+<section
+  class="task-notice pdf-download-task"
+  id="pdf-download-task-panel"
+  aria-label="PDF batch download task status"
+  data-task-id="{{ discover_task.id }}"
+  data-session-id="{{ session_id }}"
+  data-task-status="{{ discover_task.status }}"
+  data-status-url="/scholar-sessions/{{ session_id }}/tasks/{{ discover_task.id }}/status"
+  data-active="{{ 'true' if is_active else 'false' }}"
+>
+  {% if discover_task_created %}
+    <p class="notice">批量 PDF 下载任务已创建。</p>
+  {% endif %}
+  <div class="card-row card-row-between">
+    <div>
+      <h2>自动查找 / 下载所有 PDF</h2>
+      <p>任务 #{{ discover_task.id }}</p>
+    </div>
+    <span id="pdf-task-status-badge">
+      {{ status_badge(discover_task.status) }}
+    </span>
+  </div>
+
+  <div class="pdf-task-progress-wrap">
+    <progress
+      id="pdf-task-progress"
+      value="{{ discover_task.progress_current or 0 }}"
+      {% if discover_task.progress_total %}max="{{ discover_task.progress_total }}"{% endif %}
+      aria-label="批量 PDF 下载进度"
+    ></progress>
+    <div class="pdf-task-progress-meta">
+      <span id="pdf-task-progress-text">
+        {% if discover_task.progress_total %}
+          {{ discover_task.progress_current }}/{{ discover_task.progress_total }}
+        {% else %}
+          等待 worker
+        {% endif %}
+      </span>
+      <span id="pdf-task-progress-percent">
+        {% if discover_task.progress_total %}
+          {{ ((discover_task.progress_current / discover_task.progress_total) * 100)|round(1) }}%
+        {% endif %}
+      </span>
+    </div>
+  </div>
+
+  <p class="task-message" id="pdf-task-message">
+    {{ discover_task.stage_message or "任务正在等待 worker。" }}
+  </p>
+  <p class="muted" id="pdf-task-stage">
+    当前阶段：{{ discover_task.stage or "queued" }}
+  </p>
+  <p class="task-error" id="pdf-task-error" {% if not discover_task.error_message %}hidden{% endif %}>
+    {{ discover_task.error_message or "" }}
+  </p>
+
+  {% set live_summary = discover_task.result_summary or discover_task.progress_summary or {} %}
+  <div class="stat-grid" id="pdf-task-summary">
+    {% for key, label in [
+      ("downloaded", "下载成功"),
+      ("open_access_downloaded", "开放 PDF"),
+      ("ieee_downloaded", "IEEE 助手"),
+      ("skipped", "已跳过"),
+      ("requires_login", "需要登录"),
+      ("no_pdf_found", "未找到 PDF"),
+      ("failed", "失败")
+    ] %}
+      <article class="stat-card">
+        <div class="stat-value" data-pdf-summary-key="{{ key }}">{{ live_summary[key] or 0 }}</div>
+        <div class="stat-label">{{ label }}</div>
+      </article>
+    {% endfor %}
+  </div>
+
+  {% if discover_task.result_summary and discover_task.result_summary.failures %}
+    <details open id="pdf-task-failures">
+      <summary>未下载条目及原因（{{ discover_task.result_summary.failure_count }}）</summary>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Queue Item</th><th>引用论文</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            {% for failure in discover_task.result_summary.failures %}
+              <tr>
+                <td>{{ failure.queue_item_id }}</td>
+                <td>{{ failure.citing_paper_title }}</td>
+                <td>{{ failure.reason }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  {% endif %}
+</section>

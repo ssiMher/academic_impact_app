@@ -30,26 +30,45 @@ def handle_discover_pdfs_for_queue(db: Session, task: AnalysisTask) -> None:
     failures = []
     task.progress_total = total
     task.progress_current = 0
-    task.stage = "discovering_pdfs"
-    db.flush()
+    task.stage = "downloading_pdfs"
+    task.stage_message = "正在准备批量 PDF 下载"
+    _save_progress(db, task, counts)
     for index, item in enumerate(items, start=1):
+        item_id = item.id
+        item_title = (item.citing_paper_title or f"Queue item {item.id}")[:120]
+        task.progress_current = index - 1
+        task.progress_total = total
+        task.stage = "downloading_pdfs"
+        task.stage_message = f"正在处理 {index}/{total}：{item_title}"
+        _save_progress(db, task, counts)
+
         if item.queue_status not in {"selected", "pending"}:
             counts["skipped"] += 1
             counts["skipped_ineligible"] += 1
             task.progress_current = index
+            task.stage_message = (
+                f"已处理 {index}/{total}：{item_title}；结果=skipped_ineligible"
+            )
+            _save_progress(db, task, counts)
             continue
         try:
             result = service.download_pdf_for_queue_item(
-                item.id,
+                item_id,
                 allow_restricted_browser=True,
             )
         except Exception as exc:
-            result = None
             counts["failed"] += 1
-            failures.append(_failure(item, f"{type(exc).__name__}: {exc}"))
-            task.progress_current = index
+            failure_reason = f"{type(exc).__name__}: {exc}"
+            failures.append(_failure_values(item_id, item_title, failure_reason))
             db.rollback()
-            task = db.merge(task)
+            task = db.get(AnalysisTask, task.id)
+            task.progress_current = index
+            task.progress_total = total
+            task.stage = "downloading_pdfs"
+            task.stage_message = (
+                f"已处理 {index}/{total}：{item_title}；结果=failed"
+            )
+            _save_progress(db, task, counts)
             continue
         status = result.status
         if status == "downloaded":
@@ -71,7 +90,8 @@ def handle_discover_pdfs_for_queue(db: Session, task: AnalysisTask) -> None:
             counts["failed"] += 1
             failures.append(_failure(item, result.reason or status))
         task.progress_current = index
-        db.commit()
+        task.stage_message = f"已处理 {index}/{total}：{item_title}；结果={status}"
+        _save_progress(db, task, counts)
     summary = {
         "total_items": total,
         **counts,
@@ -83,8 +103,11 @@ def handle_discover_pdfs_for_queue(db: Session, task: AnalysisTask) -> None:
         "failures": failures,
     }
     payload = _payload(task)
+    payload["progress_summary"] = dict(counts)
     payload["result_summary"] = summary
     task.payload_json = json.dumps(payload, ensure_ascii=False)
+    task.progress_current = total
+    task.progress_total = total
     task.stage_message = (
         f"total_items={total}; "
         f"downloaded={counts['downloaded']}; "
@@ -110,8 +133,23 @@ def _payload(task: AnalysisTask) -> dict:
 
 
 def _failure(item: DeepAnalysisQueueItem, reason: str) -> dict:
+    return _failure_values(item.id, item.citing_paper_title or "", reason)
+
+
+def _failure_values(item_id: int, item_title: str, reason: str) -> dict:
     return {
-        "queue_item_id": item.id,
-        "citing_paper_title": (item.citing_paper_title or "")[:240],
+        "queue_item_id": item_id,
+        "citing_paper_title": item_title[:240],
         "reason": reason[:500],
     }
+
+
+def _save_progress(
+    db: Session,
+    task: AnalysisTask,
+    counts: dict,
+) -> None:
+    payload = _payload(task)
+    payload["progress_summary"] = dict(counts)
+    task.payload_json = json.dumps(payload, ensure_ascii=False)
+    db.commit()

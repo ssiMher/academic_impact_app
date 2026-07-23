@@ -444,6 +444,34 @@ mark.target-reference {
   padding: 10px;
 }
 
+.pdf-task-progress-wrap {
+  margin: 18px 0 12px;
+}
+
+.pdf-task-progress-wrap progress {
+  accent-color: var(--primary);
+  display: block;
+  height: 18px;
+  width: 100%;
+}
+
+.pdf-task-progress-meta {
+  color: var(--muted);
+  display: flex;
+  font-size: 0.9rem;
+  font-weight: 750;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.pdf-download-task[data-task-status="succeeded"] progress {
+  accent-color: var(--success);
+}
+
+.pdf-download-task[data-task-status="failed"] progress {
+  accent-color: var(--danger);
+}
+
 .task-error {
   background: #fee4e2;
   border-radius: 12px;
