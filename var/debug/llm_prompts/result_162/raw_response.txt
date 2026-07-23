@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "According to [34], when we focus on the human voice with complicated frequency bands, USRP reader with a higher sampling rate is more suitable for eavesdropping than the COTS RFID reader.",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "reasoning": "The citing paper explicitly cites [34] to justify the use of USRP reader over COTS RFID for high-frequency voice eavesdropping, indicating that the cited paper's method serves as a foundation for the citing paper's hardware choice.",
+      "highlight_keywords": ["According to [34]", "USRP reader", "higher sampling rate", "more suitable for eavesdropping"],
+      "keep": true
+    },
+    {
+      "citation_text": "Tag-Bug[34] utilizes RFID to sense nearby objects vibrations caused by the sound from loudspeaker for voice eavesdropping, but it fails to eavesdrop on live human speech due to large wind noise.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "reasoning": "In the related work section, the citing paper describes Tag-Bug[34] as an existing RFID-based eavesdropping method that works on loudspeaker vibrations but fails on live speech due to wind noise, positioning it as a prior work with a limitation that the citing paper aims to address.",
+      "highlight_keywords": ["Tag-Bug[34]", "utilizes RFID", "sense nearby objects vibrations", "fails to eavesdrop on live human speech"],
+      "keep": true
+    }
+  ]
+}

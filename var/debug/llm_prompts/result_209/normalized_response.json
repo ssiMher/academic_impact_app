@@ -1,0 +1,72 @@
+{
+  "findings": [
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Tag-Bug [43]",
+      "reasoning": "The citation appears in Table 1 listing representative acoustic eavesdropping studies. No explicit sub-mm or RFID capability description is provided in the body text. It is a grouped citation among many others, and the context is a comparison table. The classification as representative work is appropriate, but attribution to specific claims is uncertain.",
+      "keywords": [
+        "Tag-Bug",
+        "[43]",
+        "Representative"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: no RFID sub-mm capability evidence in body text; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no RFID sub-mm capability evidence in body text",
+          "matched_terms": [
+            "sub-mm",
+            "rfid",
+            "through-wall",
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Tag-Bug [43]",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[43]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": true,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The citation appears in Table 1 listing representative acoustic eavesdropping studies. No explicit sub-mm or RFID capability description is provided in the body text. It is a grouped citation among many others, and the context is a comparison table. The classification as representative work is appropriate, but attribution to specific claims is uncertain.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: no RFID sub-mm capability evidence in body text; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

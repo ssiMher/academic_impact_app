@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Systems like RadioMic [20, 21], Radio2Speech [54], mmspy [3], mmecho [11], RFMic-Phone [32], and others [7–9, 38–40, 43–45, 49] use mmWave radar to detect minute vibrations caused by sound waves. They can offer capabilities like through-wall sensing [ 41] and noise resilience [ 23, 25], sometimes combining radar with traditional microphones [32].",
+      "reasoning": "The target reference [41] is grouped with other mmWave radar systems in a related work section discussing non-backscatter RF-based sound sensing. The context mentions 'through-wall sensing' as a capability, which aligns with the target paper's focus on thru-the-wall eavesdropping. However, the mention is brief and grouped, so it is classified as background with a grouped citation mention type. The evidence does not provide detailed attribution of sub-mm level vibration sensing but acknowledges the through-wall capability.",
+      "keywords": [
+        "through-wall sensing",
+        "mmWave radar",
+        "minute vibrations"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Systems like RadioMic [20, 21], Radio2Speech [54], mmspy [3], mmecho [11], RFMic-Phone [32], and others [7–9, 38–40, 43–45, 49] use mmWave radar to detect minute vibrations caused by sound waves. They can offer capabilities like through-wal...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[41]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target reference [41] is grouped with other mmWave radar systems in a related work section discussing non-backscatter RF-based sound sensing. The context mentions 'through-wall sensing' as a capability, which aligns with the target paper's focus on thru-the-wall eavesdropping. However, the mention is brief and grouped, so it is classified as background with a grouped citation mention type. The evidence does not provide detailed attribution of sub-mm level vibration sensing but acknowledges the through-wall capability.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

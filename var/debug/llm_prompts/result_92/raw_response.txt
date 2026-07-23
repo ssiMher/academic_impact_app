@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "Interference between a camera CFA and a high-frequency grid background enables ultra-precise pose estimation and tracking [19–21]. MoiréPose targets 6-DoF localization [19], and MoiréVision extends this concept to curvilinear patterns with sub-pixel feature extraction [20]. MoiréVib demodulates periodic fringe motion for micro-vibration sensing [21].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "This context is in the Related Work section, where MoiréPose [19] is listed as an existing work using Moiré patterns for pose estimation. It is presented as a representative example of the 'single high-frequency grid × camera CFA' approach, without evaluation or extension.",
+      "highlight_keywords": ["MoiréPose", "ultra-precise", "6-DoF localization"],
+      "keep": true
+    },
+    {
+      "citation_text": "Moiré patterns have been used in visual sensing because small geometric displacements yield large, measurable phase shifts in the fringes [5, 19–22, 33, 36, 37].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "This sentence in the Related Work section cites [19] as part of a general statement that Moiré patterns are used in visual sensing. It provides no specific evaluation or extension of MoiréPose.",
+      "highlight_keywords": ["Moiré patterns", "visual sensing", "phase shifts"],
+      "keep": true
+    }
+  ]
+}

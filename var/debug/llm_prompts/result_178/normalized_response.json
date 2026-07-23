@@ -1,0 +1,91 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "citation_text": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "reasoning": "The citing paper mentions the target paper [44] in a related work section about Through-Wall Detection using RFID. It acknowledges that the target paper can measure loudspeaker vibration via RFID, but then states that RFID's long wavelength makes it unsuitable for tracking mm-level movements, which is the focus of RadSee. This is a limitation or negative comparison highlighting that RFID (including the target paper's approach) cannot achieve the required granularity.",
+      "keywords": [
+        "RFID tag can also be used to measure the vibration pattern of a loudspeaker",
+        "due to its long wavelength",
+        "not a good candidate for tracking mm-level movements"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "citation_text": "Through-Wall Detection using RFID. Through-wall detection is also possible by using RFID systems. Tadar [59] and RF-HMS [51] demonstrated their capabilities of tracking human moving directions through walls using an array of RFID tags. However, the tracking error in these systems is around 10 cm, indicating their incapability of tracking mm-level hand movements. RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "reasoning": "This broader context includes the target paper [44] in a paragraph discussing RFID-based through-wall detection. The citing paper groups several RFID works and notes their limitations for mm-level tracking. The target paper is cited as an example of measuring vibration patterns, but the overall assessment is that RFID systems, including [44], cannot track mm-level hand movements due to wavelength constraints. This positions the target paper as part of a category (RFID) that is inadequate for the task at hand.",
+      "keywords": [
+        "RFID tag can also be used to measure the vibration pattern of a loudspeaker",
+        "not a good candidate for tracking mm-level movements"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "Tadar [59] and RF-HMS [51] demonstrated their capabilities of tracking human moving directions through walls using an array of RFID tags. However, the tracking error in these systems is around 10 cm, indicating their incapability of tracking mm-level hand movements. RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "reasoning": "The target paper [44] is cited in a grouped citation alongside [59] and [51] in the same paragraph. The citing paper discusses the limitations of RFID for mm-level tracking. While [44] is specifically about measuring vibration patterns, the overall claim is that RFID is not suitable for mm-level hand movements, so the stance is negative. The mention is grouped because it appears among other RFID references in the same sentence and paragraph.",
+      "keywords": [
+        "RFID tag can also be used to measure the vibration pattern of a loudspeaker",
+        "not a good candidate for tracking mm-level movements"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "target_reference_marker": "[44]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper mentions the target paper [44] in a related work section about Through-Wall Detection using RFID. It acknowledges that the target paper can measure loudspeaker vibration via RFID, but then states that RFID's long wavelength makes it unsuitable for tracking mm-level movements, which is the focus of RadSee. This is a limitation or negative comparison highlighting that RFID (including the target paper's approach) cannot achieve the required granularity.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Through-Wall Detection using RFID. Through-wall detection is also possible by using RFID systems. Tadar [59] and RF-HMS [51] demonstrated their capabilities of tracking human moving directions through walls using an array of RFID tags. Howe...",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "target_reference_marker": "[44]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "This broader context includes the target paper [44] in a paragraph discussing RFID-based through-wall detection. The citing paper groups several RFID works and notes their limitations for mm-level tracking. The target paper is cited as an example of measuring vibration patterns, but the overall assessment is that RFID systems, including [44], cannot track mm-level hand movements due to wavelength constraints. This positions the target paper as part of a category (RFID) that is inadequate for the task at hand.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Tadar [59] and RF-HMS [51] demonstrated their capabilities of tracking human moving directions through walls using an array of RFID tags. However, the tracking error in these systems is around 10 cm, indicating their incapability of trackin...",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[44]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_too_ambiguous",
+      "generated_strong_evidence": false,
+      "reasoning": "The target paper [44] is cited in a grouped citation alongside [59] and [51] in the same paragraph. The citing paper discusses the limitations of RFID for mm-level tracking. While [44] is specifically about measuring vibration patterns, the overall claim is that RFID is not suitable for mm-level hand movements, so the stance is negative. The mention is grouped because it appears among other RFID references in the same sentence and paragraph.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

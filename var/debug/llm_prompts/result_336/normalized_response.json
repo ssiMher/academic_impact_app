@@ -1,0 +1,21 @@
+{
+  "target_reference_marker": "[44]",
+  "target_reference_entry": "[44] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.\n16",
+  "paper_level_summary_zh": "该引用论文在相关工作章节中提及目标论文，将其归类为通过RFID实现穿墙检测的方法，但明确指出由于RFID波长较长（33 cm），不适合毫米级运动追踪，因此只是作为背景引用，未将其作为核心方法或性能比较对象。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44].",
+      "evidence_context": "Through-Wall Detection using RFID. Through-wall detection is also possible by using RFID systems. Tadar [59] and RF-HMS [51] demonstrated their capabilities of tracking human moving directions through walls using an array of RFID tags. However, the tracking error in these systems is around 10 cm, indicating their incapability of tracking mm-level hand movements. RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "证据引用目标标记[44]，但正文仅提及RFID标签可以测量扬声器振动模式，随后立即指出RFID由于波长远不适用于毫米级运动追踪。该引用属于普通相关工作列举，且包含负面评述，因此排除非正面推荐。",
+      "copy_ready_zh": "引用论文将目标论文作为穿墙RFID相关工作进行简要列举，但未确认其亚毫米级感知能力，而是指出其波长限制。",
+      "confidence": "high",
+      "target_reference_marker": "[44]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": false,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

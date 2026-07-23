@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[15]",
+  "target_reference_entry": "[15] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers\nvia RFID by capturing sub-mm level vibration,” Proc. ACM Inter-\nactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25,\n2021.",
+  "paper_level_summary_zh": "该文在相关工作中提及 [23]，指出其使用RFID进行窃听，但需要预安装标签，且与毫米波方法相比分辨率较低。属于普通相关工作引用，未明确评价其亚毫米级能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "limitation_feedback",
+      "evidence_quote": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim's room.",
+      "evidence_context": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim's room.",
+      "reference_entry": "C. Wang et al., \"Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,\" Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用文中标记为[15]，而非目标标记[23]；且[15]指向另一篇RFID工作，不是目标论文。属于引用错误，应排除。",
+      "copy_ready_zh": "该文错误地将目标论文标记为[15]，实际引用的是另一篇RFID工作。",
+      "confidence": "high",
+      "target_reference_marker": "[15]",
+      "evidence_reference_marker": "[15]",
+      "evidence_reference_entry_raw": "[15] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers\nvia RFID by capturing sub-mm level vibration,” Proc. ACM Inter-\nactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25,\n2021.",
+      "reference_match_status": "matched",
+      "reference_match_reason": "reference_entry_matches_target",
+      "normalized_target_reference": "[15] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers\nvia RFID by capturing sub-mm level vibration,” Proc. ACM Inter-\nactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25,\n2021.",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true,
+      "grouped_citation": true
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "[23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals.",
+      "evidence_context": "Authors in [17] used mmWave to acquire high-quality voice from user's vocal vibrations from near-throat region. [23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals.",
+      "reference_entry": "C. Wang et al., \"Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,\" Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文引用[23]描述的方法与目标论文（RFID亚毫米级振动窃听）不符；目标论文是RFID，而描述的是压电薄膜和毫米波信号。属于误归因。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该文将目标论文[23]描述为使用压电薄膜和毫米波信号的窃听方法，与目标论文实际内容不符。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[15]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] C. Wang et al., “mmPhone: Acoustic eavesdropping on loud-\nspeakers via mmWave-characterized piezoelectric effect,” in Proc.\nIEEE Conf. Comput. Commun., 2022, pp. 820–829.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[15] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers\nvia RFID by capturing sub-mm level vibration,” Proc. ACM Inter-\nactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25,\n2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

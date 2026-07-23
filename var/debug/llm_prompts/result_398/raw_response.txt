@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[17]",
+  "target_reference_entry": "Wang C, Xie L, Lin Y, et al. Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration[J]. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 2021, 5(4): 1-25.",
+  "paper_level_summary_zh": "该引用论文将目标论文 [17] 作为普通文献在背景技术部分引用，未对目标论文的方法或性能进行具体评价或使用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "The tranditional method is difﬁcult to achieve satisﬁed results due to the imprecise estimation of the static component. Therefore, TagVibra takes advantage of the modulation scheme of RFID and proposes a phase ampliﬁcation algorithm (Differential Phase Ampliﬁcation, DPA) to eliminate the impact of static component and amplify the phase change. The basic idea of DPA is behind Equ.5, which can be rewritten as: { V1 =Vs +V1 tag V0 =Vs +V0 tag (6) Since V1 and V0 both contain the same static component Vs, an intuitive method is to eliminate the impact of the static component by making a difference betweenV1 and V0. However, the resulting phase change may be very slight (since the angular changes ofV1 and V0 should be identical when the static component is eliminated, in theory). To solve this problem, we calculated the average value ofV0 (regard asV0) and subtract it from V1. Since V0 contains the same static component asV1, the impact of the static component can still be eliminated after subtraction. sinceV0 is a point, the phase change ofV1 −V0 can be measured directly. Even better, since V0 is closer toV1 than the distance between the origin andV1, the phase change ofV1 can be effectively ampliﬁed: ΔV =V1 −V0 =V1 tag −V0 tag (7) Compared toV0 or V1, we have eliminated the static component, and ΔV only retains tag’s reﬂection signals related to vibration. Therefore, as shown in Fig. 6(b), compared to the raw phase, the modulated phase is signiﬁcantly ampliﬁed.",
+      "evidence_context": "The paragraph describes the DPA algorithm proposed by TagVibra. The citation [17] appears only at the end of the previous sentence: 'RFID tag modulates its data on the backscatter signal using ON-OFF keying scheme. We regard them asVi tag, wherei=0 or 1 represents the matching and mismatching states of the antenna impedance of the tag, respectively [16] [17].' The citation [17] is grouped with [16] and points to the background knowledge of tag modulation, not to the sub-mm or through-wall claim.",
+      "reference_entry": "Wang C, Xie L, Lin Y, et al. Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration[J]. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 2021, 5(4): 1-25.",
+      "why_this_judgment_zh": "引用论文仅在背景技术描述中提及 [17]，用以说明 RFID 标签的阻抗调制机制。没有对目标论文的亚毫米级精度、穿墙窃听或扬声器振动感知能力进行任何评价或使用。因此属于 ordinary_reference，应排除。",
+      "copy_ready_zh": "引用论文将目标论文作为普通参考文献引用，未对其核心能力进行确认或使用。",
+      "confidence": "high"
+    }
+  ]
+}

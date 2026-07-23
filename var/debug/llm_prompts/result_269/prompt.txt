@@ -1,0 +1,1521 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | method_use | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: Sensing Metal Coil Vibration of Headsets for Eavesdropping on Online Conversations With Out-of-Vocabulary Words Using RFID
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025 7107
+Sensing Metal Coil Vibration of Headsets for
+Eavesdropping on Online Conversations With
+Out-of-V ocabulary Words Using RFID
+Yunzhong Chen ,J i a d iY u, Senior Member , IEEE, Yingying Chen , Fellow, IEEE,
+Linghe Kong , Senior Member , IEEE,Y a n m i nZ h u, Senior Member , IEEE,
+a n dY i c h a oC h e n, Senior Member , IEEE
+Abstract—As one of the most essential accessories, headsets
+have been widely used in common online conversations. The
+metal coil vibration patterns of headset speakers/microphones
+have been proven to be highly correlated with the speaker-
+produced/microphone-received sound. This paper presents an on-
+line conversation eavesdropping system, RFSpy, which uses only
+one RFID tag attached on a headset to alternately sense metal coil
+vibrations of headset speaker and microphone for eavesdropping
+on speaker-produced and microphone-received sound. In some
+accessible scenarios, assuming attackers secretly attach a small,
+battery-free RFID tag under one ear cushion of an eavesdropped
+user’s headset without being noticed. Meanwhile, RFID readers are
+camouﬂaged as decorations placed in/out of rooms to transmit and
+receive RF signals. When the eavesdropped user talks with other
+users online through the headset, RFSpy ﬁrst activates the RFID
+tag to capture the metal coil vibration patterns of headset speaker
+and microphone upon RF signals. Then, RFSpy reconstructs sound
+spectrograms from the RF signal-based vibration patterns for not
+only trained words but also untrained (i.e., out-of-vocabulary)
+words utilizing designed SSR network. Finally, RFSpy converts the
+sound spectrograms to conversation content through sound recog-
+nition API. Extensive experiments demonstrate that RFSpy can
+eavesdrop on online conversations with out-of-vocabulary words
+effectively.
+Index Terms—RFID, conversation eavesdropping, coil vibration,
+out-of-vocabulary word.
+I. INTRODUCTION
+I
+N recent years, with the rapid development of Internet of
+Things (IoT) sensing technologies, sound eavesdropping has
+become a major security concern due to the non-encrypted
+characteristic of human-speaking sound, which makes it vul-
+nerable for attackers to acquire sensitive information, such as
+personal privacy, business secrets, and even military secrets,
+Received 26 June 2024; revised 4 February 2025; accepted 25 February 2025.
+Date of publication 7 March 2025; date of current version 3 July 2025. This
+work was supported by NSFC under Grant 62172277 and Grant 62172275.
+Recommended for acceptance by W. Gong.(Corresponding author: Jiadi Yu.)
+Yunzhong Chen, Jiadi Yu, Linghe Kong, Yanmin Zhu, and Yichao Chen
+are with the Department of Computer Science and Engineering, Shanghai
+Jiao Tong University, Shanghai 200240, China (e-mail: chenyzh@sjtu.edu.cn;
+jiadiyu@sjtu.edu.cn; linghe.kong@sjtu.edu.cn; yzhu@cs.sjtu.edu.cn; yichao@
+cs.sjtu.edu.cn).
+Yingying Chen is with the Department of Electrical and Computer En-
+gineering, Rutgers University, Newark, NJ 07102 USA (e-mail: yingche@
+scarletmail.rutgers.edu).
+Digital Object Identiﬁer 10.1109/TMC.2025.3548980
+etc. Given the potential risks, existing acoustic sensor-based
+eavesdropping methods, such as using microphones to record
+sound, have been extensively researched for establishing mature
+countermeasures, e.g., setting up soundproof rooms, placing
+anti-recording devices, etc. In addition, acoustic sensing meth-
+ods can only record human-speaking sound but fail to eavesdrop
+on speaker-produced sound during online conversations through
+headsets. Hence, side-channel attack methods for sound eaves-
+dropping are becoming increasingly attractive.
+Some recent works explore using various non-acoustic sen-
+sors, such as motion sensors and RF signals, to eavesdrop
+on speaker-produced sound [1], [2], [3] or human-speaking
+sound [4], [5]. However, RF signal-based sound sensing meth-
+ods [1], [2] generally require employed sensors, e.g., mmWave-
+radars, facing towards eavesdropped subjects, such as users’
+throats, phones, and speakers, etc. Hence, they are not robust
+to users’ positions, directions, etc., during sound eavesdrop-
+ping. As one of the most common and essential accessories,
+headsets/earphones are widely used in various online conversa-
+tions, such as online calls, video meetings, and online business
+services, etc. Hence, some researchers use customized head-
+sets/earphones equipped with metal coil[6] or motion sensor[7]
+to eavesdrop on speaker-produced sound[6] or microphone-
+received sound, i.e., human-speaking sound[7]. However, due to
+the limitations of employed sensors, the aforementioned works
+enable sensing either speaker-produced or human-speaking
+sound, but fail to eavesdrop on both speaker-produced and
+human-speaking sound through only one sensor, which limits
+their application.
+Nowadays, Radio-frequency identiﬁcation (RFID) technolo-
+gies have been developed rapidly. RFID tag has the characteris-
+tics of metal sensitivity[8], ﬂexibility, small size, and low cost,
+so it is suitable to be attached on common headsets for sensing
+the metal coil vibration of speakers and microphones. Since the
+metal coil vibration patterns of headsets speakers/microphones
+are highly correlated with the speaker-produced/microphone-
+received sound content [9], we consider using RF signals to
+eavesdrop on online conversations through a headset with an
+attached RFID tag.
+In some easily accessible or public scenarios, such as of-
+ﬁces, meeting rooms, labs, etc., attackers can secretly attach a
+small and battery-free RFID tag under the ear cushion of an
+1536-1233 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and similar technologies.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+7108 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+eavesdropped user’s headset when the eavesdropped user is
+absent temporarily, making it difﬁcult to be noticed by the eaves-
+dropped user during online conversations through the headset
+attached an RFID tag. Due to the close distance between the
+speaker and microphone of headsets, it is feasible for attackers
+to use only one RFID tag to alternately sense the metal coil
+vibrations of speaker and microphone. Furthermore, owing to
+the outstanding penetration ability of RFID signals, a compact
+RFID reader and antennas can be camouﬂaged as decorations,
+such as ﬂower pots, framed paintings, and bulletin boards, placed
+in rooms, or outside walls to transmit and receive RF signals
+for achieving online conversation eavesdropping. However, to
+implement online conversation eavesdropping through headsets
+using RF signals, we face several challenges in practice. First,
+the eavesdropping scheme needs to utilize only one RFID tag
+attached on an headset for sensing the metal coil vibration of both
+the headset speaker and microphone in/out of rooms. Second,
+the eavesdropping scheme should be able to remove various
+interference from the received RF signals for recovering con-
+versation content accurately. Third, the eavesdropping scheme
+should be able to implement sound eavesdropping for not only
+trained words but also untrained words, i.e., out-of-vocabulary
+(OOV) words.
+In this paper, we ﬁrst investigate the feasibility of online
+conversation eavesdropping leveraging an RFID tag, and ﬁnd
+that RF signals can capture the metal coil vibration patterns of
+headset speakers and microphones. Motivated by the observa-
+tions, we propose an online conversation eavesdropping system,
+RFSpy, which utilizes one RFID tag secretly attached on a head-
+set to eavesdrop on speaker-produced and microphone-received
+sound. In RFSpy, when a user talks with other users online
+by using a headset with an attached RFID tag, the RFID tag
+is ﬁrst activated by RF signals sent by a camouﬂaged signal-
+transmitting antenna to sense the metal coil vibration of the head-
+set speaker and microphone alternately. Then,RFSpy receives
+RF signals back-scattered by the RFID tag, and pre-processes
+the received RF signals to remove human body motion inter-
+ference and echo interference using designed Variational Mode
+Decomposition (VMD) algorithm and Adaptive Echo Removing
+(AER) algorithm, respectively. After the signal pre-processing,
+RFSpy obtains RF signal spectrograms corresponding to the
+metal coil vibration patterns of the speaker/microphone. Next,
+RFSpy trains a mapping relationship model between RF signal
+spectrograms and sound spectrograms through a designed Sound
+Spectrogram Reconstruction (SSR) network. Based on the
+trained mapping relationship model,RFSpy further constructs
+a phoneme-based pixel-column mapping relationship to recon-
+struct sound spectrograms for not only trained words but also
+untrained (i.e., out-of-vocabulary) words. Subsequently,RFSpy
+converts the reconstructed sound spectrograms to time-domain
+sound waveforms leveraging Grifﬁn-Lim algorithm. Finally,
+the sound waveforms are converted to sound content through
+sound recognition API for achieving online conversation eaves-
+dropping. Experiments in real environments show thatRFSpy
+can effectively eavesdrop on online conversations with OOV
+words.
+We highlight our main contributions as follows:
+r We propose aRFSpy system, which utilizes only one RFID
+tag attached on a headset to alternately sense the metal coil
+vibration of headset speaker and microphone for eaves-
+dropping on speaker-produced and microphone-received
+sound.
+r We present a Variational Mode Decomposition (VMD)
+algorithm and an Adaptive Echo Removing (AER) algo-
+rithm to remove human body motion interference and echo
+interference, respectively.
+r We design a SSR network to train a mapping relationship
+model between RF signal spectrograms and sound spec-
+trograms, and further construct a phoneme-based pixel-
+column mapping relationship to reconstruct sound spectro-
+grams for not only trained words but also untrained (OOV)
+words.
+r We conduct extensive experiments in real environments,
+and the results show thatRFSpy achieves an average Mel-
+Cepstral Distortion (MCD) of 5.9 and Word Error Rate
+(WER) of 15.85% for eavesdropping on online conversa-
+tions with OOV words.
+II. ATTACK MODEL
+People often make online conversations through headsets,
+such as online calls, video meetings, and online business ser-
+vices, etc. The metal coil vibration patterns of headset speak-
+ers/microphones have been proven to be highly correlated with
+the speaker-produced/microphone-received sound content[9].
+Since RFID tags are sensitive to nearby metal[8],i ti sp o s s i b l e
+for attackers to attach an RFID tag on headsets to sense the metal
+coil vibration of headsets for online conversation eavesdropping.
+When a user has an online conversation through a headset,
+the user either speaks through the microphone or listens through
+the speaker, usually not both at the same time. This setup allows
+RFSpy to effectively alternate its eavesdropping between the
+speaker and microphone. When sound signals are produced by
+the speaker, RFID tag captures vibrations of the speaker’s metal
+coil, and RFSpy eavesdrops on the speaker-produced sound.
+Conversely, when sound signals are received by the microphone,
+RFID tag captures vibrations of the microphone’s metal coil, and
+RFSpy eavesdrops on the microphone-received sound.
+Some online conversation scenarios, such as ofﬁces, meeting
+rooms, etc., are often accessible to attackers, so attackers can se-
+cretly attach a small, battery-free RFID tag under the ear cushion
+of headsets during eavesdropped users’ temporary absence. Typ-
+ically, people tend to use a larger headset for online conversation
+to obtain comfortable experience and superior sound quality.
+Current mainstream RFID tags are only about ten millimeters
+in size, which can be easily attached under ear cushion of the
+headset. So, it is hard for the eavesdropped users to notice the
+RFID tag. Even for smaller earphones, there exist small RFID
+tags, e.g., 2 mm ×3 mm in size, which can be attached under
+the ear cushion of these earphones without raising attention.
+Meanwhile, a compact RFID reader and antennas can be
+camouﬂaged as decorations, such as ﬂower pots, and placed
+in rooms to transceive RF signals for eavesdropping on online
+conversations. Once RF signals corresponding to either the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: SENSING METAL COIL VIBRATION OF HEADSETS FOR EA VESDROPPING ON ONLINE CONVERSATIONS 7109
+Fig. 1. Illustration of speakers and microphones.
+speaker or microphone are captured, they are processed through
+a uniﬁed mapping relationship model, which reconstructs sound
+content of the entire conversation (both speaker-produced and
+microphone-received sounds). Moreover, owing to outstanding
+wall-penetrating ability of RFID signals[10], [11], RFID reader
+and antennas can be placed outside walls to enhance camouﬂage
+capabilities for more natural online conversation eavesdropping.
+III. BACKGROUND ANDPRELIMINARY
+RFID tag has high metal sensitivity, making it suitable for
+sensing the metal coil vibration of headset speakers and micro-
+phones for online conversation eavesdropping.
+A. Background
+To satisfy the needs of online conversations, a headset usually
+contains speakers and microphones. Speakers serve the purpose
+of producing sound, while microphones are utilized for capturing
+sound. Dynamic speakers are the most common type of speakers
+in headsets, which contains three main parts, i.e., permanent
+magnet, diaphragm, and metal coil, as shown in Fig.1(a). It con-
+verts electrical energy into sound energy by interaction between
+the magnetic ﬁeld and electric current. The sound energy further
+drives the metal coil vibration of speakers, thereby producing
+sound.
+Fig. 1(b) and (c) show dynamic and capacitive microphones.
+Dynamic microphones consist of three main parts, i.e., perma-
+nent magnet, diaphragm, and metal coil, as shown in Fig.1(b).
+Surrounding sound drives the metal coil vibration of micro-
+phones, and sound energy is converted into electrical energy by
+interaction between magnetic ﬁeld and electric current, thereby
+receiving sound. Capacitive microphones use principle of ca-
+pacitors to receive sound. As shown in Fig.1(c), it consists of an
+electret ﬁlm (i.e., metal ﬁlm) and a back electrode, which com-
+bines as a capacitor. When surrounding sound drives the electret
+ﬁlm vibration of a capacitive microphone, the capacitance of
+capacitor changes, which converts sound into electrical signals,
+thereby receiving sound.
+During sound receiving/producing process of micro-
+phones/speakers, metal coils or electret ﬁlms undergo high-
+frequency vibration, which are correlated with corresponding
+sound contents [9]. For simplicity, we refer to both metal coil
+and electret ﬁlm collectively as ”metal coil” in the following.
+When both parties of online conversations talk by using a headset
+with an attached RFID tag, the speaker-produced/microphone-
+received sound drives the metal coil vibration of headset
+speaker/microphone. If there are electromagnetic waves hitting
+the vibrating metal coil, it brings time-varying electromagnetic
+Fig. 2. Illustration of modeling coil vibration of headsets upon RF signals.
+waves. Hence, it is possible for reﬂected electromagnetic waves
+capture metal coil vibration patterns of speakers/microphones.
+B. Modeling the Metal Coil Vibration of Headsets Upon RF
+Signals
+When a near-end user (i.e., eavesdropped user) talks with
+a far-end user (i.e., user talks online with the eavesdropped
+user) online by using a headset with an attached RFID tag,
+the sound produced by the near-end user/far-end user drives the
+metal coil vibration of headset microphone/speaker. As shown
+in Fig. 2, we attach an RFID tag on one side of the near-end
+user’s headset. Supposing the signal-transmitting antennaTx
+and signal-receiving antennasRx are located at the same posi-
+tion, Tx ﬁrst sends electromagnetic signals to activate the RFID
+tag on the headset, and the activated tag feedbacks RF signals
+through back-scattering toRx. For the eavesdropped user, the
+entire conversation process involves two alternating stages, i.e.,
+the listening stage and speaking stage.
+In the listening stage, sound of far-end user drives the metal
+coil vibration of headset speaker, which is captured by the RFID
+tag attached on headset. Speciﬁcally, received RF signals from
+the RFID tag contain three parts, i.e., RF signals reﬂected by all
+stationary objects, RF signals propagating through line-of-sight
+(LOS) path, and RF signals reﬂected by the vibrating metal
+coil of speaker. Phase of RF signals reﬂected by all stationary
+objects are constant, which isΔϕ1 =Φ . Phase of RF signals
+propagating through LOS path isΔϕ2 =2 πd
+λ , whered is dis-
+tance between RFID antennas and tag,λ is wavelength of RF
+signals [10]. Phase of RF signals reﬂected by metal coil of
+speaker is
+Δϕ3 ≈−
+(
+2π · d1
+λ
+)
+γ +2π
+l1
+cos α −
+dv1
+cos α cos2πft
+λ , (1)
+where d1 represents the distance between the speaker and RFID
+antenna, r1 represents the linear distance between the speaker
+and RFID tag,l1 represents the vertical distance between the
+speaker and RFID tag,dv1 represents the maximum vibration
+amplitude of speaker metal coil,α is the angle betweenr1 and
+l1, t is time,f is the metal coil vibration frequency of speaker,
+and γrepresents the reﬂection coefﬁcient of metal on RF signals.
+The reﬂection coefﬁcientγ is zm−za
+zm+za
+, where zm is impedance
+of metal andza is impedance of air. Sincezm is much smaller
+than za, zm−za
+zm+za
+is approximately equal to1. Based on the above
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+7110 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 3. Illustration of sensing disassembled speaker/microphone vibration
+using RF signals.
+analysis, the received RF signalsΔϕ is represented as
+Δϕ = Δϕ1 +Δϕ2 +Δϕ3 = k − 2πdv1 cos(2πft)
+λ cosα , (2)
+where k = cos α(λΦ+2πd−2πd1γ)+2πl1
+cos αλ . kis a constant becauseα,
+Φ, λ, d, d1, andγ are all constants. Based on(2), we can infer
+the metal coil vibration frequencyf and amplitude dv1 of the
+speaker from the received phase of RF signals.
+During the speaking stage, the sound of near-end user drives
+the metal coil vibration of headset microphones, which is sensed
+by the RFID tag on the headset. Similar to the modeling process
+in the listening stage, we can infer the metal coil vibration
+frequency and amplitude of the headset microphone from the
+received phase of RF signals when the near-end user speaks.
+Based on the metal coil vibration frequency and amplitude
+of headset speaker and microphone, we construct the metal coil
+vibration model of headset speakers and microphones upon RF
+signals.
+C. Feasibility Analysis of Online Conversation Eavesdropping
+Using RF Signals
+Based on the constructed metal coil vibration model of head-
+set speakers/microphones, we consider using an RFID tag at-
+tached on a headset to alternately capture the metal coil vibration
+patterns of speakers and microphones for eavesdropping on
+speaker-produced and microphone-received sound during online
+conversations.
+To explore the feasibility of conversation eavesdropping by
+sensing the metal coil vibration of headsets leveraging RF
+signals, we conduct experiments to analyze the spectrograms
+of received RF signals. Since the third-order harmonic signals
+achieve a trade-off between sensing sensitive and signal inten-
+sity [12], we choose the USRP N210 reader to monitor the third-
+order harmonic RF signals at the frequency of2761.89 MHz
+with the sampling frequency of2 MHz. To avoid the echo in-
+terference between the speaker and microphone, a disassembled
+dynamic speaker, dynamic microphone, and capacitive micro-
+phone are separately employed in the experiments. As shown in
+Fig. 3, we use a hard plastic plate attached an RFID tag to imitate
+the headset shell, which is placed in front of the RFID antennas,
+and the speaker/microphone is placed close to the RFID tag.
+Since the received RF signals are usually affected by signal
+transmission distortion, there could exists amplitude and fre-
+quency noise. This noise results in the degradation of signal
+clarity, affecting the reliability of received RF signals.RFSpy
+ﬁrst employs a moving average ﬁltering method based on slid-
+ing windows to eliminate the amplitude noise. In this moving
+average ﬁltering method, the amplitude of current sample is
+Fig. 4. Examples of spectrograms of RF signal phase when speaker pro-
+duces/microphone receives sound.
+replaced by the average value of several adjacent samples in one
+sliding window. Based on the above method,RFSpy eliminates
+the amplitude noise in the received RF signals. Besides,RFSpy
+utilizes a wavelet denoising method for removing the frequency
+noise. In this method,RFSpy performs wavelet transform on RF
+signals and removes low energy noise components by setting
+a threshold of wavelet coefﬁcients. After utilizing the wavelet
+denoising method,RFSpy eliminates frequency noise from the
+received RF signals effectively.
+Fig. 4(a) shows spectrogram of RF signal phase for dynamic
+speaker when it produces words ”Thank you very much”.
+Fig. 4(b) and (c) shows the spectrograms of RF signal phase
+corresponding to the dynamic microphone and capacitive mi-
+crophone when they receive words ”It was my pleasure”. It can
+be observed from the ﬁgures that there are obvious differences
+between spectrograms of different words for the speaker and two
+microphones. The structural similarity is a common metric to
+measure the similarity of two images, so we calculate the struc-
+tural similarity of spectrograms corresponding to these words.
+The results show that the structural similarity of different words’
+spectrograms are all less than0.5, and that of the same word’s
+spectrograms are all larger than0.8 for the dynamic speaker.
+And the structural similarity for both dynamic and capacitive
+microphones reveal the same characteristics.
+Therefore, different words can be distinguished based on
+spectrograms of RF signals for speakers and microphones. The
+above encouraging results show the potential of eavesdropping
+on speaker-produced and microphone-received sound by sens-
+ing the metal coil vibration of headset speakers and microphones
+using RF signals.
+IV . SYSTEM OVERVIEW
+We propose an online conversation eavesdropping system,
+RFSpy, which utilizes an RFID tag attached on a headset to
+alternately capture the metal coil vibration patterns of headset
+speakers and microphones for eavesdropping on online conver-
+sations. Fig.5 shows the architecture ofRFSpy system. InRF-
+Spy, signal-transmitting antenna ﬁrst sends RF signals to activate
+the RFID tag on headset, and then RF signals back-scattered by
+the tag are received by signal-receiving antenna for recovering
+online conversation content.RFSpy system is composed by the
+following modules:
+Pre-processing signal:After receiving the RF signals back-
+scattered by the RFID tag,RFSpy ﬁrst removes human body
+motion interference through Variational Mode Decomposition
+(VMD) algorithm. Then,RFSpy removes the echo interference
+between the speaker and microphone leveraging Adaptive Echo
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: SENSING METAL COIL VIBRATION OF HEADSETS FOR EA VESDROPPING ON ONLINE CONVERSATIONS 7111
+Fig. 5. Architecture of RFSpy System.
+Removing (AER) algorithm on the received RF signals. Fi-
+nally, RFSpy normalizes user speciﬁcity using Norm-TripletNet
+network. After signals pre-processing, RFSpy obtains user-
+independent RF signal spectrograms and recorded sound spec-
+trograms.
+Reconstructing sound spectrograms from RF signal spectro-
+grams: RFSpy ﬁrst trains a mapping relationship model be-
+tween RF signal spectrograms and sound spectrograms through
+Sound Spectrogram Reconstruction (SSR) network. Based on
+the trained mapping relationship model, RFSpy further con-
+structs a phoneme-based pixel-column mapping relationship to
+reconstruct sound spectrograms for not only trained words but
+also untrained (i.e., out-of-vocabulary) words.
+Recovering conversation content: RFSpy ﬁrst converts the
+sound spectrogram to time-domain sound waveforms using
+Grifﬁn-Lim algorithm. After that, the sound waveforms are
+converted into sound content through sound recognition API
+for achieving conversation eavesdropping.
+V. SIGNAL PRE-PROCESSING
+To eavesdrop on online conversations through a headset
+with an attached RFID tag, RFSpy ﬁrst collects RF signals
+reﬂected from the tag to capture the metal coil vibration patterns
+of speaker and microphone. Since background environments
+usually affect the received RF signals, a spectral subtraction
+algorithm [13] is used to remove the environmental interference.
+Besides, the received RF signals suffer from human body motion
+interference and echo interference between the speaker and
+microphone during online conversations, so RFSpy needs to
+further remove these interference.
+A. Removing Human Body Motion Interference
+When a near-end user talks with a far-end user online by
+using a headset with an attached RFID tag, the received RF
+signals usually suffer from body motion interference, such as
+facial movements, walking, and bone vibration, etc.
+Generally, there are three kinds of motions that can be cap-
+tured by RF signals: (1) Bone vibration, caused by human
+speech, which has a relatively high frequency (100 ∼ 500 Hz
+[5]); (2)Body movements, such as facial movements, walking,
+and waving hands, etc., during online conversations, which
+has a relatively low frequency (1 ∼ 10 Hz [14]); (3)Metal coil
+Fig. 6. An example of VMD decomposition.
+vibration of headset speakers/microphones, caused by speaker-
+produced/ microphone-received sound, which has a frequency
+range from50 ∼ 800 Hz [15].
+RFSpy employs Variational Mode Decomposition
+(VMD) [16] algorithm to extract RF signals corresponding
+to metal coil vibration and remove RF signal interference
+corresponding to bone vibration and body movements. The
+VMD algorithm can adaptively decompose the phase of
+RF signals into multiple frequency components, and each
+frequency component corresponds to a kind of speciﬁc motion.
+VMD assumes that any complicated signalf(x) consists of k
+sub-signals, i.e., intrinsic mode functions (IMFs). Each IMF
+is described as an analytic signaluk(t), which has a limited
+frequency bandwidth with center frequencywk.
+To separate the received RF signal f(x) into k IMFs,
+VMD constructs an objective function. The optimization
+of the objective function satisﬁes two constraints: (1)
+the sum of estimated bandwidth for all analytic signal
+u0(t),u1(t),u2(t),...,u k−1(t) is minimized; (2) the sum of
+all estimated analytic signalu0(t),u1(t),u2(t),...,u k−1(t) is
+equal to the received RF signalf(x). The initial center frequen-
+cies ofu0(t),u1(t),uk−1(t)are set close to the average of their
+frequency ranges. By utilizing Alternate Direction Method of
+Multipliers (ADMM) [16], VMD updates the analytic signal
+ui(t) and corresponding center frequencywi iteratively until
+the analytic signalui(t) converges for allk IMFs. Finally, RF
+signal f(x)is decomposed intok IMFs. Fig.6 shows the VMD
+decomposition results of a period of RF signal phase when a user
+speaks through a headset microphone during walking. It can be
+observed from the ﬁgure that after VMD decomposition,RFSpy
+obtains four IMFs, which is the metal coil vibration of headset
+speakers/microphones, bone vibration, body movements, and
+residual component, respectively.
+To verify the effectiveness of VMD algorithm, we compare
+the decomposed metal coil vibration patterns through VMD with
+that from a disassembled microphone, as shown in Fig.3(b)
+(i.e., without human body motion interference), when a user
+speaks the same content, and the results are shown in Fig.7.
+We calculate the Pearson Correlation Coefﬁcient[17] between
+the decomposed metal coil vibration patterns through VMD and
+that from a disassembled microphone, and the value reaches
+0.85. These positive results demonstrate the high similarity
+between them. Hence, by utilizing the VMD algorithm,RFSpy
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+7112 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 7. Example of metal coil vibration patterns decomposed via VMD and
+from a disassembled microphone.
+removes body motion interference from the received RF signals
+effectively.
+B. Removing Echo Interference
+Besides human body motion interference, RF signals also
+suffer from echo interference, i.e., the speaker-produced sound
+drives the metal coil vibration of not only headset speakers
+but also headset microphones, and the metal coil vibration of
+the headset microphones interfere with the received RF signals.
+Similarly, the metal coil vibration of headset speakers interferes
+with RF signals for sensing the metal coil vibration of headset
+microphones.
+To remove echo interference of headset speakers/
+microphones, we design an Adaptive Echo Removing (AER)
+algorithm to extract RF signals only corresponding to the
+metal coil vibration of headset speakers/microphones, which
+involves two stages, i.e., the speaker eavesdropping stage and
+microphone eavesdropping stage.
+In the speaker eavesdropping stage, the sound of far-end user
+drives the metal coil vibration of not only the headset speaker
+but also the headset microphone, and RF signals reﬂected from
+the metal coil of speaker and microphone are recorded asv(n)
+and x(n), respectively, wheren represents the number of RF
+signal sampling points. When RF signal x(n) propagates in
+space through multiple pathsw(n), it causes echo interference
+y(n) on RF signals v(n), i.e., y(n)= x(n)∗w(n), where ∗
+denotes the signal convolution operation, andy(n) is the echo
+interference on speaker caused by the metal coil vibration of
+microphone. Hence, RF signalsd(n)reﬂected from the speaker
+contains echo interference, which are represented as
+d(n)= x(n)∗w(n)+ v(n). (3)
+RFSpy utilizes the AER algorithm to extract RF signals only
+corresponding to the metal coil vibration of speaker. Speciﬁcally,
+the optimization of AER algorithm is an iterative process, each
+iteration consists of three steps. In the ﬁrst step, AER uses the
+LMS adaptive ﬁlter to estimate propagation pathsˆw(n) of RF
+signals reﬂected from the microphone, which is represented as
+ˆw(n)=[ w(0),w(1),...,w (N)]T. In the second step, AER ﬁrst
+records RF signals x(n) reﬂected from the microphone, and
+then estimates the RF signal echo interferenceˆy(n) from the
+microphone to speaker, which is represented asˆy(n)= x(n)∗
+ˆw(n)= wTxn. In the third step, AER subtractsˆy(n)from d(n)
+to obtain ˆv(n) that eliminates the echo interference after once
+iteration.
+To complete the whole iterative optimization process, we
+deﬁne two objective functions. The ﬁrst is Smin(wn+1)=
+Fig. 8. Illustration of normalizing user speciﬁcity based on Norm-TripletNet
+network.
+∥wn+1 −wn∥2, which represents that the iteration step size is
+minimized for iteration stability. The second isEmin(wn+1)=
+d(n)−wT
+n+1xn, which represents that error between estimated
+and actual RF signal paths is minimized.
+Based on the above two objective functions, a joint opti-
+mization objective function is constructed asJmin(wn+1)=
+∥wn+1 −wn∥2 +λ(d(n)−wT
+n+1xn), where λ is a constant
+parameter. When the joint optimization objective function con-
+verges, RFSpy obtains the estimated echo paths ˆwn(n).A f t e r
+that, we bring ˆwn(n) into (3) to get RF signalsv(n) reﬂected
+by the metal coil vibration of speaker. Based on the above AER
+algorithm, RFSpy eliminates echo interference on the headset
+speaker from the headset microphone.
+Moreover, for the microphone eavesdropping stage, by lever-
+aging the echo interference removing algorithm similar to the
+speaker eavesdropping stage,RFSpy can also eliminate the echo
+interference when the near-end user speaking.
+C. Normalizing User Speciﬁcity
+Typically, individual speech habits, such as intonation, pause
+duration, and rhythm, etc., introduce user speciﬁcity to both RF
+signal spectrograms and recorded sound spectrograms. Hence,
+it is necessary to further normalize user speciﬁcity for reduc-
+ing user-speciﬁc variations in both RF signal spectrograms
+and recorded sound spectrograms, which aims to train a user-
+independent sound eavesdropping model that is applicable to
+diverse users.
+To normalize user speciﬁcity, we design a Norm-TripletNet
+network, as shown in Fig.8, based on Triplet Networks[18] to
+reduce user speciﬁcity in RF signal spectrograms and recorded
+sound spectrograms for obtaining user-independent RF signal
+spectrograms and recorded sound spectrograms. The process
+involves two stages, i.e., RF signal spectrogram normalization
+stage and recorded sound spectrogram normalization stage.
+For RF signal spectrogram normalization stage, the archi-
+tecture of Norm-TripletNet network consists of three parallel
+branches, and each branch contains several components, i.e.,
+feature extraction component,L2 normalization component, and
+feature embedding component. First, three RF signal spectro-
+grams for given sound content, i.e., an anchor samplea from
+a user (e.g., user A), a positive samplep from the same user,
+and a negative samplen from a different user (e.g., user B),
+are input to the Norm-TripletNet network. Then, each of the
+three inputs is processed by the feature extraction component to
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: SENSING METAL COIL VIBRATION OF HEADSETS FOR EA VESDROPPING ON ONLINE CONVERSATIONS 7113
+Fig. 9. Architecture of SSR network.
+extract feature vectors of RF signal spectrograms. After that, the
+extracted feature vectors are normalized by anL2 normalization
+component for stabilizing the training process. Next, a Triplet
+loss function [18] is employed to train the Norm-TripletNet
+network for obtaining user-independent feature embedding in
+a shared latent space. The triplet loss function aims to ensure
+that the distance between anchor and positive samples is at least
+smaller by a margin parameter α than the distance between
+anchor and negative samples. By minimizing the feature dis-
+tance between anchor and positive samples while maximizing
+the feature distance between anchor and negative samples, the
+Norm-TripletNet network learns a mapping relationship that
+maps features of different input RF signal spectrograms into
+a shared latent space. Finally,RFSpy employs a V AE[19] to
+generate a normalized RF signal spectrogram based on the
+shared latent space. The internal components of the V AE include
+an encoder and a decoder structure. The encoder is designed to
+compress high-dimensional input data into an embedding space.
+Meanwhile, the decoder reconstructs normalized RF signal spec-
+trograms from the embedding space.
+For the recorded sound spectrogram normalization stage, by
+using Norm-TripletNet network similar to the RF signal spec-
+trogram normalization stage,RFSpy also generates normalized
+recorded sound spectrograms. Based on the normalized RF
+signal spectrograms and recorded sound spectrograms,RFSpy
+reconstructs sound spectrograms from RF signal spectrograms
+in a user-independent manner.
+VI. RECONSTRUCTING SOUND SPECTROGRAMS FROM RF
+SIGNAL SPECTROGRAMS
+After signal pre-processing, RF signals capture the metal coil
+vibration patterns of headset speakers and microphones. Based
+on the captured patterns,RFSpy further reconstructs sound spec-
+trograms from RF signal spectrograms for online conversation
+eavesdropping.
+A. Training a Mapping Relationship Model Through SSR
+Network
+To reconstruct sound spectrograms from RF signal spectro-
+grams, we design a Sound Spectrogram Reconstruction (SSR)
+network to train a mapping relationship model between RF
+signal spectrograms and sound spectrograms. Fig.9 shows the
+architecture of SSR network, which consists of three main parts,
+i.e., encoder, diffusion model, and decoder.
+Speciﬁcally, RF signal spectrogram x of headset speaker/
+microphone is ﬁrst segmented into 2s pieces, and then nor-
+malized to a256×256 pixel size for reducing complexity of
+model construction. Then, the normalized piece is input to an
+encoder. The encoder performs nonlinear mapping to compress
+high-dimensional data as low-dimensional latent space repre-
+sentation ¯z, i.e., the encoder models a probability distribution
+Qα(¯z | x) from x to ¯z, mappingx to ¯z.
+After that, the latent space representation ¯z is sent to a
+diffusion model [20] for estimating a feature distribution ˆz,
+which aims to learn the real feature distributionz. The diffusion
+model contains two processes, i.e., the forward and reverse
+diffusion process, and each process containsT steps. In the
+forward diffusion process, RFSpy adds Gaussian distribution
+noise q(zt | zt−1,Vs) on feature distribution zt−1 to obtain a
+new feature distributionzt in each step.Vs is a variable gating
+parameter, which is determined by the input category, i.e.,Vs =
+1/0 represents RF signal spectrograms corresponding to the
+metal coil vibration of microphone/speaker. AfterT steps in the
+forward diffusion process, a feature distributionzT is obtained.
+In the reverse diffusion process, based on the feature distribu-
+tion zT in the forward process, RFSpy estimates a Gaussian
+noise distribution at each step using U-Net architecture, and the
+Gaussian noise distribution is represented aspθ(zt−1 | zt,Vs).
+RFSpy removes the estimated Gaussian noise distribution from
+the feature distributionzt to obtain a new feature distribution
+zt−1.A f t e rT steps, RFSpy obtains a low-dimensional latent
+space representation z0, i.e., the estimated feature distribution
+ˆz of the input RF signal spectrogram. This setup enables SSR
+network to learn a uniﬁed mapping relationship, establishing
+mapping parameters between RF signal spectrograms and sound
+spectrograms for both speaker and microphone. Once an RF
+signal spectrogram is received during eavesdropping stage,RF-
+Spy recognizes its source as originating from either the speaker
+or microphone based on the established mapping parameters
+and processes it through this uniﬁed mapping relationship. This
+method ensures accurate reconstruction of entire conversation’s
+sound content without requiring users to identify whether the
+RF signal corresponds to the speaker or microphone.
+Usually, there is a short time interval (i.e., silent gaps) be-
+tween two successive words spoken by users. Hence,RFSpy
+should pay more attention to sound spectrogram regions where
+sound content is present, rather than irrelevant regions, such
+as silent gaps between words. To focus on regions of sound
+spectrograms that contain actual sound content,RFSpy utilizes
+cross-attention mechanism [21] to extract focused feature dis-
+tribution ˆzf, targeting spatial attributes containing actual sound
+content. Speciﬁcally, in the reverse diffusion process of SSR
+netwwork, RFSpy ﬁrst employs an encoder τθ to project the
+recorded sound spectrogramyas an intermediate representation
+yθ, which encodes the spatial attributes of sound content within
+the spectrogram. Then, yθ is mapped to intermediate layers
+of UNet via cross-attention layers. After utilizing the above
+method, RFSpy obtains focused feature distributionˆzf.
+Based onˆzf, RFSpy outputs the reconstructed sound spectro-
+gram ˆx corresponding to the RF signal spectrogram through
+a decoder, and the output process takes the recorded sound
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+7114 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+spectrogram (i.e., ground truth) as the goal. The decoder is
+composed of multilayer perceptron, which models a probability
+distribution Pβ(ˆx | ˆzf)from the feature distributionˆzf to recon-
+structed sound spectrogramˆxin each iterative. After above step,
+SSR network completes once iterative. Next,RFSpy calculates
+reconstruction similarity between outputˆxof previous iterative
+and recorded sound spectrogram, which is used to adjust the
+latent space representationz0 of diffusion model in next iterative.
+RFSpy repeats above steps until mapping relationship model
+between the RF signal spectrogram and sound spectrogram
+is established. Based on the established mapping relationship
+model, RFSpy outputs the ﬁnal reconstructed sound spectrogram
+from the input RF signal spectrogram.
+To train the SSR network, we deﬁne a loss function as
+L(α,β;x,y)=E [logPβ(ˆx | ˆzf,y)]−DKL [Qα(ˆzf | x)∥P(z)],
+(4)
+where E[logPβ(ˆx | ˆzf,y)] is likelihood probability between
+reconstructed sound spectrogram and recorded sound spectro-
+gram, and DKL[Qα(ˆzf | x)∥P(z)] represents the feature en-
+code error between estimated feature distributionˆzf and real
+feature distributionz. The loss function aims to minimize encode
+error of probability distributionQα(ˆzf | x) between estimated
+feature distribution ˆzf and real feature distribution z while
+maximize the likelihood function of probability distribution
+Pβ(ˆx | ˆzf,y) between the recorded soundy and reconstructed
+sound spectrogram ˆx. When the loss function converges,RF-
+Spy trains the mapping relationship model between RF signal
+spectrograms and corresponding sound spectrograms.
+B. Constructing a Phoneme-Based Pixel-Column Mapping
+Relationship for Sound Spectrogram Reconstruction
+To recover the complete conversation content for online con-
+versation eavesdropping, a straightforward method is to train
+a model, which establishes mapping relationship between RF
+signal spectrograms and corresponding sound spectrograms for
+all words involved in online conversations. However, it is not
+realistic to train such a model, because the conversation content
+could contain arbitrary words. Hence, we consider training a
+model that constructs mapping relationship between RF signal
+spectrograms and sound spectrograms for not only trained words
+but also untrained words, i.e., out-of-vocabulary (OOV) words.
+To eavesdrop on conversations with OOV words, we construct
+a phoneme-based pixel-column mapping relationship. Since the
+normalized RF signal spectrogram has a size of 256×256
+pixels containingM (i.e., 256) pixel-columns, the size of cor-
+responding reconstructed sound spectrogram through the SSR
+network is also set as256×256pixels. Hence,RFSpy is able
+to construct theM pixel-column mapping relationship between
+RF signal spectrograms and reconstructed sound spectrograms
+one pixel-column to one pixel-column, which forms aM pairs
+pixel-column mapping relationship. TheM pairs mapping re-
+lationship containsN non-repetitive pixel-column mapping re-
+lationship between RF signal spectrograms and sound spectro-
+grams.
+Usually, pronunciation of each English word consists of
+several phonemes, and there are total of 48 phonemes in all
+Fig. 10. An example of reconstructing sound spectrograms from RF signal
+spectrograms for OOV words.
+English words [22]. Since each phoneme consists of limited
+sound spectrogram pixel-columns, the number of pixel-column
+categories is a ﬁnite constant for all 48 phonemes. Generally,
+a few hundred common English words contain all the word
+phonemes [22], which can be used to train a mapping rela-
+tionship between RF signal spectrograms and phoneme spec-
+trograms for all 48 phonemes through the SSR network. Since
+number of pixel-columns for different phonemes are different,
+RFSpy cannot deﬁne the number of pixel-columns for each
+phoneme. Hence, we consider using pixel-column as mapping
+unit to reconstruct sound spectrograms from corresponding RF
+signal spectrograms.
+As shown in Fig.10, assuming thatRFSpy constructs pixel-
+column mapping relationship between RF signal spectrograms
+and reconstructed sound spectrograms for words ”hello” and
+”world” through the SSR network in training stage. In testing
+stage, RFSpy captures the RF signal spectrogram corresponding
+to an OOV word ”hold”, which is ﬁrst split into pixel-columns
+and input to the phoneme-based pixel-column mapping rela-
+tionship. Based on the constructed mapping relationship for
+words ”hello” and ”world” in the training stage,RFSpy maps
+each pixel-column of RF signal spectrogram for word ”hold”
+to the corresponding sound spectrogram pixel-column. Finally,
+all the mapped sound spectrogram pixel-columns are merged as
+reconstructed sound spectrogram for OOV word ”hold”.
+VII. RECOVERING CONVERSATION CONTENT
+Based on the phoneme-based pixel-column mapping relation-
+ship, RFSpy reconstructs sound spectrograms from RF signal
+spectrograms. Since the mapping unit of phoneme-based pixel-
+column mapping relationship is a pixel-column instead of a
+phoneme, RFSpy only gets sound spectrograms without know-
+ing the actual sound phonemes. Hence, we consider converting
+sound spectrograms into time-domain sound waveforms for
+conversation content recovery. To recover conversation content,
+RFSpy employs Grifﬁn-Lim algorithm [23] to convert sound
+spectrograms to corresponding time-domain sound waveforms.
+Usually, in the process of reconstructing sound spectrograms
+from RF signal spectrograms, it is inevitable to occur conver-
+sion distortion due to the neural network parameter limitation,
+which brings noise in the converted time-domain sound wave-
+forms. This noise affects the performance when converting time-
+domain sound waveforms into conversation content. Thus, we
+design a waveform ﬁlter to remove the noise. Speciﬁcally,RFSpy
+ﬁrst segments a time-domain sound waveform into episodes
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: SENSING METAL COIL VIBRATION OF HEADSETS FOR EA VESDROPPING ON ONLINE CONVERSATIONS 7115
+Fig. 11. Illustration of experimental settings.
+with equal length. Then, the autocorrelation function between
+episodes is calculated to search the basic period and resonance
+frequency of the time-domain sound waveform. Based on the
+autocorrelation function, RFSpy calculates a linear prediction
+coefﬁcient through Levinson-Durbin algorithm, and establishes
+a linear prediction model to predict the value of current sam-
+pling point based on the previous sampling points, which is
+represented asx[n]=Σ (a[i]∗x[n−i])+ e[n],where x[n−i]
+represents the previous i sampling points, a[i] is the linear
+prediction coefﬁcient, ande[n]is the prediction error. If the error
+between the predicted and true sampling points is larger than a
+threshold, RFSpy replaces the current sampling point with the
+predicted one.
+After using the above waveform ﬁlter,RFSpy obtains more
+smooth and stable time-domain sound waveforms, which can
+be used for conversation content recovering. Finally, a Sound-
+to-Text API [24] is employed to convert time-domain sound
+waveforms into conversation content.
+VIII. EVA L UAT I O N
+In this section, we evaluate the performance ofRFSpy in real
+environments.
+A. Setup and Methodology
+Environmental settings: Fig. 11 shows the illustration of
+experimental settings. An Impinj Speedway R420 Commercial
+off-the-shelf (COTS) RFID reader is utilized to transmit RF
+signals and a USRP N210 with a SBX daughter-board is utilized
+to capture harmonic RF signals. The COTS reader and USRP
+device utilize an antenna with the gain of15 dBi working at
+920 MHz and an antenna with the gain of 16 dBi working
+at 2.4 GHz, respectively. The signal-transmitting antenna (Tx)
+emits RF signals and the signal-receiving antenna (Rx) receives
+RF signals back-scattered by RFID tags. We conduct experi-
+ments in four environments with various blocking materials, i.e.,
+a hall with cardboard, a meeting room with soundproof glass,
+a lab with wood door, and an ofﬁce with brick wall, as shown
+in Fig. 12. We choose several commonly used headsets in our
+experiments, i.e., Sony with dynamic speakers and capacitive
+microphones, Ediﬁer with dynamic speakers and dynamic mi-
+crophones, and Philips with dynamic speakers and capacitive
+microphones. Each headset is attached a12 mm ×12 mm in
+size, battery-free RFID tag under one ear cushion to avoid being
+noticed, which works at the frequency of about900 MHz.
+Fig. 12. Environments and blocking materials.
+Data collection and implementation:We recruit 9 volunteers
+(4 males and 5 females, aged between 20 and 50 years old) to
+participate in the experiments. Each volunteer randomly selects
+a headset each time to talk online in an in-the-wild manner,
+i.e., volunteers perform daily activities and online conversations
+naturally, and they are not aware that their conversations are
+eavesdropped.
+RFSpy chooses hundreds of common conversations from
+LibriTTS corpus [25] that cover all the phonemes in English
+as the training data, which involves about2500 English words.
+To demonstrate the capability of our model to recover OOV
+words, we use other conversations involving about1000words to
+evaluate the sound eavesdropping performance ofRFSpy, which
+contains trained and untrained words. The ratio of trained to
+untrained words in this dataset is approximately 2:1. The RF
+signals are processed by a computer with NVIDIA RTX3090
+Ti GPU, and the corresponding sound (i.e., ground truth) is
+recorded by sound recorders. RF signals and the corresponding
+sound are conﬁgured to start recording at the same time so that
+the two signals are aligned, and a video recorder is used to record
+the status of volunteers during online conversations.
+We utilize 3-fold cross validation to evaluate the performance
+of RFSpy. Speciﬁcally, 9 volunteers are divided into three
+groups, and each group contains three users. We choose data
+of two group volunteers to construct a conversation eavesdrop-
+ping model, and another one group volunteers to evaluate the
+performance of RFSpy. Final experimental results are average
+value of cross validation.
+Evaluation metrics: To evaluate the performance ofRFSpy,
+we deﬁne several metrics as follows.
+r Mel-Cepstral Distortion (MCD), which represents the sim-
+ilarity of reconstructed sound spectrograms and corre-
+sponding recorded sound spectrograms[26].
+r Word Error Rate (WER), which represents sound recogniz-
+ability by sound recognition API.WER = S+D+I
+N , where
+S, D, and I are word numbers substituted, deleted, and
+inserted, respectively, andN is word numbers in ground
+truth [26].
+B. Overall Performance
+We evaluate the performance of RFSpy in reconstructing
+sound spectrograms. Fig.13 shows examples of reconstructed
+sound spectrograms and recorded sound spectrograms (i.e.,
+ground truth) when a dynamic speaker produces sound ”which
+instrument do you play”, and a dynamic microphone and
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+7116 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 13. Examples of reconstructed sound spectrograms and recorded sound
+spectrograms.
+Fig. 14. Overall performance of RFSpy.
+capacitive microphone receive sound ”I play piano since child-
+hood”, respectively. The involved sound content contains not
+only trained words (i.e., which, do, you, play, I, since, childhood)
+but also OOV words (i.e., instrument, piano). It can be ob-
+served from the ﬁgure that the reconstructed and recorded sound
+spectrograms (i.e., ground truth) exhibit high similarity. MCD
+between the reconstructed and recorded sound spectrograms
+for the dynamic speaker, dynamic microphone, and capacitive
+microphone are 5.21, 6.14, and 6.35, respectively. Usually,
+a sound with a MCD below 8 is well-recognized by sound
+recognition API [1], and a smaller MCD represents a higher
+similarity between reconstructed sound and recorded sound.
+To validate effect ofRFSpy for eavesdropping on conversa-
+tions with OOV words, we evaluate the performance for trained
+and untrained words, respectively. The left of Fig.14 shows
+average MCD ofRFSpy for trained and untrained words. We
+can observe from the ﬁgure that average MCD of dynamic
+speaker, dynamic microphone, and capacitive microphone for
+trained words are4.73, 5.52, and5.85, respectively, and that for
+untrained words are5.79, 6.7, and6.83, respectively. Besides,
+the right of Fig.14 shows WER of RFSpy for trained words
+and untrained words. We can observe from the ﬁgures that
+WER of dynamic speaker, dynamic microphone, and capacitive
+microphone for trained words are13.78%, 14.68%, and16.78%,
+respectively, and that for untrained words are15.5%, 16.63%,
+and 17.69%, respectively. Performance differences between
+trained and untrained words are not obvious. The overall WER of
+RFSpy for both trained and untrained words of dynamic speaker,
+dynamic microphone, and capacitive microphone are 14.64% ,
+15.66% , and 17.24% , respectively, and the overall MCD for
+both trained and untrained words of dynamic speaker, dynamic
+microphone, and capacitive microphone are 5.26, 6.11, and 6.34,
+respectively. The above results show thatRFSpy eavesdrops on
+online conversations effectively.
+TABLE I
+CONVERSATION EA VESDROPPINGPERFORMANCE OF RFSPY
+Fig. 15. Performance of RFSpy in different environments.
+Moreover, we incorporate experiments to evaluate the overall
+performance of RFSpy in real-world conversation scenarios.
+These experiments are designed to assess the system’s ability to
+eavesdrop on both speaker-produced and microphone-received
+sounds together, and the results are shown in TableI.F r o mt h e
+table, we can observe thatRFSpy achieves a MCD of 5.91 and
+WER of 15.85% when eavesdropping on the speaker-produced
+sound and microphone-received sound together. The results
+show effectiveness ofRFSpy in eavesdropping on online con-
+versations.
+C. Impact of Environments and Blocking Materials
+We evaluate the performance ofRFSpy in four environments
+with various blocking materials, and the results are shown in
+Fig. 15(a). The distances between the RFID antenna and headset
+are at the range from 0.3 m to 3.5 m randomly, so the results
+in Fig. 15(a) are the average across this distance range. It can
+be observed from the ﬁgure that the performance difference of
+RFSpy in hall, meeting room, and lab with different blocking
+materials are not obvious. For example, maximum differences
+of MCD between hall, meeting room, and lab for dynamic
+speaker, dynamic microphone, and capacitive microphone are
+only 0.88, 0.22, and 0.4, respectively, and maximum differences
+of WER between hall, meeting room, and lab for dynamic
+speaker, dynamic microphone, and capacitive microphone are
+only 2.38% , 2.62% , and 2.88% , respectively. In contrast,RFSpy
+obtains a worse performance in the ofﬁce, this is because RF
+signals undergo signiﬁcant attenuation in brick wall. However,
+even in this environment, MCD are all lower than7and WER are
+all lower than26% for both speaker and microphones. Hence,
+RFSpy can penetrate common materials and cause threats to
+in-room conversations.
+Usually, hall and lab are accompanied with passers-by, so we
+explore the impact of passers-by onRFSpy.F i g .15(b) shows
+the sound eavesdropping performance ofRFSpy in these two
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: SENSING METAL COIL VIBRATION OF HEADSETS FOR EA VESDROPPING ON ONLINE CONVERSATIONS 7117
+TABLE II
+AC OMPARISON OFRFSPY WITH EXISTING WORKS
+Fig. 16. MCD and WER of RFSpy with/without VMD for different body
+motions.
+environments with/without passers-by. We can observe from
+the ﬁgure that performance differences ofRFSpy in both hall
+and lab with/without passers-by are not obvious. For example,
+MCD differences in hall with and without passer-by for dynamic
+speaker, dynamic microphone, and capacitive microphone are
+only 0.22, 0.26, and 0.34, respectively, and WER differences in
+hall with and without passer-by for dynamic speaker, dynamic
+microphone, and capacitive microphone are only 1.19% , 0.54%
+, and 1.2% , respectively. This is becauseRFSpy removes static
+environment and dynamic passers-by interference using spectral
+subtraction and VMD algorithm, respectively.
+D. Comparison With Existing Works
+We compare sound eavesdropping performance of RFSpy
+with three state-of-the-art (SOTA) works, i.e., RF-Mic [4],
+MagEar [6], and mmEve [1]. Table II shows the comparison
+results. From the table, we can see that recent works enable
+eavesdropping on either human-speaking sound[4] or speaker-
+produced sound[1], [6] due to the limitations of employed sen-
+sors. In contrast,RFSpy is capable of eavesdropping on not only
+human-speaking sound but also speaker-produced sound. For
+eavesdropping on human-speaking sound, the WER ofRFSpy is
+comparable to that ofRF-Mic [4]. For eavesdropping on speaker-
+produced sound, RFSpy exhibits lower WER thanMagear [6]
+and similar WER as mmEve [1]. As for employed methods,
+work [4] classiﬁes words using classiﬁer-based approaches,
+while work[1] recovers speech using speech enhancement tech-
+niques and work[6] recovers speech using feature enhancement
+techniques. In contrast,RFSpy reconstructs high-quality speech
+based on the latest generative techniques. These capabilities
+distinguish RFSpy from existing methods, thereby enhancing
+RFSpy’s applicability and effectiveness in real scenarios.
+E. Impact of Body Motion
+Usually, human body motions interfere with RF signals, so
+RFSpy uses VMD to remove interference on RF signals. Fig.16
+shows MCD and WER of RFSpy with/without VMD under
+different body motions, i.e., walking, body rotation on chair, and
+Fig. 17. MCD and WER ofRFSpy under different distances.
+Fig. 18. MCD and WER ofRFSpy under different sound volumes.
+typewriting. We can observe from the ﬁgure that MCD and WER
+of RFSpy without VMD are larger than8and 29%, respectively,
+for both speaker and microphones, which is difﬁcult to recover
+conversation content. In contrast, MCD and WER ofRFSpy
+with VMD are smaller than6.8and 18%, respectively, for both
+speaker and microphones, which recovers conversation content
+effectively.
+F . Impact of Distance
+RF signals attenuate as propagating, so we explore the impact
+of distance between RFID antennas and tags onRFSpy. We select
+data when users are static, and face towards the RFID antenna
+under distance from0.3m ∼ 4.5mto evaluationRFSpy.F i g .17
+shows MCD and WER ofRFSpy under different distances, aver-
+aged across four environments with varying blocking materials.
+We can observe from the ﬁgure that MCD and WER increases as
+the distance increases for both speaker and microphones. This
+is because the signal strength of received RF signals decreases
+as the distance increases. However, MCD and WER ofRFSpy
+for the dynamic speaker, dynamic microphone, and capacitive
+microphone are all lower than 7.8 and 22% when the distance
+is within the range of3.5m. In general, RFSpy can be used
+for natural sound eavesdropping in various scenarios, such as
+meeting room, ofﬁces, etc., within such a distance range.
+G. Impact of Sound V olume
+In general, a higher sound volume brings a larger magni-
+tude of the metal coil vibration of speakers/microphones, so
+we evaluateRFSpy under different sound volumes. We record
+the microphone-received and speaker-produced sound volumes
+using a decibel meter, which is inserted under the ear cushion
+of headsets. Fig. 18 shows MCD and WER ofRFSpy under
+different sound volumes. It can be seen from the ﬁgure that
+higher sound volumes lead to lower MCD and WER. When the
+sound volume is large than40dB, MCD and WER of dynamic
+speaker, dynamic microphone, and capacitive microphone are
+all lower than 8 and 25% , respectively. Usually, speaker-
+produced/microphone-received sound volumes are larger than
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+7118 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 19. MCD and WER ofRFSpy with/without AER algorithm.
+Fig. 20. MCD and WER ofRFSpy with/without Norm-TripletNet network.
+45dB during use of headsets, soRFSpy is applicable in most
+scenarios.
+H. Impact of AER Algorithm
+To validate effect of AER algorithm in removing echo in-
+terference, we compare sound eavesdropping performance of
+RFSpy with/without AER algorithm, and the results are shown
+in Fig.19. It can be seen from the ﬁgure that MCD of dynamic
+speaker, dynamic microphone, and capacitive microphone with
+AER algorithm are all smaller than 6.5 while that without AER
+algorithm are all larger than 7.8. Usually, it is hard for sound
+recognition APIs to recognize a sound when MCD of the sound
+is larger than 8. Moreover, the WER of dynamic speaker, dy-
+namic microphone, and capacitive microphone are all decreased
+from exceeding 23% to below 18% after using AER algorithm.
+The above results show AER algorithm’s efﬁcacy in removing
+interference.
+I. Impact of Norm-TripletNet Network
+To explore the effectiveness of Norm-TripletNet network
+in normalizing user speciﬁcity, we compare the sound eaves-
+dropping performance ofRFSpy with/without Norm-TripletNet
+network, and the results are shown in Fig.20. It can be ob-
+served from the ﬁgure that MCD of dynamic speaker, dynamic
+microphone, and capacitive microphone are all decreased ex-
+ceeding 0.3 after using Norm-TripletNet network. Moreover,
+WER of dynamic speaker, dynamic microphone, and capacitive
+microphone are all decreased exceeding 1.5% after using Norm-
+TripletNet network. The above results validate the effectiveness
+of Norm-TripletNet network in normalizing user speciﬁcity.
+J. Impact of Cross-Attention in SSR Network
+To valid the effectiveness of cross-attention mechanism in
+SSR network, we compare the sound eavesdropping perfor-
+mance of RFSpy with/without cross-attention mechanism in
+SSR network, and the results are shown in Fig. 21. It can
+be observed from the ﬁgure that MCD of dynamic speaker,
+Fig. 21. MCD and WER ofRFSpy with/without Cross-attention.
+Fig. 22. MCD and WER ofRFSpy with/without moving average ﬁltering and
+wavelet denoising methods.
+dynamic microphone, and capacitive microphone are all de-
+creased exceeding 0.4 after using cross-attention mechanism.
+Moreover, WER of dynamic speaker, dynamic microphone, and
+capacitive microphone are all decreased exceeding 1.8% after
+using cross-attention mechanism. The above results validate that
+SSR network with cross-attention mechanism is more effective
+in reconstructing sound spectrograms from RF signal spectro-
+grams.
+K. Impact of Moving Average Filtering and Wavelet Denoising
+Methods
+To eliminate amplitude and frequency noise from RF sig-
+nals, RFSpy ﬁrst employs a moving average ﬁltering method
+to eliminate amplitude noise, and then a wavelet denoising
+method is used for removing frequency noise. To validate ef-
+fectiveness of these methods, we compare the performance
+of RFSpy with/without moving average ﬁltering and wavelet
+denoising methods, and the results are shown in Fig.22. It can
+be observed from the ﬁgure that MCD and WER decrease no-
+ticeably after utilizing the moving average ﬁltering and wavelet
+denoising methods. For example, MCD and WER decrease 0.6
+and 1.8% , respectively, after using the moving average ﬁltering
+for dynamic speaker. MCD and WER decrease 0.71 and 2.2%
+, respectively, after using the wavelet denoising method for
+dynamic speaker.
+IX. COUNTERMEASURE AND LIMITATION
+Countermeasures: One potential defense against RFSpy is
+to use RF shielding materials in the headset shell, typically
+made of high-permeability metals like iron or silicon steel,
+which suppress RF signal propagation. Moreover, electromag-
+netic interference devices, such as RF devices working at the
+same frequency band asRFSpy, could cause RF signal distor-
+tion. Hence, in places with high security requirements, such
+as military missions, trade negotiations, etc., electromagnetic
+interference devices can be placed around.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: SENSING METAL COIL VIBRATION OF HEADSETS FOR EA VESDROPPING ON ONLINE CONVERSATIONS 7119
+Limitations: (1) Small earphone eavesdropping.Since main-
+stream RFID tags are about ten millimeters in size, our work only
+explores eavesdropping on online conversations through larger
+headsets. However, beneﬁting from the rapid development of
+RFID technologies, the size of RFID tags is becoming smaller
+and smaller, e.g., RFID tags based on the latest technologies
+are only2×3mm in size. Hence, our work also enables online
+conversation eavesdropping for smaller earphones by using the
+small RFID tags.
+(2) Near-end user and far-end user speak simultaneously:
+RFSpy uses a single RFID tag to alternately sense coil vibrations
+from headset speakers and microphones for eavesdropping.
+It can eavesdrop on either speaker-produced or microphone-
+received sound at a time, but not both simultaneously. When
+near-end and far-end user speak simultaneously, the coil of
+headset speakers and microphones vibrate at the same time,
+and RFSpy cannot distinguish RF signals corresponding to the
+speaker or microphone.
+X. RELATED WORK
+In this section, we review works related toRFSpy.
+Sensing sound through non-acoustic sensors:With the devel-
+opment of IoT technology, studies about sound sensing through
+non-acoustic sensors receive lots of attention. On one hand,
+some researchers use accelerator[5], [7], [27], gyroscope[28],
+and magnetic sensor [6], to capture smart device vibration
+for sensing speaker-produced sound [6], [27], [28] or facial
+dynamics to sense human-speaking sound [5], [7].O nt h e
+other hand, some works use RF signals, such as Wi-Fi[29],
+mmWave[2], and RFID[3], [4], [30], to capture object vibration
+for sensing speaker-produced sound[1], [2], [3], [29], [30] or
+capture body motions for sensing human-speaking sound[4].
+However, due to sensor limitations, these methods can sense
+either speaker-produced or human-speaking sound, but not both
+simultaneously.
+Sensing sound through earphones/headsets: Recently, pri-
+vacy security issues are widely explored[6], [7]. Some works
+explore sound sensing through earphones/headsets equipped
+with various sensors[6], [7]. For example,MagEar [6] uses a
+customized coil to capture magnetic signals leaked by a speaker
+to sense speaker-produced sound.EarSpy [7] uses accelerom-
+eter on earphones to sense mouth motions during speaking
+for eavesdropping on human-speaking sound. However, liking
+non-acoustic sensor-based sound sensing methods, works[6],
+[7] still fail to eavesdrop on both speaker-produced and human-
+speaking sound through only one sensor. Moreover, works[6],
+[7] implement sound eavesdropping only for trained words, but
+cannot recover online conversations with OOV words.
+RFID-based Sensing: Due to advantages of low cost and
+deployment ﬂexibility, RFID tags have been utilized in var-
+ious wireless sensing applications, such as localization[31],
+user authentication [32], etc. Meanwhile, due to the excellent
+sensing ability of RF signals, recent years have witnessed the
+rapid development of RFID-based vibration sensing[30], [33],
+which are utilized to sense mechanical vibration. However, no
+works are available to realize online conversation eavesdropping
+through RFID sensing.
+XI. CONCLUSION
+In this paper, we propose RFSpy, which utilizes common
+headsets with an attached RFID tag to eavesdrop on speaker-
+produced and microphone-received sound.RFSpy ﬁrst leverages
+VMD and AER algorithm to remove body motion interference
+and echo interference from the received RF signals, respectively.
+Then, we use a SSR network to train a mapping relationship
+model between RF signal spectrograms and sound spectrograms,
+and further construct a phoneme-based pixel-column mapping
+relationship to reconstruct sound spectrograms for not only
+trained but also untrained (OOV) words. Afterward, RFSpy
+employs Grifﬁn-Lim algorithm to convert sound spectrograms
+to time-domain sound waveforms, which can be recovered by
+sound recognition API to sound content. Experiments in real-
+world demonstrate effectiveness ofRFSpy for eavesdropping on
+online conversations with OOV words.
+REFERENCES
+[1] C. Wang et al., “mmEve: Eavesdropping on smartphone’s earpiece via
+COTS mmWave device,” inProc. Annu. Int. Conf. Mobile Comput. Netw.,
+Sydney, Australia, 2022, pp. 338–351.
+[2] P. Hu, W. Li, R. Spolaor, and X. Cheng, “mmEcho: A mmWave-based
+acoustic eavesdropping method,” inProc. IEEE Symp. Secur . Privacy,
+Delft, Netherlands, 2023, pp. 1840–1856.
+[3] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by
+capturing sub-mm level vibration,”Proc. ACM Interact. Mobile Wearable
+Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+[4] Y . Chen, J. Yu, L. Kong, H. Kong, Y . Zhu, and Y .-C. Chen, “RF-Mic:
+Live voice eavesdropping via capturing subtle facial speech dynamics
+leveraging RFID,” Proc. ACM Interact. Mobile Wearable Ubiquitous
+Technol., vol. 7, no. 2, pp. 1–25, 2023.
+[5] C. Shi et al., “Face-mic: Inferring live speech and speaker identity via subtle
+facial dynamics captured by AR/VR motion sensors,” inProc. Annu. Int.
+Conf. Mobile Comput. Netw., New Orleans, USA, 2021, pp. 478–490.
+[6] Q. Liao, Y . Huang, Y . Huang, Y . Zhong, H. Jin, and K. Wu, “MagEar:
+Eavesdropping via audio recovery using magnetic side channel,” inProc.
+ACM Int. Conf. Mobile Syst., Appl., Serv., Portland, Oregon, 2022, pp. 371–
+383.
+[7] Y . Cao, F. Li, H. Chen, X. Liu, C. Duan, and Y . Wang, “I can hear you
+without a microphone: Live speech eavesdropping from earphone motion
+sensors,” inProc. IEEE Conf. Comput. Commun., New York, USA, 2023,
+pp. 1–10.
+[8] K. D’hoe et al., “Inﬂuence of different types of metal plates on a high
+frequency RFID loop antenna: Study and design,”Adv. Elect. Comput.
+Eng., vol. 9, no. 2, pp. 3–8, 2009.
+[9] J. H. Kim, J. T. Kim, J. O. Kim, and J. K. Min, “Acoustic characteristics
+of a loudspeaker obtained by vibration and acoustic analyses,”WIT Trans.
+Built Environ., vol. 28, pp. 181–190, 1997.
+[10] M. D. Daniel et al.,SS The RF in RFID Passive UHF RFID in Practice.
+Amsterdam, The Netherlands: Elsevier, 2008.
+[11] L. Yang, Q. Lin, X. Li, T. Liu, and Y . Liu, “See through walls with COTS
+RFID system,” inProc. ACM Annu. Int. Conf. Mobile Comput. Netw.,
+Paris, France, 2015, pp. 487–499.
+[12] G. A. Vera, Y . Duroc, and S. Tedjini, “Analysis of harmonics in UHF RFID
+signals,” IEEE Trans. Microw. Theory Techn., vol. 61, no. 6, pp. 2481–
+2490, Jun. 2013.
+[13] S. Boll, “Suppression of acoustic noise in speech using spectral subtrac-
+tion,” IEEE Trans. Acoustics, Speech, Signal Process., vol. 27, no. 2,
+pp. 113–120, Apr. 1979.
+[14] R. E. van Emmerik and E. E. van Wegen, “On variability and stability in
+human movement,”J. Appl. Biomech., vol. 16, no. 4, pp. 394–406, 2000.
+[15] P. M. Morse,A. S. of America, and A. I. of Physics, Vibration and Sound.
+New York, NY , USA: McGraw-Hill, 1948.
+[16] K. Dragomiretskiy and D. Zosso, “Variational mode decomposition,”IEEE
+Trans. Signal Process., vol. 62, no. 3, pp. 531–544, Feb. 2014.
+[17] I. Cohen, Y . Huang, J. Chen, and J. Benesty, “Pearson correlation co-
+efﬁcient,” in Noise Reduction in Speech processing. Berlin, Germany:
+Springer, 2009, pp. 1–4.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.
+7120 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+[18] F. Schroff, D. Kalenichenko, and J. Philbin, “FaceNet: A uniﬁed embed-
+ding for face recognition and clustering,” inProc. IEEE Conf. Comput.
+Vis. Pattern Recognit., 2015, pp. 815–823.
+[19] D. P. Kingma and M. Welling, “Auto-encoding variational bayes,”
+2013, arXiv:1312.6114.
+[20] R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer,
+“High-resolution image synthesis with latent diffusion models,” inProc.
+IEEE Conf. Comput. Vis. Pattern Recognit., New Orleans, USA, 2022,
+pp. 10674–10685.
+[21] A. Vaswani et al., “Attention is all you need,” inProc. Adv. Neural Inf.
+Process. Syst., 2017, pp. 6000–6010.
+[22] A. Cohen, The Phonemes of English. Berlin, Germany: Springer, 1965.
+[23] D. Grifﬁn and J. Lim, “Signal estimation from modiﬁed short-time fourier
+transform,”IEEE Trans. Acoustics, Speech, Signal Process., vol. 32, no. 2,
+pp. 236–243, Apr. 1984.
+[24] G. Cloud, “Cloud speech-to-text documentation,” 2023. [Online]. Avail-
+able: https://cloud.google.com/speech-to-text
+[25] H. Zen et al., “LibriTTS: A corpus derived from librispeech for text-to-
+speech,” inProc. ACM/IEEE Annu. Int. Symp. Comput. Architecture, Graz,
+Austria, 2019, pp. 1526–1530.
+[26] K. S. Jones and J. R. Galliers,Evaluating Natural Language Processing
+Systems: An Analysis and Review. Berlin, Germany: Springer, 1995.
+[27] P. Hu et al., “Accelerometer acoustic eavesdropping with unconstrained
+vocabulary,” inProc. IEEE Symp. Secur . Privacy, San Francisco, USA,
+2022, pp. 1757–1773.
+[28] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” in Proc. USENIX Secur . Symp.,S a n
+Diego, USA, 2014, pp. 1053–1067.
+[29] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping through
+wireless vibrometry,” inProc. ACM Annu. Int. Conf. Mobile Comput.
+Netw., Paris, France, 2015, pp. 130–141.
+[30] P. Li, Z. An, L. Yang, and P. Yang, “Towards physical-layer vibration
+sensing with RFIDs,” in Proc. IEEE Conf. Comput. Commun., Paris,
+France, 2019, pp. 892–900.
+[31] F. Xiao, Z. Wang, N. Ye, R. Wang, and X.-Y . Li, “One more tag enables
+ﬁne-grained RFID localization and tracking,”IEEE/ACM Trans. Netw.,
+vol. 26, no. 1, pp. 161–174, Feb. 2018.
+[32] Y . Chen, J. Yu, L. Kong, Y . Zhu, and F. Tang, “RFPass: To-
+wards environment-independent gait-based user authentication leveraging
+RFID,” inProc. 19th Annu. IEEE Int. Conf. Sens., Commun., Netw., 2022,
+pp. 289–29.
+[33] L. Yang, Y . Li, X.-Y . Li, and Y . Liu, “Making sense of mechanical vibration
+period with sub-millisecond accuracy using backscatter signals,” inProc.
+Annu. Int. Conf. Mobile Comput. Netw., New York, USA, 2016, pp. 16–28.
+Yunzhong Chen received the bachelor’s and mas-
+ter’s degrees in automation from Henan Universuty,
+Henan, China, in 2018 and 2020, respectively. He
+is now working toward the PhD degree with the
+Department of Computer Science and Engineering,
+Shanghai Jiao Tong University. His research inter-
+ests include mobile computing, wireless sensing, and
+human-computer interaction.
+Jiadi Yu (Senior Member, IEEE) received the PhD
+degree in computer science from Shanghai Jiao Tong
+University. He is an associate professor with the
+Department of Computer Science and Engineering,
+Shanghai Jiao Tong University. Prior that, he was
+with the Stevens Institute of Technology, USA as a
+postdoc. He has published more than 100 papers in
+international leading journals and conferences. His
+research interests include mobile computing, cyber
+security, Internet of Things.
+Yingying Chen (Fellow, IEEE) is a professor with
+the Department of Electrical and Computer Engi-
+neering, Rutgers University. Her research interests
+include cyber security and mobile computing. She
+has published more than 80 journals and conference
+papers. She is the recipient of NSF CAREER Award
+and Google Faculty Research Award. She is recipient
+of the Best Paper Award from ACM MobiCom 2011.
+She is on the editorial boards ofIEEE Transactions on
+Mobile Computing (IEEE TMC) andIEEE Network
+Magazine.
+Linghe Kong (Senior Member, IEEE) received the
+PhD degree in computer science from Shanghai Jiao
+Tong University, 2012. He is a research professor with
+the Department of Computer Science and Engineer-
+ing, Shanghai Jiao Tong University. Before that, he
+was a postdoctoral researcher with Columbia Uni-
+versity, McGill University, and with the Singapore
+University of Technology and Design. His research
+interests include wireless networks, Big Data, mobile
+computing, and Internet of Things.
+Yanmin Zhu (Senior Member, IEEE) received the
+PhD degree from the Department of Computer Sci-
+ence and Engineering, Hong Kong University of
+Science and Technology, in 2007. He is currently
+a professor with the Department of Computer Sci-
+ence and Engineering, Shanghai Jiao Tong University,
+China. His research interests include wireless sensor
+networks and mobile computing. Before that, he was
+a research associate with the Department of Comput-
+ing, Imperial College London, U.K..
+Yichao Chen (Senior Member, IEEE) received the
+BS and MS degrees from the Department of Computer
+Science and Information Engineering, National Tai-
+wan University, in 2004 and 2006, respectively, and
+the PhD degree in computer science from the Univer-
+sity of Texas at Austin, in 2015. He joined Shanghai
+Jiao Tong University, Department of Computer Sci-
+ence and Engineering, in 2018. His research interests
+include wireless networking and mobile computing.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:31:38 UTC from IEEE Xplore.  Restrictions apply.

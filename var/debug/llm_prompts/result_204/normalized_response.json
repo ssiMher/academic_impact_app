@@ -1,0 +1,71 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19], WiFi[20]) is limited.",
+      "reasoning": "The citation text groups RFID[19] with WiFi[20] as examples of longer wavelength RF signals whose accuracy is limited in micron mechanical vibration scenarios. The target reference marker [19] is present. The context does not specify the target paper's sub-mm capability; it only mentions limited accuracy. Therefore, this is a grouped citation that positions the target work as an example of less accurate technology, but does not provide detailed evaluation. Attribution uncertainty exists because multiple works are grouped together.",
+      "keywords": [
+        "accuracy",
+        "limited",
+        "RFID",
+        "WiFi"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "sub-mm",
+            "rfid"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19], WiFi[20]) is limited.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[19]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citation text groups RFID[19] with WiFi[20] as examples of longer wavelength RF signals whose accuracy is limited in micron mechanical vibration scenarios. The target reference marker [19] is present. The context does not specify the target paper's sub-mm capability; it only mentions limited accuracy. Therefore, this is a grouped citation that positions the target work as an example of less accurate technology, but does not provide detailed evaluation. Attribution uncertainty exists because multiple works are grouped together.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

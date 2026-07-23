@@ -1,0 +1,56 @@
+{
+  "findings": [
+    {
+      "citation_text": "UHF RFID [24, 25, 26] Int/Ext mm∼cm <2 MHz Distance",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [26] appears in a table listing side-channel key factors, including UHF RFID. It is a grouped citation without detailed discussion; the table serves as a summary of related work. The mention is a neutral factual listing of capabilities. Template 73 (rfid_submm_capability) is not satisfied because there is no explicit mention of sub-mm or millimeter-level vibration sensing in the body text; the table only lists 'mm∼cm' resolution which is coarse and not the sub-mm capability claimed by the target paper. Template 74 (first_or_pioneering_claim) is not satisfied because no first/pioneering expression is present.",
+      "highlight_keywords": ["UHF RFID", "[24, 25, 26]", "mm∼cm", "<2 MHz"],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "No template is satisfied. The context does not affirm sub-mm capability or first/pioneering status.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73: The quote mentions 'mm∼cm' resolution, not sub-mm. No explicit body wording about sub-mm or millimeter-level sensing for target [26]. Template 74: No first/pioneering expression."
+    },
+    {
+      "citation_text": "RF signals, including WiFi [23], UHF RFID [24, 41, 25, 26], UWB [27], mmWave signals [29, 31, 32, 28, 42, 7], can be considered as a wireless vibrometry to measure the RF signal changes caused by the sound source vibration.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "Target [26] is cited in a sentence describing RF-based SSEA as a category. The mention is a grouped citation in a background/survey context, listing various RF technologies. No detailed technical discussion of [26] is provided. Template 73 is not satisfied because sub-mm capability is not mentioned; the context only refers to 'wireless vibrometry' in general. Template 74 is not satisfied because there is no first/pioneering claim.",
+      "highlight_keywords": ["UHF RFID", "[24, 41, 25, 26]", "wireless vibrometry"],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "No template is satisfied. The context does not contain explicit sub-mm capability or first/pioneering language.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73: No sub-mm or millimeter-level sensing mention. Template 74: No first/pioneering wording."
+    },
+    {
+      "citation_text": "Tag-bug [26] LS Standalone RFID On objects 2 MHz VA WC 4 10/26 W",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "In a table summarizing existing works, target [26] is listed as 'Tag-bug' with specifications. This is a typical related work enumeration. No evaluation or detailed use of the target paper's method is provided. Template 73 is not satisfied because sub-mm capability is not mentioned in the row; the table shows high sampling rate (2 MHz) and resolution not specified. Template 74 is not satisfied because there is no first/pioneering expression.",
+      "highlight_keywords": ["Tag-bug", "[26]", "LS Standalone", "RFID"],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "No template is satisfied. The row is a factual listing without sub-mm or first/pioneering claims.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73: No sub-mm or millimeter-level mention; only frequency and task info. Template 74: No first/pioneering wording."
+    },
+    {
+      "citation_text": "Word classification is the most frequently task that is evaluated in existing works [1, 13, 14, 8, 23, 26] because this task is relatively easy than the tasks above.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "Target [26] is one of several references cited as examples of works evaluating word classification. The context is about the prevalence of the task, not about the target paper's specific contribution. Templates 73 and 74 are not satisfied as no sub-mm capability or first/pioneering claim appears.",
+      "highlight_keywords": ["word classification", "[1, 13, 14, 8, 23, 26]"],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "No template is satisfied. The quote is a generic citation for word classification task.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73: No sub-mm or vibration sensing context. Template 74: No first/pioneering language."
+    }
+  ]
+}

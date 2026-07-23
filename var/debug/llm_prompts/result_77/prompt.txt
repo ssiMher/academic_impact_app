@@ -1,0 +1,1927 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Fine-Grained Head Orientation Tracking Using Head-Mounted Acoustic Devices
+CITED_PAPER_TITLE: MoiréVision: A Generalized Moiré-based Mechanism for 6-DoF Motion Sensing
+CITED_PAPER_YEAR: 2024
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3636534.3649374
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Zhihao Yan, Yanling Bu, Jun Luo 0001
+TARGET_REFERENCE_MARKER: 
+TARGET_REFERENCE_ENTRY: 
+TARGET_REFERENCE_CONTEXTS:
+(none)
+TARGET_ALIAS_CONTEXTS:
+[Context 1] section_heading=Head posture estimation has become an active topic in the; context_type=alias_context; contains_formula=False
+n, and other ﬁelds. Since the end of the last
+century, dozens of methods for head posture estimation have
+been proposed. Now the more common CV-based methods are
+based on the geometric relationship of the facial key points[30],
+[31], [32], [33], [34], [35], [36], [37], [38], [39]. These methods
+identify and track some key points of the face, such as eyes, nose,
+mouth, ears, and the contour; and then estimate the head posture
+based on the collective relationship between these points. More-
+over, MoiréVision [40] introduces a generalized 6-DoF motion
+sensing mechanism based on moiré patterns, addressing the
+limitations of traditional moiré-based methods under perspective
+distortion and dimensional interference. Compared with our
+acoustic-based approach, MoiréVision is camera-dependent and
+may be sensitive to lighting and occlusion, while our system
+ensures privacy and robustness in visually constrained environ-
+ments. These complementary characteristics highlight different
+design trade-offs in high
+
+[Context 2] section_heading=Head posture estimation has become an active topic in the; context_type=alias_context; contains_formula=False
+, [37], [38], [39]. These methods
+identify and track some key points of the face, such as eyes, nose,
+mouth, ears, and the contour; and then estimate the head posture
+based on the collective relationship between these points. More-
+over, MoiréVision [40] introduces a generalized 6-DoF motion
+sensing mechanism based on moiré patterns, addressing the
+limitations of traditional moiré-based methods under perspective
+distortion and dimensional interference. Compared with our
+acoustic-based approach, MoiréVision is camera-dependent and
+may be sensitive to lighting and occlusion, while our system
+ensures privacy and robustness in visually constrained environ-
+ments. These complementary characteristics highlight different
+design trade-offs in high-precision 6-DoF tracking. In addition,
+HRPose [41] proposes a lightweight high-resolution network for
+real-time 6D object pose estimation with competitive accuracy.
+However, head posture estimation systems based on CV have
+many defects. For example, because the
+
+[Context 3] section_heading=EFERENCES; context_type=alias_context; contains_formula=True
+under
+varying face pose and facial expression,”Pattern Recognit., vol. 40, no. 11,
+pp. 3195–3208, 2007.
+[38] L.-P. Morency, J. Whitehill, and J. Movellan, “Monocular head pose
+estimation using generalized adaptive view-based appearance model,”
+Image Vis. Comput. , vol. 28, no. 5, pp. 754–761, 2010.
+[39] X. Liang and W. Tong, “Face pose estimation using near-infrared images,”
+in Proc. Int. Conf. Commun. Syst. Netw. Technol. , 2012, pp. 216–220.
+[40] J. Ning, L. Xie, Z. Yan, Y . Bu, and J. Luo, “Moirévision: A generalized
+moiré-based mechanism for 6-DoF motion sensing,” inProc. 30th Annu.
+Int. Conf. Mobile Comput. Netw., New York, NY , USA, 2024, pp. 467–481,
+doi: 10.1145/3636534.3649374.
+[41] Q. Guan, Z. Sheng, and S. Xue, “Hrpose: Real-time high-resolution 6D
+pose estimation network using knowledge distillation,”Chin. J. Electron.,
+vol. 32, no. 1, pp. 189–198, 2023.
+[42] E. Foxlin, “Inertial head-tracker sensor fusion by a complementary
+separate-bias Kalman ﬁlter,” in Proc. IEEE Virtual Reality
+
+ACTIVE_EVIDENCE_TEMPLATES:
+
+FULL_EXTRACTED_TEXT:
+IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026 5083
+Fine-Grained Head Orientation Tracking Using
+Head-Mounted Acoustic Devices
+Haipeng Dai , Senior Member, IEEE , Jinpeng Song , Junlong Chen ,L e iW a n g, Haoran Wan ,
+Zhizheng Yang ,F uX i a o, Senior Member, IEEE , Xianjun Deng , Senior Member, IEEE ,
+and Guihai Chen , Fellow, IEEE
+Abstract—Head orientation tracking has many potential appli-
+cations in many ﬁelds, e.g., human-computer interaction, AR, and
+VR. In recent years, a large amount of existing work only focuses
+on the positioning of the user but ignore the tracking of the head
+orientation. Undoubtedly, with the information of the user’s head
+orientation, many applications will have more opportunities for
+performance enhancement and better user experience. However,
+reviewing existing works regarding head tracking, the CV-based
+solutions have limited tracking angle range and privacy issues, the
+IMU-based solutions have accumulated errors, and the traditional
+microphone array-based solutions have low accuracy. Thus, none
+of these methods provides accurate and stable head orientation. In
+this paper, we propose EHeadTracker, an enhanced ﬁne-grained
+head orientation tracking system based on head-mounted acoustic
+devices. This system recognizes rich head motions and achieves
+high-precision head direction tracking, while solving the problem
+of pivot point initialization. The experimental results show that
+the system can achieve an average error of 6 degrees in the head
+orientation tracking. To the best of our knowledge, EHeadTracker
+is the ﬁrst system to use head-mounted acoustic devices to achieve
+head orientation tracking and has the highest accuracy in all
+current work.
+Index Terms—Head orientation tracking, ultrasonic signal,
+wearable devices, wireless sensing.
+I. INTRODUCTION
+I
+N RECENT years, a lot of work on user location tracking
+have been presented[1], [2], [3], [4], [5], [6]. However, most
+Received 8 May 2025; revised 13 September 2025; accepted 28 October 2025.
+Date of publication 4 November 2025; date of current version 6 March 2026.
+This work was supported in part by the National Natural Science Foundation of
+China under Grant 62272223 and Grant U22A2031, in part by the Collaborative
+Innovation Center of Novel Software Technology and Industrialization, Nanjing
+University, in part by Jiangsu High-level Innovation and Entrepreneurship
+(Shuangchuang) Program, and in part by the National Natural Science Foun-
+dation of China under Grant 62472299. Recommended for acceptance by L.
+Wang. (Corresponding author: Lei Wang.)
+Haipeng Dai, Jinpeng Song, Junlong Chen, Zhizheng Yang, and Guihai
+Chen are with the State Key Laboratory for Novel Software Technology,
+Nanjing University, Nanjing 210023, China (e-mail: haipengdai@nju.edu.cn;
+jinpengsong@smail.nju.edu.cn; cjl@smail.nju.edu.cn; yzz@smail.nju.edu.cn;
+gchen@nju.edu.cn).
+Lei Wang is with the Soochow University, Suzhou 215021, China (e-mail:
+wanglei@suda.edu.cn).
+Haoran Wan is with the Department of Computer Science, Princeton Univer-
+sity, Princeton, NJ 08540 USA (e-mail: haoran.w@princeton.edu).
+Fu Xiao is with the School of Computer Science, Nanjing University of Posts
+and Telecommunications, Nanjing 210023, China (e-mail: xiaof@njupt.edu.cn).
+Xianjun Deng is with the School of Cyber Science and Engineering,
+Huazhong University of Science and Technology, Wuhan 430074, China (e-mail:
+dengxj615@hust.edu.cn).
+Digital Object Identiﬁer 10.1109/TMC.2025.3628741
+user tracking systems focus only on the user’s location while
+ignoring the user’s head orientation, which can be used to derive
+valuable information, such as the user’s focus area. Intuitively,
+head orientation tracking, especially in 3D space, has many
+potential applications in various ﬁelds, such as human-computer
+interaction, somatosensory game, virtual meetings, and AR/VR.
+Further, if the user’s accurate 3D head position and orientation
+can be obtained simultaneously in real time, we can envision
+and expect its wide usage in many scenarios, for example:
+1) Online courses. In recent years, online education has de-
+veloped rapidly due to the epidemic. Tens of thousands
+students have to attend classes in front of computers.
+However, there are some problems with online education,
+such as teacher’s inability to monitor student’s focus.
+In order to determine where the students’ attention is
+focused, the only way at present is to require all students to
+turn on their cameras. However, in a large online classroom
+environment, it is a very big challenge for network load
+if dozens or hundreds of students turn on the cameras
+at the same time. The teacher also cannot pay attention
+to so many videos simultaneously. Furthermore, another
+signiﬁcant disadvantage of cameras is privacy leakage.
+2) Somatosensory game. In many ﬁrst-person shooters, there
+are movements such as head turning and tilting. Under
+normal conditions, players usually need to rely on a key-
+board, mouse, or handle to give instructions when they
+want to perform these actions. The head orientation track-
+ing system can replace these complex button operations,
+making the game control simpler and more intuitive. In
+addition, we can construct spatial audio according to the
+player’s head orientation, which will signiﬁcantly deepen
+the player’s sense of immersion and enrich their overall
+gaming experience.
+3) Additional application scenarios. In indoor scenes, we can
+better interact with smart homes with the help of head
+tracking system. We can issue instructions to any device
+according to the face orientation without remembering the
+name of all devices, which makes it possible to precisely
+control a certain lamp or a certain door. In addition, we
+can also precisely control which area the sweeping robot is
+going to clean through the head orientation. In the driving
+scene, given the driver’s head orientation, the intelligent
+driving system can provide more functions in aspects such
+as driving assistance and dangerous action recognition.
+1536-1233 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and similar technologies.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5084 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+Fig. 1. EHeadTracker: an enhanced ﬁne-grained head orientation tracking
+system based on head-mounted ultrasound headphones.
+When the driver’s head turns to the left, the system can
+determine that the driver may want to turn left and help
+him turn on the turn signal in advance. In addition, when
+the driver’s head shakes up and down, it means that he/she
+is likely to be dozing off. Once the system detects such
+abnormal actions, it can issue warnings to the driver and
+passengers to avoid accidents.
+Most of the existing head orientation tracking work is based
+on computer vision[7], [8]. These Computer Vision-based (CV-
+based) solutions can only achieve a small range of head tracking
+due to the dead angle of the camera. And they are severely
+affected by environmental factors such as light. Moreover, the
+use of cameras will also bring certain privacy risks. There are
+also some IMU-based head tracking solutions[1], [4], but such
+solutions are limited by the cumulative error of the six-axis
+IMU and need to be continuously calibrated in use. Although
+the nine-axis IMU addresses the cumulative error problem to a
+certain extent [9], [10], it is seriously affected by the external
+magnetic ﬁeld [11]. The most important thing is that, regard-
+less of the CV-based solution or the IMU-based solution, the
+obtained head orientation is in their own internal coordinate
+system, which is difﬁcult to be converted to the world coordinate
+system to interact with other devices. At the same time, there
+are some solutions based on microphone arrays[12], [13],b u t
+the accuracy of these solutions is relatively low.
+In this paper, we propose a ﬁne-grained head orientation
+tracking system based on head-mounted ultrasound headphones,
+which leverages ZC-based ultrasonic positioning algorithm and
+Bi-LSTM neural network to get the precise head position and
+orientation (as shown in Fig.1). Compared with other existing
+work, EHeadTracker signiﬁcantly improves the accuracy of
+head position and orientation. In order to meet the require-
+ments of ultrasonic positioning, we modiﬁed the existing head-
+phone and installed piezoelectric ceramics on it for transmit-
+ting ultrasonic waves to the outside. Then, we use frequency
+division multiplexing ZC ultrasonic localization algorithm to
+complete the positioning of the headphone. To enable head
+orientation tracking with only two points on the head, we use a
+Bi-LSTM neural network model to train and classify the tracking
+data of the headphone, so as to recognize the ongoing simple
+movement of the user’s head. Next, based on the head movement
+information, we calculate the position of the pivot point of the
+head movement, and then combine the positions with the two
+transmitters to calculate the head orientation. Further, we pro-
+pose EHeadTracker, an enhanced system for HeadTracker that
+implements the recognition of head translations along arbitrary
+directions and rotations around arbitrary axes as well as adaptive
+initialization of pivot points. On this basis, the system achieves
+an average error of 6 degrees for head orientation tracking.
+In summary, our system can provide ﬁne-grained and accurate
+tracking of users’ head position and orientation, which can be
+leveraged in various scenarios. However, during the implemen-
+tation of this system, we encounter many challenges:
+1) Multipath problem. Our head tracking system is based on
+positioning, so it is of vital importance to achieve high-
+precision headphone positioning. As is well known, the
+biggest challenge for positioning using ultrasonic signals
+comes from multipath. Because of the reﬂection of the
+environment, the ultrasonic signal will generate a lot of
+multipath during transmission. The received signal is often
+a mixture with multipath signals, rendering it extremely
+difﬁcult to extract the signal on a single path.
+2) Line of Sight (LOS) blockage problem. Because our head-
+phone positioning is range-based, one of the challenges
+is the occlusion of the direct path. There may be many
+obstacles in actual use scenes, such as cups and books.
+Once these obstacles happen to be located on the direct
+path between the transmitter and the receiver, it will cause
+large errors in the ranging results. Specially, human head
+itself is a big obstacle to the propagation, which can
+easily block the direct path between the transmitter and
+the receiver on the other side of the head.
+3) Head orientation tracking problem under head movement
+of x-axis, y-axis, and z-axis. Clearly, at least the coor-
+dinates of three points on an object need to be known
+to determine its posture in 3D space. However, we can
+only get the coordinates of the two transmitters through
+the headphone positioning. Therefore, to obtain the head
+orientation using only the coordinates of the two points on
+the head is a serious challenge.
+4) Head orientation tracking problem under arbitrary axis
+head movement. By deﬁning and categorizing the head
+motion, it can help to realize the calculation of head
+orientation. But head movement is very complex. It is
+difﬁcult to deﬁne head movements in such a way as to
+encompass a wider range of head movements, and to
+enable the system to correctly recognize the pre-deﬁned
+patterns of head movements.
+To address the above multiple design and implementation
+challenges, we propose the following technologies:
+1) Ultrasonic signal modulation based on ZC sequences.
+To solve the multipath problem, we use the Zadoff-Chu
+(ZC) sequence to modulate the ultrasound signal. The ZC
+sequence has the best auto-correlation properties, which
+enables it to distinguish reﬂected signals passing through
+different path lengths [14]. This means that each path
+of ZC signal decomposition is seldom affected by other
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5085
+paths. Therefore, we can easily and accurately calculate
+the distance of a particular path based on the channel
+impulse response (CIR).
+2) Multiple receiver selection algorithm. To solve the prob-
+lem that the direct path is blocked, we borrow the idea
+of GPS and other satellite positioning systems[15].W e
+deploy multiple receivers in the environment to ensure that
+no matter how the head moves, the direct path between
+each transmitter and at least three receivers will not be
+blocked. Additionally, we propose a signal quality metric
+to select three receivers with the best quality signals.
+With these three receivers, we can accurately localize the
+transmitters.
+3) Orientation tracking algorithm under coordinate axis head
+movement. By observing and analyzing the movement of
+the human head, we ﬁnd that most head movements are
+carried out around a point in the neck, which is named
+the pivot point. The position change of the pivot point
+is closely related to the movement of the head. When
+the head is rotating, the position of the pivot point is
+basically unchanged. While the head is translating, with
+the concurrent position change of the pivot point, the
+relative position of the pivot point and the headphone
+remains almost unchanged. Therefore, we can calculate
+the position of the pivot point based on the result of head
+movement recognition, and then combine the position of
+the headphone to calculate head orientation.
+4) Pivot initialization algorithm. For different users, the po-
+sition of the pivot point of the neck is different. In order
+for the system to update the position of the pivot point by
+the type of head movement, the user needs to manually
+enter the information about the pivot point during the ﬁrst
+use. The pivot point initialization algorithm automatically
+calculates the position of the pivot points without the need
+for manual input by the user.
+5) Movement enrichment. On the basis of supporting the
+recognition of the head’s translational movement along
+the x-axis, y-axis, and z-axis and rotational movement
+around thex-axis, y-axis, andz-axis, EHeadTracker fur-
+ther expands the head movement that can be recognized
+by the system, and eventually supports the recognition of
+the head’s translational movement along any direction and
+rotational movement around any rotational axis.
+In summary, the contributions of our paper can be summarized
+as follows:
+r We propose EHeadTracker, an enhanced ﬁne-grained head
+orientation tracking system based on a head-mounted
+acoustic device. It enriches the recognized head move-
+ments and can adaptively calculates the position of the pivot
+point for different users.
+r We use the ZC sequence to modulate the ultrasonic signal
+to reduce the impact of multipath. Meanwhile, we solve the
+direct path blocking problem to a large extent by deploying
+multiple receivers. These methods greatly improve the
+robustness of EHeadTracker.
+r We use Bi-LSTM as a classiﬁcation model to clas-
+sify the headphone trajectory and achieve high-accuracy
+recognition of head movement. On the basis of head
+movement recognition, we combine the position of the
+headphone to calculate the position of the pivot point, and
+then determine the head orientation.
+r We implement and evaluate EHeadTracker in real envi-
+ronments. Abundant experiments demonstrate that EHead-
+Tracker has start-of-the-art performance. Speciﬁcally, the
+accuracy of headphone positioning is 4.5 mm, the accu-
+racy of head movement recognition reaches 99%, and the
+accuracy of head orientation tracking achieves an average
+error of 6 degrees. We also evaluate the performance of
+EHeadTracker on richer motions. Sufﬁcient experiments
+demonstrate that the system has an average classiﬁcation
+accuracy of over 98% for richer head movements, with an
+average error of 6 degrees for head orientation.
+The remaining of this paper is organized as follows. In
+Section II, we summarize the related work on head tracking in re-
+cent years and propose our work and solutions. In SectionIII,w e
+describe the system design and processing ﬂow of our proposed
+approach HeadTracker in detail. In Section IV, we describe
+the enhancements of EHeadTracker over HeadTracker in detail.
+Then, we introduce the deployment of the system and conduct
+a large number of experiments to evaluate the effectiveness of it
+in SectionV. We discuss the limitations of our work and future
+possibilities in SectionVI. Finally, in SectionVII, we conclude
+this paper.
+II. R
+ELATED WORKS
+Advances in sound-based sensing technology have made it
+possible to measure head orientation using ultrasound. Accord-
+ing to the different equipment used, the existing head tracking
+systems are mainly divided into the following three categories:
+CV-based, IMU-based, and Mic-based. We will summarize and
+discuss sound-based sensing technology and these three types
+of work separately as follows.
+A. Sound-Based Sensing Technology
+In recent years, sound-based sensing technologies have been
+rapidly developing and achieving tremendous applications in
+many ﬁelds. In the ﬁeld of action recognition, UltraGesture[16]
+utilizes ultrasonic signals and convolutional neural networks to
+achieve over 99% accuracy in recognizing 12 gestures on mobile
+devices. Zhang et al. proposed a sound-based real-time 3D ultra-
+sound imaging system with hybrid reconstruction[17].L ie ta l .
+investigated hand-to-face (V AHF) gestures for voice interaction,
+proposing a cross-device sensing method that achieved gesture
+recognition accuracy rates of up to 97.3% and 91.5% [18].
+MAF [19] leverages commodity hardware in bone conduction
+earphones for hand-to-face gesture interactions, achieving an
+average gesture recognition accuracy of 92%. Magsound[20]
+utilizes magnetic ﬁeld intensity to predict the position of wireless
+earphones, enabling recognition of the associated motion trajec-
+tory for input. A sound-based method using LSTM-SNN[21]
+has been proposed for snoring detection, achieving high ac-
+curacy in home environments. In addition, in our previous
+work, HeadTracker can recognize head movements [22].I n
+the ﬁeld of identity authentication, both SpeakPrint[23] and
+F2Key [24] propose human authentication solutions based on
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5086 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+acoustic signals. In the ﬁeld of health monitoring, PD-Gait[25]
+utilizes non-contact acoustic signals to measure gait parame-
+ters of Parkinson’s disease patients. APG[26] achieves cardiac
+monitoring by sending ultrasound probing signals and utilizing
+their echoes. Sound signals also ﬁnd extensive applications in
+temperature and distance measurements[27], [28].E a r A c E[29]
+is a recent earable sensing platform that repurposes commercial
+ANC headphones for versatile acoustic sensing tasks, such as
+heart rate monitoring and user authentication. Unlike our system,
+which targets ﬁne-grained 3D head orientation tracking using ul-
+trasound, EarAcE leverages in-ear sensing and does not address
+precise head pose estimation. These two systems represent com-
+plementary directions in acoustic sensing. Overall, sound-based
+sensing technologies hold vast potential across various domains.
+B. CV-Based Head Orientation Tracking
+Head posture estimation has become an active topic in the
+ﬁeld of pattern recognition and computer vision, because it
+has a broad application prospect in face recognition, line of
+sight estimation, and other ﬁelds. Since the end of the last
+century, dozens of methods for head posture estimation have
+been proposed. Now the more common CV-based methods are
+based on the geometric relationship of the facial key points[30],
+[31], [32], [33], [34], [35], [36], [37], [38], [39]. These methods
+identify and track some key points of the face, such as eyes, nose,
+mouth, ears, and the contour; and then estimate the head posture
+based on the collective relationship between these points. More-
+over, MoiréVision [40] introduces a generalized 6-DoF motion
+sensing mechanism based on moiré patterns, addressing the
+limitations of traditional moiré-based methods under perspective
+distortion and dimensional interference. Compared with our
+acoustic-based approach, MoiréVision is camera-dependent and
+may be sensitive to lighting and occlusion, while our system
+ensures privacy and robustness in visually constrained environ-
+ments. These complementary characteristics highlight different
+design trade-offs in high-precision 6-DoF tracking. In addition,
+HRPose [41] proposes a lightweight high-resolution network for
+real-time 6D object pose estimation with competitive accuracy.
+However, head posture estimation systems based on CV have
+many defects. For example, because the viewing angle of the
+camera is limited, the posture of the user’s head cannot be
+recognized when the user’s head accidentally leaves the camera
+range or the angle of rotation is too large. In addition, the
+CV-based solution is greatly affected by ambient light. More
+signiﬁcantly, the use of the camera carries a notable risk of
+potential privacy leakage.
+C. IMU-Based Head Orientation Tracking
+A large number of IMU-based body motion capture systems
+have been proposed [42], [43], [44], [45], [46]. A head ori-
+entation tracking system based on IMU (Inertial Measurement
+Unit) [1] requires users to wear an IMU on head, and then use
+the internal accelerometer and gyroscope sensor to collect data
+to implement the head tracking. But due to the accumulated
+error of inertial sensors, this IMU-based solution needs to be
+continuously calibrated in use.
+The cumulative error problem of six-axis IMU (including
+accelerometer and gyroscope) is the classical problem in the
+ﬁeld of inertial navigation. A large number of IMU-based works
+have proposed methods to solve this problem [2], [3], [4],
+[5], [6], [47], but none of them has completely solved it. The
+nine-axis IMU adds a magnetometer to the six-axis IMU, and
+uses the earth’s magnetic ﬁeld to calibrate the error, which is
+quite effective in cases
+[9], [10]. However, this method limits
+the range of potential application scenarios because nearby
+magnetic ﬁelds or iron-containing objects can cause signiﬁcant
+interference [11]. This issue is serious in indoor environments,
+where such interferences are more prevalent[48], [49].
+In addition, there are many VR devices, such as noloVR,
+on the market that allow users to track their heads. Many of
+these devices are also IMU based, and although they provide a
+decent experience for motion-sensing games, they are currently
+too expensive. In addition, special VR glasses need to be worn
+during the use, which is very inconvenient and affects people’s
+sight. As a result, users cannot do other things when using VR
+equipment.
+D. Microphone-Based Head Orientation Tracking
+In recent years, there has been a lot of work using micro-
+phone arrays to estimate the position and orientation of the
+speakers [12], [13], [50], [51], [52], [53], [54], [55], [56], [57],
+[58], [59], [60], [61], [62], [63]. These work use a large number
+of microphone arrays in the environment to collect information
+such as the strength and angle of the voice signal to calculate
+the speaker’s position and orientation. Nakadai et al. proposed a
+weighted delay-and-sum (WDS) beamforming system based on
+64-ch microphone array[50], which can estimate the direction
+of sound source. However, since the system determines the
+direction of sound source based on power, it requires a large
+number of receivers, and the accuracy is not very high. Yang et al.
+proposed a Model-based head orientation estimation system,
+namely HOE[12], which only requires two microphone arrays.
+However, HOE only enables two-dimensional head orientation
+tracking, and cannot support 3D head orientation tracking. Fur-
+thermore, HOE can only be used when the user is talking and
+the accuracy can only achieve a median estimation error of 23
+degrees, which does not satisfy the requirement for real-time
+and accurate head orientation tracking. Also, there is a solution
+Soundr [13] designs a CNN-LSTM neural network to train a
+large amount of data to obtain the position and direction of the
+head with only one microphone array, but its head orientation
+estimation error is more than 30 degrees. Although the Face-
+Ori [64] method measures head orientation with low error, its
+system only supports recognizing yaw and pitch motion and its
+system requires a calibration process.
+III. H
+EADTRACKER SYSTEM DESIGN
+In this section, we introduce the technical details of Head-
+Tracker. This system can track head orientation as the head
+translates along and rotates around the 3D coordinate axes.
+HeadTracker mainly consists of three modules: Headphone
+positioning, head movement recognition, and Head tracking ,a s
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5087
+Fig. 2. Overview of HeadTracker.
+TABLE I
+LIST OF SYMBOLS USED IN THIS PAPER
+is depicted in Fig.2. For clarity, all mathematical symbols used
+throughout the paper are summarized in TableI.
+A. Signal Processing
+1) Signal Design: We select ZC sequences as the baseband
+ultrasound signal, because ZC is a kind of CAZAC (Constant
+Amplitude Zero AutoCorrelation waveform), which means ZC
+sequences have ideal auto-correlation properties [65], [66].
+Compared with the common CW (Continuous Wave) signal and
+FMCW (Frequency Modulated Continuous Wave) signal, ZC
+signal can separate paths at different distances and reduce the
+inﬂuence of multipath.
+We modulate the ZC sequence by a sinusoid carriers at the
+transmitter, and the mathematical form of the ZC sequence is
+ZC[n]= e
+−j
+πun(n+cf+2q)
+NZC , (1)
+where NZC is the length of ZC sequence, the value range ofn
+is 0 ≤ n<N ZC, andcf takes 0 or 1 as the remainder ofNZC
+modulo 2. The ZC sequence contains two integer parametersq
+and u. Generally,q is set to 0, and the ZC sequence degenerates
+Fig. 3. CIR. The abscissa is the delay point, which corresponds to a certain
+propagation time of the signal. The ordinate is the amplitude, which represents
+the strength of the signal. Generally speaking, the highest peak corresponds to
+LOS. Because we use the frequency division multiplexing method to modulate
+and demodulate the signal, half of the bandwidth of the CIR is repeated, and we
+only need the ﬁrst half of the data when using it.
+into Chu sequence. Moreover,uis in the range[0,NZC], and it
+is relatively prime toNZC.
+2) ZC Modulation and Demodulation: In the process of sig-
+nal modulation and demodulation, we use an OFDM-based inter-
+val interpolation method, which makes it possible to modulate
+two different ZC sequences to the same center frequency by
+utilizing odd and even subcarriers. Similarly, in the demodula-
+tion process of the received signal, we use the frequency domain
+interval sampling method to separate the two ZC sequences from
+the same received signal.
+We know that according to the characteristics of the ZC
+sequence, the auto-correlation result of the ZC sequence is
+only non-zero att =0 , which is a Dirac impulse functionδ(t).
+Because the received signal consists of several different time-
+delayed versions of the transmitted signal over several different
+paths, the result of cross-correlation between the transmitted
+signal and the received signal ish[n], which is a combination of
+δ[(n−τ
+i) mod N] signals :
+h[n]=
+P∑
+i=1
+Aie−jφi[n]δ[(n−τi) mod N], (2)
+where nis the discrete sample points, with a time interval of1/fs
+between each pair of consecutive samples,fs is the sampling
+frequency, N is the total length of the modulated frame,P is the
+number of paths,Ai is the signal strength of signal pathi, φi is
+the phase offset of the signal on pathi, andτi is a discrete value
+representing the time-of-ﬂight (TOF) multiplied byfs. We can
+express the channel impulse response (CIR) ash[n],a ss h o w n
+in Fig.3.
+B. Headphone Positioning
+The ﬁrst step to achieve head tracking is to complete the
+positioning of the headphone. However, most of the headphones
+on the market have a frequency response range below 24 KHz,
+which only provides us with a relatively small bandwidth be-
+cause we have to avoid using the hearing range of the human ear
+in this frequency response range. Moreover, the speakers of these
+headphones are designed to play sound internally, which is also
+very unfriendly to enable distance measurement with external
+devices.
+To achieve high-precision positioning of the headphone, we
+make certain modiﬁcations to the ordinary headphone, that is,
+we install ultrasonic transmitters on each of its left and right
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5088 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+sides. At the same time, we also deploy multiple ultrasonic
+receivers in the environment. We choose to use piezoelectric
+ceramics as the transmitter and receiver, which can complete
+the conversion of electrical signals and mechanical signals. The
+reason for choosing piezoelectric ceramics is that its body is very
+small, with a volume of only5 mm ×5 mm ×1 mm, which is
+easy to install and does not take up too much space. Secondly, the
+frequency response range of piezoelectric ceramics is relatively
+large, which can support 48 KHz audio transmission and recep-
+tion.This underscores their versatility and robust performance
+across diverse applications.
+1) Receiver Selection: As is well known, there is a big trouble
+for ultrasonic positioning in practice, that is, the direct path of
+sound waves between transmitter and receiver is easily blocked.
+To solve this problem, we refer to the idea of satellite positioning
+systems like GPS for satellite positioning, which is to deploy
+multiple satellites in orbit to achieve full coverage of the ground,
+so that users can search for at least 4 satellites to meet their posi-
+tioning needs no matter where they are. Similarly, we can deploy
+multiple ultrasonic receivers in the environment, distributing
+them evenly across the user’s head rotation range. In this way,
+no matter how the user rotates or moves their head, the direct
+path between each transmitter and at least three receivers will
+remain unobstructed. At the same time, we propose a receiver
+selection algorithm through which the system will choose the
+most suitable three receivers from multiple options to complete
+positioning each time. To implement this receiver selection
+algorithm, we ﬁrst propose an indicator namedSNR
+los, which
+is used to evaluate the signal quality and determine whether the
+direct path between the receiver and the transmitter is blocked.
+Meanwhile, to ensure the positioning equations are solvable in
+3D space, the three selected receivers must not be located on
+the same horizontal plane. Speciﬁcally, theirz-axis coordinates
+must differ. No strict threshold is required—their heights only
+need to differ by a non-zero amount.
+The speciﬁc evaluation method ofSNR
+los is as follows. After
+receiving the signal, the system ﬁrst completes the demodulation
+of the signal according to the above-mentioned signal processing
+method. Then, each receiver gets two CIRs corresponding to
+the two transmitters. For each CIR, we deﬁne theSNR
+los to
+determine whether the direct path between the transmitter and
+receiver is blocked.SNRlos is based on the observation that the
+energy of the direct path tends to be much stronger than that of
+other reﬂected paths. Therefore, theSNR
+los is deﬁned as(3),
+which is the ratio of the amplitude of the highest peak to the
+average of all other peaks’ amplitude in the CIR.
+SNRlos = maxCIR [i]
+∑L
+2
+i=1 CIR [i]−maxCIR [i]
+, (3)
+where L is the length of CIR. Because we use the frequency
+division multiplexing method to modulate and demodulate the
+signal, the ﬁrst half and the second half of the CIR diagram are
+repeated, and we only need to use the ﬁrst half of it.
+In this way, for each transmitter, we can quickly ﬁnd out all
+the receivers that are not blocked, and then pick out the three
+most suitable ones. Speciﬁcally, when theSNR
+los is larger than
+a preset threshold the direct path between the transmitter and
+receiver is considered unblocked. Conversely, if theSNRlos is
+lower than the threshold, we think that the direct path is blocked.
+SNRlos, at the same time, can also represent the quality of the
+signal. The larger theSNRlos, the better the signal quality. For
+a transmitter, if the direct path with multiple (more than three)
+receivers is not blocked, then we sorted theSNR
+loss that exceed
+the threshold, and select the receivers corresponding to the three
+largest SNRlos to compute the transmitter position.
+2) Ranging: The abscissa of the CIR corresponds to the
+delay and the ordinate corresponds to the cross-correlation value
+between transmitted signalZC[t] and ZC[t−τi], transmitted
+signal after a certain delayτi. The larger the cross-correlation
+value, the stronger the delayed signal. Generally, the path corre-
+sponding to the highest peak of the CIR is the direct path when
+there is no occlusion. In addition, the difference between the
+distances of adjacent time-delay signals is the ratio of the speed
+of sound c and the sampling ratef
+s. Therefore, the distance
+corresponding to the direct path is given by(4).
+d =a r g m a x
+1<=i<= L
+2
+CIR [i] c
+fs
+. (4)
+In our system, the receiver and transmitter are synchronized,
+although there is an initial error at system startup. This initial
+error is determined by the characteristics of the device hardware
+and communication link, and it is ﬁxed for each transmitter-
+receiver pair. This means that the initial clock error is constant
+for each transmitter-receiver pair and does not change after a
+device restart. So we can do a calibration at the beginning to
+eliminate this initial error. The calibration is done by placing
+each pair of transmitters and receivers so close together that
+the actual distance between them is almost 0. Nevertheless, the
+distance measured by the system is not 0 at this time because
+of the time consuming. We consider the measured distances to
+be their initial error, which can be subtracted during subsequent
+experiments without recalibration each time. Using the above
+measurement and calibration methods, we can calculate the
+exact distance between each transmitter and each receiver.
+3) Positioning: After receiver selection, each transmitter has
+selected three receivers for ranging and positioning. According
+to the triangulation method, the distance between a point and
+three known anchor points is known, and a ternary quadratic
+equation can be set up to calculate the coordinates:
+f =
+⎧
+⎨
+⎩
+(x−x
+1)2 +(y −y1)2 +(z −z1)2 −d2
+1
+(x−x2)2 +(y −y2)2 +(z −z2)2 −d2
+2
+(x−x3)2 +(y −y3)2 +(z −z3)2 −d2
+3,
+(5)
+where (x,y,z ) is the position of the transmitter,(xi,yi,zi) is
+the position of selected receiver, anddi is the distance between
+the transmitter and receiver measured by ultrasonic ranging.
+This is a least squares problem[67]. We use Newton’s iterative
+method to solve this ternary quadratic equation system. In order
+to improve the calculation speed, we set the initial iteration
+value of each positioning as the result of the last positioning,
+which can greatly reduce the number of iterations. We set the
+convergence threshold EPS to 1e-6 and the maximum number
+of iterations to 10. These parameters are empirically selected
+to ensure convergence within a few steps while maintaining
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5089
+Algorithm 1: Positioning Algorithm.
+Input: CIR[n] and coordinates ofNR receivers.
+Output: The coordinates of the transmitter.
+1: Calculate theSNRlos of eachCIR[n] using Eq.(3).
+2: Sort theSNRlos that exceed the threshold, and select
+the ﬁrst three corresponding receivers from them
+named R
+1, R2 and R3.
+3: Calculate the distance betweenR1, R2, R3 and the
+transmitter using theirCIR[n] according to Eq.(4).
+4: Using the calculated distance and the known
+coordinates of receivers, the equationf are listed
+according to Eq.(5).
+5: k ⇐ 0
+6: ⃗xk ⇐ ⃗xpre // Take the result of the previous
+positioning as the initial iteration value of this
+positioning to reduce the iteration times.
+7: while k< = MaximumIteration do
+8: Jk = Jf(⃗xk) // Calculate the Jacobian matrix of
+f(⃗xk)
+9: ⃗xk+1 ⇐ ⃗xk −J−1
+k f(⃗xk) // Newton’s iterative
+method.
+10: if abs(⃗xk+1 −⃗xk) <EPS then
+11: BREAK // If the accuracy reaches the threshold
+EPS set in advance, the iteration ends.
+12: end if
+13: end while
+14: ⃗xpre ⇐ ⃗xk // Save the result of this positioning as the
+initial value of the next positioning iteration.
+low computational overhead. Generally, each positioning can
+be completed only after three or four iterations in this way.
+Speciﬁcally, the positioning algorithm for the transmitter is
+shown in Algorithm1. After completing the demodulation of
+the received signal, we can get multiple CIRs, with which we
+can complete the positioning of the transmitter. The positioning
+algorithms of the left and right transmitters are the same, so
+we only need to apply this positioning algorithm to the two
+transmitters in turn.
+C. Basic Movement Recognition
+Human head movement consists of six basic movements, that
+is, the movement along the directions of the three orthogonal
+coordinates (i.e., x,y,z ) and the rotation around these three co-
+ordinate axes. We deﬁne the coordinates of the head as follows:
+the positive direction of thex-axis is horizontally forward, the
+positive direction of they-axis is horizontal to the right, and
+the positive direction of thez-axis is vertical upward. We use
+the deﬁnition in the ﬁeld of navigation to describe the move-
+ments of these six degrees of freedom, which are the translation
+movements surge, sway, heave along the three coordinate axes
+and the rotation movements roll, pitch, yaw around the three
+coordinate axes.
+We deﬁne the movements of the human head according to the
+above six movements, as shown in Fig.4. Surge is the translation
+movement along thex-axis, heave is the translation movement
+Fig. 4. Head movements.
+Fig. 5. Bi-LSTM.
+Fig. 6. Confusion matrix.
+along the z-axis, sway is the translation movement along the
+y-axis, roll is the rotation movement around thex-axis, yaw is
+the rotation movement around thez-axis, and pitch is the rotation
+movement around they-axis.
+We collect a data set of more than 7000 trajectory information
+to evaluate the performance of the head movement recognition
+module. There are about 1000 trajectories for each type of
+movement, each of which is a two-second coordinate sequence
+of two transmitters. Speciﬁcally, 80% of the data in the dataset
+is used to train the model while the remaining 20% is used for
+testing.
+We use a confusion matrix to show the classiﬁcation accuracy
+of seven movements (including stationary) in Fig.6. According
+to observations, the Bi-LSTM we use to solve this problem is
+quite effective, whose average classiﬁcation accuracy on this
+dataset is more than 99%. For a single head movement, the one
+with the lowest accuracy is the pitch movement, which achieves
+the accuracy of 98.64%, and the one with the highest accuracy is
+sway, roll, yaw, and static movement, which reaches 100%. It can
+be seen from the confusion matrix that the classiﬁcation accuracy
+of the two movements (i.e., surge and pitch) are relatively low
+compared to others. This is also in line with our intuition,
+because surge is the forward and backward translation of the
+head, and pitch is the forward and backward rotation of the head.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5090 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+Fig. 7. Position of pivot point.
+The two movements are very similar when the movement range
+is not large, so they are easy to be confused, which is consistent
+with Bi-LSTM’s capability to capture long-term dependencies
+and multi-granularity features[68].
+As for the reason why the classiﬁcation result is so accurate,
+we believe that it can be attributed to the strong representation
+ability of Bi-LSTM for time series data, the sufﬁcient training
+data and the simple classiﬁcation task.
+Here we only select these six basic movements, without
+considering other complex movements. In SectionIV, we will
+extend the system from the existing motions so that it can rec-
+ognize head rotation around any axis and translation along any
+direction. After completing the deﬁnition of head movements,
+we are facing a multi-classiﬁcation problem. Considering that
+the time series of data we use for classiﬁcation is the trajectory
+of the headphone, we choose to use Bi-directional Long Short-
+Term Memory (Bi-LSTM) to complete this multi-classiﬁcation
+task as shown in Fig.5. The reason we choose the Bi-LSTM
+model is that the trajectory information exhibits strong temporal
+correlations, where the signal at a given time depends not only
+on the current frame but also on past and future frames during
+head movement. Compared with simpler models like MLP or
+unidirectional LSTM, Bi-LSTM signiﬁcantly improves angle
+prediction accuracy and feature stability over time. Moreover, it
+is more efﬁcient than more complex models such as Transform-
+ers, making it better suited for latency-sensitive applications
+like real-time tracking. Thus, Bi-LSTM achieves a favorable
+trade-off between accuracy and efﬁciency. Furthermore, the
+Bi-LSTM model we adopted consists of one bidirectional LSTM
+layer with 200 hidden units, followed by a fully connected layer.
+The ﬁnal decision is made using a softmax activation function
+and a classiﬁcation layer.
+D. Orientation Calculation
+As we know, to determine the posture of an object in three
+dimensions, at least the coordinates of the three points need to
+be known. If you only know the coordinates of the two points,
+the posture of the rigid body is not unique, because it can rotate
+around the axis formed by the two points. However, according
+to the results of the headphone positioning mentioned above, we
+can only get the coordinates of the two transmitters on the left
+and right of the headphone at most. So the question ishow to
+calculate the head posture based on the positions of only two
+points?
+Through observation, we ﬁnd that the movement of the head is
+mainly around apivot point on the neck as shown in Fig.7.W e
+now mathematically deﬁne the system’s receivers, transmitters,
+and pivot point. After performing the receiver signal selection
+in Section III-B, we obtain three known receiver coordinates,
+namely (x
+i,yi,zi). After calculating the transmitter positions in
+Section III-B, we obtain the coordinates for the two transmitters,
+representing the left and right headphones, respectively, asPleft
+and Pright. The initial coordinates of the pivot point can be
+calculated from the coordinates of the left and right transmit-
+ters, namely (Pleft+Pright
+2 −Vdistance). The vectorVdistance is
+formed by the relative distance entered by the user between the
+midpoints of the two transmitters and the pivot point. When
+the head rotates, the position of the pivot point almost does not
+change. While the head makes simple translational movement
+(e.g., back and forth, left and right, up and down), the position
+relative to the headphone remains almost the same, although the
+position of the pivot point changes.
+The relative position between the pivot point and the head-
+phone is unchanged for a person, which is determined by the
+bones of the head and neck. In order to track the head orientation
+later, we need to know the initial position of the pivot point.
+However, due to the differences in the bones of the head and
+neck among different people, the positions of the pivot points
+are not exactly the same, which will have an impact on the head
+orientation estimation. In order to initialize the pivot points of
+users with different body structures, a relatively simple solution
+is to manually calibrate the pivot points. That is, each user needs
+to manually measure the distance between the pivot point of his
+neck and midpoints of the two transmitters and then modify the
+parameters in the ﬁrst use.
+After obtaining the initial position of the pivot point of the
+user’s head, we can continuously update its position based
+on the results of headphone positioning and head movement
+recognition. That is, we can judge whether the head is moving
+or rotating according to the result of head movement recognition
+in the second step. If the result of head movement recognition is a
+rotational movement, the position of the pivot point is considered
+unchanged, and the current position of the pivot point is the
+position of its previous frame. On the contrary, if the result
+of head movement recognition is a movement, even though
+the absolute position of this pivot point changes, its relative
+position with the headphone is considered unchanged. Thus,
+we can subtract this relative position from the midpoint of the
+transmitter to get the new pivot point position. The pivot point
+position updating formula is expressed as follows:
+P
+pivot =
+{Pleft+Pright
+2 −Vdistance M ∈{ surge,sway,heave }
+Ppre M ∈{ roll,pitch,yaw,static },
+(6)
+where Ppivot is the position of the current required pivot point,
+Pleft and Pright are the positions of the left and right transmitters
+obtained by the headphone positioning, andVdistance is a vector
+formed by the relative distance entered by the user between the
+midpoints of the two transmitters and the pivot point,P
+pre is the
+position of the pivot point in the previous frame, andM is the
+ongoing movement of the head obtained by the head movement
+recognition.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5091
+We now have the coordinates of the three points on the head
+in total,i.e., the pivot point and two transmitters. Theoretically,
+we can use these three points to get the head orientation. We ﬁnd
+that the plane formed by these three points is relatively immobile
+with the head, no matter how the head moves.
+And as long as the headset is worn correctly, the normal
+vector of this plane is almost parallel to the orientation of the
+head. Based on this we can calculate the head orientation. We
+ﬁrst calculate the vector between the pivot point and the two
+transmitters according to the following formula:{
+V
+PivotToRight =( Pright −Ppivot)
+VPivotToLeft =( Pleft −Ppivot). (7)
+As we know, the result of the cross product of these two vectors
+is the normal vector of the plane where the three points (Ppivot,
+Pright, and Pleft) are located. Speciﬁcally, according to the
+right-hand rule, the result of the cross product ofVPivotToRight
+and VPivotToLeft is consistent with the head orientation. So
+we can get the head orientationVOrientation according to the
+following formula:
+VOrientation = VPivotToRight ×VPivotToLeft . (8)
+In practice, the accuracy of the calculated orientation vector
+VOrientation depends heavily on the precision of the transmitter
+positions and the stability of the pivot point estimation. Mea-
+surement noise in ultrasonic ranging, which may arise from
+multipath reﬂections, LOS blockage, and environmental acous-
+tic interference, can introduce errors in the estimated positions
+of the two transmitters. These position deviations will directly
+propagate into the computation of the pivot point and subse-
+quently affect the orientation estimation. Since the pivot point is
+determined from the relative geometry of the head and neck, even
+small localization errors can lead to noticeable angular devia-
+tions in the ﬁnal head orientation. To mitigate these effects, we
+integrate a ZC sequence–based signal modulation with excellent
+auto-correlation properties and employ a multi-receiver selec-
+tion algorithm to ensure that only the highest-quality direct path
+measurements are used. This design signiﬁcantly reduces the
+inﬂuence of noise and increases the robustness of the orientation
+calculation process.
+IV . E
+NHANCED SYSTEM FOR HEADTRACKER
+In this section, we describe the enhancements of EHead-
+Tracker over HeadTracker in detail. Speciﬁcally, we propose
+a pivot initialization algorithm, so that different users no longer
+need to manually input the distance between the pivot point of
+his neck and midpoints of the two transmitters when using the
+system, but can achieve the effect of adaptive initialization of
+the position of the pivot point of different users. In addition, we
+have enriched the types of movements that can be recognized by
+EHeadTracker on the basis of the original six movements, and
+achieved motion recognition for head translation in any direction
+and rotation around any axis.
+A. Movement Enrichment
+In order to facilitate the deﬁnition of the head movements,
+this section establishes the 3D coordinate system with the pivot
+TABLE II
+ROTATIONACTION DEFINITION.
+point of the head as the origin. As described in SectionIII-C,
+the original system only supports translational motion of the
+head along the x-axis, y-axis, z-axis and rotational motion
+around thex-axis, y-axis, z-axis, which is insufﬁcient to apply to
+many complex head movements. In order to make EHeadTracker
+applicable to a wider range of scenarios, we extend the types of
+actions recognized by the system in the following way:
+Head movements can be divided into two main categories,
+translational and rotational. For rotational motion, we observe
+that the head has several types of rotational motion in addition to
+rotational motion around thex-axis, y-axis, andz-axis. In order
+to enable the system to be applied to rotational head movements
+around any axis, we deﬁne eight new head rotation motions.
+Different rotation actions have different rotation axes. Let the
+direction vector of the rotation axis bev =( a,b,c ), then the
+correspondence between the rotational action and the equations
+of the rotational axis is shown in TableII.
+The inclusion of eight new rotational motions, combined with
+the three existing ones, covers all possible ways in which the
+head can rotate around the axis of rotation.
+In order for the Bi-LSTM model to recognize these rota-
+tional motions, we collected approximately 1000 trajectories
+for each added rotational motion, each containing a sequence
+of two transmitter positions. As for the pivot point update, we
+only need to know whether the head motion is a rotational
+or translational motion. Therefore, we use the eight additional
+rotational motions together with the dataset of the roll, pitch, yaw
+motions mentioned in SectionIII-C as the dataset for rotational
+motions and the dataset of the surge, sway, heave motions in
+Section III-C as the dataset for translational motions. We train
+the Bi-LSTM model on this new dataset, where 80% of each
+class of action dataset is used for model training and 20% for
+model validation. We use the confusion matrix to represent the
+classiﬁcation accuracies of the three motions (including station-
+ary), and as shown in Fig.8, the Bi-LSTM model has very high
+classiﬁcation accuracies for rotational and translational motions,
+with an average classiﬁcation accuracy of more than 97%. The
+added dataset enriches the original rotational motion dataset,
+allowing the model to recognize richer head rotational motions.
+Therefore, the position of the pivot point update equation can be
+updated as follows:
+P
+pivot =
+{Pleft+Pright
+2 −Vdistance M ∈{ translation}
+Ppre M ∈{ rotation,static}.
+(9)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5092 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+Fig. 8. Confusion matrix for head movement recognition with EHeadTracker.
+Fig. 9. Pivot to headphone distance.
+For the translational motion of the head, we observe that
+the relative distances between the pivot points and the left and
+right headphones are constant regardless of the head translation.
+When the system uses the pivot point updating method as in
+(6), if the translational motion is incorrectly judged as rotational
+motion, the relative distances between the pivot points and the
+left and right headphones will change.
+To further demonstrate this situation, we ask a user to perform
+translational movement and plot the relative distance results
+using pivot point updating methods with different recognition
+results. As shown in Fig. 9, blue folding line indicates the
+change in the relative distance between the pivot point and the
+left and right headphones when the head motion is correctly
+judged as translation. Orange folding line indicates the change
+in the relative distance between the pivot point and the left
+and right headphones when the head is misjudged as rotating.
+Green folding line indicates the relative distance from the pivot
+point to the left and right headphones measured manually as
+18 cm. We can observe that the variation of blue folding line is
+signiﬁcantly smaller than that of orange folding line. The small
+variation of blue folding line originates from the ranging error
+between the transmitter and receiver. In order for the system to
+correctly recognize the head’s translational motion along any
+direction, we collect about 1000 sets of head’s translational and
+rotational motion trajectories and count the relative distance
+changes between the left and right headphones and the pivot
+point. As shown in Fig.10, when the head is correctly recognized
+as a translational or rotational motion, the relative distance
+changes between the left and right headphones and the pivot
+point are less than10mm. Therefore we choose a constantΔ.
+When the system tries to classify the head movements, if the
+relative distance change between the pivot point and the left and
+right headphones is greater than this constant, it means that the
+translational movement is misjudged as rotational movement,
+then the current action is corrected as translational movement
+Fig. 10. Distance change from pivot to headphones.
+Algorithm 2: Movements Recognize Algorithm.
+Input:Sequence of left and right headphone positionsP1
+and P2 and distance change thresholdΔ.
+Output:Types of movement.mov
+1: mov = LSTM (P1,P2)
+2: if mov ∈ movr then
+3: dis1 = getDistance(p3,p1)
+4: dis2 = getDistance(p3,p2)
+5: β = getDischange(dis1,dis2)
+6: if β> Δ then
+7: mov = movt
+8: end if
+9: end if
+and the pivot point coordinates are updated according to the
+(6). The algorithm for recognizing head motion that rotates
+around any axis and translates in any direction is shown in
+Algorithm 2, where Δ is a pre-set distance change threshold,
+movr is a collective term for rotational motion, andmovt is a col-
+lective term for translational motion,getDistance is a function
+that calculates the Euclidean distance between two points,disi is
+the Euclidean distance between the two points,getDischange
+is a function that calculates the change in distance,β represents
+the distance change.
+B. Pivot Initialization
+In order to track the head orientation, we need to know
+the initial position of the pivot point. However, as described
+in Section III-D, HeadTracker requires the user to manually
+enter a relative distance parameter between the midpoints of
+the two transmitters and the pivot point during initial use. This
+parameter needs to be manually measured by the user to obtain
+it, which is inconvenient for the user. Therefore, we propose
+an adaptive pivot initialization algorithm for EHeadTracker. In
+HeadTracker method, the initialization of the pivot point re-
+quires manual calibration, while headphone positioning, move-
+ment recognition, and orientation calculation can all be per-
+formed automatically. In EHeadTracker method, the initializa-
+tion of the pivot point has also been implemented with adaptive
+initialization.
+Due to the differences in the bones of the head and neck
+among different people, the pivot point position of the head can
+change. In order to make HeadTracker adaptive in determining
+the pivot position for different users, we adopt the following
+approach. The position of the pivot point is located directly
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5093
+Algorithm 3: Pivot Initialization Algorithm.
+Input:Sequence of left and right headphone positions
+during head-up.P1 and P2
+Output:Position of the pivot point.Ppivot
+1: for p1,p2 in P1,P2 do
+2: pmid = p1+p2
+2
+3: δ =[ 0,0,0.005],S =6 0
+4: for i =1 to N do
+5: p3 = pmid −i×δ
+6: dis1 = getDistance(p3,p1)
+7: dis2 = getDistance(p3,p2)
+8: dis = dis1 +dis2
+9: disseq =[ disseq,dis]
+10: end for
+11: result =[ result;disseq]
+12: [minstd,col]= getMinstd(result)
+13: Ppivot = pmid −col×δ
+14: end for
+below the midpoint position of the left and right headphone
+connecting lines, which is due to the structure of the human
+head. The distance between the pivot point position and the
+left and right headphones does not change for different users
+when they complete the head-up action. Therefore, when the
+system starts up, it allows the user to complete a short head-up
+movement. During this process, from the midpoint of the line
+connecting the two points of the left and right headphones, probe
+down along the negative half-axis of thez-axis until the point
+where the distance between the user’s pivot position and the
+left and right headphones changes the least during the head-up
+process is found, which is the user’s initial pivot point posi-
+tion. Speciﬁcally, the algorithm for calculating the user’s initial
+pivot point position is shown in Algorithm3. In this algorithm,
+the function getDistance() computes the Euclidean distance
+between two points and the functiongetMinstd computes the
+standard deviation of each column in the matrix and return the
+smallest standard deviation and the corresponding index. The
+parameter δ represents the unit length for probing down, and
+S is the maximum number of probing down iterations. These
+two parameters are used in Algorithm3 to probe down from the
+midpoint between the two transmitters to locate the pivot point.
+The probing stepδ is set to[0,0,0.005], corresponding toa5m m
+vertical step. This value is empirically selected to balance search
+accuracy and computational efﬁciency. A 5 mm resolution is
+sufﬁcient to accurately locate the position of the pivot point
+while keeping the number of probing iterations manageable.
+Based on common knowledge, the average head length of a
+human is typically no more than 30 cm. Thus, we chooseS =
+60, meaning the maximum probing down distance is 30 cm.
+V. I
+MPLEMENTATION ANDEVA L UAT I O N
+A. Implementation
+Fig. 11 shows the devices used in our experiment. We use
+Murata MA40H1 piezoelectric ceramics as sound sources for
+transmitting and receiving ultrasonic waves. The I/O device we
+Fig. 11. Hardware.
+Fig. 12. Experimental scene.
+use is USB-6356 produced by National Instruments, which can
+support up to 2 analog signal outputs and 8 analog signal inputs.
+As shown in Fig.12, we choose piezoelectric ceramics as the
+transmitter and receiver of ultrasonic waves. We install the two
+transmitters on both sides of the headphone, and then install
+the receivers in the environment. These piezoelectric ceramics
+are connected to NI equipment through coaxial cables. The NI
+device is connected, via a USB cable, to a computer with an
+Intel I7-9700 CPU (3.00 GHz) and 16 GB memory, which is
+sufﬁcient to support signal acquisition and processing. In the
+part of software, we use MATLAB on PC to drive the device
+for signal acquisition and data processing. In the experiment,
+we set the sampling rate of NI to 96 KHz, the center frequency
+of ZC signal to 40 KHz, and the bandwidth to 16 KHz, which
+can make the lowest frequency of sound signal far beyond the
+hearing range of human ears.
+B. Performance of HeadTracker
+To determine the ground truth of head orientation, we ﬁrst
+design a head orientation error evaluation method based on mark
+points, called the Mark Points Method (MPM) for short. MPM
+requires us to mark some points in the environment in advance.
+We calculate the head orientations of the user when looking at
+these mark points in advance. During the experiment, we attach
+a laser pointer to the headphone. When the laser pointer points to
+a mark point, we then obtain the ground truth of the user’s head
+orientation at that moment. In order to evaluate the performance
+of HeadTracker, we measure the median and average errors of the
+system. We conduct a total of 6 groups of experiments. Fig.13(a)
+shows the error of the 6 groups. From the ﬁgure, it can be seen
+that the median error of each experiment is between about 4
+degrees and 7 degrees. According to the calculation, the average
+error of these 6 groups is about 6 degrees. Fig.13(b) shows the
+CDF of the errors of all groups, where 50% of the data have an
+error less than 7 degrees, and 90% of the data have an error less
+than 12 degrees.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5094 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+Fig. 13. Head orientation tracking results with HeadTracker.
+Fig. 14. Head orientation tracking results with EHeadTracker.
+C. Performance of EHeadTracker
+As described in Section IV-A, after motion enrichment of
+HeadTracker, EHeadTracker already supports recognizing trans-
+lational movements of the head along any direction and ro-
+tational movements around any axis. In order to evaluate the
+accuracy of the EHeadtrakcer’s computation of head orientation
+when the head performs more complex movements, we conduct
+the following experiments. First, in order to make the head move-
+ments in the experiment not limited to the six basic movements,
+we specify the head movement trajectories of the experimen-
+tal participants. We select a total of four different trajectories
+containing translation motions and rotation motions. During the
+experiment, each trajectory was repeated, and we computed a
+total of about 800 orientation errors. We used the MPM method
+to evaluate the experimental results, and the experimental errors
+are shown in the Fig.25. From the ﬁgure, it can be seen that the
+median error of each experiment is between about 3 degrees and
+7.5 degrees. According to the calculation, the average error of
+these 4 groups is about 6 degrees. It can be seen that the system’s
+computational error for head orientation is almost constant after
+performing Movement enrichment. Fig.14(b) shows the CDF of
+the errors of all groups, where the 50% error of data is less than
+7.5 degrees and the 90% error of data is less than 13 degrees.
+D. Comparison With the CV-Based Approach
+In order to comparison with CV-based head orientation mea-
+surements in the literature, we measure the mean error of EHead-
+Tracker under yaw as well as pitch movements. As shown in
+TableIII, we can observe that the average error of EHeadTracker
+is about 21% less than that of RGB camera-based methods[69]
+during pitch motion, and the error of EHeadTracker is similar
+to that of RGB camera-based methods during yaw motion, and
+the error of both methods is higher than that of RGBD-based
+TABLE III
+MEAN ERROR OFDIFFERENT HEAD MEASUREMENT METHODS.
+TABLE IV
+MEDIAN ERROR OFDIFFERENT HEAD MEASUREMENT METHODS
+methods [70]. However, CV-based methods come with several
+drawbacks. They are limited in low-light conditions, when faces
+are partially obscured, or when there are extreme head rotation
+angles. Additionally, there is a risk of privacy breaches associ-
+ated with CV-based methods. EHeadTracker has none of these
+drawbacks.
+E. Comparison With the UHead Using UWB Radar
+UHead [71] utilizes a UWB radar mounted on a smartphone
+holder within the vehicle to detect the driver’s head rotation
+angle, allowing it to infer the driver’s attention level. In order to
+comparison with other wireless sensing solutions, we compared
+EHeadTracker with UHead. We used the median error of head
+orientation in yaw and pitch movements as the evaluation metric.
+As shown in TableIV, we can observe that during yaw motion,
+the median error of EHeadTracker is approximately 54% lower
+than that of the UHead method, and during pitch motion, the
+median error of EHeadTracker is approximately 36% lower
+than that of the UHead method. Meanwhile, EHeadTracker can
+recognize arbitrary head movements, making its application
+scope broader than that of the UHead method.
+F . Comparison With the IMU-Based Method
+To illustrate the impact of cumulative errors from the IMU
+on head orientation measurements, we carry out the experiment
+using the six-axis IMU. This IMU can provide us with three-axis
+angle change and three-axis acceleration change data. Therefore,
+we can attach the IMU to the headphone and calculate the head
+orientation based on the three-axis angle changes it provides.
+To illustrate the impact of cumulative errors on head orienta-
+tion measurements, we calculate the errors in head orientation
+measurements using the IMU over short, medium, and long
+periods of time. As shown in the Fig.15, when using the IMU
+for short-duration measurements, the average error is relatively
+low, around 3 degrees. However, for long-duration measure-
+ments using the IMU, the average error becomes signiﬁcantly
+higher, approximately 13 degrees. When using the IMU for
+long-duration head orientation measurements, the mean error
+of EHeadTracker is approximately 53% lower than the mean
+error of the IMU. When using the IMU for long-duration head
+orientation measurements, the error becomes unacceptable. The
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5095
+Fig. 15. Results for IMU at different measurement durations.
+Fig. 16. Results for materials with different reﬂectivity.
+error of the six-axis IMU will continue to accumulate over time,
+making it almost impossible to use it for a long time.
+G. Impact of Material Reﬂectivity
+Considering that different materials have different ultrasonic
+reﬂection coefﬁcients: high-reﬂectivity materials (such as met-
+als) can cause strong reﬂections, potentially leading to mul-
+tipath effects and increased positioning errors; whereas low-
+reﬂectivity materials (such as fabric or wool hats) can absorb and
+attenuate the ultrasonic signals, reducing positioning accuracy.
+To explore the impact of material reﬂectivity on EHeadTracker’s
+head orientation measurements, we selected materials with dif-
+ferent reﬂectivity and deployed them in the environment. For
+low reﬂectivity materials, we chose wool; for high reﬂectivity
+materials, we selected metal. No materials were deployed in
+the experimental environment to serve as a comparison for
+normal reﬂectivity. We measured the head orientation errors
+in these three different environments. The results in Fig.16
+demonstrate an important characteristic of our system: the noise
+introduced by environmental factors is effectively suppressed by
+our signal processing pipeline. Even when reﬂective properties
+differ drastically between materials such as metal and wool, the
+ZC-based modulation allows for accurate separation of the direct
+path from reﬂected paths, and the receiver selection algorithm
+ensures that the LOS measurements dominate the positioning
+computation. Consequently, the impact of reﬂection-induced
+noise on the ﬁnal orientation estimation is negligible, which
+conﬁrms the resilience of EHeadTracker against such environ-
+mental variations.
+H. Impact of Speed
+Considering that different rotation speeds may also affect
+the direction of the head, we conduct experiments at different
+rotation speeds. First of all, according to the habit of human
+head rotation, we divide the rotation speed of the head into
+Fig. 17. Results for different rotation speeds.
+Fig. 18. Results for different participants.
+low speed, medium speed and high speed. Low speed means
+the rotation speed is about 1.5 degrees/second, medium speed
+means the rotation speed is about 3 degrees/second, and high
+speed means the rotation speed is about 9 degrees/second. We
+let the volunteer rotate the head at different speeds, and then
+evaluate EHeadTracker performance.
+Fig. 17 shows the experimental results at different rotation
+speeds. It can be seen from Fig.17(a) that the error of low-
+speed rotation is smaller than that of medium-speed rotation,
+and the error of medium-speed rotation is smaller than that of
+high-speed rotation. Regardless of the average value, median and
+other indicators for comparison, the effect of low-speed rotation
+is almost always the best. Fig.17(b) also shows that the error
+of low-speed rotation is the smallest, achieving a result that the
+50% error of the data is less than 5 degrees and the 90% error
+of the data is less than 12 degrees. This is also in line with our
+intuition, because the lower the rotation speed, the more stable
+the head is, the easier it is to control the head orientation.
+I. Impact of Participants
+Considering the performance of EHeadTracker is closely
+related to the user’s physiological characteristics, especially the
+size and shape of the bones in the head and neck, different users
+may bring different experimental results. In order to evaluate
+the robustness of our system to users, we invite 10 participants
+(7 males, 3 females) to conduct the experiment. And these
+volunteers range in age from 20 to 25. The experimental scene
+is shown in Fig.19. We let each participant wear the equipment
+to conduct the experiment and evaluate the results of the experi-
+ment. The error of each experiment is shown in Fig.18. Because
+of the different physiological structure and head movement
+habits among people, there are some differences between the
+results from different participants as shown in Fig.18(a). Among
+them, participant M5 has the largest average error, achieving
+about 5 degrees, and participant M3 has the smallest average
+error, achieving about 2.5 degrees. And the average error of all
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5096 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+Fig. 19. Different participants.
+Fig. 20. Results for different locations.
+participants’ data is about 4 degrees, which is slightly different
+from the error we measured above. Meanwhile, participant M6
+has the largest median error, achieving about 5 degrees, and
+participant M3 has the smallest median error, achieving about 2
+degrees. These experiments show that EHeadTracker is robust to
+different participants. In addition, we count the head orientation
+errors of male and female participants respectively and draw
+CDF ﬁgure of them as shown in Fig.18(b). As seen from the
+ﬁgure, the two curves basically overlap, which prove that the
+results are almost not affected by gender.
+J. Impact of Locations
+To comprehensively assess the robustness of EHeadTracker
+under varying environmental conditions, we perform experi-
+ments in four distinct locations—lab, conference, apartment,
+and ofﬁce—while keeping all other parameters unchanged. The
+results, illustrated in Fig.20(a), show that the average errors are
+approximately 4, 6, 10, and 7 degrees for the four environments,
+with the lab achieving the smallest average error of3.75
+◦ and the
+apartment reaching the largest at 9.8 degrees. The corresponding
+median errors are about 3.0, 5.9, 10, and 6.5 degrees, follow-
+ing the same ranking, with the lab again yielding the lowest
+and the apartment the highest. Compared with results from
+ﬁxed-location tests, both the median and average errors show
+only minor variations, remaining within an acceptable range. As
+shown in Fig.20(b), the CDF curves of all four environments are
+closely aligned, indicating that despite environmental changes,
+the overall distribution of errors is highly consistent, thereby
+demonstrating EHeadTracker’s strong resilience to location-
+dependent variations.
+Fig. 21. Over-ear headphones.
+Fig. 22. In-ear headphones.
+Fig. 23. Results for different over-ear headphones.
+K. Impact of Types of Headphones
+Considering the close relationship between EHeadTracker
+and the headphones used by users, we evaluate its robustness
+against structural variations in headphones. Four different over-
+ear headphone brands—EDIFIER, SENIC, SONY , and HP—are
+tested under identical environmental conditions, as shown in
+Fig. 21. Each brand is worn by the same participants, with
+about 1000 head orientation measurements per experiment. The
+results in Fig.23(a) show that the average error ranges from 4.3
+degrees (EDIFIER) to 5.7 degrees (SENIC), with the latter being
+about 30% larger than the former. Nevertheless, the CDF curves
+in Fig.23(b) exhibit similar trends, indicating strong robustness
+to over-ear headphone differences.
+To assess the effect of headphone size, we also test four in-
+ear headphone brands—UGREEN, SAMSUNG, APPLE, and
+HUAWEI—under the same protocol, as illustrated in Fig.22.
+Each set again contains about 1000 measurements, with errors
+presented in Fig.24. The maximum average error for in-ear head-
+phones is about 25% greater than the minimum. A comparison
+between over-ear and in-ear results in Fig.25(a) shows nearly
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5097
+Fig. 24. Results for different in-ear headphones.
+Fig. 25. Results on different size headphones.
+identical median and average errors, while Fig.25(b) reveals
+overlapping CDF curves, further conﬁrming EHeadTracker’s
+resilience to variations in headphone size.
+VI. L
+IMITATIONS ANDDISCUSSIONS
+Multipath problem: Although we use the ZC sequence to
+modulate ultrasonic waves, which can reduce the impact of
+multipath, it will still be affected by multipath to a certain extent
+in use. During the experiment, we ensured that the experimen-
+tal environment was as clean and simple as possible to avoid
+multipath. However, if the user puts the system in a messy
+environment, it may reduce the stability and accuracy of the
+system.
+Hardware cost: The current system is based on a data ac-
+quisition card with two transmitters and six receivers, which
+may impose a considerable threshold for ordinary users, as such
+devices are not commonly available. To address the issue of
+high hardware cost and limited accessibility, we plan to build
+a distributed system based on our existing design in future
+research. For example, audio devices that are widely deployed
+in daily life—such as smartphones, stereo systems, monitors,
+or televisions—could serve as acoustic signal transmitters or
+receivers through software upgrades. Although the installation
+of receivers in the environment presents a limitation, it is a one-
+time setup process. In ﬁxed scenarios like smart homes, ofﬁces,
+or classrooms, we believe this deployment cost is acceptable.
+Furthermore, with the continuous advancement in smartphone
+and edge device capabilities, lightweight neural networks such
+as Bi-LSTM—used in our system for trajectory classiﬁcation—
+can now be efﬁciently executed on consumer-grade hardware.
+This makes it feasible to run the core components of our system
+without reliance on bulky or specialized computing resources.
+Therefore, we believe our system has strong potential for real-
+world application and practical integration into existing con-
+sumer electronics.
+System Robustness in Dynamic Environments: Although the
+current evaluation of EHeadTracker is conducted in semi-
+controlled indoor environments, we have taken several factors
+into account to ensure its adaptability to dynamic scenarios
+commonly encountered in AR/VR applications. These scenarios
+include environments where users are surrounded by moving in-
+dividuals or objects, causing frequent and unpredictable changes
+in signal paths. Efﬁciently handling dynamic environments is
+both challenging and crucial for practical applications [72],
+[73]. The system utilizes ZC sequences for ultrasonic signal
+modulation, which provide excellent autocorrelation properties,
+making them resilient to multipath effects often exacerbated
+in dynamic environments. Moreover, the receiver selection al-
+gorithm dynamically chooses the top three receivers with the
+highest signal quality (SNR
+los) in real time. This strategy helps
+to avoid temporary occlusions caused by moving obstacles or
+people by leveraging alternative unblocked receivers.
+More importantly, we performed speciﬁc experiments to test
+system robustness under varying head rotation speeds (Fig.17)
+and across different user physiologies (Fig. 18). The results
+show that even at high rotation speeds (9 degrees/sec), the
+average orientation error remains about 8 degrees. Similarly,
+across 10 participants of different head and neck structures, the
+system maintains an average orientation error of about 4 de-
+grees, demonstrating its adaptability to individual variability and
+movement diversity. These results indicate that the system can
+tolerate a certain degree of environmental dynamics, including
+user movement, rapid head orientation changes, and participant
+diversity.
+To further enhance the system’s performance in highly dy-
+namic environments, future work may consider deploying a
+denser array of ultrasonic receivers in the environment. By
+increasing receiver density, we can ensure that, regardless of
+temporary occlusions or fast user motion, there are always at
+least three receivers with sufﬁciently high-quality signals for
+robust localization. In addition to hardware redundancy, future
+versions of our system may beneﬁt from an intelligent signal
+selection strategy. Speciﬁcally, we propose using reinforcement
+learning (RL) to train a policy that dynamically selects the
+optimal subset of receivers in real time, as it avoids the need for
+large labeled datasets and excels at sequential decision-making
+in dynamic environments. The RL agent can be designed to
+observe environmental and signal states (such as SNR trends and
+occlusion history) and learn a selection strategy that minimizes
+the long-term orientation error. This data-driven approach can
+outperform ﬁxed heuristic rules, especially in complex and
+fast-changing AR/VR scenarios.
+Practical applications: According to [74], eye tracking en-
+ables communication and interaction for nonverbal individuals
+with disabilities. Similarly, our method tracks head orientation to
+convert head movements into inputs, enabling functions such as
+computer cursor control and other device interactions. Beyond
+control, EHeadTracker can also support attention analysis by
+assessing head orientation to infer focus distribution, enabling
+personalized interface adjustments and enhancing user experi-
+ence. Combined with eye movement data, it can further reveal
+attention pathways, offering valuable insights for assistive de-
+vice design.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5098 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+Beyond the potential applications in assistive interaction and
+attention analysis, EHeadTracker also shows promising indus-
+trial implications, particularly in the design of next-generation
+smart earphones. In our implementation, we retroﬁt commer-
+cial headphones by embedding miniature piezoelectric ceram-
+ics to support ultrasonic signal transmission, without signiﬁ-
+cantly altering the overall structure or comfort of the device.
+This demonstrates that our system can be feasibly integrated
+into existing earphone designs with minimal modiﬁcation.
+The compact size, low cost, and compatibility of these added
+components with existing manufacturing processes make the
+system viable for large-scale production. More importantly,
+the robustness and accuracy of EHeadTracker in real-world
+environments afﬁrm its potential for commercialization. This
+opens new avenues for collaborations with consumer electronics
+manufacturers to develop head-aware audio devices, enabling
+innovative applications in AR/VR, gaming, smart control, and
+context-aware interaction. EHeadTracker not only contributes
+academically to head orientation tracking but also paves the
+way for real-world deployment in industrial and consumer
+domains.
+Privacy and Security: Although EHeadTracker does not rely
+on camera-based inputs or speech data, which inherently reduces
+privacy risks associated with facial images or environmental
+exposure, privacy concerns related to data collection and pro-
+cessing must still be addressed. In our system, the tracked data
+comprises purely numerical values representing head position
+and orientation; no personally identiﬁable information (PII) is
+collected during runtime.
+Furthermore, EHeadTracker can be entirely deployed locally
+on edge devices without requiring cloud connectivity. This de-
+sign eliminates the need for transmitting sensitive motion data
+to external servers, ensuring a secure scenario. Compared with
+vision-based methods, our system provides a signiﬁcantly im-
+proved privacy proﬁle by design and supports secure deployment
+in both local and networked environments.
+VII. C
+ONCLUSION
+A person’s head orientation provides valuable information to
+various ﬁelds such as online courses, online conferences, and
+somatosensory games. To effectively obtain and utilize this in-
+formation, we propose EHeadTracker, an enhanced ﬁne-grained
+head orientation tracking system based on a head-mounted
+ultrasound device. In order to achieve high-precision tracking,
+we ﬁrst install the ultrasonic transmitter on the headphone and
+deploy the ultrasonic receiver in the environment to realize the
+positioning of the user’s headphone. Then, we use the trajectory
+of the headphone and Bi-LSTM to complete the recognition of
+user’s head movement along the 3D coordinate axis. Further, we
+enable the system to recognize translational motion of the head
+along any direction and rotational motion around any axis as
+well as the ability to adaptively initialize the user’s pivot point
+position. This greatly enhances the system’s applicability and
+user-friendliness for complex head movements. Finally, we cal-
+culate the real-time position of the pivot point based on the head
+movement, and then calculate the head orientation. Through
+abundant evaluations, we show that EHeadTracker achieves an
+average error of 6 degrees for head orientation tracking in the real
+environment, which is the best performance among all works as
+far as we know. This result demonstrates that our system has
+great development potential and application prospects.
+R
+EFERENCES
+[1] Z. Yang, Y .-L. Wei, S. Shen, and R. R. Choudhury, “Ear-AR: Indoor
+acoustic augmented reality on earphones,” inProc. Annu. Int. Conf. Mobile
+Comput. Netw., 2020, pp. 1–14.
+[2] A. Correa, E. M. Diaz, D. B. Ahmed, A. Morell, and J. L. Vicario, “Ad-
+vanced pedestrian positioning system to smartphones and smartwatches,”
+Sensors, vol. 16, no. 11, 2016, Art. no. 1903.
+[3] A. R. Jimenez, F. Seco, C. Prieto, and J. Guevara, “A comparison of
+pedestrian dead-reckoning algorithms using a low-cost MEMS IMU,” in
+Proc. IEEE Int. Symp. Intell. Signal Process. , 2009, pp. 37–42.
+[4] W. Kang and Y . Han, “SmartPDR: Smartphone-based pedestrian dead
+reckoning for indoor localization,” IEEE Sensors J. , vol. 15, no. 5,
+pp. 2906–2916, May 2015.
+[5] N. Roy, H. Wang, and R. R. Choudhury, “I am a smartphone and i can
+tell my user’s walking direction,” inProc. Int. Conf. Mobile Systems,
+Applications, Serv., 2014, pp. 329–342.
+[6] H. Wang, S. Sen, A. Elgohary, M. Farid, M. Youssef, and R. R. Choudhury,
+“No need to war-drive: Unsupervised indoor localization,” inProc. Int.
+Conf. Mobile Syst., Appl., Serv. , 2012, pp. 197–210.
+[7] F. Gao, S. Li, and S. Lu, “How frontal is a face? Quantitative estimation
+of face pose based on CNN and geometric projection,”Neural Comput.
+Appl., vol. 33, no. 8, pp. 3035–3051, 2021.
+[8] Y . Wang, Y . Ye, F. Gu, Z. Song, and X. Bai, “Adaptive head pose estimation
+with real-time structured light,” inProc. IEEE Int. Conf. Acoust. Speech
+Signal Process., 2024, pp. 3485–3489.
+[9] M. Euston, P. Coote, R. Mahony, J. Kim, and T. Hamel, “A complementary
+ﬁlter for attitude estimation of a ﬁxed-wing UA V,” inProc. IEEE/RSJ Int.
+Conf. Intell. Robots Syst. , 2008, pp. 340–345.
+[10] S. O. Madgwick, A. J. Harrison, and R. Vaidyanathan, “Estimation of IMU
+and MARG orientation using a gradient descent algorithm,” inProc. Int.
+Conf. Rehabil. Robot. , 2011, pp. 1–7.
+[11] S. S. Das, “Simple, inexpensive, accurate calibration of 9 axis inertial
+motion unit,” inProc. IEEE Int. Conf. Robot Hum. Interactive Commun. ,
+2019, pp. 1–6.
+[12] Q. Yang and Y . Zheng, “Model-based head orientation estimation for smart
+devices,”ACM Interactive, Mobile, Wearable Ubiquitous Technol. ,v o l .5 ,
+no. 3, pp. 1–24, 2021.
+[13] J. J. Yang, G. Banerjee, V . Gupta, M. S. Lam, and J. A. Landay, “Soundr:
+Head position and orientation prediction using a microphone array,” in
+Proc. Conf. Hum. Factors Comput. Syst. , 2020, pp. 1–12.
+[14] K. Sun, T. Zhao, W. Wang, and L. Xie, “VSkin: Sensing touch gestures
+on surfaces of mobile devices using acoustic signals,” inProc. Int. Conf.
+Mobile Comput. Netw. , 2018, pp. 591–605.
+[15] E. D. Kaplan and C. Hegarty,Understanding GPS/GNSS: Principles and
+Applications. Norwood, MA, USA: Artech house, 2017.
+[16] K. Ling, H. Dai, Y . Liu, A. X. Liu, W. Wang, and Q. Gu, “UltraGesture:
+Fine-grained gesture sensing and recognition,”IEEE Trans. Mobile Com-
+put., vol. 21, no. 7, pp. 2620–2636, Jul. 2022.
+[17] Y . Lyu, Y . Shen, M. Zhang, and J. Wang, “Real-time 3D ultrasound imaging
+system based on a hybrid reconstruction algorithm,”Chin. J. Electron. ,
+vol. 33, no. 1, pp. 245–255, 2024.
+[18] Z. Li et al., “Enabling voice-accompanying hand-to-face gesture recogni-
+tion with cross-device sensing,” inProc. CHI Conf. Hum. Factors Comput.
+Syst., 2023, pp. 1–17.
+[19] Y . Yang, T. Chen, Y . Huang, X. Guo, and L. Shangguan, “MAF: Exploring
+mobile acoustic ﬁeld for hand-to-face gesture interactions,” inProc. CHI
+Conf. Hum. Factors Comput. Syst. , 2024, pp. 1–20.
+[20] L. Wang, W. Wang, H. Dai, and S. Liu, “MagSound: Magnetic ﬁeld assisted
+wireless earphone tracking,”Proc. ACM Interactive, Mobile, Wearable
+Ubiquitous Technol., vol. 7, no. 1, pp. 1–32, 2023.
+[21] R. Zhang, R. Li, J. Liang, K. Yue, W. Li, and Y . Li, “Long short-term
+memory spiking neural networks for classiﬁcation of snoring and non-
+snoring sound events,”Chin. J. Electron. , vol. 33, no. 3, pp. 793–802,
+2024.
+[22] J. Song et al., “HeadTracker: Fine-grained head orientation tracking system
+based on headphones,” inProc. Int. Conf. Wireless Algorithms, Syst., Appl.,
+2022, pp. 317–329.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+DAI et al.: FINE-GRAINED HEAD ORIENTATION TRACKING USING HEAD-MOUNTED ACOUSTIC DEVICES 5099
+[23] H. Dai, W. Wang, A. X. Liu, K. Ling, and J. Sun, “Speech based human
+authentication on smartphones,” inProc. 16th Annu. IEEE Int. Conf. Sens.,
+Commun., Netw., 2019, pp. 1–9.
+[24] D. Duan et al., “F2Key: Dynamically converting your face into a private
+key based on cots headphones for reliable voice interaction,” inProc. 22nd
+Annu. Int. Conf. Mobile Syst., Appl. Serv. , 2024, pp. 127–140.
+[25] Z. Li et al., “PD-Gait: Contactless and privacy-preserving gait measure-
+ment of Parkinson’s disease patients using acoustic signals,”Softw., Pract.
+Experience, vol. 54, pp. 1733–1753, 2023.
+[26] X. Fan, D. Pearl, R. Howard, L. Shangguan, and T. Thormundsson, “APG:
+Audioplethysmography for cardiac monitoring in hearables,” inProc. 29th
+Annu. Int. Conf. Mobile Comput. Netw. , 2023, pp. 1–15.
+[27] H. Wan et al., “Vector: Velocity based temperature-ﬁeld monitoring with
+distributed acoustic devices,”Proc. ACM Interactive, Mobile, Wearable
+Ubiquitous Technol., vol. 6, no. 3, pp. 1–28, 2022.
+[28] L. Wang et al., “SCALAR: Self-calibrated acoustic ranging for dis-
+tributed mobile devices,”IEEE Trans. Mobile Comput. , vol. 23, no. 2,
+pp. 1701–1716, Feb. 2024.
+[29] Y . Cao, C. Cai, A. Yu, F. Li, and J. Luo, “EarAcE: Empowering versatile
+acoustic sensing via earable active noise cancellation platform,”Proc.
+ACM Interactive Mobile Wearable Ubiquitous Technol. , vol. 7, no. 2,
+pp. 1–23, Jun. 2023, doi:10.1145/3596242.
+[30] T. Horprasert, Y . Yacoob, and L. S. Davis, “Computing 3-D head orienta-
+tion from a monocular image sequence,” inProc. Int. Conf. Autom. Face
+Gesture Recognit., 1996, pp. 242–247.
+[31] H. R. Wilson, F. Wilkinson, L.-M. Lin, and M. Castillo, “Perception of
+head orientation,”Vis. Res., vol. 40, no. 5, pp. 459–472, 2000.
+[32] J.-G. Wang and E. Sung, “EM enhancement of 3D head pose estimated
+by point at inﬁnity,”Image Vis. Comput. , vol. 25, no. 12, pp. 1864–1874,
+2007.
+[33] A. Gee and R. Cipolla, “Determining the gaze of faces in images,”Image
+Vis. Comput., vol. 12, no. 10, pp. 639–647, 1994.
+[34] A. Nikolaidis and I. Pitas, “Facial feature extraction and pose determina-
+tion,” Pattern Recognit., vol. 33, no. 11, pp. 1783–1791, 2000.
+[35] M. D. Cordea, E. M. Petriu, N. D. Georganos, D. C. Petriu, and T.
+E. Whalen, “Real-time 2(1/2)-D head pose recovery for model-based
+video-coding,”IEEE Trans. Instrum. Meas., vol. 50, no. 4, pp. 1007–1013,
+Aug. 2001.
+[36] Z. Zhu and Q. Ji, “Robust real-time face pose and facial expression recov-
+ery,” inProc. IEEE Comput. Soc. Conf. Comput. Vis. Pattern Recognit. ,
+2006, pp. 681–688.
+[37] Y . Tong, Y . Wang, Z. Zhu, and Q. Ji, “Robust facial feature tracking under
+varying face pose and facial expression,”Pattern Recognit., vol. 40, no. 11,
+pp. 3195–3208, 2007.
+[38] L.-P. Morency, J. Whitehill, and J. Movellan, “Monocular head pose
+estimation using generalized adaptive view-based appearance model,”
+Image Vis. Comput. , vol. 28, no. 5, pp. 754–761, 2010.
+[39] X. Liang and W. Tong, “Face pose estimation using near-infrared images,”
+in Proc. Int. Conf. Commun. Syst. Netw. Technol. , 2012, pp. 216–220.
+[40] J. Ning, L. Xie, Z. Yan, Y . Bu, and J. Luo, “Moirévision: A generalized
+moiré-based mechanism for 6-DoF motion sensing,” inProc. 30th Annu.
+Int. Conf. Mobile Comput. Netw., New York, NY , USA, 2024, pp. 467–481,
+doi: 10.1145/3636534.3649374.
+[41] Q. Guan, Z. Sheng, and S. Xue, “Hrpose: Real-time high-resolution 6D
+pose estimation network using knowledge distillation,”Chin. J. Electron.,
+vol. 32, no. 1, pp. 189–198, 2023.
+[42] E. Foxlin, “Inertial head-tracker sensor fusion by a complementary
+separate-bias Kalman ﬁlter,” in Proc. IEEE Virtual Reality Annu. Int.
+Symp., 1996, pp. 185–194.
+[43] E. R. Bachmann, “Inertial and magnetic tracking of limb segment orienta-
+tion for inserting humans into synthetic environments,”Nav. Postgraduate
+Sch., Monterey, CA, USA, Tech. Rep., 2000.
+[44] Y . Fujimori, Y . Ohmura, T. Harada, and Y . Kuniyoshi, “Wearable motion
+capture suit with full-body tactile sensors,” inProc. IEEE Int. Conf. Robot.
+Automat., 2009, pp. 3186–3193.
+[45] Q. Yuan, I.-M. Chen, and S. P. Lee, “SLAC: 3D localization of human
+based on kinetic human movement capture,” inProc. IEEE Int. Conf.
+Robot. Automat., 2011, pp. 848–853.
+[46] L. Zhu et al., “A novel motion intention recognition approach for soft
+exoskeleton via IMU,”Electronics, vol. 9, no. 12, 2020, Art. no. 2176.
+[47] Z. Xiao, H. Wen, A. Markham, and N. Trigoni, “Robust pedestrian dead
+reckoning (R-PDR) for arbitrary mobile device placement,” inProc. Int.
+Conf. Indoor Positioning Indoor Navigation , 2014, pp. 187–196.
+[48] D. Roetenberg, “Inertial and magnetic sensing of human motion, Univer-
+sity of Twente, Enschede, The Netherlands, 2006.
+[49] A. M. Sabatini, “Kalman-ﬁlter-based orientation determination using iner-
+tial/magnetic sensors: Observability analysis and performance evaluation,”
+Sensors, vol. 11, no. 10, pp. 9182–9206, 2011.
+[50] K. Nakadai, H. Nakajima, K. Yamada, Y . Hasegawa, T. Nakamura, and H.
+Tsujino, “Sound source tracking with directivity pattern estimation using
+a 64 ch microphone array,” inProc. IEEE/RSJ Int. Conf. Intell. Robots
+Syst., 2005, pp. 1690–1696.
+[51] J. M. Sachar and H. F. Silverman, “A baseline algorithm for estimating
+talker orientation using acoustical data from a large-aperture microphone
+array,” inProc. IEEE Int. Conf. Acoustics, Speech, Signal Process. , 2004,
+pp. 65–68.
+[52] A. Levi and H. F. Silverman, “A new algorithm for the estimation of talker
+azimuthal orientation using a large aperture microphone array,” inProc.
+IEEE Int. Conf. Multimedia Expo , 2008, pp. 565–568.
+[53] A. Levi and H. Silverman, “A robust method to extract talker azimuth
+orientation using a large-aperture microphone array,”IEEE Trans. Audio,
+Speech, Lang. Process. , vol. 18, no. 2, pp. 277–285, Feb. 2010.
+[54] H. Nakajima, K. Kikuchi, T. Daigo, Y . Kaneda, K. Nakadai, and Y .
+Hasegawa, “Real-time sound source orientation estimation using a 96
+channel microphone array,” inProc. IEEE/RSJ Int. Conf. Intell. Robots
+Syst., 2009, pp. 676–683.
+[55] A. Abad, C. Segura, D. Macho, J. Hernando, and C. Nadeu, “Audio person
+tracking in a smart-room environment,” inProc. Int. Conf. Spoken Lang.
+Process., 2006, pp. 2590–2593.
+[56] A. Brutti, M. Omologo, and P. Svaizer, “Oriented global coherence ﬁeld
+for the estimation of the head orientation in smart rooms equipped with
+distributed microphone arrays,” in Proc. Eur. Conf. Speech Commun.
+Technol., 2005, pp. 2337–2340.
+[57] B. Mungamuru and P. Aarabi, “Enhanced sound localization,”IEEE Trans.
+Syst., Man, Cybern., Part B (Cybernetics) , vol. 34, no. 3, pp. 1526–1540,
+Jun. 2004.
+[58] C. Segura and J. Hernando, “3D joint speaker position and orientation
+tracking with particle ﬁlters,”Sensors, vol. 14, no. 2, pp. 2259–2279, 2014.
+[59] A. Abad, C. Segura, C. Nadeu, and J. Hernando, “Audio-based approaches
+to head orientation estimation in a smart-room,” inProc. Int. Speech
+Commun. Assoc., 2007, pp. 590–593.
+[60] C. S. Perales, “Speaker localization and orientation in multimodal smart
+environments,” Ph.D. dissertation, Universitat Politècnica de Catalunya,
+Barcelona, Spain, 2011.
+[61] C. S. Perales, A. Abad, F. J. Hernando Pericás, and C. N. Camprubı,
+“Speaker orientation estimation based on hybridation of GCC-PHAT
+and HLBR,” inProc. Annu. Conf. Int. Speech Commun. Assoc. , 2008,
+pp. 1325–1328.
+[62] C. Segura, C. Canton-Ferrer, A. Abad, J. R. Casas, and J. Her-
+nando, “Multimodal head orientation towards attention tracking in smart-
+rooms,” inProc. IEEE Int. Conf. Acoust. Speech Signal Process. , 2007,
+pp. 681–684.
+[63] P. Svaizer, A. Brutti, and M. Omologo, “Environment aware estimation of
+the orientation of acoustic sources using a line array,” inProc. Eur. Signal
+Process. Conf., 2012, pp. 1024–1028.
+[64] Y . Wang et al., “FaceOri: Tracking head position and orientation using
+ultrasonic ranging on earphones,” in Proc. CHI Conf. Hum. Factors
+Comput. Syst., 2022, pp. 1–12.
+[65] L. Wang et al., “Watching your phone’s back: Gesture recognition by
+sensing acoustical structure-borne propagation,”ACM Interactive, Mobile,
+Wearable Ubiquitous Technol., vol. 5, no. 2, pp. 1–26, 2021.
+[66] H. Wan, S. Shi, W. Cao, W. Wang, and G. Chen, “RespTracker: Multi-
+user room-scale respiration tracking with commercial acoustic devices,”
+in Proc. Conf. Comput. Commun. , 2021, pp. 1–10.
+[67] A. Björck, “Least squares methods,” Handbook Numer. Anal. ,v o l .1 ,
+pp. 465–652, 1990.
+[68] J. Wen, Y . Deng, W. Peng, and Y . Xue, “Linguistic steganalysis via fusing
+multi-granularity attentional text features,”Chin. J. Electron. , vol. 32,
+no. 1, pp. 76–84, 2023.
+[69] A. F. Abate, P. Barra, C. Bisogni, M. Nappi, and S. Ricciardi, “Near real-
+time three axis head pose estimation without training,”IEEE Access,v o l .7 ,
+pp. 64256–64265, 2019.
+[70] D. J. Tan, F. Tombari, and N. Navab, “Real-time accurate 3 D head tracking
+and pose estimation with consumer RGB-D cameras,”Int. J. Comput. Vis.,
+vol. 126, pp. 158–183, 2018.
+[71] C. Xu, X. Zheng, Z. Ren, L. Liu, and H. Ma, “UHead: Driver attention
+monitoring system using UWB radar,”Proc. ACM Interactive, Mobile,
+Wearable Ubiquitous Technol., vol. 8, no. 1, pp. 1–28, 2024.
+[72] H. Wang et al., “Bamboo ﬁlters: Make resizing smooth and adaptive,”
+IEEE/ACM Trans. Netw., vol. 32, no. 5, pp. 3776–3791, Oct. 2024.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.
+5100 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 25, NO. 4, APRIL 2026
+[73] H. Wang et al., “Parallel wormhole ﬁlters: High-performance approximate
+membership query data structures for persistent memory,”IEEE Trans.
+Parallel Distrib. Syst., vol. 36, no. 11, pp. 2229–2246, Nov. 2025.
+[74] Nasa, “Seeing is communicating,” 2024. [Online]. Available:
+https://www.nasa.gov/directorates/stmd/tech-transfer/spinoffs/nasa-
+tech-tuesday-seeing-is-communicating/
+Haipeng Dai (Senior Member, IEEE) received the
+BS degree from the Department of Electronic En-
+gineering, Shanghai Jiao Tong University, Shanghai,
+China, in 2010, and the PhD degree from the Depart-
+ment of Computer Science and Technology, Nanjing
+University, Nanjing, China, in 2014. He is currently
+an associate professor with the Department of Com-
+puter Science and Technology, Nanjing University.
+His research papers have been published in many
+prestigious conferences and journals such as ACM
+MobiSys, ACM MobiHoc, ACM UbiComp, IEEE
+INFOCOM, ACM SIGMETRICS, IEEE ICDCS, IEEE ICNP,IEEE Trans-
+actions on Mobile Computing , IEEE Journal on Selected Areas in Commu-
+nications, IEEE/ACM Transactions on Networking ,a n dIEEE Transactions on
+Parallel and Distributed Systems . His research interests include in the areas of
+Internet of Things and mobile computing. He serves/served as the TPC chair of
+the IEEE ISPA’22, TPC vice-chair of the IEEE HPCC’21, poster chair of the
+IEEE ICNP’14, track chair of the ICCCN’19 and the ICPADS’21, TPC member
+of ACM MobiHoc’20-22 and IEEE INFOCOM’20-23. He was the recipient of
+the Best Paper Award from IEEE ICNP’15, Best Paper Award Runner-up from
+IEEE SECON’18, and Best Paper Award Candidate from IEEE INFOCOM’17.
+Jinpeng Song received the BS degree from the
+School of Computer Science and Technology, North-
+western Polytechnical University, and the MSE de-
+gree from the Department of Computer Science and
+Technology, Nanjing University. His research inter-
+ests include in the areas of mobile computing, wire-
+less sensing, and networking.
+Junlong Chen received the BS degree from the
+School of Computer Science and Technology, Harbin
+Institute of Technology in 2023. He is currently
+working toward the MS degree with the Department
+of Computer Science and Technology, Nanjing Uni-
+versity. His research interests include deep learn-
+ing, machine learning, wireless sensing, and mobile
+computing.
+Lei Wang received the PhD degree from the Depart-
+ment of Computer Science and Technology, Nanjing
+University, Nanjing, China, in 2020. He has been in-
+vited as a joint PhD student by the University of New
+South Wales, Australia, from 2018 to 2019. He was
+a postdoctoral assistant researcher with the School of
+Computer Science, Peking University, China, from
+2020 to 2022. He is currently a distinguished young
+professor with Soochow University, China. His re-
+search interests include in the areas of pervasive
+computing and wireless sensing.
+Haoran Wanreceived the BS degree from the School
+of Information and Communication, University of
+Electronic Science and Technology of China, and
+the MSE degree from the Department of Computer
+Science and Technology, Nanjing University. He is
+currently working toward the ﬁrst year PhD degree
+with the Department of Computer Science, Prince-
+ton University. His research interests include in the
+areas of mobile computing, wireless sensing, and
+networking.
+Zhizheng Yang received the BS degree in computer
+science and technology from Northwestern Polytech-
+nical University in 2021. He is currently working
+toward the MS degree with the Department of Com-
+puter Science and Technology, Nanjing University.
+His research interests include wireless sensing and
+device-free activity recognition.
+Fu Xiao (Senior Member, IEEE) received the PhD
+degree in computer science and technology from
+the Nanjing University of Science and Technology,
+Nanjing, China, in 2007. He is currently a professor
+and a PhD supervisor with the School of Computers,
+Nanjing University of Posts and Telecommunica-
+tions. His research interests include wireless sensor
+networks and mobile computing. He is a member of
+the Association for Computing Machinery.
+Xianjun Deng (Senior Member, IEEE) received the
+PhD degree from the School of Electronic Informa-
+tion and Communications, Huazhong University of
+Science and Technology, Wuhan, China, in 2014. He
+is currently a professor with the School of Cyber
+Science and Engineering, Huazhong University of
+Science and Technology, China. He has authored or
+coauthored more than 50 technical papers in interna-
+tional top journals and conferences. His research in-
+terests include security and reliability, reinforcement
+learning-enabled networking, coverage optimization,
+parallel and distributed computing in wireless sensor networks and Internet of
+Things. He was the recipient of the IEEE TCSC Award. He is an IEEE senior
+member.
+Guihai Chen (Fellow, IEEE) received the BS degree
+in computer software from Nanjing University in
+1984, the ME degree in computer applications from
+Southeast University in 1987, and the PhD degree in
+computer science from the University of Hong Kong
+in 1997. He had been invited as a visiting profes-
+sor by many foreign universities including Kyushu
+Institute of Technology, Japan in 1998, University
+of Queensland, Australia in 2000, and Wayne State
+University, USA from 2001 to 2003. He is currently
+a professor and deputy chair of the Department of
+Computer Science, Nanjing University. His research interests include sensor
+networks, peer-to-peer computing, high-performance computer architecture and
+combinatorics.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:33:40 UTC from IEEE Xplore.  Restrictions apply.

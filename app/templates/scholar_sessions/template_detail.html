@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}模板详情{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">模板详情</div>
+      <h1>{{ template.description or template.name }}</h1>
+    </div>
+    <a class="button button-secondary" href="/scholar-sessions/{{ session_id }}/templates">返回模板列表</a>
+  </header>
+  <section class="card">
+    <dl class="meta-grid">
+      <div><dt>名称</dt><dd>{{ template.name }}</dd></div>
+      <div><dt>类型</dt><dd>{{ template.template_type }}</dd></div>
+      <div><dt>是否启用</dt><dd>{{ template.is_active }}</dd></div>
+    </dl>
+    <p>目标：{{ template.natural_language_goal }}</p>
+    <p>目标方面：{{ template.target_aspects_json }}</p>
+    <p>正向关键词：{{ template.positive_keywords_json }}</p>
+    <p>负向关键词：{{ template.negative_keywords_json }}</p>
+    <p>必要证据模式：{{ template.required_evidence_patterns_json }}</p>
+    <p>提示词片段：{{ template.prompt_fragment }}</p>
+    <p>评分规则：{{ template.scoring_rules_json }}</p>
+    {% if template.template_type == "long_context_citation" %}
+      <section class="card">
+        <h2>结构化规则</h2>
+        <p>模板类型：大篇幅/长上下文引用</p>
+        <p>规则：</p>
+        <ul>
+          <li>citation_text 至少达到评分规则中的最小字符数或词数</li>
+          <li>是否要求正文包含目标引用编号：见 scoring_rules_json</li>
+          <li>是否允许 grouped citation：见 scoring_rules_json</li>
+        </ul>
+      </section>
+    {% endif %}
+  </section>
+{% endblock %}

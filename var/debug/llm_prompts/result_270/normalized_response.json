@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文在公式推导中引用目标论文的IF信号表达式作为标准FMCW信号模型的基础，并未涉及目标论文的RFID亚毫米级振动感知或穿墙窃听能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "The IF signal can be expressed as[23]:",
+      "evidence_context": "A mixer eliminates the carrier wave in the received signal and uses a low-pass filter(LPF) to obtain the so-called intermediate frequency (IF) signal. The IF signal needs ADC sampling for digital signal processing. The IF signal can be expressed as[23]: IF(t)= T(t) ⨂ R(t) =cos(2π 2Sd c t + 4π(d+ d(t)) λ +4 πSd(t)t c −4πS(d+ d(t) c )^2 ) ≈ cos(2πft + ψ(t)) (3) where f = 2S c d is the frequency of the IF signal, which is proportional to d, λ = f0 c is the signal wavelength, and ψ(t) denotes the phase of the IF signal associated with micro-displacement.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用仅用于支持FMCW雷达IF信号的数学表达式推导，属于技术背景引用，未涉及目标论文的核心贡献（RFID亚毫米级振动感知或穿墙窃听），不应归类为能力佐证或亚毫米精度声明。",
+      "copy_ready_zh": "引用论文在FMCW雷达信号模型的基础公式推导中引用了目标文献，作为IF信号表达式的参考来源，未对目标论文的RFID亚毫米级振动感知能力进行任何描述或评价。",
+      "confidence": "high"
+    }
+  ]
+}

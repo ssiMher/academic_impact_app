@@ -1,0 +1,145 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Some methods leverage the aliasing effect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera’s color filter array.",
+      "reasoning": "The context groups [15], [16], [17] as methods leveraging the aliasing effect for out-of-plane rotation measurement. The mention is neutral and descriptive, positioning the cited paper among related works. No detailed evaluation is provided.",
+      "keywords": [
+        "aliasing effect",
+        "[16]"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "citation_text": "Recently, some out-of-plane rotation measurement methods based on 3-D Moiré effect have achieved a favorable balance among cost-effectiveness, easy-to-deployment, and high accuracy. They exploit the sensitivity of 3-D Moiré effect to viewing angle [18] to achieve high-accuracy out-of-plane rotation measurement.",
+      "reasoning": "This context introduces 3-D Moiré-based methods with a positive stance, noting their favorable balance. However, the cited paper [16] is not explicitly mentioned here; the reference [18] is a book. The context provides general background rather than specific citation of [16].",
+      "keywords": [
+        "3-D Moiré effect",
+        "favorable balance",
+        "high accuracy"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "citation_text": "For 3-D Moiré-based methods, the key problem is establishing the mapping between the Moiré patterns and the rotation angles. At this point, u-LentiMark [19] uses a look-up table and MoiréTag [20] relies on a learning-based model. Both produce implicit and somewhat ambiguous mappings. This leads to two problems. First, these methods might have transferability issues, as the performance can be unstable across different configurations and environments. Second, the factors influencing the accuracy remain unrecognized, which may lead to missed opportunities for potential improvements.",
+      "reasoning": "The cited paper [16] is not mentioned in this context; instead, it discusses [19] and [20]. Therefore, it does not provide evidence about [16].",
+      "keywords": [],
+      "keep": true
+    },
+    {
+      "evidence_type": "application_extension",
+      "stance": "positive",
+      "mention_type": "comparison",
+      "citation_text": "The proposed marker is similar to MoiréTag [20] in hardware, as both consist of two periodic masks etched on the opposite sides of a glass wafer. However, we can estimate the angle using the phase of only one point, without relying on phase differences between multiple 3-D Moiré patterns.",
+      "reasoning": "The citing paper compares its marker design to MoiréTag [20], highlighting a methodological advantage (using phase of one point). This shows extension and improvement over prior work, but does not directly cite [16].",
+      "keywords": [
+        "similar to MoiréTag [20]",
+        "phase of only one point"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "citation_text": "In contrast, the aliasing Moiré-based methods yield errors in the range from 0.2° to 2°. These methods exploit the aliasing effect that arises when a camera captures high-frequency patterns, such as the pixel array of a display, thereby avoiding the use of visually obtrusive artificial markers. However, in terms of accuracy, they offer no advantage over conventional methods.",
+      "reasoning": "This context discusses aliasing Moiré-based methods, which include [15], [16], [17] as per the earlier grouped citation. The stance is negative (accuracy no advantage), but the mention is grouped rather than explicit. The evidence is indirect.",
+      "keywords": [
+        "aliasing Moiré-based methods",
+        "0.2° to 2°",
+        "no advantage"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Some methods leverage the aliasing effect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera’s color filter array.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[16]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The context groups [15], [16], [17] as methods leveraging the aliasing effect for out-of-plane rotation measurement. The mention is neutral and descriptive, positioning the cited paper among related works. No detailed evaluation is provided.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "weak",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Recently, some out-of-plane rotation measurement methods based on 3-D Moiré effect have achieved a favorable balance among cost-effectiveness, easy-to-deployment, and high accuracy. They exploit the sensitivity of 3-D Moiré effect to viewin...",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "target_reference_marker": "[16]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This context introduces 3-D Moiré-based methods with a positive stance, noting their favorable balance. However, the cited paper [16] is not explicitly mentioned here; the reference [18] is a book. The context provides general background rather than specific citation of [16].",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "For 3-D Moiré-based methods, the key problem is establishing the mapping between the Moiré patterns and the rotation angles. At this point, u-LentiMark [19] uses a look-up table and MoiréTag [20] relies on a learning-based model. Both produ...",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "target_reference_marker": "[16]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "The cited paper [16] is not mentioned in this context; instead, it discusses [19] and [20]. Therefore, it does not provide evidence about [16].",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 3,
+      "citation_text_preview": "The proposed marker is similar to MoiréTag [20] in hardware, as both consist of two periodic masks etched on the opposite sides of a glass wafer. However, we can estimate the angle using the phase of only one point, without relying on phase...",
+      "evidence_type": "application_extension",
+      "stance": "positive",
+      "mention_type": "comparison",
+      "target_reference_marker": "[16]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper compares its marker design to MoiréTag [20], highlighting a methodological advantage (using phase of one point). This shows extension and improvement over prior work, but does not directly cite [16].",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 4,
+      "citation_text_preview": "In contrast, the aliasing Moiré-based methods yield errors in the range from 0.2° to 2°. These methods exploit the aliasing effect that arises when a camera captures high-frequency patterns, such as the pixel array of a display, thereby avo...",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "target_reference_marker": "[16]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "This context discusses aliasing Moiré-based methods, which include [15], [16], [17] as per the earlier grouped citation. The stance is negative (accuracy no advantage), but the mention is grouped rather than explicit. The evidence is indirect.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

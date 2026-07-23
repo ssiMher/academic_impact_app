@@ -1,0 +1,134 @@
+{
+  "findings": [
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "Wireless systems based on long-wavelength signals represented by RFID [5], [6] have limited displacement sensitivity.",
+      "reasoning": "The citing paper groups [5] and [6] as representative RFID systems with limited displacement sensitivity, implying a limitation of the target paper's approach.",
+      "keywords": [
+        "limited displacement sensitivity",
+        "RFID",
+        "long-wavelength signals"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "RFID [5], [6] is limited in detecting small amplitudes due to its long wavelength.",
+      "reasoning": "In the Related Work section, the citing paper states RFID is limited in detecting small amplitudes, which directly criticizes the target paper's capability.",
+      "keywords": [
+        "limited",
+        "small amplitudes",
+        "long wavelength",
+        "RFID"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid",
+            "detect"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Wireless systems based on long-wavelength signals represented by RFID [5], [6] have limited displacement sensitivity.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[5]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper groups [5] and [6] as representative RFID systems with limited displacement sensitivity, implying a limitation of the target paper's approach.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "RFID [5], [6] is limited in detecting small amplitudes due to its long wavelength.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[5]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "In the Related Work section, the citing paper states RFID is limited in detecting small amplitudes, which directly criticizes the target paper's capability.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

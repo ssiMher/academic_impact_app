@@ -1,0 +1,327 @@
+"""Build citation anchors from target paper information."""
+
+import re
+import unicodedata
+from dataclasses import dataclass
+from typing import Dict, List, Optional
+
+
+@dataclass(frozen=True)
+class CitationAnchor:
+    title: str
+    normalized_title: str
+    keywords: List[str]
+
+
+@dataclass(frozen=True)
+class ReferenceAnchor:
+    reference_marker: str
+    reference_marker_text: str
+    reference_entry_text: str
+    reference_entry_start: int
+    reference_entry_end: int
+    match_method: str
+    match_score: float
+
+
+@dataclass(frozen=True)
+class TargetReferenceContext:
+    marker_text: str
+    context_text: str
+    start: int
+    end: int
+    section_heading: str
+    context_type: str
+    contains_formula: bool
+
+
+def reference_entries_by_marker(fulltext: str) -> Dict[str, str]:
+    """Return raw References entries keyed by numeric citation marker."""
+    references_start = _references_section_start(fulltext)
+    if references_start is None:
+        return {}
+    references_text = fulltext[references_start:]
+    return {
+        marker: entry_text.strip()
+        for marker, entry_text, _start, _end in _extract_reference_entries(
+            references_text,
+            references_start,
+        )
+    }
+
+
+def normalize_text(value: str) -> str:
+    ascii_text = (
+        unicodedata.normalize("NFKD", value or "")
+        .encode("ascii", "ignore")
+        .decode("ascii")
+    )
+    ascii_text = ascii_text.replace("-\n", "").replace("\n", " ")
+    return " ".join(re.sub(r"[^a-zA-Z0-9]+", " ", ascii_text.lower()).split())
+
+
+def build_target_citation_anchor(target_title: str) -> CitationAnchor:
+    normalized_title = normalize_text(target_title)
+    keywords = [
+        token
+        for token in normalized_title.split()
+        if len(token) >= 4 and token not in {"paper", "study", "analysis"}
+    ]
+    return CitationAnchor(
+        title=target_title,
+        normalized_title=normalized_title,
+        keywords=keywords,
+    )
+
+
+def find_target_reference_anchor(
+    fulltext: str,
+    cited_title: str,
+    cited_doi: Optional[str] = None,
+    cited_authors: Optional[List[str]] = None,
+) -> Optional[ReferenceAnchor]:
+    references_start = _references_section_start(fulltext)
+    if references_start is None:
+        return None
+    references_text = fulltext[references_start:]
+    entries = _extract_reference_entries(references_text, references_start)
+    if not entries:
+        return None
+
+    normalized_title = normalize_text(cited_title)
+    normalized_doi = normalize_text(cited_doi or "")
+    author_terms = [
+        normalize_text(author).split()[-1]
+        for author in (cited_authors or [])
+        if normalize_text(author)
+    ]
+
+    best_anchor = None
+    best_score = 0.0
+    for marker, entry_text, start, end in entries:
+        normalized_entry = normalize_text(entry_text)
+        score = 0.0
+        method = ""
+        if normalized_doi and normalized_doi in normalized_entry:
+            score = 1.0
+            method = "doi_exact"
+        elif normalized_title and normalized_title in normalized_entry:
+            score = 0.98
+            method = "title_exact"
+        else:
+            title_overlap = _token_overlap(normalized_entry, normalized_title)
+            author_overlap = _author_overlap(normalized_entry, author_terms)
+            if title_overlap >= 0.75:
+                score = max(score, round(0.8 + min(title_overlap, 0.18), 4))
+                method = "title_overlap"
+            if not method and title_overlap >= 0.55 and author_overlap > 0:
+                score = round(0.65 + min(author_overlap * 0.1, 0.1), 4)
+                method = "title_author_overlap"
+        if score > best_score:
+            best_score = score
+            best_anchor = ReferenceAnchor(
+                reference_marker=marker,
+                reference_marker_text=f"[{marker}]",
+                reference_entry_text=entry_text.strip(),
+                reference_entry_start=start,
+                reference_entry_end=end,
+                match_method=method or "unknown",
+                match_score=score,
+            )
+    return best_anchor if best_anchor and best_anchor.match_score >= 0.65 else None
+
+
+def citation_text_has_target_anchor(citation_text: str, reference_marker: Optional[str]) -> bool:
+    if not citation_text or not reference_marker:
+        return False
+    try:
+        target = int(reference_marker)
+    except ValueError:
+        return False
+    for range_match in re.finditer(r"\[(\d+)\]\s*[-–—]\s*\[(\d+)\]", citation_text):
+        start = int(range_match.group(1))
+        end = int(range_match.group(2))
+        if start <= target <= end or end <= target <= start:
+            return True
+    for content in re.findall(r"\[([^\]]+)\]", citation_text):
+        normalized = content.replace("–", "-").replace("—", "-")
+        tokens = [token.strip() for token in normalized.split(",") if token.strip()]
+        for token in tokens:
+            if "-" in token:
+                start_text, end_text = [part.strip() for part in token.split("-", 1)]
+                if start_text.isdigit() and end_text.isdigit():
+                    start = int(start_text)
+                    end = int(end_text)
+                    if start <= target <= end or end <= target <= start:
+                        return True
+            elif token.isdigit() and int(token) == target:
+                return True
+    return False
+
+
+def extract_target_reference_contexts(
+    fulltext: str,
+    reference_marker: str,
+    window_chars: int = 1200,
+    max_contexts: int = 10,
+) -> List[TargetReferenceContext]:
+    if not fulltext or not reference_marker:
+        return []
+    body_end = _references_section_start(fulltext)
+    body_text = fulltext[:body_end] if body_end is not None else fulltext
+    contexts: List[TargetReferenceContext] = []
+    seen = set()
+    pattern = re.compile(
+        r"\[[^\]]+\](?:\s*,\s*\[[^\]]+\])*(?:\s*[-–—]\s*\[[^\]]+\])?"
+    )
+    for match in pattern.finditer(body_text):
+        marker_text = match.group(0)
+        if not citation_text_has_target_anchor(marker_text, reference_marker):
+            continue
+        start, end = _window_bounds(len(body_text), match.start(), match.end(), window_chars)
+        context_text = body_text[start:end].strip()
+        if not context_text:
+            continue
+        context_key = (start, end, normalize_text(context_text[:200]))
+        if context_key in seen:
+            continue
+        seen.add(context_key)
+        context_type = _context_type_for_marker(marker_text)
+        contains_formula = _contains_formula_language(context_text)
+        if contains_formula:
+            context_type = "formula_nearby"
+        contexts.append(
+            TargetReferenceContext(
+                marker_text=f"[{reference_marker}]",
+                context_text=context_text,
+                start=start,
+                end=end,
+                section_heading=_nearest_section_heading(body_text, match.start()),
+                context_type=context_type,
+                contains_formula=contains_formula,
+            )
+        )
+        if len(contexts) >= max_contexts:
+            break
+    return contexts
+
+
+def extract_alias_contexts(
+    fulltext: str,
+    aliases: List[str],
+    window_chars: int = 1000,
+    max_contexts: int = 8,
+) -> List[TargetReferenceContext]:
+    body_end = _references_section_start(fulltext)
+    body_text = fulltext[:body_end] if body_end is not None else fulltext
+    contexts: List[TargetReferenceContext] = []
+    seen = set()
+    for alias in aliases:
+        alias = (alias or "").strip()
+        if not alias:
+            continue
+        pattern = re.compile(re.escape(alias), re.IGNORECASE)
+        for match in pattern.finditer(body_text):
+            start, end = _window_bounds(len(body_text), match.start(), match.end(), window_chars)
+            context_text = body_text[start:end].strip()
+            if not context_text:
+                continue
+            context_key = (start, end, normalize_text(context_text[:200]))
+            if context_key in seen:
+                continue
+            seen.add(context_key)
+            contexts.append(
+                TargetReferenceContext(
+                    marker_text=alias,
+                    context_text=context_text,
+                    start=start,
+                    end=end,
+                    section_heading=_nearest_section_heading(body_text, match.start()),
+                    context_type="alias_context",
+                    contains_formula=_contains_formula_language(context_text),
+                )
+            )
+            if len(contexts) >= max_contexts:
+                return contexts
+    return contexts
+
+
+def _references_section_start(fulltext: str) -> Optional[int]:
+    match = re.search(r"(?im)^\s*(references|bibliography)\s*$", fulltext or "")
+    return match.start() if match else None
+
+
+def _extract_reference_entries(references_text: str, offset: int):
+    matches = list(re.finditer(r"(?m)^\s*\[(\d+)\]\s*", references_text))
+    entries = []
+    for index, match in enumerate(matches):
+        start = match.start()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(references_text)
+        marker = match.group(1)
+        entry_text = references_text[start:end]
+        entries.append((marker, entry_text, offset + start, offset + end))
+    return entries
+
+
+def _token_overlap(entry_text: str, title_text: str) -> float:
+    title_terms = {term for term in title_text.split() if len(term) >= 4}
+    if not title_terms:
+        return 0.0
+    entry_terms = set(entry_text.split())
+    return len(title_terms & entry_terms) / len(title_terms)
+
+
+def _author_overlap(entry_text: str, author_terms: List[str]) -> int:
+    if not author_terms:
+        return 0
+    entry_terms = set(entry_text.split())
+    return sum(1 for author in author_terms if author and author in entry_terms)
+
+
+def _window_bounds(text_length: int, start: int, end: int, window_chars: int):
+    half_window = max(400, window_chars // 2)
+    context_start = max(0, start - half_window)
+    context_end = min(text_length, end + half_window)
+    return context_start, context_end
+
+
+def _nearest_section_heading(text: str, position: int) -> str:
+    lines = text[:position].splitlines()
+    for line in reversed(lines):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if len(stripped) > 120:
+            continue
+        if re.match(r"^(\d+(\.\d+)*)\s+", stripped):
+            return stripped
+        if stripped.isupper() or re.match(r"^[A-Z][A-Za-z0-9 ,:/-]{2,}$", stripped):
+            return stripped
+    return ""
+
+
+def _contains_formula_language(text: str) -> bool:
+    normalized = normalize_text(text)
+    formula_terms = {
+        "eq",
+        "equation",
+        "formula",
+        "model",
+        "convolution",
+        "spectral",
+        "frequency",
+        "sampling",
+        "vector",
+        "theorem",
+        "proof",
+    }
+    return any(term in normalized.split() or term in normalized for term in formula_terms)
+
+
+def _context_type_for_marker(marker_text: str) -> str:
+    normalized = marker_text.replace(" ", "")
+    if re.search(r"\[\d+\]\s*[-–—]\s*\[\d+\]", normalized):
+        return "range_marker"
+    if "," in normalized:
+        return "grouped_marker"
+    return "exact_marker"

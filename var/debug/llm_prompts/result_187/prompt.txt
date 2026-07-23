@@ -1,0 +1,1007 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: VibCamera: mmWave and Camera Fusion for Multi-point Vibration Monitoring
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [5]
+TARGET_REFERENCE_ENTRY: [5] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via RFID by capturing
+sub-mm level vibration,”Proc. ACM IMWUT, vol. 5, no. 4, pp. 1–25,
+2021.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=Existing wireless signal-based solutions still possess certain; context_type=formula_nearby; contains_formula=True
+) [1] or laser [2] are more suitable for
+single-point measurement. Camera-based methods [3], [4] can
+distinguish equipment parts, while it requires proximity to the
+target, making it challenging to achieve multi-object detection
+at longer distances in industrial environments. Therefore, we
+consider using the wireless signal, which is contactless, easy
+to deploy, and capable of spatial segmentation.
+B. Limitation of Prior Art
+Existing wireless signal-based solutions still possess certain
+limitations despite their advantages. Wireless systems based
+on long-wavelength signals represented by RFID [5], [6]
+Correspondence Author: Xin Xie.
+have limited displacement sensitivity. The spatial resolution
+of WiFi [7] is not sufﬁcient to achieve precise spatial dif-
+ferentiation and multi-point vibration measurement. Although
+Ultra-Wideband (UWB) radar [8], [9] can achieve multi-target
+vibration detection and distinction in the range domain, its
+subsequent spatial spectrum estimation ability is limited, and
+antenna array deployment is also difﬁcult.
+In recent years, many solutions leveraging millimeter-wave
+(mmWave) radar have been proposed, beneﬁting from its high
+spatial resolution and displacement s
+
+[Context 2] section_heading=RFID; context_type=formula_nearby; contains_formula=True
+e. Therefore, the best
+detection effect is achieved at 400μm.
+V. RELA TEDWORK
+A. Vibration Measurement
+In traditional vibration measurement methods, the IMU [1]
+requires to be directly deployed on the object, which may in-
+troduce extra deployment and maintenance costs. Laser sensor
+[2], [16] has the ability to detect micrometer-level vibrations
+but is more suitable for single-point vibration detection. High-
+deﬁnition camera [3], [4] needs appropriate lighting and a
+very close distance to measure the subtle vibration. RF-based
+methods have shown great potential in vibration measurement.
+RFID [5], [6] is limited in detecting small amplitudes due to
+its long wavelength. UWHear [9] uses IR-UWB technology
+to distinguish sound sources through some light-building ma-
+terials. ART [7] uses 2.4GHz WiFi to detect sub-millimeter
+vibration and recover high-quality audio.
+B. mmW ave-based Measurement
+mmWave has a higher resolution for vibration measure-
+ment due to its mm-level wavelength [11], [13], [17]–[20].
+Mikhelson et al. [17] analyze vibration signals in the IQ
+domain and proposed the ﬁtting method to remove static
+components. Biet al. [18] introduce a digital phase shifter for
+multi-arc circl
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。
+- 首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。
+FULL_EXTRACTED_TEXT:
+VibCamera: mmWave and Camera Fusion for
+Multi-point Vibration Monitoring
+Xiulong Liu, Zhihua Yang, Hankai Liu, Xin Xie, Xinyu Tong
+College of Intelligence and Computing, Tianjin University, Tianjin, China
+Tianjin Key Laboratory of Advanced Networking (TANK), Tianjin, China
+{xiulong liu, zhihua , hkliu, xinxie, xytong}@tju.edu.cn
+Abstract—As a diagnostic method of equipment operational
+status, vibration monitoring plays a signiﬁcant role in industrial
+systems. It is necessary to monitor multiple equipment com-
+ponents simultaneously, due to their different vibration modes.
+Previous solutions either work in an invasive manner or face
+challenges in object localization and results correspondence.
+Therefore, we propose VibCamera, a vibration monitoring system
+that combines mmWave radar and computer vision technology.
+We propose an expand-shrink method to optimize object detec-
+tion results of computer vision and combine camera localization
+results to extract mmWave signals. Additionally, we employ
+mmWave data recombination and respective ﬁtting methods to
+calculate the vibration characteristics for each point accurately.
+The experiment shows that after fusing visual information, the
+target detection accuracy is improved to 94.8%, and the cluster
+point efﬁciency is improved by 23.3%. Furthermore, amplitude
+and frequency measurement errors are reduced to 29.1μm and
+0.08Hz, respectively.
+Index T erms—Wireless Sensing, mmWave Radar, Vibration
+Measurement
+I. I NTRODUCTION
+A. Motivation and Problem Statement
+Industrial equipment faults such as screw detachment and
+connection misalignment can manifest in abnormal vibration
+amplitude and frequency. By monitoring the equipment vibra-
+tion, potential faults can be promptly detected, enabling timely
+repair and maintenance to prevent accidents and mitigate po-
+tential losses. V ariations in work modes and states may differ
+in the vibration characteristics of different equipment parts.
+Therefore, performing simultaneous vibration measurements at
+multiple parts is crucial for effective equipment fault diagnosis.
+Traditional measurement solutions based on Inertial Mea-
+surement Unit (IMU) [1] or laser [2] are more suitable for
+single-point measurement. Camera-based methods [3], [4] can
+distinguish equipment parts, while it requires proximity to the
+target, making it challenging to achieve multi-object detection
+at longer distances in industrial environments. Therefore, we
+consider using the wireless signal, which is contactless, easy
+to deploy, and capable of spatial segmentation.
+B. Limitation of Prior Art
+Existing wireless signal-based solutions still possess certain
+limitations despite their advantages. Wireless systems based
+on long-wavelength signals represented by RFID [5], [6]
+Correspondence Author: Xin Xie.
+have limited displacement sensitivity. The spatial resolution
+of WiFi [7] is not sufﬁcient to achieve precise spatial dif-
+ferentiation and multi-point vibration measurement. Although
+Ultra-Wideband (UWB) radar [8], [9] can achieve multi-target
+vibration detection and distinction in the range domain, its
+subsequent spatial spectrum estimation ability is limited, and
+antenna array deployment is also difﬁcult.
+In recent years, many solutions leveraging millimeter-wave
+(mmWave) radar have been proposed, beneﬁting from its high
+spatial resolution and displacement sensitivity [10]. Position-
+ing the vibration source is the primary and crucial step in
+vibration measurement. mmVib [11] enhances displacement
+sensitivity through chirp decomposition and demonstrates
+the feasibility of utilizing mmWave radar for precise vi-
+bration measurement. However, range-based signal extraction
+constrains its spatial discrimination and localization ability.
+GWaltz [12] performs object detection in terms of distance
+and horizontal angle dimensions, but it still cannot ensure
+that the detected target matches the interested one. Multi-
+Vib [13] installs corner reﬂectors on the object to enhance
+the reﬂection intensity of the interested position and extend
+the target localization to 3D space. The introduction of corner
+reﬂectors increases the deployment cost and complexity.
+In summary, existing approaches have two main limitations:
+First, there is a lack of association between detected radar
+points and real-world targets. Therefore, the system cannot
+efﬁciently determine which object the vibration measurement
+results belong to. Secondly, the various parts of the object
+are not subdivided, making it difﬁcult to conduct all-point
+vibration measurements of the object.
+C. Our Approach
+In this paper, we introduce computer vision technology to
+mmWave vibration measurement and propose a multi-modal
+system named VibCamera. As shown in Fig. 1, VibCamera
+mainly consists of a mmWave radar and an RGB-D camera.
+The camera performs object detection and reports the position
+of the interested target to the mmWave radar, which extracts
+the corresponding signal for vibration monitoring. The Vib-
+Camera system mainly contains the following three modules.
+Target localization: After capturing RGB and depth images
+using the RGB-D camera, the trained semantic segmentation
+model is used to predict the target pixels. Subsequently, we
+2033
+2023 IEEE 29th International Conference on Parallel and Distributed Systems (ICPADS)
+2690-5965/23/$31.00 ©2023 IEEE
+DOI 10.1109/ICPADS60453.2023.00277
+2023 IEEE 29th International Conference on Parallel and Distributed Systems (ICPADS) | 979-8-3503-3071-7/23/$31.00 ©2023 IEEE | DOI: 10.1109/ICPADS60453.2023.00277
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.
+Object Detection &
+Position Assistance
+Vibration Measurement
+Camera
+mmWave Radar Visualized Measurement Result
+Fig. 1. Basic structure of VibCamera.
+employ the expand-shrink algorithm to improve the object de-
+tection accuracy and perform density reduction and coordinate
+conversion to reduce the calculation time.
+Measurement point selection: By calibrating the RGB
+image and the depth image, the precise 3D position of the
+target can be detected. The detected position is mapped to
+radar coordinates and serves as a reference for ﬁltering the
+3D point cloud obtained by the radar.
+Vibration calculation: The signals of each target point will
+be extracted and translated into the In-phase and Quadrature
+(IQ) domain. Subsequently, frame recombination and respec-
+tive circular ﬁtting will be performed to precisely extract the
+signal phase curve for the vibration characteristics calculation.
+Finally, VibCamera projects the measurement results onto
+RGB images for the intuitive perception of the measurement
+results, as shown in Fig. 1.
+D. Challenges and Solutions
+We need to address the following key challenges when
+implementing the VibCamera system.
+The ﬁrst challenge is how to provide precise position refer-
+ence for mmW ave.Although the semantic segmentation model
+can predict categories for each pixel, it may not fully cover
+the object or may exceed its actual boundary. Consequently, it
+is difﬁcult to achieve comprehensive vibration measurement
+in all parts of the target, as there may be omissions or
+incorrect predictions. We propose an expand-shrink method
+to achieve more precise visual segmentation. This method
+involves performing a dilation operation to expand the detected
+area, followed by clustering the 3D point positions to remove
+outlier points. Afterward, the detection results are utilized
+to identify the object’s position, guiding the extraction and
+calculation of mmWave signals.
+The second challenge is how to extract an accurate phase
+curve for vibration measurement.The discontinuity between
+radar frames and the changes in the vibration direction can
+lead to variations in the phase curve. Therefore, calculating the
+amplitude directly from the original phase would yield inaccu-
+rate results. We concatenate signals from various frames and
+reorganize the radar data into segments based on a consistent
+displacement in the same direction. By individually ﬁtting each
+reorganized data segment, we can extract the accurate phase
+data for vibration measurement.
+Fig. 2. FMCW chirp signal.
+-2 -1 0 1 2
+Velocity (m/s)
+1
+2
+3
+4Range (m)
+Fig. 3. Range-Doppler-FFT result.
+E. Contributions
+The contributions of this paper are summarized as follows.
+• We introduce the camera into mmWave vibration mea-
+surement for the ﬁrst time and propose an expand-shrink
+algorithm, enabling VibCamera to have accurate and
+reliable object detection and localization ability. Building
+upon this foundation, the system can perform simulta-
+neous multi-point vibration measurements and gives an
+intuitive display.
+• We combine the camera data and radar data fully and
+use a method of radar data reorganization and respective
+ﬁtting to obtain the correct phase data. Therefore, Vib-
+Camera demonstrates accuracy in both amplitude mea-
+surement and frequency measurement.
+• We implement VibCamera and conduct extensive ex-
+periments to evaluate its performance in corridor and
+warehouse environments. The detection coverage rate of
+interested targets reaches 94.8%, and the measurement
+accuracy of vibration amplitude and frequency reaches
+29.1μm and 0.08Hz, respectively.
+The remainder of this paper is organized as follows. Section
+II presents the mmWave signal model and some preliminary
+knowledge. Section III describes the system design of Vib-
+Camera, and in Section IV we present the implementation
+and experimental results. The related works are discussed in
+Section V and Section VI concludes this paper.
+II. P RELIMINARY
+A. mmW ave Signal Model
+The mmWave radar transmits the Frequency-Modulated
+Continuous Wave (FMCW) chirp signal as shown in Fig. 2.
+The frequency of a chirp signal increases linearly over a certain
+time: f(t)= fc + B
+Tc
+t, where fc, B and Tc are the starting
+frequency, bandwidth, and chirp duration. The transmitted
+chirp can be expressed as
+ST(t)= AT cos(2πfct+πB
+Tc
+t2 +ϕ0), (1)
+where AT is the transmit power andϕ0 is the ﬁxed phase
+offset. The signal is reﬂected by an object at a distance ofd
+and accepted bytd =2d/c, wherec is the speed of light. The
+received signal can be expressed as
+2034
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.
+Vibrating
+Equipment
+Camera
+mmWave
+   Radar
+Object Dection
+Area Re-determination
+Position Transformation
+Range-Doppler-FFT
+2D CFAR
+2D Angle-FFT
+Frame
+Reorganization
+Static Signal
+   Removal
+Phase Profile
+  Extraction
+6UOTZ
+3KXMOTM
+Target Position Detection
+Point Cloud Generation
+FFT
+Data CollectionData Collection
+ Vibration Signal 
+Extraction Measurement Result
+Frequency
+Band-pass Filter
+Peak-peak Value
+Amplitude
+Camera
+Camera
+Fig. 4. Overview of VibCamera.
+SR(t)= αAT cos(2πfc(t−td)+ πB
+Tc
+(t−td)2 +ϕ0), (2)
+where α identiﬁes the attenuation factor. By mixing the
+transmitted signal and the received signal, the Intermediate
+Frequency (IF) signal can be obtained as
+S(t)≈AIF cos(2πBtd
+Tc
+t+2πfctd), (3)
+where AIF is the amplitude of the IF signal. The other
+relatively small terms can be neglected for short-range radar
+applications [14]. After signal segmentation and extraction,
+the signal phase is represented by theθ(t)=2 πfctd = 4πfc
+c d.
+The phase change caused by displacementΔd over a while is
+Δθ = 4πfc
+c Δd. Hence, the displacementΔd, which represents
+the amplitude of vibration, can be calculated by
+Δd= cΔθ
+4πfc
+. (4)
+Due to the millimeter-level wavelength, mmWave can detect
+sub-millimeter-level vibrations. For instance, for the 77GHz
+mmWave signal, a displacement of500μmwill cause a phase
+change of1.61rad, which can be discovered and calculated.
+B. mmW ave Object Positioning
+We perform Range-FFT onS(t) in each chirp to convert
+the signal into the range domain and determine the target
+distance. Next, we perform Doppler-FFT on the Range-FFT
+processed signal to detect the velocity information of the
+target. After obtaining range and velocity information, the
+signal is processed using the 2D Constant False Alarm Rate
+(CFAR) algorithm to generate Range-Doppler (RD) point
+clouds, as shown in Fig.3. To obtain the spatial position of the
+target, we need to estimate the signal direction of arrival. By
+performing 2D Angle-FFT on the extracted RD point cloud
+signals, we can obtain the azimuth and the elevation of the
+target. Finally, through the above steps, the 4D point cloud
+can be obtained, which includes information on the position,
+velocity, and spatial distribution of the target, providing a more
+comprehensive target perception [15].
+C. Vision Object Segmentation
+Object segmentation, as one of the fundamental applications
+of computer vision, aims to determine the object to which
+each pixel belongs. Due to its high prediction precision,
+we leverage this technology for vibration object recognition
+and positioning. The Fully Convolutional Network (FCN)
+is a crucial foundation for object segmentation models. By
+replacing the fully connected layer with convolutional layers,
+FCN can process input images of any size and generate dense
+predictions of the same size. Moreover, FCN employs up-
+sampling operations to restore high-dimensional feature maps
+to the input image size, thereby preserving valuable spatial
+information. This capability enables FCN to classify pixels
+into different categories and provides essential insights and
+groundwork for developing subsequent models, such as the
+DeepLabV3 model utilized in this paper.
+III. S YSTEM DESIGN
+This section introduces the design of VibCamera, which
+combines data from the camera and mmWave radar for vi-
+bration monitoring. Fig. 4 shows the workﬂow of VibCamera,
+which consists of three main modules.
+• Target localization: The camera captures the scene’s
+RGB image and depth image. By using a trained semantic
+segmentation model for prediction and the expand-shrink
+algorithm for improving coverage, the area of the target
+object can be detected.
+• Measurement point selection: By combining the de-
+tected positions from the camera with the radar points
+generated by the radar, VibCamera selectively chooses
+the position points that accurately represent the target.
+• Vibration calculation: VibCamera extracts the radar
+signal from the selected position points, removes static
+components, and then calculates the vibration frequency
+and amplitude for each point.
+A. T arget Localization
+1) T arget Detection:VibCamera utilizes an RGB-D camera
+to capture RGB and depth images of the scene. To train the
+2035
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.
+Fig. 5. Camera-based target detection.
+ Fig. 6. Radar point cloud.
+DeepLabV3 model for target detection, we collect 50 RGB
+images for each object of interest. We employ the MobileNet
+as the backbone network of DeepLabV3 architecture. During
+training, 80% of the collected data is allocated to the training
+set, while the remaining 20% is used for testing. The model
+is trained with a batch size of 4 for 50 epochs, resulting in a
+loss value of 0.013.
+Fig. 5 illustrates the prediction results on a photo of a
+centrifuge. The red area corresponds to the positions predicted
+by the model, while the green dashed line represents the
+accurate boundary of the target. Overall, the prediction results
+accurately locate the target and basically cover it, but there are
+also cases of incomplete or excessive coverage.
+2) T arget Area Re-determination:To address the issue of
+incomplete coverage or excessive coverage, we propose the
+expand-shrink algorithm to achieve more accurate detection of
+the target object. Firstly, we employ the dilation algorithm to
+solve the incomplete coverage problem. We use the square as
+the dilation kernel, as shown by the white square in Fig. 5, with
+a side length ofkPA/PB, where k is empirically set to 0.5,
+PA is the number of pixels within the detection area andPB is
+the number of pixels at the boundary of the detection area. By
+traversing all boundary pixels, the square kernel expands the
+overall area outward by approximately 0.25 times. It achieves
+a balance to ensure that a certain number of pixels are added
+without affecting subsequent clustering results.
+Next, we proceed to shrink the boundary to eliminate points
+that do not belong to the target. By mapping the detected
+RGB image pixels to the depth image, we can obtain the
+3D coordinates of these pixels. Non-target pixels usually
+have depths different from the target, which means there is
+a distance between them and the 3D points of the target.
+Therefore, we use the Density-Based Spatial Clustering of
+Applications with Noise (DBSCAN) algorithm to ﬁlter out
+the outlier points. The blue area shown in Fig. 5 represents
+the re-determined area after the expand-shrink process. This
+method achieves a higher target detection accuracy and more
+comprehensive coverage, which is also the foundation of multi-
+point vibration measurement.
+B. Measurement Point Selection
+In this module, we introduce how to integrate mmWave and
+camera data and select points for vibration measurement.
+1) Radar Point Generation:First, we utilize the 4D FFT
+algorithm to generate the radar point cloud and the result is
+shown in Fig. 6. The red triangle represents the radar position,
+the blue dots represent the calculated radar points, and the
+orange-framed area represents the actual position of the target
+object. It can be observed that due to the characteristics of
+radar, radar point clouds are usually sparse and unstable.
+The points of the signals reﬂected by the environment or
+other objects may fall outside the range of the target, making
+it challenging to select and identify the target accurately.
+Therefore, vision information is necessary for precise target
+point selection, localization, and signal extraction.
+2) Point Merging: By mapping the detected RGB image
+pixel points to the depth image, we can obtain the 3D
+coordinates of the object relative to the camera. Based on
+the rigid transformation formulation, the 3D coordinates in
+the camera coordinate system can be converted to the radar
+coordinate system by
+Pradar =RPcamera+T, (5)
+where Pradar and Pcamera denote the coordinates in the
+mmWave radar and the camera coordinate systems, respec-
+tively. Since the relative position of the radar and the camera
+remain static and can be obtained through prior knowledge, the
+rotation matrixR and translation matrixT can be calculated
+in advance. Additionally, the relationship between the pixels in
+the RGB image and the 3D coordinates in the radar coordinate
+system also helps visualize the vibration measurement result.
+With visual information as a guide, radar points can be
+effectively ﬁltered and supplemented. Firstly, we use the
+position detected by the camera as a reference to ﬁlter the radar
+points based on their distance and angle range. Secondly, we
+merge the points from the radar and the camera at a1◦ ×1◦
+interval. This approach allows us to obtain measurement points
+with sufﬁcient density within a precise area.
+C. Vibration Calculation
+1) Vibration Signal Extraction:The discrete signal can be
+represented as points in the IQ domain, with the real part as the
+x-axis and the imaginary part as the y-axis. According to the
+electromagnetic wave propagation theory, the phase change
+of the reﬂected signal is proportional to its displacement
+change. Therefore, in an ideal scenario, reciprocating motion
+can be represented as an arc centered at the origin in the
+IQ domain as shown in Fig. 7(d). The central angle of the
+arc θ1 corresponds to the amplitude, and the reciprocating
+phase frequency represents the vibration frequency. However,
+the center of the arc may deviate from the origin due to
+the background reﬂection, which is also known as static
+components. The size of the central angle of the shifted arc
+changes, as shown as θ1 and θ2, which leads to incorrect
+amplitude calculation results. Therefore, it is necessary to ﬁt
+the arc, determine its center position, and calculate its central
+angle to measure the amplitude accurately.
+The circle ﬁtting of the IQ points can be transformed into
+an optimization problem [11]. LetX = {xn,c}N×C denote
+the IQ samples fromN frames, with C chirps in a frame.
+2036
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.
+-2 -1
+105
+-2
+-1
+0
+1
+2 105
+01 2
+I
+Q
+(a) Original frame arcs
+-2 -1
+105
+-2
+-1
+0
+1
+2 105
+1
+2
+3
+01 2
+I
+Q
+(b) Details of arcs
+-1 -0.5 0 0.5 1
+105
+-1
+-0.5
+0
+0.5
+1 105
+Turning Point
+O
+P1
+2
+2’
+I
+Q
+(c) Frame reorganization
+-3 -1.5 0 1.5 3
+105
+-3
+-1.5
+0
+1.5
+3 105
+ș2ș1
+I
+Q
+(d) Center offset result
+Fig. 7. Illustration of vibration signal extraction module.
+The optimization problem is to ﬁnd a radiusr and center z
+that minimizes the summed geometric distance between each
+sample and the circle:
+z∗,r∗ =a r gm i n
+z,r
+C∑
+c=1
+N∑
+n=1
+(∥xc,n −z∥− r)2, (6)
+which can be solved by the least squares method.
+The original image of the signal in the IQ domain is shown
+in Fig. 7(a). The signal in each frame is drawn as an arc, but
+the center of the arc shifts overall. In Fig. 7(b), the position
+of the number is the starting position of the frame arc. To ﬁnd
+the center of the signal arc for amplitude calculation, we need
+to solve two problems. The ﬁrst problem is the discontinuity
+between frames. For example, there is a break between frame
+1’s end and frame 2’s beginning. The second problem is the
+phase direction change caused by the change in vibration
+direction. The change may occur at the junction of frames,
+as indicated by the purple arrows at the junction of frames 2
+and 3, or within frames, as indicated by the black arrows in
+frame 1. The phase change within the frame divides the arc
+into two parts, each of which may have its center. Therefore,
+it is necessary to concatenate and reorganize the signals to
+represent vibration effectively.
+Firstly, we need to determine the turning point of the
+vibration, which is the turning point in the phase direction,
+represented by the black dot on the arc in Fig. 7(c). If we
+calculate the phase of the blue arc relative to the origin, the
+direction of phase change does not change, which means there
+is no turning point. This inconsistency with the actual situation
+prompts us to ﬁrst smooth the data and then employ circle
+ﬁtting to ﬁnd the initial circle centerP. By calculating the
+phase from the points on the arc to the initial centerP,w e
+can accurately determine the position of the phase transition
+and identify the turning point.
+Secondly, we reorganize the data divided by the calculated
+turning point. The data between two turning points is consid-
+ered a segment. If the segment data spans multiple frames,
+we move the next frame to the end of the previous frame to
+overcome the frame discontinuity, as shown by the movement
+of frame 2 shown by the yellow lines in Fig. 7(c). Then, we
+(a) Wide corridor environment
+ (b) Warehouse environment
+Fig. 8. Experiment setup of VibCamera.
+ﬁt the circle on each segment separately and translate the arc
+so that the center of all the circles reaches the origin of the
+system, as shown in Fig. 7(d). The current phase is accurate
+in calculating the correct vibration characteristics.
+2) Vibration Characteristic Calculation:The frequency of
+the phase corresponds to the object’s vibration frequency,
+while the phase’s peak-to-peak value can be utilized to cal-
+culate the vibration amplitude. We employ the FFT algorithm
+to obtain the spectrum, and the peak frequency represents the
+object’s vibration frequencyfs. Next, we apply a band-pass
+ﬁlter to smooth the phase and ﬁlter out the phase information
+of the vibration. The cut-off frequencies of the ﬁlter are set
+as [0.8 × fs, 1.2 × fs]. The average peak-to-peak value of
+the ﬁltered phase signal is expressed asΔφ, and the radial
+vibration amplitude can be calculated throughΔd= cΔφ
+4πfc
+.
+IV . EV ALUA TION
+In this section, we introduce the experiment setup and
+evaluation results of VibCamera.
+A. Experiment Setup and Evaluation Methods
+1) Data Collection Platform:We implement VibCamera on
+a commercial mmWave radar board, Texas Instruments (TI)
+AWR2243, and a commercial RGB-D camera Azure Kinect, as
+shown in Fig. 8. The mmWave radar works on the 77-81GHz
+frequency band, utilizing 8 RXs to capture the reﬂected signal
+from 6 TXs, which forms a11.5×3 wavelength virtual array.
+2037
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.
+The radar transmits 128 chirps per frame and samples 256
+points per chirp, with the chirp period of 50μs, and the frame
+period of 38.7ms. The Azure Kinect captures photos at a
+resolution of3840×2160, while the depth camera operates at
+the narrow ﬁeld of view mode to ensure an adequate detection
+range. The experiments are conducted with a laptop with an
+Intel i7-10510U processor and 16GB memory. The ground
+truth is obtained by the triple-axis accelerometer WT-VB01-
+485, with a sampling frequency of 1kHz, and a displacement
+sensitivity of 1μm.
+2) Experiment Site: As shown in Fig. 8, we ensure the
+Azure device and mmWave radar are positioned on the same
+plane to maintain stable relative positions. Data collection is
+performed in two scenarios: a4.5m×10m wide corridor and
+a 1.5m×6m warehouse. We utilize a centrifuge to generate
+vibrations with frequencies around 10Hz and amplitudes
+ranging from 100μm to 1500μm. The ground truth of the
+vibration is measured using the accelerometer deployed on the
+object’s surface. The evaluation of VibCamera encompasses
+various aspects, including vibration frequency, amplitude, valid
+signal ratio, and more. For each conﬁguration, we conduct a
+minimum of 20 sets of experiments.
+3) Comparisons: For a typical mmWave radar system, its
+1D, 2D, and 3D spatial object detection and localization can
+be expressed through range, range-azimuth (RA), and range-
+azimuth-elevation (RAE). To evaluate the performance of
+VibCamera, we compare our localization method with the RA
+method and the RAE method. Due to the range method’s com-
+prehensive coverage and weak spatial resolution of objects, we
+do not delve into a comparison. The RA method detects objects
+in range and horizontal dimension without distinguishing them
+in height [12]. In contrast, the RAE method leverages angular
+information for spatial detection and clusters spatial points to
+represent the target, such as Multi-Vib [13]. The advantage
+of our work lies in the accuracy of object detection and
+localization, so to ensure fairness in the evaluation, we use
+the same vibration calculation method for all methods.
+4) Evaluation Metrics: First, to assess the system’s effec-
+tiveness in detecting objects, we evaluate the coverage rate
+of object detection, deﬁned as the proportion of pixels in the
+predicted area to the total number of pixels in the target area.
+Second, we examine the percentage of radar points accurately
+positioned at the target location and measure the point efﬁ-
+ciency, deﬁned as the proportion of the effective points within
+the target position cluster. Speciﬁcally, the deﬁnition of an
+effective point is a point where the error between the calculated
+amplitude and the true amplitude is less than 20%. Besides, we
+evaluate the localization accuracy, vibration frequency error,
+and amplitude error to verify the accuracy of VibCamera.
+B. Overall Performance
+First, we verify the effectiveness of VibCamera in target
+localization. As shown in Table. I, VibCamera achieves an
+average coverage rate of 94.8% for target objects. Addition-
+ally, Table. II shows that VibCamera provides more accurate
+0 30 60 90 120 150
+Amplitude Error(um)
+0
+0.2
+0.4
+0.6
+0.8
+1
+CDF
+Corridor
+Warehouse
+RAE
+RA
+(a) CDF of amplitude error
+0 0.1 0.2 0.3 0.4 0.5
+Frequency Error(Hz)
+0
+0.2
+0.4
+0.6
+0.8
+1
+CDF
+Corridor
+Warehouse
+RAE
+RA
+(b) CDF of frequency error
+Fig. 9. CDF of the measurement error.
+TABLE I
+OBJECT DETECTION RESULTS
+1m 2m 3m 4m
+Radar Point 28.9% 27.2% 40.8% 25.9%
+Model Coverage 89.5% 86.7% 93.5% 90.4%
+VibCamera Coverage 96.8% 93.2% 94.6% 94.8%
+TABLE II
+SIGNAL EXTRACTION EFFICIENCY
+RA RAE VibCamera
+Positioning Accuracy 96.3% 92.6% -
+Point Efﬁciency 25.9% 43.5% 66.8%
+object positions and improves point efﬁciency by 40.9% and
+23.3% compared to the RA method and the RAE method,
+respectively. The improvement in target coverage rate and
+point efﬁciency ensures the feasibility of conducting vibration
+detection on all parts of the object.
+Next, we evaluate the performance of VibCamera in terms
+of vibration frequency and amplitude calculation. Fig. 9 shows
+the overall performance. The average amplitude error and
+average frequency error of VibCamera in all settings is 29.1μm
+and 0.08Hz. Speciﬁcally, the amplitude error is 23.2μmin the
+corridor environment and 34.9μm in the warehouse environ-
+ment, verifying the environmental robustness of VibCamera.
+In addition, VibCamera signiﬁcantly outperforms the RA and
+RAE methods in over 60% of the CDF data, demonstrating
+more stable performance. It reduces the amplitude error at the
+80th percentile by 34.8% and 22.0% respectively.
+C. T arget Localization Evaluation
+We assess the object detection performance of VibCamera
+at various distances. As shown in Fig. 6, some radar points are
+unrelated to the position of the object due to the background
+reﬂection. Table. I shows that only 30.7% of the radar points
+correspond to the object’s location on average, making it chal-
+lenging to accurately locate the object. However, by employing
+the visual approach, the object coverage rate reaches an im-
+pressive 90.1%, demonstrating excellent multipath resistance.
+2038
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.
+1234
+Distance(m)
+0
+20
+40
+60Amplitude Error(um)
+corridor warehouse
+(a) Impact of distance
+0 1 02 03 0
+Angle(°)
+0
+20
+40
+60Amplitude Error(um)
+corridor warehouse
+(b) Impact of angle
+abcd
+Position
+0
+20
+40
+60Amplitude Error(um)
+corridor warehouse
+(c) Impact of position
+200 400 700 1000
+Amplitude(um)
+0
+20
+40
+60Amplitude Error(um)
+corridor warehouse
+(d) Impact of amplitude
+Fig. 10. Impact of different factors.
+VibCamera further improves the coverage rate to 94.8% and
+exhibits outstanding performance within the 4m range.
+Then, we validate the differences in localization and the
+proportion of the effective points of signals extracted by
+different methods. We cluster and select the strongest and
+closest category as the target object to calculate the vibration
+characteristics. Table. II indicates that compared to the RA
+method, the RAE method has lower accuracy in target localiza-
+tion. The RAE method has an additional vertical angle to rep-
+resent the position of the object, which also adds limitations.
+However, VibCamera introduces a camera for localization and
+has a signiﬁcantly higher percentage of effective points in the
+selected cluster compared to the RA and RAE methods.
+D. Sensitivity Analysis
+We evaluate the accuracy of VibCamera in estimating vibra-
+tion frequency and amplitude in both corridor and warehouse
+environments, considering various practical factors such as
+distance, angle, vibration amplitude, and more.
+1) Impact of Measurement Distance:In this experiment, we
+maintain a frequency of 10Hz and an amplitude of 500μm,
+while varying the distance from 1m to 4m. The results,
+as shown in Fig. 10(a), indicate that whether in the corri-
+dor environment or the warehouse environment, VibCamera
+demonstrates excellent performance within a range of 4m.
+This conﬁrms its ability to resist multipath interference and
+accurately detect vibrations.
+2) Impact of Measurement Angle:In this experiment, we
+maintain a frequency of 10Hz, an amplitude of 500μm, and a
+distance of 2m. We consider the angle between the midpoint of
+the radar RXs and the accelerometer as the measurement angle
+and set it from 0◦ to 30◦. Fig. 10(b) shows that VibCamera has
+exhibited excellent measurement accuracy and anti-multipath
+capabilities within a 30◦ angle range. Overall, in the warehouse
+environment, as the angle increases, the error in vibration
+amplitude gradually increases. The angle range of the depth
+camera limits the effective angle range of the system.
+3) Impact of Measurement Point Position:Since we mea-
+sure the multi-point vibration, we need to evaluate the effect
+of measurement positions. As shown in Fig. 8(b), we conduct
+experiments on the positions of four points ona, b, c, and d.
+We maintain a frequency of 10Hz, an amplitude of 500μm,
+and a distance of 2m. Fig. 10(c) shows that VibCamera shows
+good accuracy for different parts. The average amplitude
+error in the corridor environment and warehouse environment
+is 19.38μm and 23.56μm. The measurement effect is very
+stable, which lays the foundation for comprehensive vibration
+monitoring of multiple objects.
+4) Impact of Vibration Amplitude:In this experiment, we
+keep the frequency to 10Hz and the distance to 2mand change
+the amplitudes from 200μmto 1mm. Fig. 10(d) illustrates that
+in the corridor environment, there is no signiﬁcant amplitude
+error across all vibration amplitudes. This is attributed to
+the utilization of the camera to extract the signal from the
+radar, effectively mitigating interference from non-target radar
+points reﬂected by the environment. The smaller the amplitude,
+the more difﬁcult it is to measure the amplitude. The larger
+the amplitude, the wider the error range. Therefore, the best
+detection effect is achieved at 400μm.
+V. RELA TEDWORK
+A. Vibration Measurement
+In traditional vibration measurement methods, the IMU [1]
+requires to be directly deployed on the object, which may in-
+troduce extra deployment and maintenance costs. Laser sensor
+[2], [16] has the ability to detect micrometer-level vibrations
+but is more suitable for single-point vibration detection. High-
+deﬁnition camera [3], [4] needs appropriate lighting and a
+very close distance to measure the subtle vibration. RF-based
+methods have shown great potential in vibration measurement.
+RFID [5], [6] is limited in detecting small amplitudes due to
+its long wavelength. UWHear [9] uses IR-UWB technology
+to distinguish sound sources through some light-building ma-
+terials. ART [7] uses 2.4GHz WiFi to detect sub-millimeter
+vibration and recover high-quality audio.
+B. mmW ave-based Measurement
+mmWave has a higher resolution for vibration measure-
+ment due to its mm-level wavelength [11], [13], [17]–[20].
+Mikhelson et al. [17] analyze vibration signals in the IQ
+domain and proposed the ﬁtting method to remove static
+components. Biet al. [18] introduce a digital phase shifter for
+multi-arc circle ﬁtting to improve signal processing accuracy.
+mmVib [11] provides a signal processing method based on
+the multi-chirp property to achieve the micrometer-level vi-
+bration measurement, but it treats the entire object as a source
+2039
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.
+of vibration. Multi-Vib [13] achieves multi-point vibration
+monitoring by installing the designed corner reﬂectors to the
+object, which introduces deployment difﬁculty. Besides, the
+calculation results lack directionality, making it difﬁcult to
+directly determine which label the calculated signal comes
+from in a multiple-label environment.
+C. Multimodal Combination
+The integration with vision enhances the universality and
+reliability of mmWave sensing. VPBCT [21] infers the optimal
+beam pair for transceivers based on the vision-measured vehi-
+cle position to improve communication performance. Liet al.
+[22] distinguish pedestrian or humanoid signs on the road by
+calculating the radar cross-section of mmWave, making up for
+the shortcomings of computer vision. Wanget al. [23] combine
+the train speed calculated by the mmWave and the loop closure
+detection result of camera data to accurately locate the train.
+ReID [24] achieves cross-modal human re-identiﬁcation by
+analyzing human gait data from vision and mmWave radar.
+VI. C ONCLUSION AND FUTURE WORK
+In this paper, we present VibCamera to locate and measure
+the vibration of objects accurately. VibCamera introduces com-
+puter vision technology into mmWave vibration measurement,
+achieving more accurate target detection, localization, and
+differentiation. To improve the model prediction result of the
+target, we propose an expand-shrink algorithm to expand the
+pixels of the target object more reasonably. To eliminate non-
+object points, we use the visual range of the target to ﬁlter
+the radar point cloud. We solve the engineering problem of
+vibration extraction through radar data reorganization and re-
+spective ﬁtting and conduct more accurate vibration character-
+istic calculations. Experimental results reveal that VibCamera
+can accurately measure the vibration characteristics of points,
+with the average error of vibration frequency and amplitude
+as 29.1μm and 0.08Hz.
+In the future, we will further enhance the practicality and
+robustness of VibCamera. We plan to eliminate the dependence
+on the depth camera and use low-cost RGB cameras to achieve
+determination assistance for measurement points. Besides, we
+will attempt to deploy VibCamera on robots to facilitate
+automated, omnidirectional device vibration monitoring.
+ACKNOWLEDGMENT
+This work is supported in part by the National Natural
+Science Foundation of China under Grant 62002259 and Grant
+62372324.
+REFERENCES
+[1] A. Sabato, C. Niezrecki, and G. Fortino, “Wireless MEMS-based ac-
+celerometer sensor boards for structural vibration monitoring: A review,”
+IEEE Sensors Journal, vol. 17, no. 2, pp. 226–235, 2016.
+[2] H. Shi, J. Shi, Y . Yang, S. Tang, C. Su, and L. Liu, “Spatial vibration and
+displacement measurement through single-point continuous and interval
+scanning laser doppler vibrometer,”IEEE Transactions on Instrumenta-
+tion and Measurement, vol. 72, pp. 1–11, 2022.
+[3] M. Sheinin, D. Chan, M. O’Toole, and S. G. Narasimhan, “Dual-shutter
+optical vibration sensing,” inProc. IEEE/CVF CVPR, 2022, pp. 16 324–
+16 333.
+[4] Z. Zang, X. Yang, G. Zhang, J. Wang, and J. Chen, “Phase-based
+vibration frequency measurement from videos recorded by unstable
+cameras,” IEEE Transactions on Instrumentation and Measurement,
+vol. 71, pp. 1–14, 2022.
+[5] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via RFID by capturing
+sub-mm level vibration,”Proc. ACM IMWUT, vol. 5, no. 4, pp. 1–25,
+2021.
+[6] P . Yang, Y . Feng, J. Xiong, Z. Chen, and X.-Y . Li, “RF-Ear: Contactless
+multi-device vibration sensing and identiﬁcation using COTS RFID,” in
+Proc. IEEE INFOCOM, 2020, pp. 297–306.
+[7] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” inProc. ACM MobiCom, 2015, pp. 130–
+141.
+[8] Y . Rong, S. Srinivas, A. V enkataramani, and D. W. Bliss, “UWB radar
+vibrometry: An RF microphone,” in Proc. Asilomar Conference on
+Signals, Systems, and Computers, 2019, pp. 1066–1070.
+[9] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava,
+“UWHear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” inProc. ACM SenSys, 2020, pp. 1–14.
+[10] K. Cui, Q. Yang, L. Shen, Y . Zheng, and J. Han, “Integrated sensing and
+communication between daily devices and mmWave radars,” inProc.
+ACM SenSys, 2022, pp. 831–832.
+[11] J. Guo, Y . He, C. Jiang, M. Jin, S. Li, J. Zhang, R. Xi, and Y . Liu,
+“Measuring micrometer-level vibrations with mmWave radar,”IEEE
+Transactions on Mobile Computing, 2021.
+[12] J. Guo, M. Jin, Y . He, W. Wang, and Y . Liu, “Dancing waltz with ghosts:
+Measuring sub-mm-level 2D rotor orbit with a single mmWave radar,”
+in Proc. ACM IPSN, 2021, pp. 77–92.
+[13] Y . Yang, H. Xu, Q. Chen, J. Cao, and Y . Wang, “Multi-Vib: Precise
+multi-point vibration monitoring using mmWave radar,”Proc. ACM
+IMWUT, vol. 6, no. 4, pp. 1–26, 2023.
+[14] A. Ahmad, J. C. Roh, D. Wang, and A. Dubey, “Vital signs monitoring
+of multiple people using a FMCW millimeter-wave sensor,” inProc.
+IEEE RadarConf, 2018, pp. 1450–1455.
+[15] X. Liu, W. Jiang, S. Chen, X. Xie, H. Liu, Q. Cai, X. Tong, T. Shi,
+and W. Qu, “PosMonitor: Fine-grained sleep posture recognition with
+mmWave radar,”IEEE Internet of Things Journal, pp. 1–15, 2023.
+[16] P . Castellini, M. Martarelli, and E. P . Tomasini, “Laser doppler vi-
+brometry: Development of advanced solutions answering to technology’s
+needs,” Mechanical systems and signal processing, vol. 20, no. 6, pp.
+1265–1285, 2006.
+[17] I. V . Mikhelson, S. Bakhtiari, T. W. Elmer, II, and A. V . Sahakian,
+“Remote sensing of heart rate and patterns of respiration on a stationary
+subject using 94-GHz millimeter-wave interferometry,”IEEE Transac-
+tions on Biomedical Engineering, vol. 58, no. 6, pp. 1671–1677, 2011.
+[18] S. Bil, X. Gao, V . M. Lubecke, O.-B. Lubecke, D. Matthews, and
+X. L. Liu, “A multi-arc method for improving doppler radarmotion
+measurement accuracy,”Proc. IEEE/MTT-S IMS, pp. 244–247, 2018.
+[19] H. Liu, X. Liu, X. Xie, X. Tong, T. Shi, and K. Li, “Application-oriented
+privacy ﬁlter for mmWave radar,”IEEE Communications Magazine, pp.
+1–7, 2023.
+[20] K. Cui, Q. Yang, Y . Zheng, and J. Han, “mmRipple: Communicating
+with mmWave radars through smartphone vibration,” inProc. ACM
+IPSN, 2023, pp. 149–162.
+[21] W. Xu, F. Gao, X. Tao, J. Zhang, and A. Alkhateeb, “Computer
+vision aided mmWave beam alignment in V2X communications,”IEEE
+Transactions on Wireless Communications, vol. 22, no. 4, pp. 2699–
+2714, 2022.
+[22] H. Li, R. Liu, S. Wang, W. Jiang, and C. X. Lu, “Pedestrian liveness
+detection based on mmWave radar and camera fusion,” inProc. IEEE
+SECON, 2022, pp. 262–270.
+[23] Z. Wang, G. Y u, B. Zhou, P . Wang, and X. Wu, “A train positioning
+method based-on vision and millimeter-wave radar data fusion,”IEEE
+Transactions on Intelligent Transportation Systems, vol. 23, no. 5, pp.
+4603–4613, 2021.
+[24] D. Cao, R. Liu, H. Li, S. Wang, W. Jiang, and C. X. Lu, “Cross vision-
+RF gait re-identiﬁcation with low-cost RGB-D cameras and mmWave
+radars,”Proc. ACM IMWUT, vol. 6, no. 3, pp. 1–25, 2022.
+2040
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:43:28 UTC from IEEE Xplore.  Restrictions apply.

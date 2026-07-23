@@ -1,0 +1,1072 @@
+You are analyzing the citing paper full text.
+Find whether and how this citing paper cites or discusses the cited paper.
+Only report evidence that is explicitly grounded in the provided full text.
+Each finding must include citation_text copied from the full text.
+If the full text only mentions similar keywords but does not clearly discuss the cited paper, return findings=[].
+Do not use bibliography/reference-list entries as findings.
+A reference entry only proves that the cited paper appears in References; it is not evidence of evaluation, use, comparison, or contribution.
+citation_text must come from the main body discussion, not from the References section.
+If the only occurrence of the cited paper is in References, return {"findings": []}.
+If a sentence discusses moire, moiré, aliasing, or similar keywords generally but cannot be attributed to the cited paper, do not return it.
+Do not invent evidence.
+Do not infer praise without textual support.
+For grouped citations, only attribute a claim to the cited paper if the text clearly applies to it.
+If a grouped citation contains TARGET_REFERENCE_MARKER, the claim may be relevant to the cited paper as part of the group. Mark mention_type as grouped_citation and explain attribution uncertainty.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Each finding must include citation_text copied from the full text, otherwise it will not be saved.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Autocorrelation-based Fiducial Markers for Traceability
+CITED_PAPER_TITLE: MoiréPose: ultra high precision camera-to-screen pose estimation based on Moiré pattern
+CITED_PAPER_YEAR: 2022
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3495243.3560537
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Yi Li 0062, Yingying Chen 0001, Yanling Bu, Baoliu Ye, Sanglu Lu
+TARGET_REFERENCE_MARKER: [35]
+TARGET_REFERENCE_ENTRY: [35] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu,
+Baoliu Ye, and Sanglu Lu. Moir ´epose: ultra high precision
+camera-to-screen pose estimation based on moir´e pattern. In
+Proceedings of the 28th annual international conference on
+mobile computing and networking, pages 106–119, 2022. 11
+ACTIVE_EVIDENCE_TEMPLATES:
+- Prioritize claims that the target paper is first, seminal, or pioneering.
+- Prioritize detailed comparison evidence, not passing mentions.
+- Prioritize evidence where the target paper is used as a baseline or benchmark.
+- Prioritize theoretical foundation evidence.
+- Prioritize method foundation evidence.
+- Prioritize long-context citation evidence.
+- Prioritize positive evaluation evidence grounded in citation_text.
+- Prioritize limitation or negative evaluation evidence with original citation_text.
+FULL_EXTRACTED_TEXT:
+Autocorrelation-based Fiducial Markers for Traceability
+Ismail Bencheikh1,2,∗ Max Dunitz1,2,∗ Marie d’Autume1 Enric Meinhardt-Llopis1
+Marc Pic2 Gabriele Facciolo1 Pablo Mus´e1,3
+1Universit´e Paris-Saclay, ENS Paris-Saclay, CNRS, Centre Borelli, France
+2Advanced Track & Trace, France ∗ Equal contributions.
+3IIE, Facultad de Ingenier´ıa, Universidad de la Rep´ublica, Uruguay
+Abstract
+Classical approaches to the rectiﬁcation of a single image
+of a product, without stereo correspondences, require spa-
+tial landmarks. These landmarks, constructed from high-
+contrast elementary shapes that can be detected with sim-
+ple algorithms, are highly conspicuous. To rectify complex
+deformations, one can use chessboard patterns of markers
+with elements that break quadrilateral symmetry, such as
+the three eyes of a QR code. However , these marker boards
+are even more conspicuous than a single marker . In trace-
+ability applications, only one site of marking is used, limit-
+ing the complexity of the surface on which it can be read,
+and exposing the mark to deidentiﬁcation attacks for di-
+version of the product to a grey market. We introduce a
+method for constructing stealth and robust ﬁducial markers
+that can be displayed across a surface, limiting exposure
+to marker tampering for product deidentiﬁcation. These
+markers, which we refer to as self-rectifying textures, can be
+used to rectify complex deformations by solving an inverse
+problem rather than relying on pixel correspondences of
+conspicuous landmarks. These stealth textures place ﬁdu-
+cial markers in the autocorrelation of the image. In this
+way, crops of the deformed texture can be rectiﬁed using
+only these spatially invariant statistical properties. Afﬁne
+transformations of an image correspond to linear transfor-
+mations of the autocorrelation, without phase component.
+Exploiting this fact, self-rectifying textures enable the lo-
+cal estimation of the differential of a planar deformation
+by identifying landmarks in the autocorrelation image, such
+as peaks, whose locations in the fronto-parallel view of the
+texture are known. The translation component can be re-
+covered independently via phase correlation. A rectifying
+map, modulo translations, can also be ﬁt directly to local
+observations of the differential of the deformation, without
+access to the rectiﬁed texture or need for phase correlation.
+Self-rectifying textures can be used for communication, wa-
+termarking, authentication, surface identiﬁcation, calibra-
+tion, and geometry processing.
+Figure 1. A self-rectifying texture and a QR code are printed on
+a piece of paper folded across a table edge. This deformation pre-
+vents the QR code from being read. By contrast, the real-time self-
+rectifying texture reader (left) can acquire the deformation differ-
+ential (left lower inset) from the small patch being processed (left
+upper inset); from this single patch, after afﬁne rectiﬁcation, the
+traceability information is easily decoded. A photograph of the
+QR code spread across two surface faces (center) cannot be read.
+However, the geometric information exposed by the self-rectifying
+texture easily allows rectiﬁcation of a homography for each planar
+surface, allowing the QR code to be read.
+1. Introduction
+Trademark holders, inventory managers, consumer advo-
+cates, safety and environmental regulators, customs ofﬁ-
+cials, central banks, and tax authorities seek better technolo-
+gies and standards to ensure product traceability and supply
+chain transparency [14, 18, 37]. As physical goods come in
+many forms, markings containing product information must
+be easily readable, even on complex surfaces. Traceability
+markers are common sites of tampering as product deiden-
+tiﬁcation is often necessary for diversion to a grey market.
+As a defense against tampering, robust traceability marking
+requires redundancy–and thus, due to aesthetic constraints,
+stealth.
+Fiducial markers (see Fig. 2) generally consist of high-
+contrast images of large, elementary objects like squares,
+enabling detection by simple algorithms [5, 17, 21, 43, 46].
+This WACV paper is the Open Access version, provided by the Computer Vision Foundation.
+Except for this watermark, it is identical to the accepted version;
+the final published version of the proceedings is available on IEEE Xplore.
+1345
+They reveal pose information via pixel locations of land-
+marks–often the corners of a square marker’s bounding
+box–along with elements that disrupt symmetries to distin-
+guish the landmarks (such as the three “eyes” of QR code).
+Only the repetition of markers across a surface can endow
+landmark-based rectiﬁcation methods with robustness to in-
+tense, localized occlusion due to deidentiﬁcation. Such rep-
+etition often grants the ability to rectify planar deformations
+more complex than homographies. But repeated mark-
+ers generally assume the form of chessboard-like arrays of
+high-contrast markers, known as marker boards [ 19]. We
+seek a conﬁgurable family of inconspicuous ﬁducial mark-
+ers that, like marker boards, are geometrically informative
+and robust to deidentiﬁcation occlusion.
+Objectives:
+We introduce a family of ﬁducial markers that is
+• informative: exposing local deformation differentials;
+• inconspicuous: covering product surfaces with mark-
+ings, granting robustness to tampering and warp;
+• template-free: rectifying complex deformations up to
+translation without phase correlation; and
+• conﬁgurable: accomodating a variety of payloads.
+1.1. Existing markers are unsuitable for traceability
+Our area of focus–anti-diversion traceability–involves
+smaller payloads than typical 2D communication schemes
+(on the order of 8 message bytes, or 10
+19 messages), but
+much larger payloads than typical marker ID dictionaries.
+Even the standard “low payload” 25×25 module QR code
+version 2 carries 47 bytes, of which 19-37 are message
+bytes, depending on the error-correction-level setting [ 26].
+This is far more than we require. On the other hand, marker
+systems for augmented reality applications, such as AR-
+ToolKit [10], AprilTags [38], and ArUco markers [19], con-
+tain IDs in a pre-deﬁned dictionary, typically with on the or-
+der of 10
+1 to 103 IDs per dictionary–far less than an eight-
+byte message ( 1019). While CALTags could offer such
+combinatorial possibilities, they do not incorporate forward
+error correction (FEC); ARTags, which do, accommodate
+only 10
+3 marker IDs.
+Most ﬁducial markers have sufﬁcient landmarks and
+asymmetry to rectify homographies. (With information
+to estimate normal translations, such as camera intrin-
+sics, these markers–especially AprilTags and ArUco mark-
+ers–are used by the robotics community to estimate the six
+degree-of-freedom pose of a camera relative to a planar
+surface [22, 27].) In the literature, however, only marker
+boards can rectify complex planar deformations induced by
+the acquisition of a 2D code printed on a complex surface or
+by camera lens warp. But these conspicuous marker boards,
+while useful for instrument calibration, are ill-suited for use
+QR Code
+1994, [21]
+not tiled over
+surface: not robust
+Fourier Tag
+2007, [45]
+lower contrast; not
+self-rectifying
+CALTags
+2010, [5]
+occlusion-robust
+camera calibration
+BlurTags
+2012, [42]
+occlusion-robust
+PSF estimation
+Self-Rectifying
+Texture, 2025
+occlusion-robust,
+stealth, conﬁgurable
+Figure 2. Example ﬁducial markers. The self-rectifying texture
+(right) is more discreet than the others in the literature. Most
+tags with sufﬁcient asymmetry (all but Fourier Tag here) possess
+enough information to perform landmark-based rectiﬁcation of a
+homography, but only conspicuous chessboard patterns repeated
+across a surface or the self-rectifying texture can reveal the more
+complex planar deformations encountered in product traceability
+applications and exhibit the necessary robustness to tampering.
+Like the QR code, it can be conﬁgured to carry arbitrary messages
+(rather than a ﬁxed set of motifs from a small marker dictionary);
+its payload size, density, and robustness are highly adaptable, akin
+to QR code version and error-correction-level selection.
+in commercial packaging.
+While many markers offer some protection against oc-
+clusion, only a furtive marker that can cover a large surface
+is robust to deidentiﬁcation attacks.
+Traceability applications have varying two-dimensional
+code design needs. For codes with ﬁne-grained detail, of-
+ten examined with specialized instruments at high levels
+of magniﬁcation, small contiguous regions must be decod-
+able. For codes masked by branding materials and prod-
+uct information and acquired with a smartphone, a code
+block can span a large surface, with the parity-check ma-
+trix linking spatially distant bits. Another approach suitable
+for commercial packaging consists in printing random lin-
+ear combinations of small blocks–small enough to ﬁt be-
+tween branded product markings–so that the complete mes-
+sage can be decoded with enough acquired linear combina-
+tions.
+1.2. Direct rectiﬁcation of planar markers
+The perspective projection of a 3D scene onto an image
+plane induces geometric distortion. Information displayed
+on a planar surface––such as a QR code on the face of a
+cuboid package–that is acquired with perspective can be
+placed in a standard view (fronto-parallel, typically) via a
+homography. A homography H: R
+2 → R2 is a nonlin-
+ear planar deformation determined by an isomorphism of
+the real projective plane P
+2 (the set of lines through the ori-
+gin in R3). Thus, each homography maps distinct lines to
+distinct lines, preserving incidence. While homographies
+preserve collinearity, they break parallelism and distort an-
+gle and distance ratios. This distorts encoded data motifs,
+rendering their accurate recovery difﬁcult. The rectifying
+homography is found using the aquired pixel coordinates of
+1346
+at least four spatial landmarks [ 22], whose locations in a
+rectiﬁed code are generally known. Applying the rectify-
+ing homography to the acquired image places the data in a
+standard form accessible to the decoder.
+But spatial landmarks impede stealth: subtle landmark
+motifs are difﬁcult to detect reliably. One can compen-
+sate for poor keypoint detection reliability with quantity.
+With knowledge of the entire ﬁducial marker that was ac-
+quired in standard form (which is rare in traceability appli-
+cations), one can use algorithms such as SIFT to ﬁnd avail-
+able keypoint correspondences between the known and ac-
+quired patterns, from which the rectifying homography for
+the acquired image can be calculated [ 22, 33]. But such an
+approach requires explicit knowledge of the entire pattern
+(rather than a small set of reliably detected, high-contrast
+landmarks, like QR code “eyes,” which do not contain vari-
+able coded data and thus can be known without a complete
+template). Even with template access, such approaches may
+still suffer from matched descriptor points that are degener-
+ate, unreliable, or unavailable without tweaks to the key-
+point isolation algorithm. This especially holds for pat-
+terns made from faint, repetitive motifs, such as the pat-
+terns we seek to create (the ideal traceability markers are
+imperceptible). For traceability markers, one often has ac-
+cess to the sites at which data might be encoded but not
+the data itself. In such cases, cross-correlation-based meth-
+ods are more practical than correspondence-based methods.
+Such methods are computationally expensive and ill-suited
+for the recovery of many rectifying homography parame-
+ters. An overview of existing inverse, template-free rectiﬁ-
+cation methods is provided in the Supplementary Materials,
+Sec. A.
+1.3. Self-rectiﬁable textures: textures that pose a
+natural inverse problem for rectiﬁcation
+Fiducial markers are examples of self-rectiﬁable patterns.
+Structures embedded within the marker–typically the pixel
+indices of landmarks–reveal information about the pose of
+the acquisition camera. These patterns may possess data
+payloads (channel coded, for robustness to occlusion [ 21])
+or auxiliary calibration tools (such as dots for the identiﬁca-
+tion of spatially varying point-spread functions [43]). They
+announce themselves to the acquisition camera with large,
+elementary geometric forms and high-contrast, typically bi-
+nary, signals. Notable exceptions are the ARToolKit [ 39]
+and Fourier tag [ 46] (see Fig. 2). The former contains a
+large square image that is the weighted sum of a payload
+consisting of a Discrete Cosine Transform (DCT-II) basis
+function (or its negative) and a ﬁxed DCT-II basis func-
+tion used to compensate for the bilateral symmetry of even
+basis functions. Marker identiﬁcation is accomplished us-
+ing phase correlation. The Fourier tag embeds in a large
+circle a smooth radial signal, ﬁxed across a sector. This
+signal is the Discrete Fourier Transform (DFT) of a sym-
+metrized binary signal that permits partial recovery (of its
+low-frequency component) in the presence of blur. In both
+cases, the ﬁducial marker is grayscale and smooth.
+Motivated by traceability applications, we seek to de-
+sign self-rectifying patterns in the form of inconspicuous
+textures that can be printed across a curved packaging sur-
+face. Deformed, cropped texture portions can be rectiﬁed
+modulo translation using a single image without template,
+based on known statistical properties of the texture.
+To achieve inconspicuousness, we place landmarks not
+in the texture itself but rather in its autocorrelation image.
+Since the positions of peaks in the autocorrelation image
+are mapped linearly by the deformation differential, the au-
+tocorrelation of patches of a deformed texture expose the
+local behavior of the deformation. Moreover, to rectify
+the deformation, the original texture need not be known,
+only the sites of its most prominent autocorrelation peaks.
+Template-free rectiﬁcation (modulo translations) can thus
+be performed, avoiding expensive phase correlations.
+1 With
+additional knowledge of texture (such as the sites at which
+data appear in the binary texture in the rectiﬁed view), the
+translation can be acquired with a single phase correla-
+tion, thanks to the separability property described in Sec. 3.
+Thus, the complete afﬁne approximation of the deforma-
+tion of the patch can be acquired (and rectiﬁed) with a sin-
+gle phase correlation, in sharp contrast with the computa-
+tionally expensive correlation-based acquisition of up to six
+afﬁne parameters in the template-matching literature. Such
+methods require a phase correlation in each step of the op-
+timization [28].
+While a single square marker, such as a QR code, can
+only be used to rectify homographies and chessboard arrays
+of square markers are ill-suited for the aesthetic demands
+of packaging, self-rectiﬁable textures
+2 can be inconspicu-
+ously placed across a curved surface, making its rectiﬁca-
+tion possible and its information decodable. As these tex-
+tures are repeated and contain no landmarks in the spatial
+domain, there is no unique site of vulnerability. Data pay-
+loads encoded in such textures can be made robust to occlu-
+sion and tampering via traditional channel coding over the
+whole texture, over blocks, or via random linear combina-
+tions of blocks. In this way, no particular part of the texture
+1These have cost O(mn log mn), where m and n are the maximum
+dimension of the query patch and template. Thus, they are “as expensive”
+as an autocorrelation computation. If the template has 100 times the area
+of the query patch, one can compute over 100 patch autocorrelations for
+the cost of a phase correlation.
+2This usage is unrelated to that of [ 54]. In that work, rectiﬁcation
+refers to improvements in constrained synthetic texture generation; “self-
+rectiﬁcation” hints at the self-attention in the training process, not the tex-
+ture itself. In our work, we use “self-rectifying” or “self-rectiﬁable” to
+indicate that the texture itself contains sufﬁciently rich geometric informa-
+tion to enable template-free rectiﬁcation of planar deformations modulo
+translation.
+1347
+(a) A texture and its autocorrelation (most prominent peak at the origin).
+u
+u
+(b) Two overlaid copies with pairwise lags ±u; its autocorrelation.
+u
+u
+v
+v
+(c) Three copies, with pairwise lags ±u, ±v, and ±(u −v). The autocor-
+relation peak locations Hf-p = {±u, ±v, ±(u−v)}form the “fundamen-
+tal hexagon.” Afﬁne deformation x ↦→ Ax + b of the texture maps peak
+locations linearly to a deformed hexagon {±Au, ±Av, ±A(u −v)}.
+Figure 3. Three textures in fronto-parallel view (left) and their
+autocorrelation images (right): a base texturef in (a); f +f(·−u)
+in (b); and f +f(·−u)+ f(·−v) in (c). The texture of (b) is used
+in [42] to rectify scale and rotation without reﬂection. The texture
+in (c) has a “fundamental hexagon” of autocorrelation peaks; their
+locations in deformed image patches are mapped linearly by the
+deformation differential, permitting template-free rectiﬁcation of
+more general deformations modulo translation.
+need be acquired to decode a message, only enough of the
+texture.
+1.4. Outline
+In this article, we generate simple autocorrelation-based
+self-rectifying textures by summing three copies of a tex-
+ture with noncollinear offsets (see Algorithm 1), generating
+a hexagon of known peaks in the autocorrelation image of
+the texture in the fronto-parallel view (see Fig. 3). When
+patches of the texture are acquired with perspective on a
+planar or curved surface, the hexagon in the patch autocor-
+relation is mapped linearly by differential of the planar de-
+formation. The relative offsets of autocorrelation peaks in
+a patch of the query image expose the linear part of the de-
+formation between the patch in fronto-parallel view and in
+the query view; this linear part is found in Algorithm 2.
+The translation component can be computed using phase
+correlation (with knowledge of the texture or just locations
+where data motifs in the texture might be present), enabling
+Figure 4. A self-rectiﬁable texture covering a rectangular prism
+and the fundamental hexagons of two patches. The orientation of
+the autocorrelation peaks of each patch reveals the differential of
+the texture deformation at the patch.
+patchwise rectiﬁcation of complex deformations, as in Al-
+gorithm 3. Textures are generated in Sec. 2 and afﬁne
+maps are rectiﬁed in Sec. 3. The robustness of patch-based
+local afﬁne map acquisition is assessed in Sec. 4. Fully
+template-free rectiﬁcation of deformations modulo transla-
+tions is considered in Sec. 5 and the Supplementary Materi-
+als, Sec. C.
+2. Generation of self-rectiﬁable textures
+Fig. 3 illustrates the transformation of a sample texture (in
+fronto-parallel view) into one that is self-rectifying. We re-
+quire a base texture, such as that of Fig. 3a, whose most
+prominent autocorrelation peak is at the origin. The auto-
+correlation of two overlaid copies of the texture in Fig.3b,a t
+relative shifts 0 and u, possesses three prominent peaks, at
+0and ±u. These peak locations are used to rectify rotation-
+dilations (orientation-preserving similarities with at least
+one ﬁxed point) in [42].
+A self-rectifying texture is presented in Fig. 3c. Created
+using Algorithm 1, this texture consists of three summed
+copies of the base texture with relative shifts of 0, u and
+v. This shifted overlay results in a “fundamental hexagon”
+of its most prominent autocorrelation peaks at six nonzero
+lags: H = {±(u − 0),±(v − 0), and ±(v − u)}. Un-
+der mild assumptions, the fundamental hexagon and origin
+form the seven most intense peaks in the autocorrelation
+image; our ability to isolate them depends on the promi-
+nence of the peak at the origin in the autocorrelation image
+(and, in practice, the patch size). In the ideal case, the self-
+rectifying texture consists of three summed, shifted copies
+of white noise, with autocorrelation equal to3δ
+0+∑ 6
+p∈H δp
+(where δp is the shifted Dirac deltaδ(·−p)). But this works
+far beyond the ideal case: three summed, shifted copies of
+even substantially self-correlated textures have recoverable
+1348
+fundamental hexagons.
+From these six peak locations–all samples of the oblique
+Bravais lattice [24] with primitive vectors u and v–we can
+extract the transformed shifts u and v. For instance, taking
+all sums and differences of two distinct vectors and reﬂected
+copies ±a and ±b, we recover the third peak and the vec-
+tor sum of two peaks only when {±a,±b} = {±u,±v}.
+From the offsets alone we cannot uniquely identify u and
+v in general without additional information, such as their
+relative positions in the rectiﬁed texture and constraints on
+the afﬁne transformation; oriented motifs in the base tex-
+ture; additional shifted copies; or distinct weights in the
+sums of the shifted copies of the base texture. Of course,
+if we know the form of the rectiﬁed texture, we can execute
+the assignment between hexagon peaks and shifts using the
+phase correlation.
+As Sec. 3 details, afﬁne transformations x ↦→ Ax + b
+of the texture image effect linear transformations of its au-
+tocorrelation, and of the positions of the autocorrelation
+peaks. The fundamental hexagon is transformed linearly
+by A. This result extends in practice to patches of the tex-
+ture, as Fig. 4 demonstrates. Thus, the peaks in the auto-
+correlation image of a patch of a texture expose the linear
+part of the local afﬁne approximation to the deformation we
+wish to rectify. This approach is novel but familiar: auto-
+correlation peaks are widely used in signal processing, from
+channel estimation (e.g., using m-sequences) to watermark
+recovery [29].
+Algorithm 1:One way to create self-rectifying tex-
+tures: superimpose three shifted copies of a texture.
+// Key property: if u and v are not collinear
+and f has its most prominent autocorrelation
+peak at 0, the most prominent autocorrelation
+peaks of r form the ‘‘fundamental hexagon.’’
+1
+Input: texture f : R2 → R; shifts u and v in R2
+2 Result: r = f +f(·− u)+ f(·− v)
+Algorithm 1 is but one of many ways to create self-
+rectiﬁable textures. It is the simplest method–used here to
+streamline the exposition and keep focus on the stealth na-
+ture of self-rectifying textures, which consequently require
+inverse rather than correspondence-based rectiﬁcation–but
+it is not the one we use in practice. One can place ﬁxed
+constellations of points around repulsively sampled points.
+More shifts can be employed. One can choose instead to
+place peaks in the power spectrum instead (which slightly
+changes the rectiﬁcation problem; see Fig.5a). More gener-
+ally, one can search for textures with desired autocorrelation
+(or, equivalently, power spectrum) motifs. The problem of
+inferring a function from its autocorrelation is widely stud-
+ied under the name “phase retrieval” as the autocorrelation
+of a signal determines its Fourier transform modulus but
+not phase. Classically, it arises when employing diffracted
+electromagnetic radiation to determine the structure of an
+object (e.g., in X-ray crystallography, transmission electron
+microscopy, etc.) [ 45]: in such cases, one seeks to image
+an object with access only to (the Fourier transform of)
+its autocorrelation. Today, the problem is found in many
+other domains [3]. Homometry makes this inverse problem
+ill-posed (a rich space of measures, stochastic and deter-
+ministic, can possess the same Fourier transform modulus);
+solutions return one of many functions consistent with the
+known autocorrelation (see, e.g., Wrinch’s algorithm [47]).
+Unique recovery is possible only in certain constrained set-
+tings–most notably, binary images of compact convex pla-
+nar shapes [6]. In our application, unlike in computational
+imaging, this ill-posedness is an asset, offering design ﬂex-
+ibility to satisfy other constraints (due to printing technol-
+ogy, aesthetic imperatives, the need for stochasticity [ 20])
+or to avoid repetition. Moreover, as rectiﬁcation depends
+only on pixel locations of autocorrelation structures such as
+peaks, not the autocorrelation itself, the ﬂexibility is still
+greater than that found in the classical phase retrieval prob-
+lem.
+3. Efﬁcient extraction of local afﬁne maps
+thanks to the autocorrelation’s separation
+of translation from the linear part
+For simplicity, we consider images to be integrable func-
+tions f : R2 → R. We are interested in the behavior
+of images of self-rectifying textures under deformations of
+the plane. Let A ∈ Aﬀ(2,R) be an afﬁne transformation
+x ↦→ Ax+b parameterized by A ∈ R
+2×2 (invertible) and
+b ∈ R2. We observe an image g that is f deformed by an
+afﬁne map: g = f ◦ A,s o g(x)= f(Ax + b). We wish
+to recover A knowing f (or its properties). We denote as T
+the map from an image f to its deterministic autocorrela-
+tion Rf,f
+def
+= f⋆ ←−f (i.e., (Tf)(τ)=
+∫
+R2 f(x+τ)f(x)dx).
+Translations preserve the autocorrelation; thus, by a regular
+variable substitution, T(f ◦A) ∝ T(f)◦A (here ∝ reads
+“is proportional to”):
+T(g)(τ)=
+∫
+R2
+f(A(x+τ)+ b)f(Ax+b)dx (1)
+= 1
+|detA|
+∫
+R2
+f(t+Aτ)f(t)dt ∝ T(f)(Aτ).
+Our forward model can be stated simply: if pis the location
+of a peak in f, then Apis the location of a peak in Tf. The
+inverse problem for the recovery of the afﬁne map’s linear
+part A from the autocorrelation of g = f ◦ A is solved in
+Algorithm 2. For patchwise rectiﬁcation, we can recover the
+phase b using phase correlation. Crucially, this approach,
+unlike typical template-matching approaches (discussed in
+1349
+fR f,f
+Sf,f
+T
+|·|2◦F F
+(a) Wiener-Khinchin theorem.
+|f|Rf,f
+|g| = |f ◦A|Rg,g
+Sf,f
+Sg,g
+id
+id
+reciprocal
+reciprocal
+A−TA
+(b) Oblique lattice of peaks.
+Figure 5. By the commutative diagram (a), an oblique lattice of
+peaks in a texture f and its power spectrum Sf,f is reciprocal to
+that of its autocorrelation Rf,f .I n (b), these signal peak locations
+are related to those of g = f ◦ A, deformed by afﬁne map A
+with linear part A. Observations of autocorrelation peaks of a de-
+formed texture expose the linear part A of an afﬁne deformation;
+observations of power spectrum peaks, A−T .
+A), separates recovery of A and b so that only these two
+parameters need be recovered via phase correlation.
+Deﬁne the operator Ng(f) giving the phase correlation
+with an image g of an image f as follows:
+Ngf = F−1
+( ˆf(ω)ˆg(ω)
+|ˆf(ω)ˆg(ω)|
+)
+.
+By a regular variable substitution,
+ˆf ◦A(ξ)= 1
+|detA|eibT A−T ξ ˆf(A−Tξ). (2)
+From (2), we can establish the translation-covariance of the
+operator Nf: any pure translation At : x ↦→ Ix+bsatisﬁes
+Ng(f ◦At)=N g(f)◦At.
+As translations do not affect the autocorrelation, we can rec-
+tify A and b separately, as in Algorithm 3. Due to the ro-
+bustness of the phase correlation, patchwise rectiﬁcation is
+often possible when one lacks access to a complete template
+consisting of the fronto-parallel view of the self-rectiﬁable
+texture, but does have the sites where coded data may ap-
+pear (say, in a binary image where only pixels that commu-
+nicate data may be illuminated).
+Eq. (2) allows us to complete Fig. 5b, which shows how
+peak locations in the Fourier transform magnitude, power
+spectrum, or autocorrelation of a Bravais lattice are trans-
+formed linearly when the lattice image undergoes an afﬁne
+deformation A. Our example self-rectifying texture, gener-
+ated using Algorithm 1, possesses not a lattice of peaks in
+the autocorrelation domain, but seven samples thereon (the
+fundamental hexagon). This windowing renders the dual-
+lattice peaks in the power spectrum too difﬁcult to detect to
+permit an estimation of A. However, the power spectrum
+peaks of other self-rectifying textures may be used to esti-
+mate the linear part of the afﬁne deformation A.
+Algorithm 2: Estimate linear component of afﬁne
+transformation from fundamental hexagon.
+1 Input: fundamental shifts u and v in R2; patch P of
+deformed texture
+2 Result: linear part A of afﬁne deformation
+// Compute periodic component [32] autocorrelation
+3 R = idft2(|dft2(per component(P))|2)
+// if most prominent peaks exhibit the correct
+form, fit a Gaussian to each peak’s
+neighborhood, give subpixel maxima locations
+4
+Hdef = get fundamental hexagon(R)
+// solve the assignment problem between peaks in
+Hf-p = {±u,±v,±(u − v)} and their deformed
+twins in Hdef using oriented texture motifs,
+weights in the overlay sum, constraints on A
+and identification of lattice primitive
+vectors, or phase correlation
+5 match ← solve assignment(AHf-p,Hdef)
+// A is least-squares fit to an overdetermined
+system, well-posed whenever u,v noncollinear
+6
+A = argmin
+A∈R2×2
+6∑
+i=1
+||AHf-p[i]−Hdef[match(i)]||2
+R2
+(3)
+4. Robustness of patchwise rectiﬁcation
+Complex deformations are often rectiﬁed patchwise, by ﬁt-
+ting afﬁne maps or homographies to each deformed patch.
+These maps are widely used in remote sensing, image
+stitching, and registration applications, as well as–in re-
+verse–in image projection on nonplanar surfaces [4, 31, 55].
+Algorithm 3 details our patchwise rectiﬁcation process.
+Fig. 6 shows patchwise rectiﬁcation of a homography.
+The change of variables used in Eq. (1) assumes an inﬁ-
+nite texture. Preprocessing can enhance peak prominence in
+ﬁnite textures, particularly for small or axis-aligned shifts.
+In Algorithm 2, we retain patch periodic components [ 32].
+Texture motif and density choices also impact hexagon peak
+acquisition. In this study, we consider two base textures: a
+random binary texture and a binary commercial marker of
+3×3 square motifs placed randomly on a regular grid of a
+tunable density, using a (128, 64) low-density parity check
+(LDPC) code. The regular grid of the latter sacriﬁces peak
+prominence for ease of decoding.
+Patch sampling strategies require great care when de-
+formations are not afﬁne. Patches barely larger than the
+fundamental shifts u and v lack signal correlation runtime;
+the echoes of shifted copies are barely recognizable, and
+the corresponding autocorrelation peaks are hard to dis-
+1350
+Figure 6. Patchwise rectiﬁcation of a self-rectifying texture printed
+at 300 DPI and afﬁxed across a table border. Patchwise rectiﬁca-
+tion is accomplished using Algorithm 3, given knowledge of the
+sites at which data may be encoded in a commercial traceability
+marker but not the template code. As the difference image attests,
+redressed points are sufﬁciently well-placed to enable decoding.
+tinguish from the background. Moreover, due to the use
+of the DFT to compute the autocorrelation, their locations
+can be aliased (see Supplementary Materials, Fig. 7). With
+patch lengths a bit over twice the fundamental shifts, peaks
+are prominent. Beyond that, our linearized forward model
+can break down: peaks of large patches appear at locations
+inconsistent with a deformed fundamental hexagon AH
+f-p
+due to approximation error. Afﬁne deformations map peaks
+situated on an oblique Bravais lattice inHf-p to peaks on an-
+other oblique lattice AHf-p = Hdef; non-afﬁne maps warp
+the lattice. While the difference between primitive vectors
+is in the fundamental hexagon u − v ∈ H
+f-p, this does not
+hold for their deformed pairs u′ and v′: (u′ − v′) ̸∈ Hdef.
+We consider the hexagon Hdef undetectable when we can-
+not isolate the primitive vectors of Hdef in this way, within
+tolerance.
+In the Supplementary Materials, Sec. D, we show that
+the recovery of the linear part A of an afﬁne map from
+the fundamental hexagon is possible even with poor con-
+ditioning. It is standard [ 22] to write the singular value
+decomposition of A = UΣV
+T =( UVT)VΣVT in the
+orientation-preserving subgroup of GL(2,R) as a rotation
+VT by a “tilt angle” φ, a non-isotropic scaling by a diago-
+nal matrix D = diag(1,t)in the rotated coordinates, a rota-
+tion V by −φ, a ﬁnal rotation UVT by θ, and an isotropic
+scaling (zoom) λ. When t< 1, the tilt tis the inverse of the
+condition number of the linear part A of an afﬁne map.
+While a continuous image of an inﬁnite texture always
+permits recovery of nondegenerate A, per Equation (1), re-
+liable recovery of the transformed hexagon from a ﬁnite,
+sampled patch depends on the texture, sampling strategy
+(algorithm to choose patch size(s), locations, and number),
+and acquisition mode. These parameters must be assessed
+with experimentation speciﬁc to the application. In our ex-
+periments, we used the naive strategy of sampling patches
+of a ﬁxed size uniformly for piecewise rectiﬁcation and
+randomly, with variable size determined by Supplementary
+Materials Algorithm 6, for homographic rectiﬁcation.
+Algorithm 3: Patchwise rectiﬁcation of a planar
+deformation. Requires phase correlation and a tem-
+plate (fronto-parallel view of texture or simply the
+sites at which binary data may be encoded).
+1 Input: A template T and deformed texture I
+2 Result: Patchwise rectiﬁed image R
+// I is divided into patches, overlapping where
+needed, with size and shape chosen so that the
+periodic component of each patch has a
+detectable transformed fundamental hexagon.
+3
+P1,...,P n = patchify(I)
+// Get the local affine approximation of the
+deformation ϕ. For each patch Pi centered at
+yi, our estimate of the deformation’s
+differential ∇ϕ−1(yi)ϕ is Ai and with the
+phase bi we complete the first-order
+approximation about xi = ϕ−1(yi)= A−1
+i (yi − bi):
+h ↦→ yi + Ai(h − xi)= Aih + bi.
+4 for i =1 ,...,n do
+5 Ai = get linear component(Pi)
+6 bi = argmax
+b∈R2
+NA−1
+i Pi
+(b)
+// Apply the inverse map and interpolate.
+7 for i =1 ,...,n do
+8 Form Ri by applying the map h ↦→ A−1
+i (h−bi)
+to Pi, using bicubic interpolation to remain on
+pixel grid
+9 Stitch together the overlapping Pi to form P.
+5. Extension to template-free rectiﬁcation
+The patchwise rectiﬁcation described in Algorithm 3 re-
+quires access to a template: an image in the fronto-parallel
+view of the binary texture being rectiﬁed or of sites where
+data may appear. This template is used to recover the trans-
+lation component of the local afﬁne map via a phase corre-
+lation. In certain applications, rectiﬁcation of a deformation
+without access to such a tempalte is desirable.
+From the autocorrelation peaks of each deformed patch
+P
+i, centered at yi, we can estimate the differential
+Ai ≈∇ ϕ−1(yi)ϕ (4)
+of the deformation ϕ using Algorithm 2. For this, we need
+1351
+no template image, only the shift parameters u,v used to
+generate the self-rectiﬁable texture using Algorithm 1 and
+modest additional information to distinguish symmetries
+and resolve the assignment problem between peaks. The
+differential of a homography, for instance, involves all its
+parameters, including the translation parameters. It is nat-
+ural, then, to wonder whether ϕ can be recovered from our
+indirect observations A
+i of its differential∇ϕ−1(yi)ϕ, made
+using peak displacement.
+Not entirely, it turns out. As our observations are made
+through the translation-invariant autocorrelation, they can-
+not distinguish between two deformations related by trans-
+lation, ϕand ϕ◦τ. By the chain rule, the local afﬁne trans-
+formations estimated using Pi, centered at yi, of both ϕand
+ϕ◦τ share a linear part, since ∇xτ = I for all x ∈ R2:
+∇(ϕ◦τ)−1(yi)ϕ◦τ = ∇(τ◦τ−1◦ϕ−1)(yi)ϕ·∇(ϕ◦τ)−1(yi)τ
+= ∇ϕ−1(yi)ϕ·I = ∇ϕ−1(yi)ϕ.
+Thus, our indirect observations alone cannot be used to dis-
+tinguish ϕand ϕ◦τ; we can only hope to recoverϕmodulo
+translation. Nevertheless, we can still rectify without tem-
+plate by assembling our scattered observations A
+i into a
+global model of ϕ modulo translation. With access to our
+deformation modulo translation, we need just a single ob-
+servation of the translation–say, via a synchronization se-
+quence, or via information encoded in our texture–to re-
+solve the ill-posedness of our inverse problem and recover
+ϕ. Moreover, in certain circumstances, recovering ϕ mod-
+ulo translations sufﬁces to decode the message.
+To assemble our scattered observationsA
+i of ∇ϕ−1(yi)ϕ
+into an estimate of ϕ modulo translations, we have two ap-
+proaches: by ﬁtting the Ai to a parametric model ofϕor by
+obtaining a non-parametric representation of ϕ.
+Template-free rectiﬁcation can be performed nonpara-
+metrically, by integrating the observations (Eq. (4)) directly
+over a triangle mesh into a global model. The two rows
+of our observations A
+i form an integrable polyvector ﬁeld.
+The literature on polyvector ﬁelds [9, 41, 51] offers ways to
+integrate [15] these observations. They also permit denois-
+ing: a polyvector ﬁeld can be represented as a polynomial,
+determined by two complex coefﬁcients, that exhibits the
+same symmetries [ 40]. The Dirichlet energy of the vector
+ﬁeld of coefﬁcients across the image or graph of sample
+sites is widely used as a smoothness penalty.
+In practice, parametric methods require fewer observa-
+tions to characterize the rectifying map for a marker on a
+packaging surface and thus are more suitable for real-time
+rectiﬁcation than direct integration. We can model the rec-
+tifying deformation parametrically–using, for instance, ho-
+mographies, polynomials, or thin-plate splines–and ﬁt its
+parameters to our inverted observations B
+i = A−1
+i .I n
+the Supplementary Materials, Sec. C, we show that the
+problem of ﬁtting rectifying homographies modulo trans-
+lation to these observations can be reduced to an opti-
+mization over a six-dimensional afﬁne subspace of R9.I n
+short, we can view our homographies–the projective lin-
+ear group PGL(3,R)–as isomorphic to the special linear
+group SL(3,R) as a Lie group and manifold. The quotient
+manifold of SL(3,R)modulo translations is covered by the
+union of three manifolds. Only one of these manifolds,
+the Lie group A
+2(2,R) of matrix transposes of the afﬁne
+group [13], is relevant to the rectiﬁcation of homographies
+encountered in practice. The manifold A2(2,R) is dense in
+a six-dimensional afﬁne subspace H of R9 over which we
+optimize, using pymanopt’s trust-region algorithm [1, 50]
+and Euclidean manifold. As we do not encounter singular
+optima in practice, we can interpret the result as a mem-
+ber of A
+2(2,R), representing an orbit of SL(3,R) modulo
+translations–the matrix that has been “translated to zero.”
+Let H be the rectifying homography and G=H −1 the
+deformation. The scattered observations Ai of ∇G−1(yi)G
+computed with Algorithm 2 can be used to estimate H.B y
+the inverse function theorem, Bi = A−1
+i is an estimate
+of ∇yiH. Using the robust (non-squared) Frobenius norm
+loss, we choose parameters ofHby matching the parametric
+form ∇yiHto our scattered dataBi = A−1
+i in Algorithm 4.
+Algorithm 4: Estimation of homography.
+1 Input: Observations {Ai}n
+i=1 of {∇G−1(yi)G}n
+i=1
+2 Output: Rectifying homography H
+3 Solve H∗ = argmin
+H∈H
+1
+n
+∑ n
+i=1 ||∇yiH−A−1
+i ||F
+Nonparametric homography recovery is demonstrated in
+Supplementary Materials, Fig. 9c, Fig. 8, and Sec. E.
+6. Conclusion
+Self-rectifying textures permit the estimation of local sur-
+face geometry and perspective using a single image without
+keypoint matches. Rectiﬁcation can be performed patch-
+wise, using correlation with texture templates (or data en-
+coding sites), or via model-ﬁtting. Only the two translation
+parameters are ﬁt with expensive phase correlations; the
+texture exposes the other four for afﬁne patchwise rectiﬁca-
+tion or homographic rectiﬁcation modulo translation. With
+no spatial landmarks, these stealth textures can be placed
+across a surface, granting robustness to tampering. Since
+rectiﬁcation depends on the autocorrelation, it is robust to
+a variety of contaminants that preserve locations of promi-
+nent peaks, such as blur and noise. Acquisition of the linear
+component of the local afﬁne approximation to a deforma-
+tion is robust and accurate in traceability applications.
+1352
+References
+[1] P-A Absil, Christopher G Baker, and Kyle A Gallivan. Trust-
+region methods on Riemannian manifolds. F ound. Comp.
+Math., 7:303–330, 2007. 8
+[2] Dror Aiger, Daniel Cohen-Or, and Niloy J Mitra. Rep-
+etition maximization based texture rectiﬁcation. In Com-
+puter Graphics F orum, pages 439–448. Wiley Online Li-
+brary, 2012. 11
+[3] Emmanuel Amiot. Homometry and the phase retrieval prob-
+lem. Music Through F ourier Space: Discrete F ourier Trans-
+form in Music Theory, pages 27–49, 2016. 5
+[4] Vicente Arevalo and Javier Gonzalez. Improving piecewise
+linear registration of high-resolution satellite images through
+mesh optimization. IEEE Transactions on Geoscience and
+Remote Sensing, 46(11):3792–3803, 2008. 6
+[5] Bradley Atcheson, Felix Heide, and Wolfgang Heidrich. Cal-
+tag: High precision ﬁducial markers for camera calibration.
+In Vision, Model., Visualization, pages 41–48, 2010. 1
+[6] Gennadiy Averkov and Gabriele Bianchi. Conﬁrmation of
+Matheron’s conjecture on the covariogram of a planar convex
+body. Eur . J. Math., 11(6):1187, 2009. 5
+[7] Coloma Ballester and Manuel Gonz ´alez. Afﬁne invariant
+texture segmentation and shape from texture by variational
+methods. J. Math. Imaging Vis., 9:141–171, 1998. 11
+[8] Serge Belongie, Jitendra Malik, and Jan Puzicha. Shape
+matching and object recognition using shape contexts. IEEE
+transactions on pattern analysis and machine intelligence,
+24(4):509–522, 2002. 11
+[9] Mikhail Bessmeltsev and Justin Solomon. Vectorization of
+line drawings via polyvector ﬁelds. ACM Trans. Gr ., 38(1):
+1–12, 2019. 8
+[10] Mark Billinghurst, Hirokazu Kato, and Ivan Poupyrev. Ar-
+toolkit: A computer vision based augmented reality toolkit.
+IEEE VR2000, New Jersey, 2000. 2
+[11] Jacques Brochard, Majdi Khoudeir, and Bertrand Augereau.
+Invariant feature extraction for 3D texture analysis using the
+autocorrelation function. Pattern Recogn. Lett., 22(6):759–
+768, 2001. 11
+[12] Vicent Caselles, Bartomeu Coll, and Jean-Michel Morel. Ge-
+ometry and color in natural images. J. Math. Imaging Vis.,
+16:89–105, 2002. 11
+[13] Yevhenii Yu Chapovskyi, Serhii D Koval, and Olha Zhur.
+Subalgebras of Lie algebras. Example of sl(3, R) revisited.
+arXiv preprint. arXiv:2403.02554, 2024. 8, 14
+[14] U.S. Consumer Product Safety Commission. Tracking la-
+bel business guidance. Technical report, Guidance (updated
+October, 2022), 2022. 1
+[15] Olga Diamanti, Amir Vaxman, Daniele Panozzo, and Olga
+Sorkine-Hornung. Integrable polyvector ﬁelds. ACM Trans.
+Graph. (TOG), 34(4):1–12, 2015. 8
+[16] Csaba Domokos, Jozsef Nemeth, and Zoltan Kato. Nonlin-
+ear shape registration without correspondences.
+IEEE Trans-
+actions on pattern analysis and machine intelligence, 34(5):
+943–958, 2011. 11
+[17] Mark Fiala. ARTag, a ﬁducial marker system using digital
+techniques. In CVPR 2005: IEEE Comput. Soc. Conf. Com-
+put. Vision Pattern Recognit., pages 590–596. IEEE, 2005.
+1
+[18] Directorate-General for Environment. Proposal for Ecode-
+sign for Sustainable Products Regulation. The European
+Commission, 2022. 1
+[19] Sergio Garrido-Jurado, Rafael Mu ˜noz-Salinas, Fran-
+cisco Jos ´e Madrid-Cuevas, and Manuel Jes ´us Mar ´ın-
+Jim´enez. Automatic generation and detection of highly
+reliable ﬁducial markers under occlusion. Pattern Recognit.,
+47(6):2280–2292, 2014. 2
+[20] Uwe Grimm and Michael Baake. Homometric point sets
+and inverse problems. Z. Kristallogr ., 223(11-12):777–781,
+2008. 5
+[21] Masahiro Hara, Motoaki Watabe, Tadao Nojiri, Takayuki
+Nagaya, and Yuji Uchiyama. Optically readable two-
+dimensional code and method and apparatus using the same,
+1998. US Patent 5,726,435. 1, 3
+[22] Richard Hartley and Andrew Zisserman. Multiple view ge-
+ometry in computer vision . Cambridge University Press,
+2003. 2, 3, 7
+[23] Richard Hartley and Andrew Zisserman. Multiple View Ge-
+ometry in Computer Vision. Cambridge University Press,
+Cambridge, UK, 2 edition, 2004. 15
+[24] Yuchen He and Sung H Kang. Lattice identiﬁcation and sep-
+aration: theory and algorithm. SIAM J. Imaging Sci., 12(4):
+2063–2096, 2019. 5
+[25] Berthold KP Horn and Michael J Brooks. The variational ap-
+proach to shape from shading. Comput. Gr . Image Process.,
+33(2):174–208, 1986. 11
+[26] International Organization for Standardization and Interna-
+tional Electrotechnical Commission. Information technol-
+ogy – automatic identiﬁcation and data capture techniques –
+qr code bar code symbology speciﬁcation, 2015. Standard
+number: ISO/IEC 18004:2015. 2
+[27] Michail Kalaitzakis, Brennan Cain, Sabrina Carroll, Anand
+Ambrosi, Camden Whitehead, and Nikolaos Vitzilaios.
+Fiducial markers for pose estimation: Overview, applications
+and experimental comparison of the artag, apriltag, aruco
+and stag markers. Journal of Intelligent & Robotic Systems,
+101(4):71, 2021. 2
+[28] Shun’ichi Kaneko, Yutaka Satoh, and Satoru Igarashi. Using
+selective correlation coefﬁcient for robust image registration.
+Pattern Recognition, 36(5):1165–1173, 2003. 3, 11
+[29] Martin Kutter. Watermarking resistance to translation, rota-
+tion, and scaling. In Multimedia Syst. Appl., pages 423–431.
+SPIE, 1999. 5
+[30] Jongwoo Lim and Ming-Hsuan Yang. A direct method for
+modeling non-rigid motion with thin plate spline. In 2005
+IEEE Computer Society Conference on Computer Vision and
+Pattern Recognition (CVPR’05), pages 1196–1202. IEEE,
+2005. 11
+[31] Chung-Ching Lin, Sharathchandra U Pankanti, Karthikeyan
+Natesan Ramamurthy, and Aleksandr Y Aravkin. Adaptive
+as-natural-as-possible image stitching. In Proceedings of the
+IEEE conference on computer vision and pattern recogni-
+tion, pages 1155–1163, 2015. 6
+[32] Lionel Moisan. Periodic plus smooth image decomposition.
+J. Math. Imaging Vis., 39:161–179, 2011. 6
+1353
+[33] Lionel Moisan, Pierre Moulon, and Pascal Monasse. Funda-
+mental matrix of a stereo pair, with a contrario elimination
+of outliers. Image Process. Line, 6:89–113, 2016. 3
+[34] Mads Nielsen, Peter Johansen, Andrew D Jackson, Benny
+Lautrup, and Søren Hauberg. Brownian warps for non-rigid
+registration. Journal of Mathematical Imaging and Vision,
+31(2):221–231, 2008. 11
+[35] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu,
+Baoliu Ye, and Sanglu Lu. Moir ´epose: ultra high precision
+camera-to-screen pose estimation based on moir´e pattern. In
+Proceedings of the 28th annual international conference on
+mobile computing and networking, pages 106–119, 2022. 11
+[36] Richard Nock and Frank Nielsen. Statistical region merging.
+IEEE Transactions on pattern analysis and machine intelli-
+gence, 26(11):1452–1458, 2004. 11
+[37] U.S. Department of Homeland Security Ofﬁce of Strat-
+egy, Policy, and Plans. Combating trafﬁcking in counter-
+feit and pirated goods. Technical report, U.S. Department of
+Homeland Security, 2020. Published pursuant to the Presi-
+dential Memorandum dated April 3, 2019. 1
+[38] Edwin Olson. Apriltag: A robust and ﬂexible visual ﬁducial
+system. In 2011 IEEE international conference on robotics
+and automation, pages 3400–3407. IEEE, 2011. 2
+[39] Charles B Owen, Fan Xiao, and Paul Middlin. What is
+the best ﬁducial? In IEEE Int. Workshop Augmen. Reality
+Toolkit, pages 8–15. IEEE, 2002. 3
+[40] David Palmer, David Bommes, and Justin Solomon. Al-
+gebraic representations for volumetric frame ﬁelds. ACM
+Trans. Gr ., 39(2):1–17, 2020. 8
+[41] D. Palmer, O. Stein, and J. Solomon. Frame ﬁeld operators.
+Comput. Gr . F orum, 40(5):231–245, 2021. 8
+[42] Justin Picard, Jean-Pierre Massicot, Alain Foucou, and Zbig-
+niew Sagan. Method and device for securing documents,
+United States Patent 0220364A1, Sep. 2, 2010. 4, 11
+[43] Alexander Reuter, Hans-Peter Seidel, and Ivo Ihrke.
+BlurTags: spatially varying PSF estimation with out-of-
+focus patterns. In WSCG 2012: Int. Conf. Comput. Gr ., Vi-
+sualization, Comput. Vision, pages 239–247, 2012. 1, 3
+[44] Mariano Rodr ´ıguez, Gabriele Facciolo, and Jean-Michel
+Morel. Robust homography estimation from local afﬁne
+maps. Image Process. Line, 13:65–89, 2023. 14
+[45] Joseph Rosenblatt. Phase retrieval. Commun. Math. Phys.,
+95(3):317–343, 1984. 5
+[46] Junaed Sattar, Eric Bourque, Philippe Giguere, and Gregory
+Dudek. Fourier tags: Smoothly degradable ﬁducial markers
+for use in human-robot interaction. InCRV 2007: Can. Conf.
+Comput. Rob. Vision, pages 165–174. IEEE, 2007. 1, 3
+[47] Marjorie Senechal. A point set puzzle revisited. Eur . J. Com-
+binatorics, 29(8):1933–1944, 2008. 5
+[48] J.S. Seo, J. Haitsma, T. Kalker, and C.D. Yoo. Afﬁne
+transform resilient image ﬁngerprinting. In ICASSP 2003:
+IEEE Int. Conf. Acoust. Speech Signal Process., pages III–
+61, 2003. 11
+[49] Richard Szeliski. Computer Vision: Algorithms and Appli-
+cations. Springer, London, UK, 2010. 16
+[50] James Townsend, Niklas Koep, and Sebastian Weichwald.
+Pymanopt: A Python toolbox for optimization on manifolds
+using automatic differentiation. J. Mach. Learn. Res.,1 7
+(137):1–5, 2016. 8
+[51] Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele
+Panozzo, David Bommes, Klaus Hildebrandt, and Mirela
+Ben-Chen. Directional ﬁeld synthesis, design, and process-
+ing. Comput. Gr . F orum, 35(2):545–572, 2016. 8
+[52] Dor Verbin and Todd Zickler. Toward a universal model for
+shape from texture. In Proc. IEEE/CVF Conf. Comput. Vis.
+Pattern Recogn., pages 422–430, 2020. 11
+[53] Andrej Zde ˇsar, Igor ˇSkrjanc, and Gregor Klanˇcar. Homogra-
+phy estimation from circular motion for use in visual control.
+Robotics and autonomous systems, 62(10):1486–1496, 2014.
+11
+[54] Yang Zhou, Rongjun Xiao, Dani Lischinski, Daniel Cohen-
+Or, and Hui Huang. Generating non-stationary textures us-
+ing self-rectiﬁcation. In Proceedings of the IEEE/CVF Con-
+ference on Computer Vision and Pattern Recognition, pages
+7767–7776, 2024. 3
+[55] Bo Zhu, Li-jun Xie, Qi-hui Wang, Ting-jun Yang, and Yao
+Zheng. An intelligent projection system adapted to arbi-
+trary surfaces. In 2011 First International Conference on
+Instrumentation, Measurement, Computer , Communication
+and Control, pages 293–298. IEEE, 2011. 6
+1354

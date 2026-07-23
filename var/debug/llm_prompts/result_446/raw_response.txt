@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM IMWUT, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文在相关工作中将目标论文作为RFID振动感知的普通相关工作提及，未具体描述或评价其能力，属于并列引用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "RFID [5], [6] is limited in detecting small amplitudes due to its long wavelength.",
+      "evidence_context": "In traditional vibration measurement methods, the IMU [1] requires to be directly deployed on the object, which may introduce extra deployment and maintenance costs. Laser sensor [2], [16] has the ability to detect micrometer-level vibrations but is more suitable for single-point vibration detection. High-definition camera [3], [4] needs appropriate lighting and a very close distance to measure the subtle vibration. RF-based methods have shown great potential in vibration measurement. RFID [5], [6] is limited in detecting small amplitudes due to its long wavelength.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM IMWUT, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该引用处[5]和[6]共同指向RFID相关文献，但正文并未明确区分具体引用哪篇，且未具体描述目标论文的亚毫米级振动感知能力，仅作为RFID的一般性限制描述，属于误判。",
+      "copy_ready_zh": "引用论文在相关工作中将目标论文作为RFID技术的部分进行普通引用，未单独评价其能力。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Wireless systems based on long-wavelength signals represented by RFID [5], [6] have limited displacement sensitivity.",
+      "evidence_context": "Existing wireless signal-based solutions still possess certain limitations despite their advantages. Wireless systems based on long-wavelength signals represented by RFID [5], [6] have limited displacement sensitivity.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM IMWUT, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该引用处[5]和[6]共同指向RFID相关文献，正文未具体区分目标论文，且未提及亚毫米级或振动感知能力，仅为一般性限制描述，属于误判。",
+      "copy_ready_zh": "引用论文在引言中将目标论文作为RFID技术的代表进行普通引用，未单独评价。",
+      "confidence": "high"
+    }
+  ]
+}

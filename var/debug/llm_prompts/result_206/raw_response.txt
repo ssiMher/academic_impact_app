@@ -1,0 +1,43 @@
+{
+  "findings": [
+    {
+      "citation_text": "RFID-based vibration sensing has been widely used in areas like machine fault diagnosis [8–16], vital signs monitoring [17,18], and speech eavesdropping [19–23].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This is a related work listing where the target reference [23] is grouped with [19–23] under speech eavesdropping. It acknowledges RFID vibration sensing applications but does not provide specific detail about the cited paper.",
+      "highlight_keywords": ["speech eavesdropping", "19–23"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Template 73 requires explicit sub-mm or millimeter-level wording in body context. This quote only mentions 'speech eavesdropping' in a grouped citation without sub-mm or through-wall specifics. The grouped citation attribution is uncertain.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit sub-mm/millimeter-level or through-wall description in this quote; only grouped citation in related work."
+    },
+    {
+      "citation_text": "TagMic [22], built with COTS devices, was the first to show RFID tags could be used for eavesdropping. Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "explicit_target",
+      "reasoning": "In the 'Voice eavesdropping' subsection, Wang et al. [23] is explicitly mentioned as extending RFID sensing to through-wall eavesdropping, positioning it as a representative work in that line of research.",
+      "highlight_keywords": ["Wang et al.", "extended RFID sensing", "through-wall eavesdropping"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Template 73 requires sub-mm capability evidence. This quote mentions 'through-wall eavesdropping', which is a capability of the target paper, and the target paper's title includes 'sub-mm level vibration'. However, the quote does not explicitly state 'sub-mm' or 'millimeter-level'.",
+      "template_satisfied": false,
+      "template_failure_reason": "Quote lacks explicit 'sub-mm' or 'millimeter-level' wording; only 'through-wall' is mentioned, which is not sufficient per strict rules."
+    },
+    {
+      "citation_text": "eavesdropping [19–23]",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "In the introduction and related work sections, [23] appears in a grouped citation list [19–23] for eavesdropping applications. This provides no detailed discussion of the cited work.",
+      "highlight_keywords": ["eavesdropping", "19–23"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Template 73 requires body evidence for sub-mm capability. A grouped citation without any description does not satisfy the template.",
+      "template_satisfied": false,
+      "template_failure_reason": "Grouped citation with no sub-mm or capability detail."
+    }
+  ]
+}

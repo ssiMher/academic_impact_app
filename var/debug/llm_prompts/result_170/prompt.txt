@@ -1,0 +1,1101 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Who Speaks What from Afar: Eavesdropping In-Person Conversations via mmWave Sensing
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [37]
+TARGET_REFERENCE_ENTRY: [37] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-
+mm level vibration,”Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=However, vision-based approaches perform poorly in low-; context_type=formula_nearby; contains_formula=True
+to
+recover speech. For long-range attacks, Ben et al. in [33]
+analyze a hanging light bulb’s vibration response captured
+by remote electro-optical sensors. Similarly, EchoLight uses
+a photodetector behind a telescope to detect light changes
+caused by speech-induced vibrations on everyday objects [34].
+However, vision-based approaches perform poorly in low-
+light conditions and are easily obstructed. In comparison, the
+mmWave signals in our attack can penetrate opaque obstacles,
+thus avoiding these limitations.
+RF-based sound eavesdropping.Radio frequency signals,
+such as WiFi [35], [36], RFID [37], [38], and mmWave [2],
+[8], [15], [39], [40], are popular in sound eavesdropping. Due
+to the penetrating capabilities of RF signals, they are deployed
+for undetectable attacks outside the room. For example, attach-
+ing battery-less commercial off-the-shelf RFID tags on every-
+day objects can achieve through-the-wall sound eavesdropping
+[37]. mmWave-based sound eavesdropping approaches have
+gained significant attention recently because of its higher
+movement resolution. It allows speech recovery through the
+audio source itself (human throat [39] or loudspeaker surface
+[7], [8]) or nearby everyday ob
+
+[Context 2] section_heading=However, vision-based approaches perform poorly in low-; context_type=formula_nearby; contains_formula=True
+poorly in low-
+light conditions and are easily obstructed. In comparison, the
+mmWave signals in our attack can penetrate opaque obstacles,
+thus avoiding these limitations.
+RF-based sound eavesdropping.Radio frequency signals,
+such as WiFi [35], [36], RFID [37], [38], and mmWave [2],
+[8], [15], [39], [40], are popular in sound eavesdropping. Due
+to the penetrating capabilities of RF signals, they are deployed
+for undetectable attacks outside the room. For example, attach-
+ing battery-less commercial off-the-shelf RFID tags on every-
+day objects can achieve through-the-wall sound eavesdropping
+[37]. mmWave-based sound eavesdropping approaches have
+gained significant attention recently because of its higher
+movement resolution. It allows speech recovery through the
+audio source itself (human throat [39] or loudspeaker surface
+[7], [8]) or nearby everyday objects [15], [25]. The latter
+approach detects surface vibrations induced by sound waves
+on nearby objects, enabling speech recovery even when the
+original audio source is not directly accessible. However,
+current approaches mainly focus on using only the nearest
+object signal for sound eavesdropping. They neglect the fact
+that other ob
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。
+- 首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。
+FULL_EXTRACTED_TEXT:
+Who Speaks What from Afar: Eavesdropping
+In-Person Conversations via mmWave Sensing
+Shaoying Wang∗, Hansong Zhou ∗, Yukun Yuan†, Xiaonan Zhang ∗
+∗Florida State University, Tallahassee, FL, USA
+†University of Tennessee at Chattanooga, Chattanooga, TN, USA
+Abstract—Multi-participant meetings, such as business or med-
+ical discussions, often involve sensitive content. Understanding
+both the speech content and the speaker attribution is essential
+for meaningful interpretation. Prior methods leverage super-
+vised learning to reconstruct high-frequency speech features,
+which can help discriminate speakers. However, they rely on
+paired high-quality audio data for training, which is not always
+available. In this paper, we design an unsupervised mmWave-
+based eavesdropping attack that answers the question “who
+speaks what?” By leveraging the spatial diversity introduced by
+ubiquitous objects, the attacker can remotely capture in-person
+conversations without requiring clean speech audio or speaker
+identities. Specifically, we extract speaker-specific patterns for
+speaker distinction by amplifying weak frequency responses.
+Meanwhile, we enhance signal quality by fusing vibration signals
+from multiple objects through a deep learning framework. Our
+attack achieves a success rate of 0.99 in speaker distinction
+and delivers consistent signal enhancement performance across
+diverse real-world settings, including varying sensing distances,
+object materials, and speaker arrangements.
+Index Terms—mmWave sensing, Eavesdropping attack, In-
+person conversations
+I. INTRODUCTION
+Sound-based eavesdropping poses a significant privacy
+threat, due to the often unencrypted nature of voice. During
+meetings, participants frequently discuss sensitive topics such
+as bid prices, confidential client information, and strategic
+company decisions. If intercepted, such conversations could
+result in serious competitive disadvantages, financial losses,
+or violations of confidentiality agreements. To mitigate the
+risk of sound leakage, many people opt to have meetings
+in soundproof rooms. Nevertheless, sound waves emitted by
+speakers propagate through the air and induce micrometer-
+level vibrations on the surfaces of surrounding objects [1]. By
+exploiting the penetration capability of mmWave signals, an
+attacker outside the room can capture these subtle vibrations
+and potentially reconstruct the original speech content.
+Accurate attribution of speakers is equally important as
+capturing the speech content in successful eavesdropping.
+Misattributing a speaker can result in severe consequences.
+Taking the business meeting as an example, if the attacker
+misattributes important statement or decision to the wrong
+company representatives, it will result in incorrect interpre-
+tations of the company’s strategy and cause financial loss.
+However, attributing different speakers with mmWave-based
+methods is hindered by its narrowband, low-SNR signal, and
+Corresponding author: Xiaonan Zhang (xzhang14@fsu.edu).
+lossy representations of speech [2], [3], since these degraded
+mmWave signals lack high-frequency speech information that
+is essential for distinguishing speakers, such as formant details
+and timbre-related cues [4], [5]. Although some supervised
+learning [6]–[8] methods manage to recover high-frequency
+features from mmWave signals using paired labeled high-
+quality audio, this is infeasible in practical in-person conver-
+sation scenarios since the attackers generally have no access
+to the high-quality data.
+In this paper, we propose an unsupervised, multi-object
+mmWave-based eavesdropping attack that addresses the chal-
+lenge of “who speaks what?”. Our attack requires neither clean
+speech audio nor speaker identities. Instead, it relies solely on
+mmWave signals induced by minute vibrations on multiple
+everyday objects in the room (e.g., paper bags, calendars,
+cardboard boxes). As illustrated in Fig. 1, the attacker collects
+reflected signals from multiple objects to distinguish speakers
+at different locations. In particular, each speaker generates
+unique vibration patterns on surrounding objects, reflected
+in their frequency responses. Even slight differences in the
+relative positions of speakers and objects lead to perceptible
+spectral differences. By analyzing these frequency responses,
+our attack is able to attribute individual speakers and associate
+them with their corresponding speech content.
+Fig. 1: Illustration of our attack scenario.
+Nevertheless, implementing this attack in real world faces
+critical technical challenges:1) Low resolution vibration:
+vibration signals are extracted by isolating range bins through
+FFT processing. However, reflections from nearby static ob-
+jects are mixed into the same bin, introducing interference that
+lowers the resolution of the extracted vibration signal.2) Weak
+frequency response:speech-induced vibrations often produce
+weak frequency responses, due to their low amplitudes. These
+weak responses are easily submerged by the inherent self-noise
+arXiv:2512.09285v1  [cs.SD]  10 Dec 2025
+Fig. 2: Illustration of sound pressure-induced surface vibration.
+of the mmWave radar. As a result, it becomes challenging to
+detect speaker-specific patterns.3) Poor speech representation:
+Speech attenuates during propagation due to distance and
+object properties. Consequently, the vibration response only
+retains a partial representation of the original speech, thereby
+degrading speech quality.
+Our attack addresses these challenges as follows:1) Vi-
+bration Resolution Enhancement:we design a speech-aware
+calibration scheme to isolate speech-induced vibrations from
+static interference. It is based on our theoretical analysis of
+static interference.2) Frequency Response Amplification:we
+use a noise-robust signal processing pipeline that amplifies
+speech-induced frequency responses by suppressing mmWave
+self-noise.3) Multi-object Signal Enhancement:we propose
+a deep learning framework to improve signal quality, which
+aggregates complementary speech components across objects.
+The contributions of the paper are summarized as follows:
+•We propose a mmWave-based in-person conversation
+eavesdropping attack. Our attack distinguishes speech
+from multiple speakers by analyzing subtle speech-
+induced vibrations on surrounding objects.
+•We model the vibration interference caused by nearby
+static objects. A speech-aware calibration scheme is ex-
+plored to mitigate such interference.
+•We develop a noise-robust signal processing pipeline
+for speaker distinction. To enhance signal quality, we
+design a deep-learning-based framework to aggregate
+multi-object signals.
+•We evaluate our attack through extensive experiments in a
+real-world soundproof room, demonstrating its effective-
+ness across various common objects, participant genders,
+distances, and participant positions.
+II. PRELIMINARIES
+A. Object Vibration Model
+When an audio source emits sound, it generates pressure
+fluctuations in the air, which propagate as longitudinal waves,
+known as sound waves. These waves propagate omnidirec-
+tionally and are characterized by time-varying sound pressure
+[9]. The sound pressure at timetcan be represented as a
+superposition of sinusoidal components:
+P(t) = P
+i Pi cos(ωit+ϕ i), (1)
+whereP i,ω i, andϕ i are the amplitude, angular frequency,
+and initial phase of theith sinusoidal component.
+As shown in Fig. 2, when sound waves reach nearby objects
+(e.g., chip bags, calendars, or cardboard boxes), the pressure
+exerts a force on their surfaces, calculated asF=P·S, where
+Sdenotes the surface area exposed to the wave. Due to the thin
+and flexible nature of these surfaces, their dynamic response
+can be modeled as forced vibrations of elastic membranes [10]:
+EI ∂4y
+∂x4 +B ∂y
+∂t +m ∂2y
+∂t2 =F(t),(2)
+wherey(x, t)is the transverse displacement,EI(N·m 2)is
+the flexural modulus,B(kg·s −1)is the damping coefficient,
+andm(kg/m)is the mass per unit length. Assuming steady-
+state response and spatial averaging, the resulting displacement
+d(t)in Eq. 2 can be expressed as:
+d(t) =P
+i
+Pi cos(ωit+ϕi)·S
+m
+q
+(ω2
+0−ω2
+i )2+(
+ωiB
+m )
+2 ,(3)
+whereω 0 denotes the natural frequency of the membrane.
+Eq. 3 reveals that the vibration amplitude is proportional to the
+local sound pressure. In free-field conditions, sound pressure
+decays with distance approximately asP(r)∝ 1
+r [11]. Ad-
+ditionally, high-frequency components attenuate more rapidly
+with distance, leading to weaker induced vibrations compared
+to low-frequency components. Thus, closer objects experience
+stronger vibrations and preserve richer high-frequency content.
+B. mmWave-based Vibration Sensing
+We leverage the mmWave sensing based on frequency-
+modulated continuous-wave (FMCW) radar to capture sound-
+induced surface vibrations for acoustic signal reconstruction.
+Specifically, the mmWave radar emits a linearly frequency-
+modulated signal, commonly known as a chirp. It then receives
+and further modulates the reflected signal for further analysis.
+The transmitted and received signals, denoted ass TX (t)and
+sRX(t), are mathematically formulated as:
+sTX (t) = exp
+
+j
+ 
+2πfct+πKt 2
+,
+sRX(t) =αsTX [t−2R(t)/c], (4)
+wheref c andKrepresent the starting frequency and chirp
+slope, respectively.R(t)denotes the time-varying distance
+between the radar and the object, andαaccounts for the
+signal attenuation due to path loss. The radar receiver performs
+frequency mixing between the transmitted signals TX (t)and
+the received signals RX(t), followed by low-pass filtering to
+extract the intermediate frequency (IF) signal:
+sIF(t) =αexp [j(2πfIFt+ϕ IF)], (5)
+with the frequencyf IF and phaseϕ IF in the following
+fIF = 2KR(t)/c,
+ϕIF = 2πfcR(t)/c+πKR(t) 2/c2 ≈2πf cR(t)/c. (6)
+As indicated in Eq. 6, the linear mapping from distanceR(t)to
+IF frequencyf IF allows a range FFT to segment the IF signal
+into range bins, each corresponding to a specific object. The
+frequency-domain representation of the IF signal is:
+SIF (t) =F{sIF (t)}=αexp [j4πf cR(t)/c]
+=αexp [j4πf c(R0 +d(t))/c]. (7)
+The second equation in Eq. 7 follows by substitutingR(t) =
+R0 +d(t), whereR 0 is the static distance andd(t)captures
+the sound-induced displacement of the object surface.
+C. Static Interference in Vibration Sensing
+In practice, the captured mmWave signal contains reflections
+not only from vibrating objects but from static surroundings
+such as walls and furniture. Consequently, the extracted IF
+signal in Eq. 7 should be modeled as a superposition of the
+vibrating signalS vibrate from the vibrating objects and the
+static interferenceS static from the stationary reflectors, where
+SIF =S vibrate +S static
+=αexp
+
+j 4πfc
+c (R0 +d(t))
+
++S static. (8)
+Eq. 8 shows that the IF signal traces an arc centered at
+Sstatic in the IQ plane. Prior methods [3], [6] approximate
+this arc as a circular segment and shift the estimated center
+to the origin to eliminate the static componentS static for
+vibration extraction. However, sound waves can also induce
+subtle vibrations in objects typically considered static. As a
+result,S static becomes time-varying, which interferes with
+accurate vibration extraction.
+(a) P1 layout.
+ (b) P2 layout.
+(c) P1 spectrogram.
+ (d) P2 spectrogram.
+Fig. 3: Illustration of frequency responses of speech-induced
+vibrations on objects with a speaker changing position slightly.
+III. EMPIRICAL STUDY
+A. Object Vibration Model Validation
+To empirically validate the distance-dependent vibration
+response from Sec. II-A, we conduct an experiment with two
+layouts in Figs. 3a and 3b, each containing three fixed tinfoil
+objects. A commercial speaker (Wonderboom 3 [12]) is placed
+at different positions and relative distances to the objects
+in each layout. The speaker plays the spoken digit “zero”
+ten times in each configuration. A 77GHz mmWave radar
+(TI AWR1843) records the resulting surface vibrations by
+capturing phase variations in the reflected signals. We extract
+the vibration signals and apply short-time Fourier transform
+(STFT) to obtain their spectrograms, shown in Fig. 3c and 3d.
+Observation 1:The comparison of Fig. 3c and 3d reveals
+that the spectrograms of object vibrations vary significantly
+across different layouts. It results from changes in the relative
+distances between the speaker and each object: closer objects
+(e.g., Object 1) exhibit stronger frequency responses, while
+farther ones (e.g., Object 3) show weaker responses. These
+findings align with the vibration model in Sec. II-A, which in-
+dicates that vibration amplitude and frequency content depend
+on an object’s proximity to the sound source.This observation
+motivates the use of spatial differences in frequency responses
+as a discriminative feature for participant identification.
+Observation 2:Within each layout, although the same speech
+content is played, the vibration spectrograms of different ob-
+jects exhibit distinct patterns in Fig. 3d. These differences arise
+from the objects’ varying positions, which lead to different
+captured speech components as well as unique noise and
+attenuation characteristics.This observation suggests that com-
+bining speech-related information across multiple vibration
+signals yields a more accurate original speech reconstruction.
+S´static
+Sstatic
+S´static
+Sstatic
+(a) Different signal patterns.
+ (b) Silent periods phase changes.
+Fig. 4: Static interference Verification.
+B. Static Interference Verification
+To examine static interference described in Sec. II-C, we
+visualize the reflected signal from Object 3 in P2 layout
+in the IQ plane. Fig.4a reveals that the signal trajectories
+differ significantly depending on whether speech is present.
+Specifically, the trajectory during silent periods (blue) in
+Fig. 4b reflects hardware-induced phase changes [13], while
+the trajectory during speech (red) exhibits a shifted center,
+suggesting an altered reflection path. This shift arises because
+sound waves subtly change the physical state of surrounding
+objects, leading to altered static interference in the reflected
+signal. To capture this behavior, the IF signal in Eq. 8 should
+be revised as:
+Sabs
+IF =αexp [j4πf cR0/c] +S
+′
+static,(9)
+whereS
+′
+static denotes the altered static interference. From Eq.
+9, the trajectory center on IQ plane can shift between speech
+and non-speech segments. Hence, conventional circle-fitting
+methods [3], [6] inaccurately estimate the center, causing
+failure to isolate the vibration signal from static interference.
+IV. THREAT MODEL
+We consider a threat model in which a confidential meeting
+is held inside a soundproof room furnished with everyday
+objects such as calendars, paper bags, and cardboard boxes.
+Multiple participants are seated around a table, engaging
+in sensitive conversations. As each participant takes turns
+speaking, the emitted acoustic waves induce minute surface
+vibrations on nearby objects.
+Fig. 5: System overview.
+An external attacker, positioned outside the room, seeks to
+exploit these vibrations to reconstruct the spoken content. To
+this end, the attacker deploys a mmWave radar without any
+physical access to the room. This enables a fully passive and
+undetectable attack, as it does not rely on in-room devices such
+as microphones. Furthermore, by leveraging the penetration
+capability of mmWave signals, the adversary can capture
+speech-induced vibrations through soundproofing materials,
+enabling a through-wall attack. More importantly, the attack
+does not require prior knowledge of the room layout, partici-
+pant locations, or conversation content, making it practical and
+applicable to a wide range of real-world environments.
+V. SYSTEMDESIGN
+An overview of the proposed attack system is illustrated in
+Fig. 5. With the collected mmWave data,Module 1selects
+reflections from objects exhibiting stronger speech-induced
+vibrations as target signals.Module 2mitigates interference
+caused by nearby objects for accurate extraction of vibra-
+tion signals. The resulting spectrograms are then processed
+in parallel. Particularly,Module 3amplifies weak vibration
+frequency components by suppressing self-noise and resid-
+ual noise to enable reliable speech distinction.Module 4
+aggregates signals across multiple objects for speech signal
+enhancement. Finally, the outputs of Modules 3 and 4 are
+fused to infer both the speech activity with speaker labels
+and to reconstruct an intelligible speech signal for passive
+eavesdropping. The following subsections detail each module.
+A. Module 1: Target Objects Detection
+1) Surrounding Objects Isolation:The received mmWave
+signal includes reflections from diverse objects, ranging from
+highly responsive items (e.g., chip bags) to static structures
+(e.g., walls). To isolate potential vibration sources, we apply
+Range FFT[14] to segment reflections by distance into range
+bins. However, objects at the same distance but different
+directions are indistinguishable in range alone. To address this,
+we estimate the angle of arrival (AoA) using signals from
+multiple receiver antennas, resulting in a 2D range-angle map
+as shown in Fig. 6. We then identify candidate objects by
+selecting high-amplitude regions from this map, corresponding
+to surfaces with stronger vibration responses.
+Fig. 6: Object distance/angle identification and target objects
+selection with the strongest vibration responses
+2) Target Object Selection:As shown in Eq. 8, larger
+surface displacements result in greater phase variations in the
+reflected signals. We identify candidate objects by analyzing
+their phase trajectories for significant dynamics, which appear
+as abrupt transitions in Fig. 6. To quantify such variations,
+we compute the kurtosis of the phase distribution [15], [16],
+a statistical measure of tail extremity. The top M objects by
+kurtosis values are selected as targets for subsequent analysis.
+Fig. 9: Signal spectrogram.
+ Fig. 10: Bandpass signal.
+B. Module 2: Vibration Extraction
+1) Speech Activity Detection (SAD):The mmWave radar
+continuously captures reflected signals from objects in the
+room, which include both speech and non-speech segments.
+To isolate speech-related activity, we first analyze the signal
+spectrogram as in Fig. 9, where speech energy is primarily
+concentrated in the 50–1kHz range, while higher frequencies
+are dominated by noise. For each object, we apply bandpass
+filter to retain the speech-relevant frequency band and suppress
+high-frequency noise. We then calculate the envelope of the
+filtered signal to detect speech-associated temporal variations.
+Segments where the envelope exceeds a predefined threshold
+are identified as speech intervals. Fig. 10 shows these segments
+exhibit clear fluctuations that correlate with speech activity.
+Non-speech 
+Segment Radius 
+mmWave Signal
+SAD
+Step 1:
+Non-speech Segment 
+Circle Fitting
+Step 2:
+Speech Segment 
+Circle Fitting
+Speech Segment 
+Radius 
+Constraint 
+Guide
+Fig. 7: Speech-aware calibration scheme.
+(a) Original spectro-
+gram.
+(b) Speech reserva-
+tion.
+(c) Self-noise attenu-
+ation.
+(d) Residuals sup-
+pression.
+Fig. 8: (a) Original mmWave spectrogram; (b–d) Spectrogram visualization of
+mmWave signals at each stage of processing.
+2) Speech-aware Calibration Scheme:Accurately extract-
+ing the vibration signal requires removing the static interfer-
+ence, which differs between speech and non-speech periods,
+as shown in Eq. 9. Despite this difference, both segments share
+the same signal amplitudeα. In addition, Fig. 4a shows that
+the non-speech segment forms a longer arc than the speech
+segment, providing a more stable basis for estimating the
+signal circle. Therefore, we use the radius derived from the
+non-speech segment to accurately determine the circle center
+for the speech segment, for which we propose a speech-aware
+calibration scheme. This speech-aware calibration scheme is
+illustrated in Fig. 7.Step 1: Non-Speech Segment Circle
+Fitting.LetX={x n}, xn ∈R 2 denote the sample points
+of the non-speech segment. We fit a circle to these points by
+minimizing the total distance between the samples and the
+estimated circle, resulting in the centerc 0 and radiusr 0:
+c∗
+0, r∗
+0 = arg minc0,r0
+X
+xn∈X
+(∥xn −c 0∥ −r0)2 . (10)
+Step 2: Speech Segment Circle Fitting.The optimal radius
+r∗
+0 obtained from the non-speech segment serves as an initial
+estimate [17], but lacks precision. To refine this estimate,
+we user ∗
+0 as a constraint to guide the circle fitting for the
+speech segment. Specifically, we allow the fitted radius to
+deviate within a marginγ, resulting in a feasible range of
+[(1−γ)r ∗
+0,(1 +γ)r ∗
+0]. LetY={y k}, yk ∈R 2 represent
+the IQ samples of the speech segment. The constrained circle
+fitting problem is then formulated as:
+c∗
+s, r∗
+s = arg mincs,rs
+X
+yk∈Y
+(∥yk −c s∥ −rs)2 ,
+s.t.(1−γ)r 0 ≤r s ≤(1 +γ)r 0.
+(11)
+We employ the Levenberg–Marquardt algorithm [18] to effi-
+ciently solve Eq. 11 and obtain the optimal circle centerc ∗
+s.
+Then we obtain the calibrated phase signaly(t) ={y k −c ∗
+s}
+by shifting the IQ coordinate origin for further distinction.
+C. Module 3: Speaker Distinction
+Since the extracted vibration frequency response is not
+pronounced against noises, we first amplify the response with
+a three-stage signal processing scheme. After that, we employ
+an unsupervised clustering method for speaker distinction.
+1) Frequency Response Amplification:In the amplification,
+we consider irrelevant high-frequency components, self-noise
+from hardware imperfection and residual noise in each stage.
+Stage 1: Speech component reservations.Speech-induced vi-
+brations mainly reside in low-frequency spectrum [2]. We
+therefore apply a bandpass filter to the calibrated phase signal
+y(t), yielding the filtered signaly BP(t). As illustrated in Fig.
+7a and 7b, filtered signal preserves all speech-relevant features.
+Stage 2: Self-noise attenuation.Self-noise due to imperfec-
+tions in mmWave hardware remains in the low-frequency
+band, which is overlapped with the desired speech-induced
+vibration responses. As the noise is relatively stationary and
+uncorrelated with the speech content [19], we employ the
+spectral subtraction toY(t, f), the STFT ofy BP(t), to the
+mitigate the noise impact. To begin, we estimate the noise
+magnitude spectrum from the firstNnon-speech frames as
+| ˆD(f)|= 1
+N
+PN
+t=1 |Y(t, f)|. We then calculate the denoised
+magnitude spectrum with an over-subtraction factorαand
+a spectral floor parameterβ, where we have| ˆX(t, f)|=
+max
+
+|Y(t, f)| −α· |ˆD(f)|, β· |Y(t, f)|
+
+. In the end, the
+complex spectrum is constructed by combining the estimated
+magnitude with the original phase∠Y(t, f):
+ˆX(t, f) =|ˆX(t, f)| ·ej∠Y(t,f) .(12)
+The spectrogram in Fig. 7c illustrates the effectiveness of
+spectral subtraction in mmWave self-noise attenuation.
+Stage 3: Residuals suppression.Although stage 2 improves the
+visibility of speech components, residual noise persists due to
+imperfect noise estimation [20]. While typically low in energy,
+such residuals may still distort weak speech-induced frequency
+responses. To suppress residual interference, we compute the
+auto power spectrum of the estimated complex spectrum:
+P(t, f) =ˆX(t, f)· ˆX∗(t, f)
+=|S(t, f)|2 +|R(t, f)|2 + 2ℜ{S(t, f)R∗(t, f)}.
+whereS(t, f)andR(t, f)indicate the speech and residual
+noise. SinceR(t, f)is uncorrelated with the speech signal and
+has zero mean [19],ℜ{S(t, f)R ∗(t, f)}averages out across
+frames. Consequently, the power spectrum primarily reflects
+the energy of the speech signal with minor noise impacts as:
+P(t, f)≈ |S(t, f)|2 +|R(t, f)|2.(13)
+Since|R(t, f)| 2 remains small, Eq. 13 effectively sup-
+presses residual noise while preserving stable and interpretable
+speech-induced frequency responses, as shown in Fig. 7d.
+2) Unsupervised Speech Clustering:In practical scenarios,
+the number of active speakers is unknown to the attacker.
+To address this, we estimate the number of speaker clusters
+by computing the Calinski-Harabasz (CH) index across a
+candidate setN∈ {2,3, . . . , Nmax}, selecting the value
+that maximizes the index. Given the estimated number of
+speakers, we perform clustering using a Gaussian Mixture
+Model (GMM) [21]. The GMM models the underlying dis-
+tribution of frequency response features and partitions them
+into coherent clusters, enabling fully unsupervised speaker
+distinction without requiring any labeled data.
+However, the high dimensionality (e.g.,256×256) of raw
+spectrogramsP(t, f)hinders efficient clustering. Thus, we
+extract the spectral envelopeE m(f)from the spectrogram
+for each objectm. The envelope captures the amplitude
+pattern across frequencies, emphasizing bands with strong
+speech-induced vibrations and suppressing irrelevant noise. To
+standardize feature size, each envelope is uniformly sampled
+to form a low-dimensional vector for downstream distinction.
+To show thatE m(f)maintains the capability for speaker dis-
+tinction, we conduct a case study with two speakers at different
+locations. We use cosine similarities between spectral envelope
+vectors to measure the capability. As shown in the Fig. 11, case
+(i) where different speakers utter the same numbers yields a
+similarity of 0.61, while case (ii) where the same speaker utters
+different numbers results in a similarity of 0.98. It proves that
+the spectral envelope vectors reliably encode speaker-specific
+spatial characteristics and remain robust to content variations.
+Fig. 11: Spectrum envelope vectors.
+To leverage the spatial diversity across multiple objects, we
+concatenate the spectral envelope vectors from all M selected
+targets into a unified feature vector for each speech segment as
+E(f) ={E m(f)}M . This joint representation captures object-
+specific responses and enhances class separability.
+D. Module 4: Signal Enhancement
+1) Denoising Network:To combine vibration signals from
+multiple objects, we employ Minimum Variance Distortion-
+less Response (MVDR) beamforming in the time-frequency
+domain without requiring explicit spatial priors such as
+direction-of-arrival. However, the effectiveness of MVDR de-
+pends heavily on accurate steering vector estimation, which
+is challenged by substantial hardware-induced self-noise in
+mmWave signals. Although the stage 2 of module 3 applies
+frequency-domain self-noise attenuation for response amplifi-
+cation, this single-domain approach fails to address the joint
+time–frequency characteristics on which MVDR relies.
+To tackle this limitation, we adopt an encoder-decoder
+architecture to remove the inherent noise at time–frequency
+domain. It consists of4convolutional layers for downsampling
+and4deconvolutional layers for upsampling. Additionally,4
+skip connection layers are used to connect the convolutional-
+deconvolutional layer pairs, preserving important features
+during the reconstruction process. The denoising network
+is trained using the Huber loss function, which provides a
+balance between L1 and L2 losses and improves robustness to
+outliers. The network is optimized with the Adam optimizer.
+Trained on paired noisy and clean spectrograms, the model
+learns to remove spectral noise while maintaining the integrity
+of speech-induced frequency components.
+2) Beamforming:After denoising the spectrograms, we
+estimate the steering vector using a neural-based full-band
+mask estimation approach. This method jointly infers time-
+frequency masks across the entire spectrum, effectively cap-
+turing the harmonic structure of speech and mitigating the
+influence of noise components.
+Our MVDR beamforming method is illustrated in Fig. 12.
+We first generate masks for both speech and noise, which
+are then used to compute the corresponding spatial covariance
+matrices. These matrices guide the beamformer to enhance the
+desired speech signal while suppressing background interfer-
+ence. To model temporal dependencies in the spectrogram,
+we employ an LSTM-based network for mask prediction.
+Our LSTM network is trained with the magnitude spectrum
+approximation (MSA) loss on clean speech and mmWave
+noise data. During inference, the network outputs one mask per
+input signal. Since MVDR requires a single spatial covariance
+matrix, we aggregate the individual masks across signals
+using median combination [22], which provides robustness to
+outliers and yields a representative mask for beamforming.
+Fig. 12: Illustration of using neural-based mask estimation
+method to combine signals from multiple objects.
+VI. EVALUATION
+A. Experiment Setup
+We implement the proposed attack in a soundproof room
+separated by a double-pane glass window, as shown in Fig.
+13. A TI AWR1843 mmWave radar (3 TX / 4 RX) and
+a DCA1000EVM data capture board are placed outside the
+enclosure, enabling signal acquisition without physical intru-
+sion. We configure the radar to transmit chirp signals in the
+77–81GHz band, with each frame consisting of 128 chirps over
+10.64ms. The resulting sampling rate is 12.5kHz. The denois-
+ing and neural mask estimation networks are implemented in
+TensorFlow and trained on an NVIDIA RTX 3070 GPU. The
+tolerance parameterγin the constrained circle fitting method
+(Sec. V-B2) is empirically set to 0.1.
+120
+80
+80~280
+30
+Double-pane 
+Soundproof glass
+360
+480
+mmWave Radar
+120
+40
+30 30 Unit: cm
+Fig. 13: Room layout.
+Default Setup: We use a Wonderboom 3 speaker placed at five
+different positions to simulate multi-speaker scenarios. Three
+tinfoil sheets are used as reflective objects and placed on a
+table at distances of 1.1m, 1.3m, and 1.1mfrom the radar,
+with angular positions of0 ◦,30 ◦, and−30 ◦, respectively. The
+room layout is in Fig. 13.
+Speech Dataset.We evaluate our attack using the AudioM-
+NIST dataset [23], which includes 25,000 recordings of spoken
+digits (0–9). To train our models, we synthesize radar-like
+speech data by mixing clean audio samples from the Lib-
+riSpeech corpus [24] with mmWave recordings collected in
+the absence of speech. This mixing process emulates speech-
+induced reflections as captured by mmWave radar. In total,
+we generate 40,000 synthetic samples and transform them into
+spectrograms of size 128×128 for training.
+We evaluate the propsoedSpeaker DistinctionandSignal
+Enhancementschemes. For speaker distinction, we use the
+success rate as the metric, defined as the proportion of cor-
+rectly classified samples. For signal enhancement, we report
+Signal-to-Noise Ratio (SNR) and Peak SNR (PSNR). SNR
+measures the ratio between the power of the recovered speech
+and the background noise, reflecting overall enhancement
+quality. PSNR captures the peak error between the enhanced
+and clean reference signals, emphasizing fidelity at the most
+perceptually sensitive regions. We compare our approach
+(Ours) with prior work [15], [25], which recovers speech using
+only the object with the strongest mmWave vibration response.
+For fair comparison, we apply the same signal processing
+pipeline to the strongest vibration signal. We refer to this
+baseline asVibStrong.
+B. Experimental Analysis
+1) Performance of Speaker Distinction:We investigate how
+practical factors such as speaker arrangement, number of
+objects, object layout, and sensing distance affect the perfor-
+mance of our speaker distinction method.
+Impact of Speaker Arrangement.We evaluate how the
+seating arrangement of speakers affects the distinction per-
+formance by comparing two types of layouts:Shoulder to
+Shoulderwhere speakers are in close proximity, andNatural
+Spacingwhere they are more spatially separated, as illustrated
+in Fig. 14 and detailed in Table I. The results in Fig. 15 show
+thatNatural Spacingachieves a superior success rate due to its
+more distinguishable vibration pattern. Nonetheless, the attack
+remains robust under the challengingShoulder to Shoulder
+layout, achieving success rate above 0.9 with 4 speakers.
+Fig. 14: Layout.
+ Fig. 15: Arrangement impact.
+Arrangement/# of speakers 2 3 4
+Natural spacing P1 P5 P1 P3 P5 P1 P3 P4 P5
+Shoulder to shoulder P4 P5 P3 P4 P5 P1 P2 P3 P4
+TABLE I: Speaker positions under different arrangements.
+Impact of Different Object Layout.In the real world, objects
+on a table are often arranged irregularly. To validate our
+attack’s performance under varying object layouts, we consider
+four additional 3-object layouts, as depicted in Fig. 16. The
+three objects are arranged with diverse angular placements,
+including both acute and obtuse angles. We describe the speech
+distinction performance with various layouts in Fig. 17. It
+depicts a high average success rate over 0.9 across all 4 layouts
+in scenarios with2to4speakers. Even in the challenging
+case of5speakers positioned shoulder-to-shoulder, the median
+success rate remains above 0.8.
+Fig. 16: 3-object layouts.
+ Fig. 17: Speaker # impact.
+Impact of Number of Objects.Fig. 18 shows that distinction
+performance improves with an increasing number of objects.
+This trend arises because a greater number of objects provide
+with more diverse signal sources, thereby enriching the spatial
+information for eavesdropping. However, the gain plateaus
+beyond three objects, which indicates that three objects are
+sufficient to capture the positional information of speakers in
+our scenario. It implies our attack is practical since it works
+well when only a few objects are available.
+Fig. 18: Object impact.
+ Fig. 19: Distance impact.
+Impact of Sensing Distance.In indoor environments such as
+homes and offices, the distance between targets and radar can
+vary considerably. To assess this effect, we vary the sensing
+distance between the mmWave radar and the objects from 80
+cm to 280 cm. As shown in Fig. 19, the success rate exhibits a
+downward trend as distance increases. Nevertheless, our attack
+delivers strong performance: even at the longest distance of
+280 cm, it achieves an success rate exceeding 0.9 with both
+4 and 5 speakers. This result suggests that our attack remains
+effective across typical indoor scenarios.
+2) Performance of Signal Enhancement:We conduct ex-
+periments under different practical setups
+Overall Performance.We evaluate the signal enhancement
+performance with 5 speakers using the default setup in Fig. 13.
+The results in Fig. 20 indicate that our approach consistently
+outperformsVibStrong, maintaining an average SNR above 10
+dB and an average PSNR above 20 dB across scenarios with
+2to5speakers. We also observe an interesting trend: signal
+quality initially improves as the number of speakers increases
+and then declines. This is because, with fewer speakers, they
+tend to be more spaced out, providing stronger responses
+from objects. However, as more speakers get involved, their
+positions shift to less optimal locations (e.g., P2 and P4),
+resulting in weaker object responses and, consequently, a
+decline in signal quality. These results demonstrate our attack’s
+capability to effectively enhance signals.
+Fig. 20: Overall speech enhancement performance comparison.
+Fig. 21: Performance under different sensing distances.
+Impact of Sensing Distance.We investigate the sensing
+distance impact by varying the target-to-radar distance from
+80 cm to 280 cm. Fig. 21 clearly demonstrates a decrease in
+performance as the sensing distance increases. This degrada-
+tion results from the strong attenuation of mmWave reflections
+at longer distances, which weakens the observable vibrations.
+Additionally, the effectiveness of our enhancement scheme
+diminishes at greater distances. When the distance exceeds 250
+cm, the improvement becomes negligible for some objects due
+to the absence of sufficiently strong vibrations. These results
+indicates that signal enhancement benefits from the fusion
+mechanism, which leverages any available strong vibration
+response. However, when no detectable vibrations are present,
+the enhancement effect becomes limited.
+3) Performance of Speech Recovery:To evaluate the ef-
+fectiveness of our attack in speech recovery, we use digit
+recognition as a downstream task. We train a four-layer
+convolutional neural network (CNN) that takes spectrograms
+generated from our enhanced mmWave signals as input. The
+signals are collected using the setup in Fig. 3a. As shown in
+Fig. 22, the model achieves an overall accuracy of 0.85 across
+10 digits. This result confirms that our enhancement method
+recovers sufficient speech information for accurate recognition.
+Fig. 22: Speech recovery performance.
+C. Real-World Case Study
+We evaluate our attack under two real-world scenarios:
+common objects and live human speech, as shown in Fig.
+23. In both cases, reflective objects are placed on a table at
+the same locations used in the default setup. In thecommon
+object scenario, we use two paper bags of different sizes and
+a cardboard box as reflective objects. In thelive human speech
+scenario, three volunteers, including one Chinese female P1
+and two males (one Chinese P2 and one American P3), act
+as speakers. They are seated naturally along three edges of a
+table, while three tinfoil sheets serve as reflective objects.
+(a) Live human speech scenario.
+ (b) Common objects scenario.
+Fig. 23: Real-World Case Study Scenarios.
+# of Speakers 2 3 4 5
+Success Rate 1.0 1.0 0.99 0.95
+TABLE II: Speaker distinction with common object scenario.
+1) Performance of Speaker Distinction:Table II reports the
+speaker distinction performance under thecommon objects
+scenariowith 2 to 5 speakers. The results show strong and
+consistent performance: the success rate remains above 0.99
+for 2–4 speakers, and only slightly decreases to 0.95 in the
+more challenging 5-speaker case. This indicates that, even
+when speech-induced vibrations are reflected by irregularly
+shaped and lightweight objects, our attack can reliably extract
+frequency responses for accurate speaker distinction. This
+highlights the practical applicability of our approach in real-
+istic environments with non-ideal and unstructured reflectors.
+In thelive human speech scenario, three volunteers are
+asked to speak digits from 0 to 9, each repeating them 20
+times. We collect the mmWave data and evaluate speaker
+distinction performance. As shown in Table III, the success
+rate consistently reaches 0.99 across all speaker arrangements.
+It demonstrates that our attack remains effective despite vari-
+ations in speaker identity, such as gender and nationality.
+These findings further validate the reliability of our method
+in distinguishing individuals during real-world live speech.
+Speaker Layout P1P2 P2P3 P1P3 P1 P2 P3
+Success Rate 0.99 0.99 0.99 0.99
+TABLE III: Speaker distinction under live human speech.
+2) Performance of Signal Enhancement:As shown in Fig.
+24, the enhancement performance under thecommon object
+scenarioimproves significantly as the number of speakers
+increases to three. This gain is primarily attributed to the
+third speaker, who is positioned directly in front of the
+cardboard, which provides a stronger frequency response than
+the paper bags. These results suggest that our attack can
+achieve reliable enhancement performance even with common
+household objects, and performs better when reflectors exhibit
+more pronounced vibration responses.
+Fig. 24: Signal enhancement under common object scenario.
+A similar trend is observed under thelive human speech sce-
+nario. As shown in Fig. 25, when the number of participants
+increases to 2 or 3, the enhanced signal quality substantially
+improves. This is because the additional participants, P2 and
+P3, are both males, with lower vocal frequencies that produce
+stronger low-frequency energy, leading to more pronounced
+responses on the objects. Nevertheless, our attack consistently
+enhances speech signals across varying speaking styles and
+speaker genders.
+Fig. 25: Signal enhancement under live human speech.
+VII. RELATEDWORK
+Motion sensor-based sound eavesdropping.Motion sen-
+sors can detect motion events caused by speech, showing the
+feasibility of acoustic eavesdropping [26]–[28]. The motion
+caused by the speech-induced vibrations leads to changes in
+capacitance, resistance, or piezoelectric elements within mo-
+tion sensors. Those changes are then converted into electrical
+signals, which are leveraged to launch attacks. For example,
+the attacker uses the built-in accelerometer in a smartphone to
+eavesdrop on the speaker [29]. Besides, via reading data from
+built-in gyroscope in a smartphone, the attacker can recover
+the speech from the speaker [30]. However, these approaches
+require access to the smartphone to obtain sensor data and
+have low sampling rates as well. In contrast, our attack
+employs a mmWave radar for sound eavesdropping, which
+can be deployed in inconspicuous positions. Its high vibration
+sampling rate, approximately 10 kHz, allows for more accurate
+capture of minute vibrations caused by speech, improving the
+feasibility and effectiveness of sound eavesdropping.
+Vision-based sound eavesdropping.High resolution vision
+sensors with high sampling rates can be deployed to perform
+sound eavesdropping via detecting minute vibrations. For
+instance, the high-speed camera is utilized to capture videos
+of objects and extract minute vibrations on the object surface
+induced by speech [31]. For the indoor scenario investigated
+in [32], the vacuum cleaning robots are equipped with LiDAR
+sensors to detect vibrations induced on nearby objects to
+recover speech. For long-range attacks, Ben et al. in [33]
+analyze a hanging light bulb’s vibration response captured
+by remote electro-optical sensors. Similarly, EchoLight uses
+a photodetector behind a telescope to detect light changes
+caused by speech-induced vibrations on everyday objects [34].
+However, vision-based approaches perform poorly in low-
+light conditions and are easily obstructed. In comparison, the
+mmWave signals in our attack can penetrate opaque obstacles,
+thus avoiding these limitations.
+RF-based sound eavesdropping.Radio frequency signals,
+such as WiFi [35], [36], RFID [37], [38], and mmWave [2],
+[8], [15], [39], [40], are popular in sound eavesdropping. Due
+to the penetrating capabilities of RF signals, they are deployed
+for undetectable attacks outside the room. For example, attach-
+ing battery-less commercial off-the-shelf RFID tags on every-
+day objects can achieve through-the-wall sound eavesdropping
+[37]. mmWave-based sound eavesdropping approaches have
+gained significant attention recently because of its higher
+movement resolution. It allows speech recovery through the
+audio source itself (human throat [39] or loudspeaker surface
+[7], [8]) or nearby everyday objects [15], [25]. The latter
+approach detects surface vibrations induced by sound waves
+on nearby objects, enabling speech recovery even when the
+original audio source is not directly accessible. However,
+current approaches mainly focus on using only the nearest
+object signal for sound eavesdropping. They neglect the fact
+that other object signals also contain valuable speech informa-
+tion. In this work, we leverage spatial diversity from multiple
+objects for speech distinction and signal enhancement.
+VIII. CONCLUSION
+This paper presents a novel attack that enables remote eaves-
+dropping on in-person conversations via mmWave sensing. We
+develop a noise-robust signal processing pipeline to extract
+speaker-specific vibration patterns for speaker distinction. On
+the other hand, we design a deep learning framework that
+enhances signal quality by fusing multi-object vibration data.
+Our extensive experiments demonstrate that the proposed
+attack achieves a high speaker distinction success rate and
+remains robust across diverse and practical setups. These find-
+ings highlight emerging privacy risks associated with passive
+sensing in shared environments.
+REFERENCES
+[1] C. Jiang, J. Guo, Y . He, M. Jin, S. Li, and Y . Liu, “mmvib: micrometer-
+level vibration measurement with mmwave radar,” inProceedings of
+the 26th Annual International Conference on Mobile Computing and
+Networking, 2020, pp. 1–13.
+[2] C. Wang, F. Lin, H. Yan, T. Wu, W. Xu, and K. Ren, “{VibSpeech}:
+Exploring practical wideband eavesdropping via bandlimited signal of
+vibration-based side channel,” in33rd USENIX Security Symposium
+(USENIX Security 24), 2024, pp. 3997–4014.
+[3] J. Zhang, Y . Zhou, R. Xi, S. Li, J. Guo, and Y . He, “Ambiear: mmwave
+based voice recognition in nlos scenarios,”Proceedings of the ACM
+on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 6,
+no. 3, pp. 1–25, 2022.
+[4] X. Anguera, S. Bozonnet, N. Evans, C. Fredouille, G. Friedland, and
+O. Vinyals, “Speaker diarization: A review of recent research,”IEEE
+Transactions on audio, speech, and language processing, vol. 20, no. 2,
+pp. 356–370, 2012.
+[5] Q. Wang, C. Downey, L. Wan, P. A. Mansfield, and I. L. Moreno,
+“Speaker diarization with lstm,” in2018 IEEE International conference
+on acoustics, speech and signal processing (ICASSP). IEEE, 2018, pp.
+5239–5243.
+[6] C. Wang, F. Lin, T. Liu, K. Zheng, Z. Wang, Z. Li, M.-C. Huang, W. Xu,
+and K. Ren, “mmeve: eavesdropping on smartphone’s earpiece via
+cots mmwave device,” inProceedings of the 28th Annual International
+Conference on Mobile Computing And Networking, 2022, pp. 338–351.
+[7] Y . Feng, K. Zhang, C. Wang, L. Xie, J. Ning, and S. Chen, “mmeaves-
+dropper: Signal augmentation-based directional eavesdropping with
+mmwave radar,” inIEEE INFOCOM 2023-IEEE Conference on Com-
+puter Communications. IEEE, 2023, pp. 1–10.
+[8] P. Hu, Y . Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng,
+“Milliear: Millimeter-wave acoustic eavesdropping with unconstrained
+vocabulary,” inIEEE INFOCOM 2022-IEEE Conference on Computer
+Communications. IEEE, 2022, pp. 11–20.
+[9] A. Jaramillo and C. Steel,Architectural acoustics. Routledge, 2014.
+[10] R. Arellano-Castro, M. Marin, and A. Cros,Forced Oscillations of a
+Membrane, 09 2011.
+[11] L. E. Kinsler, A. R. Frey, A. B. Coppens, and J. V . Sanders,Fundamen-
+tals of acoustics. John wiley & sons, 2000.
+[12] “Logitech,” Logitech, 2024. [Online]. Available:
+https://www.ultimateears.com/en-us/shop/p/wonderboom-3-
+bluetooth.984-001807
+[13] H. Jiang, J. Zhang, X. Guo, and Y . He, “Sense me on the ride: Accurate
+mobile sensing over a lora backscatter channel,” inProceedings of the
+19th ACM Conference on Embedded Networked Sensor Systems, 2021,
+pp. 125–137.
+[14] C. Iovescu and S. Rao, “The fundamentals of millimeter wave sensors,”
+Texas Instruments, pp. 1–8, 2017.
+[15] C. Shi, T. Zhang, Z. Xu, S. Li, D. Gao, C. Li, A. Petropulu, C.-
+T. M. Wu, and Y . Chen, “Privacy leakage via speech-induced vibrations
+on room objects through remote sensing based on phased-mimo,” in
+Proceedings of the 2023 ACM SIGSAC Conference on Computer and
+Communications Security, 2023, pp. 75–89.
+[16] P. H. Westfall, “Kurtosis as peakedness, 1905–2014. rip,”The American
+Statistician, vol. 68, no. 3, pp. 191–195, 2014.
+[17] L. Y . Chang and N. S. Pollard, “Constrained least-squares optimization
+for robust estimation of center of rotation,”Journal of biomechanics,
+vol. 40, no. 6, pp. 1392–1400, 2007.
+[18] H. P. Gavin, “The levenberg-marquardt algorithm for nonlinear least
+squares curve-fitting problems,”Department of Civil and Environmental
+Engineering Duke University August, vol. 3, 2019.
+[19] K. Siddiq, M. K. Hobden, S. R. Pennock, and R. J. Watson, “Phase
+noise in fmcw radar systems,”IEEE Transactions on Aerospace and
+Electronic Systems, vol. 55, no. 1, pp. 70–81, 2018.
+[20] S. Boll, “Suppression of acoustic noise in speech using spectral subtrac-
+tion,”IEEE Transactions on acoustics, speech, and signal processing,
+vol. 27, no. 2, pp. 113–120, 1979.
+[21] D. A. Reynoldset al., “Gaussian mixture models.”Encyclopedia of
+biometrics, vol. 741, no. 659-663, 2009.
+[22] H. Erdogan, J. R. Hershey, S. Watanabe, M. I. Mandel, and J. Le Roux,
+“Improved mvdr beamforming using single-channel mask prediction
+networks.” inInterspeech, 2016, pp. 1981–1985.
+[23] S. Becker, J. Vielhaben, M. Ackermann, K.-R. M ¨uller, S. Lapuschkin,
+and W. Samek, “Audiomnist: Exploring explainable artificial
+intelligence for audio analysis on a simple benchmark,”
+Journal of the Franklin Institute, 2023. [Online]. Available:
+https://www.sciencedirect.com/science/article/pii/S0016003223007536
+[24] V . Panayotov, G. Chen, D. Povey, and S. Khudanpur, “Librispeech: an asr
+corpus based on public domain audio books,” in2015 IEEE international
+conference on acoustics, speech and signal processing (ICASSP). IEEE,
+2015, pp. 5206–5210.
+[25] P. Hu, W. Li, R. Spolaor, and X. Cheng, “mmecho: A mmwave-based
+acoustic eavesdropping method,” inProceedings of the ACM Turing
+Award Celebration Conference-China 2023, 2023, pp. 138–140.
+[26] Y . Cao, F. Li, H. Chen, X. Liu, C. Duan, and Y . Wang, “I can hear you
+without a microphone: Live speech eavesdropping from earphone motion
+sensors,” inIEEE INFOCOM 2023-IEEE Conference on Computer
+Communications. IEEE, 2023, pp. 1–10.
+[27] S. Zhang, Y . Liu, and M. Gowda, “I spy you: Eavesdropping continuous
+speech on smartphones via motion sensors,”Proceedings of the ACM
+on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 6,
+no. 4, pp. 1–31, 2023.
+[28] P. Hu, H. Zhuang, P. S. Santhalingam, R. Spolaor, P. Pathak, G. Zhang,
+and X. Cheng, “Accear: Accelerometer acoustic eavesdropping with
+unconstrained vocabulary,” in2022 IEEE Symposium on Security and
+Privacy (SP). IEEE, 2022, pp. 1757–1773.
+[29] Z. Ba, T. Zheng, X. Zhang, Z. Qin, B. Li, X. Liu, and K. Ren, “Learning-
+based practical smartphone eavesdropping with built-in accelerometer.”
+inNDSS, vol. 2020, 2020, pp. 1–18.
+[30] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” in23rd USENIX Security Symposium
+(USENIX Security 14), 2014, pp. 1053–1067.
+[31] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and
+W. T. Freeman, “The visual microphone: Passive recovery of sound
+from video,” 2014.
+[32] S. Sami, Y . Dai, S. R. X. Tan, N. Roy, and J. Han, “Spying with your
+robot vacuum cleaner: eavesdropping via lidar sensors,” inProceedings
+of the 18th Conference on Embedded Networked Sensor Systems, 2020,
+pp. 354–367.
+[33] B. Nassi, Y . Pirutin, A. Shamir, Y . Elovici, and B. Zadov, “Lamphone:
+Real-time passive sound recovery from light bulb vibrations,”Cryptology
+ePrint Archive, 2020.
+[34] G. Zhang, Z. Xiang, H. Fu, Y . Yang, and P. Hu, “Echolight: Sound
+eavesdropping based on ambient light reflection,” inIEEE INFOCOM
+2024-IEEE Conference on Computer Communications. IEEE, 2024,
+pp. 341–350.
+[35] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” inProceedings of the 21st Annual Inter-
+national Conference on Mobile Computing and Networking, 2015, pp.
+130–141.
+[36] J. Hu, H. Wang, T. Zheng, J. Hu, Z. Chen, H. Jiang, and J. Luo,
+“Password-stealing without hacking: Wi-fi enabled practical keystroke
+eavesdropping,” inProceedings of the 2023 ACM SIGSAC Conference
+on Computer and Communications Security, 2023, pp. 239–252.
+[37] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-
+mm level vibration,”Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+[38] Y . Chen, J. Yu, Y . Chen, L. Kong, Y . Zhu, and Y .-C. Chen, “Rfspy:
+Eavesdropping on online conversations with out-of-vocabulary words
+by sensing metal coil vibration of headsets leveraging rfid,” inProceed-
+ings of the 22nd Annual International Conference on Mobile Systems,
+Applications and Services, 2024, pp. 169–182.
+[39] C. Wang, F. Lin, Z. Ba, F. Zhang, W. Xu, and K. Ren, “Wavesdropper:
+Through-wall word detection of human speech via commercial mmwave
+devices,”Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies, vol. 6, no. 2, pp. 1–26, 2022.
+[40] X. Xu, Y . Chen, Z. Ling, L. Lu, J. Luo, and X. Fu, “mmear: Push the
+limit of cots mmwave eavesdropping on headphones,” inIEEE INFO-
+COM 2024-IEEE Conference on Computer Communications. IEEE,
+2024, pp. 351–360.

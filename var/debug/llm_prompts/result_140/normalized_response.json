@@ -1,0 +1,34 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Moreover, researchers also use RFID tags [15] and mmWave radar [16] to detect reflected vibration signals for eavesdropping.",
+      "reasoning": "The citing paper groups RFID-based eavesdropping (including the cited paper) as one approach among wireless-based methods. It does not specify the cited paper's sub-mm level vibration sensing, but mentions RFID tags as a technique for detecting reflected vibration signals. This is a typical related work listing without detailed acknowledgment of sub-mm precision.",
+      "keywords": [
+        "RFID tags",
+        "eavesdropping"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Moreover, researchers also use RFID tags [15] and mmWave radar [16] to detect reflected vibration signals for eavesdropping.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "no_target_reference_marker_available",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper groups RFID-based eavesdropping (including the cited paper) as one approach among wireless-based methods. It does not specify the cited paper's sub-mm level vibration sensing, but mentions RFID tags as a technique for detecting reflected vibration signals. This is a typical related work listing without detailed acknowledgment of sub-mm precision.",
+      "promotion_decision": "filtered_target_anchor_validation",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

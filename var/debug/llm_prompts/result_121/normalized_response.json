@@ -1,0 +1,67 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed for undetectable attacks outside the room. For example, attaching battery-less commercial off-the-shelf RFID tags on everyday objects can achieve through-the-wall sound eavesdropping [37]. mmWave-based sound eavesdropping approaches have gained significant attention recently because of its higher movement resolution.",
+      "reasoning": "The citation [37] is grouped with [35], [36], [38] as examples of RF-based sound eavesdropping. The text specifically mentions that attaching RFID tags on everyday objects can achieve through-the-wall sound eavesdropping, which matches the target paper's contribution. However, since it is a grouped citation and the description is brief, attribution uncertainty exists. The evidence_type is background because it merely lists the target as an example of the approach.",
+      "keywords": [
+        "RFID",
+        "through-the-wall",
+        "eavesdropping",
+        "battery-less",
+        "commercial off-the-shelf"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "representative_work",
+      "stance": "positive",
+      "mention_type": "grouped_citation",
+      "citation_text": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed for undetectable attacks outside the room. For example, attaching battery-less commercial off-the-shelf RFID tags on everyday objects can achieve through-the-wall sound eavesdropping [37]. mmWave-based sound eavesdropping approaches have gained significant attention recently because of its higher movement resolution.",
+      "reasoning": "The target paper [37] is presented as a representative example of how RFID can achieve through-the-wall sound eavesdropping. Although grouped, the context explicitly positions it as an example of this capability, aligning with the target's core contribution of sub-mm level vibration sensing for eavesdropping. This qualifies as representative_work with a positive stance, acknowledging its effectiveness.",
+      "keywords": [
+        "example",
+        "through-the-wall",
+        "eavesdropping",
+        "RFID"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed ...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[37]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citation [37] is grouped with [35], [36], [38] as examples of RF-based sound eavesdropping. The text specifically mentions that attaching RFID tags on everyday objects can achieve through-the-wall sound eavesdropping, which matches the target paper's contribution. However, since it is a grouped citation and the description is brief, attribution uncertainty exists. The evidence_type is background because it merely lists the target as an example of the approach.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed ...",
+      "evidence_type": "representative_work",
+      "stance": "positive",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[37]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The target paper [37] is presented as a representative example of how RFID can achieve through-the-wall sound eavesdropping. Although grouped, the context explicitly positions it as an example of this capability, aligning with the target's core contribution of sub-mm level vibration sensing for eavesdropping. This qualifies as representative_work with a positive stance, acknowledging its effectiveness.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

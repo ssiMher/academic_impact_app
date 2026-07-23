@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed for undetectable attacks outside the room. For example, attach- ing battery-less commercial off-the-shelf RFID tags on every- day objects can achieve through-the-wall sound eavesdropping [37].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The context groups multiple RFID works, including [37] as an example of through-the-wall sound eavesdropping via RFID tags. The citation is part of a general related-work paragraph that categorizes RF-based eavesdropping, without detailed evaluation or comparison. The mention is grouped and neutral, acknowledging the work as a representative example in the field.",
+      "highlight_keywords": ["RFID", "through-the-wall", "sound eavesdropping", "example"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID tags and through-the-wall eavesdropping, which aligns with the RFID sub-mm capability template, but does not explicitly mention sub-mm or millimeter-level vibration precision. The mention is plain RFID related work, not specifying sub-mm capability, so template 73 is not fully satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit mention of sub-mm, millimeter-level, or fine-grained vibration sensing capability in the body text. The context only describes RFID tags for through-the-wall eavesdropping without specifying vibration precision. Template 73 requires explicit wording of sub-mm or millimeter-level sensing anchored to target paper."
+    }
+  ]
+}

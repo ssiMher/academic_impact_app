@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[15]",
+  "target_reference_entry": "[15] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers\nvia RFID by capturing sub-mm level vibration,” Proc. ACM Inter-\nactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25,\n2021.",
+  "paper_level_summary_zh": "本论文在相关工作部分将目标论文列为使用 mmWave 进行窃听的相关研究之一，但仅作为普通文献引用，未详细描述或肯定其亚毫米级精度或窃听能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "[23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals.",
+      "evidence_context": "Authors in [17] used mmWave to acquire high-quality voice from user's vocal vibrations from near-throat region. [23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals. [24] proposed a remote and through-wall screen attack that used mmWave to remotely collect information from LCD screens.",
+      "reference_entry": "C. Wang et al., \"mmPhone: Acoustic eavesdropping on loudspeakers via mmWave-characterized piezoelectric effect,\" in Proc. IEEE Conf. Comput. Commun., 2022, pp. 820–829.",
+      "why_this_judgment_zh": "正文 [23] 引用的是 C. Wang et al. 的 mmPhone 论文，而非目标论文。目标论文是 C. Wang et al. 的 RFID 论文，在参考文献中标记为 [15]。因此这是一个错误的正例，应排除。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文将目标论文错误地关联为另一篇关于压电薄膜和毫米波窃听的论文。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[15]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] C. Wang et al., “mmPhone: Acoustic eavesdropping on loud-\nspeakers via mmWave-characterized piezoelectric effect,” in Proc.\nIEEE Conf. Comput. Commun., 2022, pp. 820–829.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[15] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers\nvia RFID by capturing sub-mm level vibration,” Proc. ACM Inter-\nactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25,\n2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

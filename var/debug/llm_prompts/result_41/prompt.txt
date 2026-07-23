@@ -1,0 +1,1715 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, frequency difference, convolution, sampling vectors, spectral peaks, or spectral model terms, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Anti-Spoofing Facial Authentication Based on COTS RFID
+CITED_PAPER_TITLE: RF-Badge: Vital Sign-Based Authentication via RFID Tag Array on Badges
+CITED_PAPER_YEAR: 2023
+CITED_PAPER_VENUE: IEEE Trans. Mob. Comput.
+CITED_PAPER_DOI: 10.1109/TMC.2021.3097912
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Chuyu Wang, Yanling Bu, Fengyuan Xu, Da-Wei Zhou 0001, Sanglu Lu, Baoliu Ye
+TARGET_REFERENCE_MARKER: [45]
+TARGET_REFERENCE_ENTRY: [45] J. Ning et al., “RF-Badge: Vital sign-based authentication via RFID
+tag array on badges,” IEEE Trans. Mobile Comput., vol. 22, no. 2,
+pp. 1170–1184, Feb. 2023.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=RFace to probe the correlation between facial features and RF; context_type=formula_nearby; contains_formula=True
+interaction and meanwhile defends against both spooﬁng
+attacks (2D, 2D+ and 3D) and signal replay attacks.
+B. RFID-Based User Authentication
+RFID has been developed to authenticate users’ identities in
+recent years [42], [43]. Current RFID-based user authentica-
+tion approaches can be categorized into two groups according
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4243
+to whether the user needs to touch the tags or not: contact-
+based [29], [44], [45] and contact-free ones [46], [47]. In contact-
+based authentication systems, users are required to touch the tags
+in a tag array. In this process, users’ biomaterial features (e.g.,
+impedance [29], geometry [44], and composition [44]), and be-
+havioral features like touching patterns and drawing habits [44]
+are embedded in the signals and backscattered to the reader. As
+the user needs to either carry a tag array or cooperatively interact
+with the system (e.g., tapping with a speciﬁc rhythm [48]), these
+approaches would bring inconvenience to users. By contrast,
+contact-free methods usually req
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- Prioritize claims that the target paper is first, seminal, or pioneering.
+- Prioritize detailed comparison evidence, not passing mentions.
+- Prioritize evidence where the target paper is used as a baseline or benchmark.
+- Prioritize theoretical foundation evidence.
+- Prioritize method foundation evidence.
+- Prioritize application extension evidence.
+- Prioritize positive citations from important authors or Fellows.
+- Prioritize long-context citation evidence.
+- Prioritize positive evaluation evidence grounded in citation_text.
+FULL_EXTRACTED_TEXT:
+4228 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+Anti-Spooﬁng Facial Authentication Based
+on COTS RFID
+Weiye Xu , Student Member , IEEE, Jianwei Liu , Student Member , IEEE, Shimin Zhang ,
+Yuanqing Zheng , Member , IEEE,F e n gL i n , Senior Member , IEEE,F uX i a o , Member , IEEE,
+and Jinsong Han , Senior Member , IEEE
+Abstract—Current facial authentication (FA) systems are mostly
+based on the images of human faces, thus suffering from privacy
+leakage and spooﬁng attacks. Mainstream systems utilize facial
+geometry features for spooﬁng mitigation, but they are still vul-
+nerable to feature manipulation, e.g., 3D-printed human faces. In
+this article, we propose a novel privacy-preserving anti-spooﬁng
+FA system, named RFace, which extracts both the 3D geometry
+and inner biomaterial features of faces using a COTS RFID tag
+array. These features are difﬁcult to obtain and forge, hence are
+resistant to spooﬁng attacks. Unlike images, RF signals are not
+perceptible to human eyes, so RFace protects user’s privacy. We
+build a theoretical model to rigorously prove the feasibility of
+feature acquisition and the correlation between facial features and
+RF signals. To enhance the security of RFace, we specify the tag
+reading order for each authentication to defend against the signal
+replay attack. For practicality, we design an effective algorithm to
+mitigate the impact of unstable distance and angle deﬂection from
+the face to the array. Extensive experiments with 30 participants
+and three types of spooﬁng attacks show that RFace achieves an
+average authentication success rate of over 95.7 % and an EER
+of 4.4 %. More importantly, no replay attack or spooﬁng attack
+succeeds in deceiving RFace in the experiments.
+Manuscript received 1 December 2022; revised 17 May 2023; accepted 18
+June 2023. Date of publication 27 June 2023; date of current version 4 April
+2024. This work was supported in part by the National Key R&D Program of
+China under Grant 2021QY0703, in part by the National Science Fund for Dis-
+tinguished Young Scholars of China under Grant 62125203, in part by National
+Natural Science Foundation of China under Grants U21A20462 and 61972348,
+in part by Research Institute of Cyberspace Governance in Zhejiang Univer-
+sity, “Pioneer” and “Leading Goose” R&D Program of Zhejiang under Grant
+2023C01033, in part by Leading Innovative and Entrepreneur Team Introduction
+Program of Zhejiang under Grant 2018R01005, in part by Basic Research Project
+of Shenzhen Science and Technology Innovation Commission under Grant
+JCYJ20190812155213250, in part by Shenzhen Longhua District Science and
+Technology innovation special fund project under Grant JCYJ201903, and in part
+by Hong Kong General Research Fund (GRF) under Grant PolyU 152165/19E.
+Recommended for acceptance by L. Guo. (Corresponding author: Jinsong Han.)
+This work involved human subjects or animals in its research. Approval of
+all ethical and experimental procedures and protocols was granted by Ethics
+Committee of College of Biomedical Engineering and Instrument Science,
+Zhejiang University.
+Weiye Xu, Jianwei Liu, and Shimin Zhang are with the School of Cyber
+Science and Technology, Zhejiang University, Hangzhou 310027, China, and
+also with the ZJU-Hangzhou Global Scientiﬁc and Technological Innova-
+tion Center, Hangzhou 311215, China (e-mail: xuweiye@zju.edu.cn; liujian-
+wei@stu.xjtu.edu.cn; shiminzhang@zju.edu.cn).
+Yuanqing Zheng is with the Department of Computing, Hong Kong Polytech-
+nic University, Kowloon, Hong Kong (e-mail: yqzheng@polyu.edu.hk).
+Feng Lin and Jinsong Han are with the Zhejiang University, Hangzhou
+310027, China, and also with the Key Laboratory of Blockchain and Cy-
+berspace Governance of Zhejiang Province, Hangzhou 310027, China (e-mail:
+ﬂin@zju.edu.cn; hanjinsong@zju.edu.cn).
+Fu Xiao is with the College of Computer, Nanjing University of Posts and
+Telecommunications, Nanjing 210003, China (e-mail: xiaof@njupt.edu.cn).
+Digital Object Identiﬁer 10.1109/TMC.2023.3289708
+Index Terms—RFID, wireless sensing, Internet of Things, facial
+authentication.
+I. I NTRODUCTION
+I
+N RECENT years, facial authentication (FA) systems have
+been wildly applied to daily applications (e.g., access control,
+online payment and individual identiﬁcation [1], [2], [3]). FA is
+regarded as a promising alternative to traditional authentication
+approaches, such as PIN code [4], ﬁngerprint [5] and token [6]
+thanks to its convenience and precision.
+Existing FA systems are mostly camera-based and have some
+severe ﬂaws, including privacy leakage risks and security prob-
+lems. On the one hand, most current FA systems collect facial
+features of users by RGB cameras, which inevitably reveals
+complete visual facial information (VFI) and raises privacy
+concerns [7], [8]. Although some methods have been proposed to
+preserve users’ privacy, e.g., applying the cryptographic proto-
+col [9], [10], [11] and adding perturbation [12], they can not work
+without a trusted third party, thus can not solve the privacy issues
+fundamentally. On the other hand, these approaches perform
+authentications by extracting geometry features from VFI. Once
+the VFI of a user is leaked, an attacker can easily conduct a
+spooﬁng attack by reproducing the features [13]. Although more
+geometry information has been introduced to enhance the secu-
+rity, e.g., the depth information of faces [14], camera-based FA
+systems are still vulnerable to spooﬁng attacks. This is because
+the information can still be captured remotely, e.g., using depth
+cameras or infrared dot projectors [15]. Therefore, attackers can
+manipulate a 3D-printed mask based on the captured VFI to
+deceive FA systems [16]. To overcome these drawbacks, we
+explore a new facial feature based authentication technique,
+which can protect the visual privacy of users, and meanwhile
+resist spooﬁng attacks.
+We turn our attention to radio frequency (RF) sensing. Re-
+cent advances in wireless sensing reveal that radio frequency
+(RF) signals are sensitive to the material that they encounter
+during propagation [17], [18]. Thus, by verifying the facial
+biomaterial feature captured in RF signals, we can determine
+the authenticity of users and defend against spooﬁng attacks.
+Meanwhile, unlike images that leak the user’s VFI, RF signals
+are not perceptible to the human eye and can effectively protect
+the users’ privacy. Moreover, researchers show that an array of
+commercial-off-the-shelf (COTS) radio frequency identiﬁcation
+1536-1233 © 2023 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4229
+Fig. 1. Compared with camera-based systems, RFace is privacy-preserving
+and can effectively resist spooﬁng attacks.
+(RFID) tags can serve as a low-cost and sensitive sensor to
+support ﬁne-grained wireless sensing [19], [20]. Motivated by
+the advantages of RFID, we attempt to develop an anti-spooﬁng
+and privacy- preserving FA system with COTS RFID devices.
+In this article, we propose a novel anti-spooﬁng privacy-
+preserving authentication system, named RFace. Speciﬁcally,
+RFace uses an RFID tag array to measure both RSS and phase
+of RF signals and extract 3D facial geometry and biomaterial
+features for spooﬁng attack resistance. The extracted features
+are then fed into a well-trained support vector machine (SVM)
+to conduct authentication. As shown in Fig. 1, compared with
+camera-based systems, RFace protects the VFI of users. RFace
+can effectively resist spooﬁng attacks since the extracted features
+are difﬁcult to be captured by attackers.
+There are three main challenges in the design and devel-
+opment of RFace: 1) It is difﬁcult to build the correlation
+model between real facial features and raw RF signals since
+RF signals are not as structured as images. 2) RF-based au-
+thentication system is prone to signal replay attacks. Previous
+works [21] show that if an attacker can replay the exact similar
+RF signals of a legitimate object (e.g., a human face), the
+authentication method without corresponding defense mech-
+anisms can be deceived. 3) For each user, the distance and
+deﬂection from the face to the tag array may slightly vary in
+different authentication attempts, leading to undesirable degra-
+dation of the authentication accuracy due to the sensitivity of RF
+signals.
+To address the ﬁrst challenge, we build a theoretical model
+based on the principles of electromagnetism and RF signal
+propagation. The model rigorously proves the feasibility of
+leveraging RF signals to capture and extract the desired facial
+features from raw backscatter signals. To tackle the second chal-
+lenge, we design a replay attack defense method that speciﬁes
+the reading order of tags for each authentication to increase
+the difﬁculty of conducting replay attacks. While enhancing
+the security of the FA system, we also take the efﬁciency of
+collecting RF signals into consideration by designing an efﬁcient
+reading scheme. For the third challenge, we try to explore a
+feature resistant to the variation of distance and deﬂection angle.
+Based on experiments and theoretical analysis, we ﬁnd that in the
+tag array, the difference values of RSS and phase of two tags are
+related to the distance between the two tags.Speciﬁcally, the RSS
+and phase differences of two tags that are close to each other are
+more stable than that of two tags with a far distance, especially
+when the distance and deﬂection angle vary. Therefore, we take
+the RSS and phase differences of two tags within a tiny area as
+the ﬁnal stable feature. We propose a novel algorithm, named
+DR, to split the array into the smallest blocks, i.e., a tag with its
+adjacent tags. In this way, the adjacent tags leverage their stable
+difference values of RF signals towards the variation of distance
+and deﬂection, to mitigate the degradation in the authentication
+accuracy.
+RFace is implemented with COTS RFID devices. To perform
+user authentication, users are only required to pose their faces
+in front of a tag array for a few seconds. We evaluate RFace
+with 30 volunteers under various distance and deﬂection condi-
+tions. We also test RFace against replay attack and three types
+of mainstream spooﬁng attacks, including 2D, 2D+ and 3D
+spooﬁng attacks. The results demonstrate the effectiveness of
+RFace with over 95.7 %authentication success rates and around
+4.4%equal error rates. More importantly, the results of defense
+experiments indicate that RFace is resistant to replay attack and
+spooﬁng attacks, including 3D mask attacks. Therefore, we can
+envision that RFace has the potential to complement existing
+FA systems in some challenge scenarios, e.g., protecting privacy
+and defending against spooﬁng attacks. Our contributions can
+be summarized as follow:
+r We propose a novel privacy-preserving anti-spooﬁng FA
+system, RFace, which can extract both 3D facial geometry
+and biomaterial features of users’ faces from RF signals.
+In addition, we build a theoretical model to validate the
+feasibility of the feature extraction method.
+r We propose a replay attack defense approach to enhance
+the security of RFace while ensuring the efﬁciency of our
+system.
+r We propose a novel algorithm to enhance the ﬂexibility of
+RFace by mitigating the impact of distance and deﬂection
+variations between the human face and tag array.
+r We build a prototype of RFace with COTS RFID devices.
+Extensive experiments demonstrate that RFace can achieve
+precise and robust authentication and defend against vari-
+ous attacks.
+II. P RELIMINARY
+In this section, we start with some preliminary studies on
+two elemental indicators of RF signals and the layout of the tag
+array that facilitates the feature collection. Then, we introduce
+four types of typical attacks on FA systems.
+A. Indicators of RF Signals and Tag Array Layout
+RF Signal Indicators.A typical RFID system includes three
+parts: RFID tags, a reader and its antenna. The reader continu-
+ously transmits RF signals to activate tags. Each tag responds
+its Electronic Product Code (EPC) by backscattering RF signals
+using ON-OFF keying [22]. By analyzing the backscatter sig-
+nals, the reader can obtain the indicators, i.e., received signal
+strength (RSS) and phase. Both indicators are inﬂuenced by the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4230 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+propagation distance and the materials encountered. In this arti-
+cle, RFace measures the indicators to extract facial features. The
+concrete mathematical model will be presented in Section III-A.
+In this work, we utilize the Impinj Speedway R420 reader
+which can achieve a phase resolution of 0.0015 radians in the-
+ory [23]. Thus, with the corresponding wavelength about 32 cm,
+it is capable of providing ≈ 320 mm ∗0.0015/(4×3.14) =
+0.038 mm distance resolution, which sufﬁces to capture the
+geometry feature of human face.
+Tag Array Layout.To alleviate the inductive coupling effect,
+we adopt a perpendicular orientation deployment of tags as
+in [20]. Additionally, for avoiding two tags on a tag array from
+sharing the same phase, we ensure the maximum distance be-
+tween any two tags on an array is less than half of the wavelength.
+Speciﬁcally, in RFace, we use the tiny RFID tags AZ-9629 (only
+2.25 cm ×2.25 cm) to arrange a compact tag array with the
+geometry of square space, which is capable to cover a whole
+face.
+B. Attacks
+We mainly consider the following four types of attacks against
+FA systems.
+2D Spooﬁng Attack. This attack includes both 2D static
+(photo) attack and dynamic (video) attack. 2D spooﬁng attacks
+aim to deceive an FA system with a 2D photo/video of a legiti-
+mate user’s face. Most traditional 2D feature based FA systems
+are vulnerable to this attack. As reported in [24], a 2D photo
+can deceive the face recognition systems of some mainstream
+smartphones.
+2D+ Spooﬁng Attack.This attack constructs an uneven mask
+based on a precise 2D image plus rough depth measurements of a
+legitimate user’s face. Such an attack can deceive many existing
+anti-spooﬁng FA systems [2] that only look for uneven surfaces
+rather than matching against the facial depth information exactly.
+3D Spooﬁng Attack. This attack constructs a precise 3D-
+printed mask of a legitimate user. 3D spooﬁng attacks are
+hard to defeat, since current FA systems only extract the 3D
+structural features of the face surface, while ignoring the inner
+composition, e.g., the biomaterial of faces. In this case, using a
+vivid 3D-printed mask can easily trick these FA systems [25].
+Replay Attack. This attack eavesdrops on the RF signals of
+legitimate objects (e.g., a legitimate user’s face), and then replays
+the captured signal to deceive the FA system. One common
+method to intercept signals is to use an unauthorized reader
+to capture the backscatter signals of tags during the registra-
+tion/authentication period. This kind of attack is particularly
+aimed at wireless authentication systems that utilize RF signals
+for veriﬁcation [21].
+III. T URNING RFID INTO FACIAL FEATURES EXTRACTOR
+In order to establish the correlation between RF signals and
+both the 3D geometry and inner biomaterial features of faces,
+we build a theoretical model based on the principles of elec-
+tromagnetism and RF signal propagation. Besides, we conduct
+several experiments to test the feasibility of anti-spooﬁng face
+authentication.
+Fig. 2. RF signal propagation model.
+A. Modeling Face Features Upon RF Signal Propagation
+Modeling Consideration.In our system, the received signals
+consist of three parts: the line-of-sight signal, the signal reﬂected
+from other surrounding objects and the signal reﬂected from
+face. The line-of-sight signal can be regarded as a consistent one
+when the distance between the antenna and the tag array remains
+static. In the FA scenario, the distance between other surrounding
+objects and the tag array is normally much larger than the one
+between the face and the tag array. As a result, the face would
+contribute the most of the impact on the tag array in terms
+of RF interaction. Therefore, we focus on the signal reﬂected
+from the face in our model. Moreover, we utilize the RSS and
+phase of received signals to extract the user’s facial features. We
+demonstrate that the extracted features can represent both the
+unique 3D geometry and inner biomaterial features of human
+face in the following.
+As illustrated in Fig. 2, the human face is located directly in
+front of and parallel to the tag array. The user’s chin is located
+on the vertical bisector of the bottom edge of the tag array. We
+utilize the lateral view of a 7×7tag array to interpret the effect
+of the signal reﬂected from the face on the tag array. We denote
+the distance between the antenna and the tag array as Land the
+distance between the tag array and the chin as d. Our theoretical
+model involves three processes: 1) mapping tags to blocks on
+face, 2) extracting facial features by RSS, and 3) extracting facial
+features by phase.
+Mapping Tags to Blocks on Face.In order to precisely extract
+facial features, it is essential to map tags to their corresponding
+areas on a face. Due to the sensitivity of RF signal, each tag
+on the tag array backscatters the reﬂection signal from the entire
+face. Thus, each tag captures the features of the entire face. Nev-
+ertheless, the face will have a greater impact on those tags closer
+to the face [20]. Therefore, without losing the effectiveness of
+modeling, for each tag, we analyze the inﬂuence on the tag from
+the area on the face which is closest to the tag. In speciﬁc, we
+map each tag on the array to an area closest to the tag on the
+face, which can be regarded as a block. For ease of modeling, this
+reﬂection can be equivalent to the effect of the center point of this
+block on the tag. Taking tag Ti as an example, the corresponding
+reﬂection block is represented as the closest area ( Fu_i, Fc_i,
+Fl_i), where Fu_i, Fc_i, Fl_i represent the upper vertex, center
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4231
+point and lower vertex of this block on the face, respectively.
+Therefore, the signal reﬂected from this block and received by
+tag Ti can be regarded as the signal reﬂected from the center point
+Fc_i and we denote the incident angle of RF signal propagating
+into human face at Fc_i as βin_i. In addition, for distinct human
+faces, each tag on tag array has different speciﬁc reﬂection area
+with corresponding center point and incident angle. Then we
+will take tag Ti and tag Tj as an instance to analyze the impact
+of RF signals reﬂected from human face on RSS and phase, and
+show how to extract facial features.
+Facial Features Extracted by RSS.We divide the propagation
+of RF signals in our system into three stages: from antenna to
+face, reﬂection on face and from face to antenna. We analyze
+the change of RSS in each stage respectively to extract both 3D
+geometry and inner biomaterial features.
+As for the ﬁrst propagation stage, the RSS value is deﬁned by
+the power P, which is proportional to the square of the amplitude
+A. The RSS can be formulated as:
+RSS =1 0l o gP
+10−3 =2 0l o g (DA)
+(
+P ∝ A2)
+, (1)
+where D is a constant. Generally, the amplitude A causes ex-
+ponential loss in magnitude over a unit of propagation distance,
+which can be denoted as e−α. For the tag Ti in Fig. 2, the loss of
+amplitude A during the propagation of RF signal from antenna
+to the center point Fc_i of the corresponding reﬂection block
+(Fu_i, Fc_i, Fl_i) on face can be denoted as:
+Ain = Ae−α(L+d−di). (2)
+In this equation, Ain represents the amplitude of the RF signal
+when it reaches the surface of face. di denotes the horizontal
+distance between the center point Fc_i and chin, which reveals
+the 3D facial geometry features of human face.
+For the second propagation stage, the RF signal reaches the
+surface of human face. The signal can be divided into two
+parts: the part directly reﬂected and the part entering the face
+with refraction. The inner structure of human face consists of
+various biomaterials such as skin, fat, and muscle. For ease of
+illustration, we assume that each person’s face is a unique hybrid
+material composed of multiple layers of materials, and the rela-
+tive permittivity of the mixed biomaterial can be denoted as ϵper.
+According to [17], the RF signal refracted into the face has to
+traverse multi-layered tissue and go through multiple reﬂections
+before it can escape. Due to the exponential attenuation, there
+will be only very low power signal to escape the human face,
+which can be ignored. Then, we mainly analyze the power loss
+caused by reﬂection on the face surface. The power ratio of the
+signal before and after reﬂection on the face surface is the power
+reﬂection coefﬁcient Rper_i, so the corresponding amplitude can
+be calculated as:
+A_after =
+√
+Rper_iA_before, (3)
+where A_before and A_after are the amplitudes of the corre-
+sponding before and after reﬂection signal. Rper_i is related to
+the mixed material of human face and the incident angle βin_i.
+So Rper_i can reveal the facial features of human face. Then, we
+analyze the factors that affect Rper_i in detail.
+The reﬂection on an interface between two biomaterials is
+affected by the relative permittivity ϵof them. Considering the
+RF signal arriving at the face surface which is the interface
+between the air ( ϵair) and the face material ( ϵper), the signal
+can be decomposed into transverse electric (TE) and transverse
+magnetic (TM) wave components, according to [26]. The power
+reﬂection coefﬁcient Rper_i can be calculated by Rs and Rp,
+which are the power reﬂection coefﬁcient of TE and TM wave
+components respectively. According to Fresnel formula [26], Rp
+and Rs can be calculated as:
+⎧
+⎨
+⎩
+TE : Rs =
+⏐⏐⏐
+√ϵper cos βrefr _i−√ϵair cos βin_i
+√ϵper cos βrefr _i+√ϵair cos βin_i
+⏐⏐⏐
+2
+TM : Rp =
+⏐⏐⏐
+√ϵper cos βin_i−√ϵair cos βrefr _i
+√ϵper cos βin_i+√ϵair cos βrefr _i
+⏐⏐⏐
+2 , (4)
+where βrefr_i denotes the refraction angle and ϵair denotes the
+relative permmitivity of the air. Rper_i can be represented as:
+Rper_i = RsRp
+=
+⏐⏐⏐⏐
+√ϵper cosβrefr_i −√ϵair cosβin_i
+√ϵper cosβrefr_i +√ϵair cosβin_i
+⏐⏐⏐⏐
+2
+×
+⏐⏐⏐⏐
+√ϵper cosβin_i −√ϵair cosβrefr_i
+√ϵper cosβin_i +√ϵair cosβrefr_i
+⏐⏐⏐⏐
+2
+. (5)
+Furthermore, according to Snell’s Law [26],w eh a v e :
+√ϵper sinβrefr_i = √ϵair sinβin_i, (6)
+which means that βrefr_i can be represented by βin_i, ϵair and
+ϵper. Therefore, we can conclude that Rper_i is only determined
+by ϵper and βin_i. Therefore, in the propagation stage of re-
+ﬂection on face, the value of Rper_i involves both the inner
+biomaterial and 3D geometry features of human face.
+Then for the last propagation stage from face to antenna,
+combining with (2) and (3), the amplitude of received signal
+Ar can be calculated as:
+Ar =
+√
+Rper_iAe−2α(L+d−di). (7)
+According to (1), the RSS of the received signal RSSi for tag
+Ti can be denoted as:
+RSSi =2 0l o g (DAr)=2 0l o g
+[
+D
+√
+Rper_iAe−2α(L+d−di)
+]
+.
+(8)
+We can ﬁnd that the value of RSS is relevant to the distance
+(d) between the tag array and chin, and d is an unstable factor
+because of the movement of human face. In order to better extract
+stable facial features, we then subtract the RSS values of these
+two tags Ti and Tj to remove the impact of d, which is irrelevant
+to the structure of human face. Then we can gain:
+RSSi −RSSj =2 0l o gD
+√
+Rper_iAe−2α(L+d−di)
+D
+√
+Rper_jAe−2α(L+d−dj)
+=2 0l o g
+[√
+Rper_i
+√
+Rper_j
+e−2α(dj−di)
+]
+. (9)
+It can be observed that the factor d has been eliminated and
+the value of RSSi −RSSj only related to Rper_i, Rper_j and
+dj −di. Among these variables, Rper_i and Rper_j involve both
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4232 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+the inner biomaterial feature and 3D geometry feature of human
+face which vary among persons. Meanwhile dj −di represents
+the horizontal distance between the center points of two different
+blocks on the human face, which also indicates the 3D geometry
+feature of human face. Therefore, we can conclude that the
+difference between the RSS values of the tags can reveal both
+distance-resistant 3D geometry and inner biomaterial features
+of human face.
+Facial Features Extracted by Phase. Similar to RSS, we
+analyze the changes of phase according to the three stages of
+RF signal propagation in our model successively. Taking tag Ti
+as an example, the phase of the RF signal transmitted from the
+antenna before entering face ( θ_before) can be expressed as:
+θ_before = θt + 2π
+λ (L+d−di), (10)
+where θt represents the initial phase value of the transmitter.
+As aforementioned, the signal is thought to be unable to escape
+once it enters the face, so only the reﬂections that occur on the
+surface of human face are considered. In this case, the phase of
+the RF signal ( θ_after) after reﬂection can be calculated as:
+θ_after = θ_before +θper_i, (11)
+where θper_i denotes the phase variation caused by reﬂection at
+the human face. We then show that θper_i is also related to the
+facial features. According to [26], after reﬂections, there will be
+a phase change when the angle of incidence ( βper_i) is larger
+than Brewster angle ( βB):
+{
+θper_i =0 ,β per_i ≤ βB
+θper_i = π, β per_i >β B
+,βB = arctan
+√ ϵper_i
+ϵair
+. (12)
+Therefore, θper_i is decided by ϵper_i and βper_i, which means
+that the value of the phase variation ( θper_i) caused by reﬂection
+on human face can reveal both the inner biomaterial and 3D
+facial geometry features of the face.
+Combining with the phase changes in the third stage and
+substituting (10) into (11), we can obtain the ﬁnal phase of the
+received RF signal for tag Ti as:
+θi =
+[
+θ_after +θtag_i + 2π
+λ (L+d−di)
+]
+mod 2π
+=
+[
+θt +θper_i +θtag_i + 4π
+λ (L+d−di)
+]
+mod 2π,
+(13)
+where θtag_i denotes the additional phase shift caused by the
+characteristic of tag. Similarly, to remove the factor d,w e
+subtract θi with θj and the result can be denoted as:
+θi −θj =( θper_i −θper_j)+( θtag_i −θtag_j)
++ 4π
+λ (dj −di)+2 kπ,k ∈ Z. (14)
+It is worth noting that there is a term 2kπin theory since the phase
+of the received RF signal is a periodic function with a period of
+2π. This uncertainty term can be eliminated when we apply a
+cosine function in Section V. Similar to the analysis of RSS,
+we can conclude that the difference value of phase between tags
+Fig. 3. RSS difference distributions.
+Fig. 4. Phase difference distributions.
+(θi −θj) can represent the 3D geometry and inner biomaterial
+features of human faces.
+B. Feasibility of Anti-Spooﬁng Face Authentication
+We conduct experiments to demonstrate that the 3D geometry
+and inner biomaterial features of human face have been indeed
+extracted for anti-spooﬁng FA purpose. Speciﬁcally, we ask two
+volunteers (Person A and Person B) to put their faces at a ﬁxed
+distance in front of the tag array twice, and record the phase
+and RSS values of the tags. Then, we hold the 2D photo and 3D
+printed mask of the two volunteers respectively, and collect the
+phase and RSS values. In Figs. 3 and 4, we calculate the phase
+difference and the RSS difference between the surrounding tags
+with the center one to analyze the impact of different targets
+on the tags. We can observe that the result of 2D photo is
+different from that of 3D mask, (Fig. 3(d) versus (e) and Fig. 4(d)
+versus (e)), which shows that the 3D geometry features of human
+face have been extracted. Besides, the result of 2D photo also
+varies severely to the real human face (Fig. 3(a) versus (d) and
+Fig. 4(a) versus (d)), which indicates that the traditional 2D
+static and dynamic attacks can be defended. Similarly, the result
+of 3D mask is distinct to the real face (Fig. 3(a) versus (e) and
+Fig. 4(a) versus(e)), indicating that the inner biomaterial features
+of human face have been extracted, and our system can resist 3D
+spooﬁng attacks. Additionally, the results of the same volunteer
+at different attempts are very similar (Fig. 3(a) versus (b) and
+Fig. 4(a) versus (b)), while they are different for two volunteers
+(Fig. 3(a) versus (c) and Fig. 4(a) versus (c)). Therefore, the
+features we extract are unique to everyone, so they can be utilized
+for authentication. Additionally, since these characteristics of a
+speciﬁc human face are difﬁcult to imitate, our system can resist
+spooﬁng attacks.
+IV . S YSTEM OVERVIEW
+This section ﬁrst shows the overview of RFace system and
+then illustrates its usage scenario.
+A. Overview
+The architecture of RFace consists of two primary phases
+(in Fig. 5): the registration phase and the authentication phase.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4233
+Fig. 5. System architecture of RFace.
+Users can register and authenticate by simply posing their faces
+in front of a tag array for a few seconds. In the registration
+phase, RFace collects the RSS and phase values of the RF signals
+reﬂected from human face, and feeds them into a denoising
+and rearrangement algorithm to construct an RSS and phase
+sequence. Then, this sequence goes through a disturbance re-
+sistant facial features extraction algorithm. The reliable fusion
+features consisting of 3D geometry and inner biomaterial can be
+extracted by calculating the RSS and phase differences between
+the tags on the tag array. Finally, the extracted fusion features are
+organized into feature blocks according to the time dimension
+and fed into an SVM to train a user classiﬁer.
+In the authentication phase, the collected RF signals must
+ﬁrst go through the replay attack detection module. Once a
+real human face is detected, RFace randomly generates an EPC
+sequence to specify the reading order of tags and transmits the
+corresponding reading commands to query tags. According to
+the reading commands, RFace starts to collect the RSS and phase
+values of the backscatter RF signals and compares the actual
+reading order of tags with the preset EPC sequence. If they can
+not match, we will regard this authentication as a replay attack
+and directly reject this request. If they match successfully, the
+collected RF signals will further go through a denoising and fa-
+cial feature extraction process. Afterwards, RFace leverages the
+extracted fusion features to conduct authentication and spooﬁng
+attack defense.
+B. Usage Scenario
+RFace is mainly designed for providing FA in public institu-
+tions, such as access control of group clients (e.g., communities,
+small- or moderate-scale companies) and individual identiﬁca-
+tion of smart home devices [27]. Considering the salient features
+of RF sensing including human-eye imperceptibility and mate-
+rial sensitivity, RFace can also be applied to complement and
+enhance existing camera-based methods in some challenging
+scenarios, e.g., suffering from privacy leakage and spooﬁng
+attacks. Furthermore, using RFace for authentication, users only
+need to put their faces in front of the tag array for a short time,
+which is as convenient as existing camera-based methods.
+V. S YSTEM DESIGN
+In this section, we present the design details of RFace. Before
+authentication, we ﬁrst perform replay attack detection based
+on the collected RF signals. Then, we remove noise from raw
+RF signals and suppress the impacts of distance and deﬂection
+variations between the face and the tag array to extract stable
+fusion features including both 3D geometry and inner biomate-
+rial features. Finally, we utilize an SVM to realize anti-spooﬁng
+authentication.
+A. Replay Attack Defense
+Replay attack, as one of the most tricky attacks for wireless
+authentication systems, threatens the security of RFace. Existing
+works to defend against replay attacks typically add random
+noise [21], which will destroy the features embedded in RF
+signals and affect the accuracy of authentication. Therefore, we
+attempt to develop an approach that can resist replay attacks
+while preserving high-quality facial features. To this end, we
+randomly generate an EPC sequence to specify the reading
+order of tags before each authentication, and then compare the
+actual reading order of tags with the preset EPC sequence to
+detect replay attacks. When a legitimate user utilizes RFace for
+authentication, the tags will be read sequentially according to the
+preset EPC sequence. In this case, the actual reading order has a
+high similarity with the preset EPC sequence. On the contrary,
+an attacker may try to deceive our system by eavesdropping the
+RF signals of a legitimate user while using RFace and replay-
+ing the RF signals later. Since the EPC sequence is generated
+randomly for each authentication, the probability that the actual
+reading order of the replayed RF signals can exactly match the
+current preset EPC sequence is extremely low. Transforming
+this high-level idea into our practical FA system requires tackling
+three main challenges. 1) Balancing security and tag reading efﬁ-
+ciency. To increase the difﬁculty of implementing replay attacks,
+it is necessary to generate as many different EPC sequences as
+possible. The method to generate most EPC sequences is to read
+one tag each time, so for an n∗n tag array, there are (n∗n)!
+possible EPC sequences. Although this method can enhance the
+security of our system, it will signiﬁcantly impact the efﬁciency,
+since it requires sending nreading commands to read all tags on
+the tag array. 2) Ensuring the stability of local features. During
+practical authentication, a user’s face may sway unconsciously.
+If the reading time interval between adjacent tags on a tag array
+is too long, the local facial features captured by RFace would
+be destroyed, which will affect the accuracy of authentication.
+3) Resilience to bit errors. Due to the imperfection of hardware,
+it is possible to miss reading the backscatter signals of tags.
+Therefore, even for legitimate users, the actual reading order of
+tags may not match the preset EPC sequence. This situation is
+called bit error. Bit error may make RFace mistakenly regard a
+legitimate user as an attacker. To address the above challenges,
+we design an efﬁcient reading schemeto read all tags on the tag
+array with fewer commands while ensuring security. In order to
+make this scheme better applicable to real scenarios, we propose
+a replay attack detectionmethod that is resilient to bit errors.
+1) Efﬁcient Reading Scheme: To improve the efﬁciency of
+the FA system, we hope to read a group of tags by sending one
+reading command, rather than only reading one tag per com-
+mand. However, if the tags of the group (called reading group)
+read by one reading command are randomly arranged in the tag
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4234 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+Fig. 6. Dividing the tag array into regions.
+array, the local facial features captured by the tag array will be
+affected. Therefore, we need to design a method that can make
+the tags in the reading groupadjacent to each other spatially in
+the tag array. To this end, we propose an efﬁcient reading scheme,
+which describes how to efﬁciently read tags while ensuring the
+security and stability of local facial features. Speciﬁcally, we
+ﬁrst divide the tag array into several regions according to the
+spatial position. Then, as shown in Fig. 6, we randomly select a
+tag (Tag T) from all unread tags (initially all tags are unread) in
+the tag array as the reading target of the ﬁrst reading command.
+For the subsequent command, the reading targets will be set as
+all tags on the region where Tag T locates. Afterwards, we repeat
+the above operations for the remaining unread tags until all tags
+have been read. We call the reading command whose reading
+target is only one tag as a security command. It speciﬁes the
+reading order of tags to ensure the security of the FA system. We
+call the reading command whose reading targets are all tags on a
+region as a collection command. It is responsible for collecting
+the backscatter signals of a group of tags without caring about
+the reading order, thus ensuring efﬁciency. In RFace, these two
+commands are transmitted alternatively. We describe the details
+of this efﬁcient reading schemebelow.
+Dividing Tag Array Into Regions.As aforementioned, to en-
+sure the stability of local facial features, we need to divide the tag
+array into regions. In our system, we deﬁne three types of region
+templates and utilize them to divide the tag array. Speciﬁcally, as
+shown in Fig. 6, Type I represents a 3∗3square region. Type II
+represents a region whose number of rows or columns is 3. Type
+III represents a region whose row number and column number
+are both less than 3. As shown in Fig. 6, taking a 7∗7tag array
+as an example, we ﬁrst utilize the Type I region template to
+divide it. The remaining tags that can not be divided by the Type
+I region template will be further divided by the Type II region
+template into new regions. After the above dividing process, the
+area of undivided tags whose row number and column number
+are both less than 3 will construct a new region (Type III). Then,
+as shown in Fig. 6, we sort these regions from top to bottom and
+from left to right, denoting them as 1, 2, 3 and so on. For tags
+in each region, we also sort them from top to bottom and from
+left to right, and number them as 1, 2, 3 ... 9.
+Security and Collection Commands.As aforementioned, one
+region contains nine tags at most so a four bits binary string
+(called tag number in region) can represent all tags in a region
+(as shown in Fig. 7). According to the number of regions, we
+can know how many bits are needed to represent all regions. For
+RFace, the 7∗7 tag array can be divided into nine regions, so
+Fig. 7. EPC string and select command.
+Fig. 8. Security command and collection command.
+we can utilize four bits (called region number) to represent all
+regions (as shown in Fig. 7). In this way, we can utilize an eight
+bits binary string to represent the EPC strings of each tag on a
+tag array.
+The core of security and collection commands is to selec-
+tively read the tags of interest. In RFace, we realize these two
+commands by leveraging a universal Gen2 command ‘ Select’,
+which supports selecting target tags to be read [28].T h e‘Select’
+command consists of six required ﬁelds and one optional ﬁeld.
+RFace focuses on three ﬁelds: Mask, Pointer, and Length, which
+are responsible for selecting target tags. The Mask ﬁeld speci-
+ﬁes a binary string for comparison. The Pointer ﬁeld denotes
+the starting address on the EPC string for comparison. The
+Length ﬁeld represents the length of the Mask. As shown Fig. 7,
+taking one Select command as an example, if Mask = 10112,
+Pointer =0 and Length =4 , we will select the tags whose bit
+string starting from 1st bit and ending at (1+4) th bit of the EPC
+string equals to 10112.
+Then, we will show how to utilize the ‘ Select’ command to
+realize the security and collection commands. As for the security
+command, its reading target is only one tag, e.g., the 1st tag of
+the 3rd region, so the Mask needs to be set as the EPC string
+of the reading target. Therefore, as shown in Fig. 8,w es e tt h e
+Length =8 , Pointer =0 , and Mask to the EPC string of target
+tag, i.e., Mask = 001100012. For the collection command, its
+reading targets are all tags in a region, e.g., all tags in the 3rd
+region, so the Mask should be set as the region number of the
+reading targets. For example, in Fig. 8,w es e tt h e Length =4 ,
+Pointer =0 , and Mask to the region number of the 3rd region,
+i.e., Mask = 00112. In RFace, we let the security commandand
+the collection commandbe transmitted alternatively until all tags
+have been read.
+2) Bit Error Resistant Replay Attack Detection:During au-
+thentication, based on the efﬁcient reading scheme, we can
+get the reading order of tags from the security command
+and collect the backscatter signals of tags from the collec-
+tion command. For detecting replay attacks, we compare the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4235
+Fig. 9. Performance of denoising method.
+tag reading order speciﬁed by security commands with the
+actual tag reading order. If these two reading orders can not
+match, we will regard this authentication as a replay attack. As
+for a 7∗7 tag array, we need to transmit nine security com-
+mands in total. Therefore, the maximum replay attack success
+rate can be formulated as 1/49∗1/40∗1/31∗1/22∗1/13∗
+1/10∗1/7∗1/4=1 /4865660800. It obviously shows that this
+comparison method performs well in defending against replay
+attacks.
+Although the defense method mentioned above is already
+feasible in the ideal scene, it is possible to miss reading several
+tags in reality. In this case, RFace may mistakenly regard a
+legitimate user as an attacker since the actual tag reading order
+can not match the preset one perfectly. To avoid such a situation,
+we allow the tag reading order sequence to have at most 2 bits
+errors, enabling RFace to be tolerant of bit errors. In this way,
+for a 7∗7 tag array, the maximum replay attack success rate
+is 1/31∗1/22∗1/13∗1/10∗1/7∗1/4=1 /2482480. Thus,
+RFace is still capable to defend against replay attacks with fault
+tolerance.
+B. Denoising and Rearrangement
+The phase values collected from an RFID reader involve noise
+due to the involuntary movement of faces and imperfection of
+hardware. These inevitable defects may make RFace unreliable.
+We eliminate the noise by unwrapping successive phase val-
+ues [29]. Moreover, we set a window with a size of ﬁve samples
+and ﬁlter out abnormal phase values in the window with the
+average of other normal values. Fig. 9 shows an instance of noise
+ﬁltering, where abnormal phase values are ﬁltered out. Addition-
+ally, for subsequent facial features extraction, we rearrange both
+RSS and phase values (which can be represented as N ∗2∗M,
+N is the number of frames based on slot ALOHA [30], M is the
+sum of tags) into a new sequence (whose shape is N ∗2∗R∗C,
+where Ris the number of rows and C is the number of columns
+in tag array) according to the layout of the tag array.
+Fig. 10. Impact of deﬂection.
+C. Disturbance Resistant Feature
+Based on the rearranged RSS and phase sequence, we start to
+extract the 3D geometry and inner biomaterial features (which
+can be represented as fusion features in the following). As pre-
+sented in Section III-A, the RSS difference and phase difference
+between tags can reveal the fusion features of human faces and
+we can utilize these two kinds of difference values to extract
+distance-resistant fusion features. Nevertheless, in practical FA
+scenarios, it is hard to ensure that the user’s face is always in
+a ﬁxed position and deﬂection angle relative to the tag array
+for each authentication attempt. Moreover, due to the sensitivity
+of RF signals, the tiny variations in distance and angle to the
+tag array would cause non-trivial errors in the measurements
+of RSS and phase values [31]. In order to obtain more reliable
+features, we design a facial feature extraction algorithm resistant
+to distance and angle variations.
+1) Challenges: Intuitively, we can calculate difference val-
+ues between any two tags on the tag array to extract desired
+fusion features. However, we have many practical challenges.
+First, although arbitrary subtraction can potentially calculate
+more facial features, it requires about 2∗C2
+M times of subtrac-
+tion for each authentication, which is time-consuming. Addi-
+tionally, the deﬂection of the user’s face could lead to perfor-
+mance degradation of RFace. As shown in Fig. 10, when a user
+faces at a certain angle γ, the RSS and phase differences between
+the leftmost and rightmost tags not only involve the relative
+distance Δdij, but also the unexpected distance difference dr due
+to facing direction. Δdij represents the difference of distances
+between the center points of their corresponding areas to the tag
+array. This unexpected distance dr may make RFace mistakenly
+authenticate a legitimate user as illegitimate. Finally, as shown
+in (14), there is an uncertainty term 2kπ which makes the phase
+difference unstable with the impact of distance variation, thus
+making RFace unreliable as well.
+2) Disturbance Resistance Algorithm (DR): In order to
+tackle the challenges mentioned above, we propose a universal
+subtraction method that can suppress the disturbance of distance
+and deﬂection as well as achieve fast and accurate fusion feature
+extraction. As for deﬂection, it is vital to mitigate the unexpected
+distance difference dr which may result in authentication devi-
+ation. Based on theoretical analysis, we can ﬁnd that the closer
+the two tags are selected for subtraction, the smaller the dr
+is. Therefore, the key idea of suppressing the impact of face
+deﬂection is to narrow the difference calculation range in the
+tag array. Besides, as for the 2kπ term, the uncertainty of the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4236 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+Algorithm 1. Disturbance Resistance.
+value kis actually due to the variation of distance. Here, we can
+eliminate this uncertainty by calculating the cosine of the phase
+difference to obtain stable distance-resistant features.
+According to the above analysis, we propose the disturbance
+resistance (DR) algorithm (as shown in Algorithm 1) to extract
+reliable fusion features. It is worth noting that the DR algorithm
+can be ﬂexibly applied to square tag arrays of any size. The
+purpose of DR is to decrease the time for difference calculation
+and avoid the RSS subtraction and phase subtraction for a pair
+of tags that are far apart on the tag array (e.g., the leftmost
+and rightmost, top and bottom). The DR algorithm can be
+Fig. 11. Division operation in DR.
+divided into three steps: division, difference calculation, and
+reorganization.
+Division. We ﬁrst apply the division operation (Division func-
+tion in Algorithm 1) to ﬁnd the center of the tag array and divide
+it into smaller blocks. For the square tag arrays, their layouts
+can be divided into two categories: the number of rows is odd
+or even. Different methods for the division of these two kinds
+of tag arrays are shown in Fig. 11. As for the tag array with
+odd rows, we regard the center tag of the tag array as the center
+point and add it into the center point set ( Cset in Algorithm 1).
+Then, we divide the tag array into smaller blocks ( B1 in Al-
+gorithm 1) based on the row and column where the center tag
+locates. As for the tag array with even rows, there is no center
+tag. Thus, we divide the tag array into smaller blocks ( B1) along
+the center lines of the tag array. The center lines represent the
+lines connecting the midpoints of opposite sides of the square tag
+array. Then, we repeat this division operation for these smaller
+blocks (B1) until we obtain the smallest blocks (bin Algorithm 1)
+whose rows and columns are both no more than 3. As shown in
+Fig. 11, the smallest blocks ( b) can be divided into two types.
+Type 1 denotes the tag blocks whose number of rows or columns
+is three, i.e., the shape of the block is 1∗3, 3∗1,o r 3∗3. Type
+2 represents the tag blocks whose number of rows or columns
+is two, i.e., the shape of the block is 1∗2, 2∗1,o r 2∗2.
+Difference Calculation.After the division operation, for each
+obtained smallest block, we start to calculate the RSS difference
+and the phase difference (Calculation function in Algorithm 1)
+to extract the stable fusion features. As shown in Fig. 12(a),I ft h e
+smallest block belongs to Type 1, we will ﬁrst ﬁnd the center tag
+in the block. Then, we calculate the RSS difference ( ΔR) and
+the phase difference ( cos(Δφ)) between each remaining tag and
+the center tag. If the smallest block belongs to Type 2, we will
+ﬁrst calculate the average values of the RSS and phase for this
+smallest block. Then, we calculate the RSS difference ( ΔR) and
+the phase difference (cos(Δφ)) between each tag on the smallest
+block and the average values (as shown in Fig. 12(b)).
+Reorganization. Finally, for the unassigned center point set
+(Cset), we reorganize it into a center block ( Cblock in Algorithm
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4237
+Fig. 12. Difference calculation in DR.
+Fig. 13. 7*7 tag array example represents the processes in DR.
+Fig. 14. Distributions of raw RSS and phase and features extracted by DR in
+different distance conditions.
+Fig. 15. Distributions of raw RSS and phase and features extracted by DR in
+different deﬂection conditions.
+1) according to the original position of center tags (Reorgani-
+zation function in Algorithm 1). Taking a 7∗7 tag array as an
+example, Fig. 13 shows the reorganization process, i.e., from
+7∗7 tag array to the center block. Then, we apply the DR
+algorithm for the center block ( Cblock) to get a complete fusion
+feature array.
+3) Feasibility of DR:In order to show the feasibility of DR,
+we use a 7*7 tag array as an example and show the effect of our
+DR algorithm.
+As shown in Fig. 13, we ﬁrst ﬁnd the center point ( C)o f
+the tag array and divide the tag array into smaller blocks based
+on the row and column where C locates. Then, we repeat this
+division operation until we obtain the smallest blocks (belong to
+Type 1). Next, for each smallest block, we ﬁrst ﬁnd the center of
+it (Csub), and then for each remaining tag (represented by Tr,c,
+with r and c as the row and column it locates) in this block, we
+get:
+ΔRr,c = RSSr,c −RSSC_sub, (15)
+Δφr,c = θr,c −θC_sub, (16)
+with ΔRr,c and Δφr,c denoting the RSS difference and phase
+difference between Tr,c and the corresponding center point Csub
+of the block. For the unassigned center points ( Csub) of these
+smallest blocks, we reorganize them into a center block. Then
+we apply the DR algorithm to the center block to calculate the
+RSS difference and phase difference between the Csub and the
+center point of the whole tag array ( C). So far, we have obtained
+ΔR and Δφ of all tags. As analyzed at the beginning, we have
+to substitute Δφ by cos(φ) in the phase part of our ﬁnal fusion
+features. Finally, for one frame of RFID signals, combining the
+ΔR and cos(Δφ) of all tags in the tag array, we can form a
+3-dimension fusion feature array with a shape of ( 2∗R∗C)
+with only ( 2∗R∗C) times of subtraction operations.
+Figs. 14 and 15 show the effect of our DR algorithm with
+the 7∗7 tag array, where the X-axis and Y-axis represent the
+row and column of the tag array respectively. Compared with the
+distribution of raw RSS and phase of each tag before (Figs. 14(a),
+(c) and 15(a), (c)), the values of ΔRand cos(Δφ)after applying
+the DR algorithm (Figs. 14(b), (d) and 15(b), (d)) become more
+stable under varying distance and deﬂection conditions. Hence,
+we can obtain reliable fusion features based on the DR algorithm.
+D. Anti-Spooﬁng Authentication
+Based on the extracted facial fusion features, we next demon-
+strate how to perform face authentication and defend against
+spooﬁng attacks. In addition to the aforementioned RSS differ-
+ence and phase difference, we also include the time series as a
+new dimension in the feature extraction. We take A (A =5 in
+implementation) consecutive fusion feature arrays ( 2∗R∗C)
+in time series as a fusion feature block ( A∗2∗R∗C), and
+reshape the fusion features which we obtain from DR algorithm
+into a ﬁve-dimensional array ( N/A∗A∗2∗R∗C). Then, the
+following anti-spooﬁng authentication and feature granularity
+exploration are all based on this ﬁve-dimensional fusion feature
+array.
+In RFace, we utilize an SVM as the classiﬁer to implement
+face authentication and spooﬁng attack detection. Speciﬁcally,
+each user needs to provide a batch of signal samples to train the
+SVM for RFace registration. All feature blocks are reshaped
+as one-dimensional feature vectors to train the SVM. In the
+authentication stage, once receiving a login request, RFace feeds
+extracted features from the received signal samples into the
+pre-trained SVM model. Then, it outputs a series of conﬁdence
+coefﬁcients representing the similarity between the login user
+and the registered users in the database. RFace ﬁnds the largest
+one among these conﬁdence coefﬁcients and compares it with
+a pre-determined threshold. If it is larger than the threshold,
+the user will be accepted as a legitimate user. Otherwise, the
+user will be denied. Since the fusion features of each person are
+distinct, unregistered users will fail the authentication owing
+to low similarity. Furthermore, as spooﬁng attackers cannot
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4238 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+Fig. 16. Experimental setup.
+produce inner biomaterial features, attackers will be rejected
+by the threshold-conﬁdence comparison mechanism.
+VI. E VA L UAT I O N
+We evaluate the performance of RFace in real environment
+on both authentication and anti-spooﬁng.
+A. Implementation
+Hardware.RFace is implemented with an ImpinJ R420reader
+connected to a directional antenna Larid A9028. Besides, we
+utilize 49 Alien-9629 RFID tags to form a 7∗7 tag array in a
+perpendicular orientation deployment as shown in Section II.
+The working frequency of RFace is 922.38 MHz.
+Software. The collection of RF signals adopts EPC Gen2
+standard to avoid collision and control the communication re-
+spectively. The client communicates with reader based on the
+ImpinJ LLRP Tool Kit (LTK). It delivers Gen2 parameters (e.g.,
+Pointer, Mask, Length) to specify the operation of reader, i.e.,
+selectively reading tags. The processing algorithms of RFace
+are implemented by Python which runs on a personal computer
+(PC) with Intel(R) Core(TM) i5-8250 U1.6 GHz CPU and 8 GB
+RAM.
+Experimental Setup.We conduct our experiments in three real
+environments: seminar room, lab, and ofﬁce. Fig. 16 shows the
+default setup of RFace. The directional antenna is placed 30 cm
+behind the tag array to transmit interrogative RF signals, and
+users place their faces around 10 cm in front of the tag array for
+authentication. Then RF signals reﬂected from human faces are
+collected and further sent to the PC via Ethernet for processing.
+Data Collection. We conduct the experiments by adhering
+to the approval of our university’s Institutional Review Board
+(IRB). We invite 30 volunteers (10 females and 20 males) aged
+from 18 to 30 in our experiments. Among the 30 volunteers,
+we randomly choose 5 volunteers as spoofers and the rest 25
+volunteers register as legitimate users. In the registration phase,
+we collect three groups of RF signals (each group contains 60
+fusion feature blocks) for each legitimate user, which takes about
+225 seconds. Then in the authentication phase, each legitimate
+volunteer performs authentication for 120 times and each ille-
+gitimate volunteer performs 360 times authentication to test the
+performance of RFace. Each authentication attempt takes about
+1.25 seconds.
+Metrics. We deﬁne six metrics to evaluate RFace: Authen-
+tication Success Rate (ASR), False Accept Rate (FAR), False
+Fig. 17. ASR under different environments.
+Fig. 18. EER under different environments.
+Fig. 19. Conﬁdence distributions for users.
+Reject Rate (FRR), Receiver Operating Characteristic (ROC),
+Equal Error Rate (EER) and Defense Success Rate (DSR). ASR
+is the probability that the system authenticates a legitimate user
+correctly and can be represented as: ASR = Nacc
+Nall , where Nacc is
+the number of correct authentication times for legitimate users
+and Nall is the number of all authentication times for legiti-
+mate users. FAR is the probability that the system mistakenly
+authenticates an illegitimate user as a legitimate one and can
+be represented as: FAR = Nwr
+Nil
+, where Nwr is the number
+of wrong accepted times for illegitimate users and Nil is the
+number of all authentication times for illegitimate users. FRR
+is the probability that the system mistakenly authenticates a
+legitimate user as an illegitimate one. ROC curve indicates the
+relationship between the ASR and FAR under various threshold.
+Additionally EER describes the rate where FAR equals FRR.
+Finally, we deﬁne the DSR to measure the performance of RFace
+on anti-spooﬁng. DSR is the probability that a spooﬁng attack is
+successfully detected, and the higher DSR indicates that RFace
+is more secure. DSR can be formulated by: DSR = Ndef
+Natt
+, where
+Ndef is the number of successfully detected spooﬁng attacks and
+Natt is the number of all spooﬁng attacks.
+B. Overall Performance
+We evaluate the overall performance of RFace in three dif-
+ferent environments. We ﬁrst compare the overall performance
+of RFace with/without our DR algorithm. As shown in Fig. 17,
+the average ASRs for RFace and raw data are 95.3% and 85.6%,
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4239
+Fig. 20. ROC curves for RFace and raw data.
+Fig. 21. ASR for different machine learning models.
+Fig. 22. Impact of the training set size.
+respectively. Meanwhile, with the threshold of 0.8, as shown
+in Fig. 18, the average EERs of RFace and raw data are 4.67%
+and 15.49%, respectively. These comparison results demonstrate
+that our denoising and feature extraction method can effectively
+remove noise and improve feature quality. To show if RFace
+is able to reject illegitimate users, we plot the conﬁdence dis-
+tributions of legitimate users and illegitimate users in Fig. 19.
+This result indicates that RFace can effectively reject illegitimate
+users with a high probability. Therefore, as shown in Fig. 20,
+RFace can achieve a low FAR of 4.48% while the FAR of raw
+data is as high as 16.52%. These results demonstrate that RFace
+can authenticate users accurately and securely. In addition, our
+experiments show that every authentication only takes 1.26
+seconds on average, indicating that RFace performs well in
+real-time authentication.
+C. Comparison With Mainstream Classiﬁers
+To show the superiority of our selection of classiﬁer (i.e.,
+SVM), we compare the performance of SVM with different
+machine learning models. First, we compare SVM with other
+three mainstream and traditional classiﬁers: Naive Bayes (NB),
+K-Nearest Neighbors (KNN), and Decision Tree (DT). As
+shown in Fig. 21, the ASRs for SVM, NB, KNN, and DT are
+95.7%, 90.3%, 89.2%, and 93.0%, respectively. These results
+indicate that SVM outperforms these classiﬁers. Meanwhile, the
+ASRs of the other three classiﬁers are also high, demonstrating
+that the feature extraction method in RFace is signiﬁcantly
+Fig. 23. Impact of distance between user and tag array on ASR.
+Fig. 24. Impact of deﬂection on ASR.
+effective. Additionally, we also compare the performance of
+RFace with a typical Convolutional Neural Network (CNN) [32].
+With the same data set, the ASR and FAR of CNN are 91.5%
+and 15%, respectively. Such results indicate that SVM performs
+better than CNN when the data set is small or disturbed by
+environmental noise. Besides, training a CNN model requires
+more computation than SVM, e.g., a complete CNN training
+process takes 80 seconds while the SVM only takes 3 seconds.
+Therefore, considering the accuracy and costs, we ﬁnally choose
+SVM as our classiﬁer.
+D. Impact of Training Set Size
+To explore the impact of training set size, i.e., the number of
+feature blocks of each user in the training set, we vary the size
+from 20 to 90. The experiment results shown in Fig. 22 indicate
+that with 90 feature blocks for each user, RFace can achieve
+a FAR that is lower than 5.0% while retaining a high ASR of
+about 95.5%. This result also shows that RFace is user-friendly
+in user registration because collecting 90 feature blocks only
+takes 112.5 seconds approximately.
+E. Performance Towards Distance and Deﬂection V ariations
+In the distance experiment, we use the feature blocks collected
+when the user’s face is placed in front of the tag array 10 cen-
+timeters as the training set. Then we vary the distance between
+the tag array and the user from 5 centimeters to 15 centimeters
+to evaluate the impact of distance. The authentication results are
+shown in Fig. 23, in which we ﬁnd that large distance variation
+(i.e., far from 10 centimeters) would cause ASR reduction.
+However, even if the difference is 5 centimeters, the reduction
+scale is still acceptable (less than 6%), which proves that the DR
+algorithm is effective at distance disturbance suppression and
+RFace is robust to distance variation.
+In the deﬂection experiment, we use the normal feature blocks
+without deﬂection as the training data. Then we collected testing
+data of two orientations (i.e., leaning cheeks to left or right) of
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4240 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+Fig. 25. DSR of three attacks under various thresholds.
+deﬂections. Speciﬁcally, we vary the deﬂection angles from 5
+degrees to 15 degrees. As in Fig. 24, it can be observed that
+even if the left or right deﬂection is 15 degrees, RFace can still
+achieve a high ASR. Therefore, DR is also effective in deﬂection
+impact suppression.
+F . Attack and Defense
+Attack Realizations.We evaluate our system against the replay
+attack and three types of spooﬁng attacks: 2D spooﬁng attack,
+2D+ spooﬁng attack and 3D spooﬁng attack. For the replay
+attack, we randomly select one RF signal from the previous
+successful authentication data to deceive RFace. We repeat the
+replay attack 100 times to evaluate the security of RFace. For
+the 2D spooﬁng attack, there are two attack methods including
+static and dynamic attacks, which are respectively realized with
+photos and videos of three victims (each authenticates 60 times)
+in front of the tag array. For the 2D+ spooﬁng attack, we recruited
+15 unregistered volunteers as attackers, each wearing a soft
+PVC mask printed with the victim’s photo respectively. We
+make three soft PVC masks with three victims’ photos and
+each attacker wears each mask to attack RFace 60 times. For
+the most challenging 3D spooﬁng attack, we launch attacks by
+utilizing photosensitive resin to build three 1:1 scale 3D masks
+of victims, which simulate both 2D features and precise depth
+features of the victim. Speciﬁcally, we also pose each 3D printed
+mask in front of the tag array to perform 3D spooﬁng attack 60
+times. The setup of these three types of attack is presented in
+Fig. 16.
+Defense Performance.We calculate the DSRs of the above at-
+tacks. The DSR of the replay attack is 100% which indicates that
+no replay attack succeeds in deceiving RFace in the experiments.
+The high DSR demonstrates that RFace can effectively defend
+against the replay attack. The spooﬁng attack results are shown
+in Fig. 25, which indicates that the DSRs for all three types of
+attacks are 100%. This is because the conﬁdence coefﬁcients of
+the features provided by attackers cannot reach our empirical
+threshold of 0.8. The results indicate that the extracted inner
+biomaterial feature is effective in defending against spooﬁng
+attacks. Additionally, in order to further verify RFace’s ability to
+defend against spooﬁng attacks, we conduct the poisoning attack
+experiment. Speciﬁcally, in the poisoning attack, a malicious
+user wears a soft PVC mask for registration, and then a group
+of attackers wear the same soft PVC mask for authentication.
+In this way, attackers can roughly simulate both 2D structure
+features and biomaterial features of the maliciously registered
+TABLE I
+COMPARISON WITH PREVIOUS WORK
+Fig. 26. Impact of working frequency and distance between antenna and tag
+array on ASR.
+user. To evaluate RFace’s defense ability against this attack, we
+add the RF signals of a user wearing a soft PVC mask to the
+training data. Then, we ask ten users wearing the same soft PVC
+mask to attack RFace. It is worth noting that in the poisoning
+experiment, no attacker succeeds in deceiving RFace. The reason
+is likely to be the following two aspects. First, the 3D facial
+structures of different users are various, so even if they wear
+the same soft PVC mask, the 3D geometry features extracted
+by RFace are inconsistent. Second, RF signals have excellent
+penetrability, so the biomaterial features captured by RFace
+should include both the soft PVC mask and the attacker’s own
+facial biomaterial features. Therefore, even wearing the same
+soft PVC mask, RFace can still distinguish the attacker. Table I
+compares RFace with four advanced FA systems in terms of
+spooﬁng attack defense ability. The results show that, compared
+with other FA systems, RFace can protect users’ privacy and
+defend against various spooﬁng attacks.
+G. Impact of Experimental Setup
+To explore the impacts of different experiment setups, we vary
+the working frequency and the distance between the antenna
+and the tag array respectively, and observe the variation of
+authentication performance.
+First, we vary the working frequency of RFace from
+920.38 MHz to 924.38 MHz with the step of 1 Mz. The ex-
+periment results are shown in Fig. 26(a). As we can observe,
+the ASRs of different frequencies are very similar and they are
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4241
+Fig. 27. Impact of different features on FA performance.
+Fig. 28. Impact of user number on FA performance.
+all higher than 95%. These results indicate that the variation of
+working frequency has negligible impacts on RFace’s authen-
+tication performance. By setting different working frequencies,
+multiple RFace systems can be deployed in the same location
+without interference. Then, we vary the distance between the
+antenna and the tag array from 20 cm to 40 cm with a step
+of 5 cm. The experiment results are shown in Fig. 26(b),f r o m
+which we can ﬁnd the mean ASRs are all around 95%. So, we
+can conclude that the distance variation (within [20,40]cm) has
+negligible impacts on authentication performance. Thus, users
+can ﬂexibly deploy RFace according to their demands.
+H. Impact of Different Features
+RFace extracts fusion facial features from both phase and
+RSS data for facial authentication. To show the FA performance
+when using different features, we utilize phase difference, RSS
+difference and the combination of them to conduct facial au-
+thentication, respectively. The experiment results are shown in
+Fig. 27. We can ﬁnd that when only phase difference or RSS
+difference is used, the ASR is 89% and 92%, respectively. The
+ASRs in these two cases are lower than the ASR (95.6%) when
+using the combination of phase difference and RSS difference.
+Moreover, the FAR of using the combination of phase difference
+and RSS difference for FA is 4.47%, which is lower than using
+only RSS or phase for FA. It indicates that utilizing the combi-
+nation of RSS and phase can provide more facial characteristics
+and achieve more reliable FA.
+I. Impact of User Number
+To investigate whether RFace can support a larger user set,
+similar to the experimental methodology in [35], we explore
+how the performance of RFace changes as the number of users
+increases. To this end, we increase the number of users from 20
+to 60 and calculate the corresponding FA accuracy. As shown
+in Fig. 28, when the number of users reaches 60, ASR is still
+higher than 95.5% and FAR is lower than 4.6%. It indicates that
+Fig. 29. Impact of tag array size on FA performance.
+Fig. 30. Impact of different regions of the tag array on FA performance.
+the performance of RFace does not change signiﬁcantly as the
+user number increases. It also provides encouraging signs that
+RFace has good scalability and can be well applied in the access
+control of group clients.
+J. Impact of Tag Array Size
+To evaluate the impact of tag array size on FA performance,
+we increase the number of tags from 2∗2 to 7∗7 and analyze
+the changing trend of FA accuracy. As shown in Fig. 29, we can
+ﬁnd that the larger the tag array, the higher the FA accuracy.
+When the size of the tag array is 7∗7, RFace achieves the best
+performance with a high ASR of 95.6% and a low FAR of 4.47%.
+Moreover, we can observe that when the tag array size is larger
+than 6∗6, the ASR is already higher than 95% and the FAR is
+lower than 5%. This is because the 6∗6 tag array is capable to
+cover most of the human face, so it can capture enough facial
+features to support FA. Therefore, when choosing the tag array
+for FA, we recommend selecting the one whose size is similar to
+the size of the human face. The reason is that when the tag array is
+too big, it will not only capture the signals reﬂected by the human
+face but also the signals reﬂected by other irrelevant objects, thus
+resulting in a degradation in authentication accuracy.
+K. Impact of Different Regions of the Tag Array
+In order to explore the impact of different regions of the tag
+array on feature extraction and further understand the signal
+propagation theoretical model (Section III), we conduct exper-
+iments by utilizing the features captured by different regions
+on the tag array for FA and calculate corresponding accuracy.
+Speciﬁcally, taking the default 7∗7 tag array as an example,
+we divide the tag array into nine regions, and each region is a
+3∗3small tag array centered on the center tag csub1...c...c sub8
+respectively, as shown in Fig. 13. We denote the 3∗3 small
+tag arrays centered on csub1...c...c sub8 as C1...C...C 8,r e -
+spectively. Then, we utilize the features captured by the regions
+C1...C...C 8for FA. The results are shown in Fig. 30. We can
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4242 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+Fig. 31. Usability study for RFace.
+observe that the regions C2, C, and C7 have higher ASR and
+lower FAR than other regions. This is most likely because these
+regions capture the signals mainly reﬂected by the middle part of
+the human face, which contains more face-related features. As
+illustrated in Section III, different tags can be mapped to different
+areas on the human face, so the contribution of features captured
+by different tags to FA depends on the discriminability of their
+corresponding face area.
+L. User Study
+We conduct a series of questionnaire surveys of 60 users
+to evaluate the usability of RFace. Fig. 31 shows the speciﬁc
+questions in the questionnaire and the corresponding results.
+Fig. 31(a) indicates that 88.4% of users think that RFace of-
+fers additional advantages over vision-based FA methods, e.g.,
+privacy-preserving, anti-spooﬁng, and robustness to light con-
+ditions. Additionally, 75% of users think RFace is convenient
+and only 11.7% of users feel uncomfortable when using RFace.
+As for the applicability, only 15% of users are unwilling to
+use RFace for FA daily in the workplace. From these usability
+studies, we can ﬁnd that RFace is user-friendly and has the
+potential to complement and enhance existing FA systems in
+some challenging scenarios.
+VII. R ELATED WORK
+A. Facial Authentication
+FA has been extensively studied in both literature and in-
+dustrial communities. Existing FA systems can be divided into
+vision-based ones [24], [36] and wireless signal-based ones [2],
+[37], [38]. Vision-based approaches use RGB cameras to collect
+facial information. They can achieve signiﬁcantly high accuracy
+and decent robustness. However, they also have two major
+limitations, namely the risk of privacy leakage [7], [8] and vul-
+nerability to spooﬁng attacks [24]. First, in a camera-based FA
+service, the untrusted third-party server may abuse users’ data,
+e.g., maliciously link users’ face images to other sensitive data
+like health records, raising privacy leakage concerns [8], [12].
+Although researchers have proposed some privacy-preserving
+solutions [9], [10], [11], [12], e.g., using cryptographic proto-
+col [9], [10], [11] and adding differential privacy-based pertur-
+bation to original face images [12]. However, such privacy issues
+are not solved fundamentally. Any untrusted third parties (e.g.,
+the camera manager) who own the original images still could
+leak users’ privacy [12], [39]. On the other hand, traditional
+camera-based FA systems are vulnerable to spooﬁng attacks.
+They could be tricked by photos or videos [1], [2], [3], [24].T o
+address this problem, some advanced FA systems (e.g., Apple
+FaceID [40]) probe the 3D facial information of the user before
+making authentication decisions. Nevertheless, these systems
+still could be deceived by manipulated 3D inputs (e.g., 3D
+printed face masks [41]).
+To tackle these limitations, wireless-based FA systems are
+designed to utilize the human-eye imperceptible wireless sig-
+nal, e.g., acoustic [2], millimeter wave (mmWave) [38] and
+RFID [37], for facial authentication. For instance, EchoPrint [2]
+leverages acoustic signals to capture the facial features and deter-
+mine whether the object in front of the sensor is a 3D one. Such
+an acoustic-based FA system can protect users’ visual privacy
+as well as resist 2D spooﬁng attacks. However, it can not defend
+against the more advanced 3D spooﬁng attacks. mmFace [38]
+utilizes the mmWave signals to capture both the facial biometric
+features and structure features, making it resilient to 2D and
+3D spooﬁng attacks. Nevertheless, its implementation requires
+costly mmWave radar. Compared with mmWave and acoustic
+signals, RFID bears many advantages in implementing FA. As
+another work using RFID for FA, RFaceID [37] also employs
+passive RFID arrays to capture facial features. Different from
+our work, RFaceID directly constructs a deep neural network to
+extract facial features instead of building a theoretical model like
+RFace to probe the correlation between facial features and RF
+signals. Besides, RFaceID requires the users to shake their faces
+during FA and there is no strategy designed to defend against
+signal replay attacks. RFaceID also did not measure its resistance
+to 2D, 2D+ and 3D spooﬁng attacks. Comparatively, RFace does
+not suffer from these ﬂaws. It builds a privacy-preserving FA
+system with a low-cost RFID tag array. RFace does not require
+user interaction and meanwhile defends against both spooﬁng
+attacks (2D, 2D+ and 3D) and signal replay attacks.
+B. RFID-Based User Authentication
+RFID has been developed to authenticate users’ identities in
+recent years [42], [43]. Current RFID-based user authentica-
+tion approaches can be categorized into two groups according
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4243
+to whether the user needs to touch the tags or not: contact-
+based [29], [44], [45] and contact-free ones [46], [47]. In contact-
+based authentication systems, users are required to touch the tags
+in a tag array. In this process, users’ biomaterial features (e.g.,
+impedance [29], geometry [44], and composition [44]), and be-
+havioral features like touching patterns and drawing habits [44]
+are embedded in the signals and backscattered to the reader. As
+the user needs to either carry a tag array or cooperatively interact
+with the system (e.g., tapping with a speciﬁc rhythm [48]), these
+approaches would bring inconvenience to users. By contrast,
+contact-free methods usually require fewer interactions between
+the users and the systems. To collect biomaterial features, users
+only need to exhibit their body parts (e.g., hand [46])t ot h et a ga r -
+ray. In this article, we also seek for minimizing the requirements
+for the users and propose RFace. In addition to the user-friendly
+authentication manner, the security of RFace is also greatly
+enhanced by the proposed replay defense method (Section V-A).
+Compared with existing replay defense approaches [21], [46],
+our approach bears two major advantages: 1) Our approach does
+not modify the original signals, while that in [21] adds elaborate
+noise in emitted signals, which would destroy the biometrics
+contained in the signals. 2) Our approach does not introduce
+extra storage overhead, but that in [46] must store pre-used EPC
+sequences in the database.
+VIII. D ISCUSSION
+Practicality. 1) Accuracy: The experiment results show that
+RFace achieves 95.7% authentication success rates and 4% equal
+error rates. Although the FA accuracy of RFace is better than
+another state-of-the-art RFID-based FA system [37], we admit
+that the accuracy of RFace is not comparable to current advanced
+camera-based FA systems. However, we want to clarify that
+RFace is not designed to substitute the camera-based methods,
+but instead shows the potential to complement and enhance
+existing FA systems in some challenging scenarios, such as
+suffering from spooﬁng attacks or privacy leakage. In practice,
+to increase the authentication accuracy, if a user fails the au-
+thentication, RFace can conduct a second-time authentication
+for the user. Increasing the number of authentication attempts
+can effectively reduce the false reject rate and the time required
+for each authentication is really short. 2) The number of users:
+The current version of RFace is designed for the access control of
+group clients in public institutions (e.g., communities, small- or
+moderate-scale companies) or individual identiﬁcation of smart
+home devices. In these scenarios, the number of users would
+not be as large as that of mobile applications, which may be
+in a scale of millions. Moreover, according to the evaluation
+results, RFace performs well when the amount of users is on a
+moderate-scale.
+Robustness. 1) Authentication distance: To ensure a high au-
+thentication accuracy, we recommend that users pose their faces
+close to the tag array. We believe such a requirement on sensing
+distance can be satisﬁed in practical authentication applications,
+e.g., access control at entrances and individual identiﬁcation of
+the smart home device. 2) Obstacle: Like existing FA systems,
+the performance of RFace would degrade if the line-of-sight
+(LOS) path between the tag array and face is obstructed. How-
+ever, it is very rare that there are obstacles blocking the LOS path
+in reality. Besides, obstacles can be easily detected and users can
+remove them before authentication. 3) Interference: Due to the
+openness of the physical world, the RF signals emitted by the
+reader may be interfered by other RF signal sources. However,
+the interference only functions when these two kinds of signals
+are at the same frequency band, while the devices operating
+under the permitted RFID frequency range are not common in
+our daily life. Moreover, thanks to this property, users can deploy
+multiple RFace systems working at different frequency bands in
+the same place to improve the authentication efﬁciency.
+IX. C ONCLUSION
+In this article, we build a novel facial authentication sys-
+tem named RFace with COTS RFID devices. RFace ensures
+privacy-preserving and spooﬁng-resistant simultaneously. We
+build a rigorous theoretical model to prove the feasibility of
+extracting both 3D geometry and biomaterial features from
+backscatter RFID signals. To enhance the security of our system,
+we design a replay attack defense method by specifying the tag
+reading order. In order to alleviate the impact caused by position
+differences in real scenarios, we design a novel disturbance
+resistance algorithm. We conduct comprehensive evaluations
+with 30 participants in various experiment settings. The results
+show that RFace achieves an ASR of 95.7% and an EER of 4.4%.
+More importantly, RFace can effectively defeat spooﬁng attacks
+by jointly considering 3D geometry and biomaterial features.
+REFERENCES
+[1] H. Chen, W. Wang, J. Zhang, and Q. Zhang, “EchoFace: Acoustic sensor-
+based media attack detection for face authentication,”IEEE Internet Things
+J., vol. 7, no. 3, pp. 2152–2159, Mar. 2020.
+[2] B. Zhou, J. Lohokare, R. Gao, and F. Ye, “EchoPrint: Two-factor authen-
+tication using acoustics and vision on smartphones,” in Proc. ACM Int.
+Conf. Mobile Comput. Netw., 2018, pp. 321–336.
+[3] D. Tang, Z. Zhou, Y . Zhang, and K. Zhang, “Face ﬂashing: A secure
+liveness detection protocol based on light reﬂections,” in Proc. Annu. Netw.
+Distrib. Syst. Secur . Symp., 2018.
+[4] S. Rajarajan and P. Priyadarsini, “UTP: A novel PIN number based
+user authentication scheme,” Int. Arab J. Inf. Technol., vol. 16, no. 5,
+pp. 904–913, 2019.
+[5] A. S. Rathore et al., “SonicPrint: A generally adoptable and secure ﬁnger-
+print biometrics in smart devices,” in Proc. ACM Int. Conf. Mobile Syst.
+Appl. Serv., 2020, pp. 121–134.
+[6] S. Mare, M. Baker, and J. Gummeson, “A study of authentication in daily
+life,” in Proc. USENIX Symp. Usable Privacy Secur ., 2016, pp. 189–206.
+[7] A. Bhargav-Spantzel, A. Squicciarini, and E. Bertino, “Privacy preserving
+multi-factor authentication with biometrics,” in Proc. 2nd ACM Workshop
+Digit. Identity Manage., 2006, pp. 63–72.
+[8] J. Bringer, H. Chabanne, and A. Patey, “Privacy-preserving biometric
+identiﬁcation using secure multiparty computation: An overview and
+recent trends,” IEEE Signal Process. Mag., vol. 30, no. 2, pp. 42–52,
+Mar. 2013.
+[9] A.-R. Sadeghi, T. Schneider, and I. Wehrenberg, “Efﬁcient privacy-
+preserving face recognition,” in Proc. Int. Conf. Inf. Secur . Cryptol.,
+Springer, 2009, pp. 229–244.
+[10] P. Terhörst et al., “PE-MIU: A training-free privacy-enhancing face recog-
+nition approach based on minimum information units,” IEEE Access,
+vol. 8, pp. 93635–93647, 2020.
+[11] Z. Ma, Y . Liu, X. Liu, J. Ma, and K. Ren, “Lightweight privacy-preserving
+ensemble classiﬁcation for face recognition,” IEEE Internet Things J.,
+vol. 6, no. 3, pp. 5778–5790, Jun. 2019.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+4244 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 23, NO. 5, MAY 2024
+[12] M. A. P. Chamikara, P. Bertók, I. Khalil, D. Liu, and S. Camtepe, “Privacy
+preserving face recognition utilizing differential privacy,” Comput. Secur .,
+vol. 97, 2020, Art. no. 101951.
+[13] R. Amadeo, “Galaxy S8 face recognition already defeated with a simple
+picture,” 2017. [Online]. Available: https://arstechnica.com/gadgets/
+2017/03/video-shows-galaxy-s8-face-recognition-can-be-defeated-
+with-a-picture/
+[14] K. Kollreider, H. Fronthaler, and J. Bigun, “Non-intrusive liveness detec-
+tion by face images,” J. Image Vis. Comput., vol. 27, no. 3, pp. 233–244,
+2009.
+[15] A. Wyatt, “What exactly is the dot projector? Why it is used in iPhone
+X?.” 2018. [Online]. Available: https://www.thebestintech.com/what-is-
+dot-projector/
+[16] N. Erdogmus and S. Marcel, “Spooﬁng face recognition with 3D masks,”
+IEEE Trans. Inf. Forensics Security, vol. 9, no. 7, pp. 1084–1097, Jul. 2014.
+[17] D. Vasisht, G. Zhang, O. Abari, H. Lu, J. Flanz, and D. Katabi, “In-body
+backscatter communication and localization,” in Proc. Int. Conf. ACM
+Special Int. Group Data Commun., 2018, pp. 132–146.
+[18] F. Wang, J. Han, F. Lin, and K. Ren, “WiPIN: Operation-free passive person
+identiﬁcation using Wi-Fi signals,” in Proc. IEEE Glob. Commun. Conf.,
+2019, pp. 1–6.
+[19] L. Yang, Q. Lin, X. Li, T. Liu, and Y . Liu, “See through walls with COTS
+RFID system!,” in Proc. ACM Int. Conf. Mobile Comput. Netw., 2015,
+pp. 487–499.
+[20] C. Wang et al., “Multi-touch in the air: Device-free ﬁnger tracking and
+gesture recognition via COTS RFID,” in Proc. IEEE Int. Conf. Comput.
+Commun., 2018, pp. 1691–1699.
+[21] G. Wang et al., “Towards replay-resilient RFID authentication,” in Proc.
+ACM Int. Conf. Mobile Comput. Netw., 2018, pp. 385–399.
+[22] L. Yang, Y . Chen, X.-Y . Li, C. Xiao, M. Li, and Y . Liu, “Tagoram: Real-time
+tracking of mobile RFID tags to high precision using COTS devices,” in
+Proc. ACM Int. Conf. Mobile Comput. Netw., 2014, pp. 237–248.
+[23] Impinj, “R420 readers,” 2010. [Online]. Available: https://www.impinj.
+com/library
+[24] T. Foltýn, “Face unlock on many android smartphones falls for a photo,”
+2019. [Online]. Available: https://www.welivesecurity.com/2019/01/10/
+face-unlock-many-android-smartphones-falls-photo/
+[25] A. Greenberg, “Hackers say they’ve broken face ID a week after
+iPhone X release,” 2017. [Online]. Available: https://www.wired.com/
+story/hackers-say-broke-face-id-security/
+[26] L. Tsang, J. A. Kong, and R. T. Shin, “Theory of microwave remote
+sensing,” Theory of Microwave Remote Sensing. Wiley Interscience Pub-
+lications, New York, 1985.
+[27] S. F. Kak and F. M. Mustafa, “Smart home management system based
+on face recognition index in real-time,” in Proc. Int. Conf. Adv. Sci. Eng.,
+2019, pp. 40–45.
+[28] Q. Lin, L. Yang, C. Duan, and Y . Liu, “Revisiting reading rate with
+mobility: Rate-adaptive reading of COTS RFID systems,” IEEE Trans.
+Mobile Comput., vol. 18, no. 7, pp. 1631–1646, Jul. 2019.
+[29] C. Zhao et al., “RF-Mehndi: A ﬁngertip proﬁled RF identiﬁer,” in Proc.
+IEEE Int. Conf. Comput. Commun., 2019, pp. 1513–1521.
+[30] X. Lei and L. Sanglu, Principle, Protocol and System Design of RFID.
+Beijing, China: Science Press, 2016.
+[31] L. Yang, Y . Li, Q. Lin, H. Jia, X.-Y . Li, and Y . Liu, “Tagbeat: Sensing me-
+chanical vibration period with COTS RFID systems,” IEEE/ACM Trans.
+Netw., vol. 25, no. 6, pp. 3823–3835, Dec. 2017.
+[32] M. Rizwan, “LeNet5A classic CNN architecture,” 2018. [Online].
+Available: https://www.datasciencecentral.com/lenet-5-a-classic-cnn-
+architecture/
+[33] Samsung, “How does face recognition work on galaxy S20, S20, S20
+ultra, and Z ﬂip?.” [Online]. Available: https://www.samsung.com/global/
+galaxy/what-is/face-recognition/
+[34] Y . Chen, J. Sun, X. Jin, T. Li, R. Zhang, and Y . Zhang, “Your face your
+heart: Secure mobile face authentication with photoplethysmograms,” in
+Proc. IEEE Int. Conf. Comput. Commun., 2017, pp. 1–9.
+[35] Y . Cheng, X. Ji, J. Zhang, W. Xu, and Y . Chen, “DeMiCPU: Device
+ﬁngerprinting with magnetic signals radiated by CPU,” in Proc. ACM
+SIGSAC Conf. Comput. Commun. Secur ., 2019, pp. 1149–1170.
+[36] Z. Dehai, D. da, L. Jin, and L. Qing, “A PCA-based face recognition
+method by applying fast Fourier transform in pre-processing,” in Proc.
+Int. Conf. Multimedia Technol., 2013, pp. 1148–1155.
+[37] C. Luo et al., “RFaceID: Towards RFID-based facial recognition,” in Proc.
+ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4,
+pp. 1–21, 2021.
+[38] W. Xu et al., “Mask does not matter: Anti-spooﬁng face authentication
+using mmWave without on-site registration,” in Proc. ACM Int. Conf.
+Mobile Comput. Netw., 2022, pp. 310–323.
+[39] Z. Erkin, M. Franz, J. Guajardo, S. Katzenbeisser, I. Lagendijk, and T.
+Toft, “Privacy-preserving face recognition,” in Proc. Int. Symp. Privacy
+Enhancing Technol. Symp., Springer, 2009, pp. 235–253.
+[40] A. Company, “About Face ID advanced technology,” 2022. [Online].
+Available: https://support.apple.com/en-us/HT208108
+[41] D. Oberhaus, “iPhone X’s Face ID can be fooled with a 3D-
+printed mask,” 2017. [Online]. Available: https://www.vice.com/en/
+article/qv3n77/iphone-x-face-id-mask-spoof
+[42] A. Huang, D. Wang, R. Zhao, and Q. Zhang, “Au-Id: Automatic user identi-
+ﬁcation and authentication through the motions captured from sequential
+human activities using RFID,” Proc. ACM Interactive Mobile Wearable
+Ubiquitous Technol., vol. 3, no. 2, pp. 48:1–48:26, 2019.
+[43] J. Li et al., “Rhythmic RFID authentication,” IEEE/ACM Trans. Netw.,
+vol. 31, no. 2, pp. 877–890, Apr. 2023.
+[44] J. Liu, X. Zou, J. Han, F. Lin, and K. Ren, “BioDraw: Reliable multi-factor
+user authentication with one single ﬁnger swipe,” in Proc. IEEE/ACM Int.
+Symp. Qual. Serv., 2020, pp. 1–10.
+[45] J. Ning et al., “RF-Badge: Vital sign-based authentication via RFID
+tag array on badges,” IEEE Trans. Mobile Comput., vol. 22, no. 2,
+pp. 1170–1184, Feb. 2023.
+[46] J. Liu, X. Zou, F. Lin, J. Han, X. Xu, and K. Ren, “Hand-key: Leveraging
+multiple hand biometrics for attack-resilient user authentication using
+COTS RFID,” in Proc. IEEE Int. Conf. Distrib. Comput. Syst., 2021,
+pp. 1042–1052.
+[47] C. Feng, J. Xiong, L. Chang, F. Wang, J. Wang, and D. Fang, “RF-Identity:
+Non-intrusive person identiﬁcation based on commodity RFID devices,”
+Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 1,
+pp. 9:1–9:23, 2021.
+[48] J. Li et al., “RF-Rhythm: Secure and usable two-factor RFID authentica-
+tion,” in Proc. IEEE Conf. Comput. Commun., 2020, pp. 2194–2203.
+Weiye Xu (Student Member, IEEE) received the BS
+degree in computer science and technology from
+Wuhan University, China, in 2019. She is currently
+working toward the PhD degree with Zhejiang Uni-
+versity. Her research interests include IoT security,
+wireless sensing, and mobile computing.
+Jianwei Liu (Student Member, IEEE) received the
+BS degree from Northwestern Polytechnical Univer-
+sity, in 2018, and the MS degree from Xi’an Jiao-
+tong University, in 2021. He is currently working
+toward the PhD degree with Zhejiang University. His
+research interests include RFID, mobile computing,
+and smart sensing.
+Shimin Zhang is currently working toward the mas-
+ter degree majoring in computer science and technol-
+ogy with Zhejiang University. Her research interests
+include smart sensing and wireless system security.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.
+XU et al.: ANTI-SPOOFING FACIAL AUTHENTICATION BASED ON COTS RFID 4245
+Yuanqing Zheng (Member, IEEE) received the BS
+degree in electrical engineering and the ME degree in
+communication and information system from Beijing
+Normal University, Beijing, China, in 2007 and 2010,
+respectively, and the PhD degree from the School
+of Computer Engineering, Nanyang Technological
+University, in 2014. He is currently an associate
+professor with the Department of Computing, Hong
+Kong Polytechnic University. His research interest
+includes wireless networking and mobile computing,
+acoustic and RF sensing, and Internet of Things (IoT).
+He is a member of the ACM.
+Feng Lin (Senior Member, IEEE) received the PhD
+degree from the Department of Electrical and Com-
+puter Engineering, Tennessee Technological Univer-
+sity, USA, in 2015. He is currently a professor with
+the School of Cyber Science and Technology, College
+of Computer Science and Technology, Zhejiang Uni-
+versity, China. He was an assistant professor with the
+University of Colorado Denver, USA, a research sci-
+entist with the State University of New York (SUNY)
+at Buffalo, USA, and an engineer with Alcatel-Lucent
+(currently, Nokia). His current research interests in-
+clude mobile sensing, wireless sensing, Internet of Things security, biometrics,
+and AI security. He was a recipient of the ACM SIGSAC China Rising Star
+Award, the Best Paper Awards from ACM MobiSys’20, IEEE Globecom’19,
+IEEE BHI’17, the Best Demo Award from ACM HotMobile’18, and the Best
+Paper Award Nomination from Infocom’21. He serves as an editor of the IEEE
+Network and IEEE Access.
+Fu Xiao (Member, IEEE) received the PhD degree
+in computer science and technology from the Nan-
+jing University of Science and Technology, Nanjing,
+China, in 2007. He is currently a professor and a
+PhD supervisor with the School of Computer, Nan-
+jing University of Posts and Telecommunications. He
+has authored papers in research related international
+conferences, including INFOCOM, ICC, and Mobi-
+hoc, the IEEE Journal on Selected Areas in Commu-
+nications, IEEE/ACM Transactions on Networking,
+IEEE Transactions on Mobile Computing,a n d ACM
+Transactions on Embedded Computing Systems. His research interest include
+the Internet of Things.
+Jinsong Han (Senior Member, IEEE) received the
+PhD degree in computer science from the Hong Kong
+University of Science and Technology, in 2007. He is
+now a professor with the School of Cyber Science
+and Technology, Zhejiang University. He is a senior
+member of the ACM. His research interests focus
+on IoT security, smart sensing, wireless, and mobile
+computing.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 17,2026 at 07:41:05 UTC from IEEE Xplore.  Restrictions apply.

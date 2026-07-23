@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[95]",
+  "target_reference_entry": "[95] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文将目标文献作为RFID侧信道声学窃听的代表性工作，在相关工作部分（Section X, RF）中简要提及，未在正文中具体使用或评价其方法或性能。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96].",
+      "evidence_context": "RF. ... Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96]. Across these studies, the average source-to-attacker distance is about 3.6 m, with some systems reaching up to 8 m [88], [92]. The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "reference_entry": "[95] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用论文仅在相关工作部分将目标文献列入RFID窃听方法的列表中，并跟随一句整体性能总结（accuracy up to 0.94 at 1 m），但该总结针对整个RFID类别，未明确区分目标文献的贡献；属于普通相关文献引用，不应视为单独的性能对比或亚毫米能力确认。",
+      "copy_ready_zh": "引用论文将目标文献列为RFID声学窃听的一种方法，并引用其性能指标，但未单独描述或突出目标文献的亚毫米级振动感知能力。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "The accuracy of the speech recognition can be as high as 0.94 at 1 m [95]",
+      "evidence_context": "RF. ... Radio Frequency Identification (RFID) [95]... The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "reference_entry": "[95] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该句将[95]与[96]并列，准确率0.94有可能属于目标文献，但随后用'or'连接另一性能，且整段是对RFID方法类别的总结，无法确定该数字是否明确对应[95]；同时该句子并未提及sub-mm或毫米级精度；为避免误归因，应排除。",
+      "copy_ready_zh": "引用论文在总结RFID窃听方法时提到了高准确率，但未明确将该准确率归因于目标文献，也未提及亚毫米级能力。",
+      "confidence": "medium"
+    }
+  ]
+}

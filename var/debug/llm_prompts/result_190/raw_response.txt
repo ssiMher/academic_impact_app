@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "To quantify the performance of audio recovery of the five lyrics, we calculate the similarity between the original sound and recovered sound using cross-correlation of audio frequencies [49].",
+      "evidence_type": "method_foundation",
+      "stance": "neutral",
+      "mention_type": "method_use",
+      "reasoning": "The citing paper uses the method from [49] (target paper) to compute similarity between original and recovered audio, indicating the target paper's technique is adopted as a foundation for performance quantification.",
+      "highlight_keywords": ["cross-correlation", "audio frequencies", "[49]"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The citation explicitly uses the target paper's cross-correlation method for audio similarity, which aligns with RFID sub-mm vibration sensing capability (template 73) as the method is used for audio recovery evaluation.",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}

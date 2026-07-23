@@ -1,0 +1,216 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RFID-based vibration sensing has been widely used in areas like machine fault diagnosis [8–16], vital signs monitoring [17,18], and speech eavesdropping [19–23].",
+      "reasoning": "This is a related work listing where the target reference [23] is grouped with [19–23] under speech eavesdropping. It acknowledges RFID vibration sensing applications but does not provide specific detail about the cited paper.",
+      "keywords": [
+        "speech eavesdropping",
+        "19–23"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "citation_text does not anchor to target paper",
+          "matched_terms": [
+            "rfid",
+            "vibration sensing",
+            "eavesdropping",
+            "monitor"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "explicit_target",
+      "citation_text": "TagMic [22], built with COTS devices, was the first to show RFID tags could be used for eavesdropping. Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping.",
+      "reasoning": "In the 'Voice eavesdropping' subsection, Wang et al. [23] is explicitly mentioned as extending RFID sensing to through-wall eavesdropping, positioning it as a representative work in that line of research.",
+      "keywords": [
+        "Wang et al.",
+        "extended RFID sensing",
+        "through-wall eavesdropping"
+      ],
+      "keep": true,
+      "matched_template_ids": [
+        74
+      ],
+      "template_match_reason": "explicit first/pioneering expression targets cited paper: the first, first ",
+      "template_satisfied": true,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording",
+      "matched_template_names": [
+        "首次/开创性明确表述"
+      ],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid",
+            "rfid tag",
+            "through-wall",
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": true,
+          "template_match_reason": "explicit first/pioneering expression targets cited paper: the first, first ",
+          "template_failure_reason": "",
+          "matched_terms": [
+            "the first",
+            "first "
+          ],
+          "match_score": 30.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "eavesdropping [19–23]",
+      "reasoning": "In the introduction and related work sections, [23] appears in a grouped citation list [19–23] for eavesdropping applications. This provides no detailed discussion of the cited work.",
+      "keywords": [
+        "eavesdropping",
+        "19–23"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "citation_text does not anchor to target paper",
+          "matched_terms": [
+            "rfid",
+            "vibration sensing",
+            "eavesdropping",
+            "detect",
+            "measure",
+            "measures",
+            "monitor"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RFID-based vibration sensing has been widely used in areas like machine fault diagnosis [8–16], vital signs monitoring [17,18], and speech eavesdropping [19–23].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[23]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This is a related work listing where the target reference [23] is grouped with [19–23] under speech eavesdropping. It acknowledges RFID vibration sensing applications but does not provide specific detail about the cited paper.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "TagMic [22], built with COTS devices, was the first to show RFID tags could be used for eavesdropping. Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "explicit_target",
+      "target_reference_marker": "[23]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "In the 'Voice eavesdropping' subsection, Wang et al. [23] is explicitly mentioned as extending RFID sensing to through-wall eavesdropping, positioning it as a representative work in that line of research.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false,
+      "matched_template_ids": [
+        74
+      ],
+      "matched_template_names": [
+        "首次/开创性明确表述"
+      ],
+      "template_match_reason": "explicit first/pioneering expression targets cited paper: the first, first ",
+      "template_satisfied": true,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording"
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "eavesdropping [19–23]",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[23]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": true,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "In the introduction and related work sections, [23] appears in a grouped citation list [19–23] for eavesdropping applications. This provides no detailed discussion of the cited work.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

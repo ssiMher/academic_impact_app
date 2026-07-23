@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "More recent work has focused on millimeter-wave (mmWave) radar [87], [88], [89], [90], [91], [92], [93], [94], Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96]. Across these studies, the average source-to-attacker distance is about 3.6 m, with some systems reaching up to 8 m [88], [92]. The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target paper [95] is grouped among other RF-based eavesdropping methods (mmWave radar, RFID, RF emanations). The citation notes the accuracy of 0.94 at 1 m, which is a performance metric from the target paper. It is used as a representative example of RFID-based techniques in the related work overview. The grouped citation introduces attribution uncertainty about which specific method achieves the stated accuracy, but the accuracy is explicitly cited as [95].",
+      "highlight_keywords": ["RFID", "95", "accuracy", "0.94"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The citation mentions 'RFID' and 'accuracy ... 0.94', which are positive keywords for RFID sub-mm capability, but the body text does not explicitly state 'sub-mm' or 'millimeter-level' sensing. The evidence type is representative_work, not precision_claim. The required patterns 'sub-mm RFID' or 'millimeter-level sensing' are not present. Template 73 is not fully satisfied because the body does not explicitly confirm sub-mm precision.",
+      "template_satisfied": false,
+      "template_failure_reason": "The body text does not include explicit wording about sub-mm or millimeter-level precision. The citation only reports accuracy (0.94) and mentions RFID, but does not describe the sensing capability as sub-mm or millimeter-level."
+    },
+    {
+      "citation_text": "The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "evidence_type": "positive_evaluation",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "reasoning": "This sentence directly states a specific performance metric (accuracy 0.94 at 1m) of the target paper, which is a positive evaluation of its speech recognition capability. The target reference marker [95] is explicitly present, and the context is not in References but in the related work section of the body.",
+      "highlight_keywords": ["accuracy", "0.94", "1 m", "95"],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "No active template directly matches this evidence type. Template 73 is not satisfied because sub-mm precision is not mentioned. Template 74 is not satisfied because no first/pioneering claim is made.",
+      "template_satisfied": false,
+      "template_failure_reason": "Not applicable; no template matched."
+    }
+  ]
+}

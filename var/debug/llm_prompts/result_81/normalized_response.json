@@ -1,0 +1,66 @@
+{
+  "findings": [
+    {
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "citation_text": "MoiréPose targets 6-DoF localization [19], and MoiréVision extends this concept to curvilinear patterns with sub-pixel feature extraction [20].",
+      "reasoning": "This context describes MoiréVision as extending the concept of Moiré-based pose estimation to curvilinear patterns with sub-pixel feature extraction, directly referencing [20] (MoiréVision). It positions MoiréVision as a foundational method within the camera-CFA Moiré category, which MoiréLens builds upon.",
+      "keywords": [
+        "MoiréVision",
+        "extends this concept",
+        "curvilinear patterns",
+        "sub-pixel feature extraction"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Single high-frequency grid ×camera CFA. Interference between a camera CFA and a high-frequency grid background enables ultra-precise pose estimation and tracking [19–21]. MoiréPose targets 6-DoF localization [19], and MoiréVision extends this concept to curvilinear patterns with sub-pixel feature extraction [20]. MoiréVib demodulates periodic fringe motion for micro-vibration sensing [21].",
+      "reasoning": "The entire block [19–21] groups MoiréPose, MoiréVision, and MoiréVib as representative works of the 'Single high-frequency grid ×camera CFA' approach. MoiréVision [20] is specifically mentioned as extending the concept to curvilinear patterns. However, because the reference is grouped, there is some attribution uncertainty. The context is in the Related Work section, presenting these as established methods, making 'representative_work' appropriate with neutral stance.",
+      "keywords": [
+        "Single high-frequency grid ×camera CFA",
+        "MoiréVision",
+        "extends this concept",
+        "curvilinear patterns"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "MoiréPose targets 6-DoF localization [19], and MoiréVision extends this concept to curvilinear patterns with sub-pixel feature extraction [20].",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "target_reference_marker": "[20]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This context describes MoiréVision as extending the concept of Moiré-based pose estimation to curvilinear patterns with sub-pixel feature extraction, directly referencing [20] (MoiréVision). It positions MoiréVision as a foundational method within the camera-CFA Moiré category, which MoiréLens builds upon.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Single high-frequency grid ×camera CFA. Interference between a camera CFA and a high-frequency grid background enables ultra-precise pose estimation and tracking [19–21]. MoiréPose targets 6-DoF localization [19], and MoiréVision extends th...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[20]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The entire block [19–21] groups MoiréPose, MoiréVision, and MoiréVib as representative works of the 'Single high-frequency grid ×camera CFA' approach. MoiréVision [20] is specifically mentioned as extending the concept to curvilinear patterns. However, because the reference is grouped, there is some attribution uncertainty. The context is in the Related Work section, presenting these as established methods, making 'representative_work' appropriate with neutral stance.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

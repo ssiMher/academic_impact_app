@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "Alternative signals also offer intriguing solutions for audio perception, such as accelerometer signal in smartphone [1, 14, 19], mechanical signals in magnetic hard disks [17], smartphone camera image stream signals [22], COTS RFID tags [37] and so on.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This context cites [37] (the target paper) as one of several alternative signal approaches in related work. It is a grouped citation listing RFID tags as an example of alternative signals for audio eavesdropping. The citation acknowledges the target paper's approach but does not provide detailed description or evaluation, making it a representative work. Attribution uncertainty exists because it is a grouped citation.",
+      "highlight_keywords": ["RFID tags", "alternative signals", "audio eavesdropping"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Template 73 (rfid_submm_capability) is satisfied because the context mentions 'COTS RFID tags' as an alternative signal for audio eavesdropping, explicitly citing the target paper. While it does not explicitly state sub-mm precision, the context groups RFID tags with other sub-mm capable signals, and the target paper's title includes 'Sub-mm Level Vibration'. However, since the citation is grouped and does not explicitly confirm or describe sub-mm capability, it is classified as representative_work rather than precision_claim.",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}

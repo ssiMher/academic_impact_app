@@ -1,0 +1,30 @@
+<article class="card evidence-card formal-evidence-card" id="evidence-{{ formal_item.evidence_id or formal_item.index }}">
+  <h4>{{ formal_item.index }}. {{ formal_item.claim_label }}</h4>
+  <dl class="meta-grid">
+    <div><dt>引用论文</dt><dd>{{ formal_item.citing_paper_title }}</dd></div>
+    <div><dt>被引用论文</dt><dd>{{ formal_item.cited_paper_title }}</dd></div>
+    <div><dt>建议</dt><dd>{{ formal_item.recommendation_label }}</dd></div>
+    <div><dt>置信度</dt><dd>{{ formal_item.confidence }}</dd></div>
+  </dl>
+  <h5>原文证据</h5>
+  <blockquote class="quote">{{ formal_item.quote_html | safe }}</blockquote>
+  <h5>对应参考文献（引用论文原文 References 中的条目）</h5>
+  <blockquote class="quote">{{ formal_item.reference_entry_html | safe }}</blockquote>
+  <h5>原文上下文</h5>
+  <blockquote class="quote">{{ formal_item.context_html | safe }}</blockquote>
+  <h5>亮点评价</h5>
+  <p>{{ formal_item.evaluation_zh or formal_item.copy_ready_zh }}</p>
+  <h5>评价理由</h5>
+  <p>{{ formal_item.why_this_judgment_zh }}</p>
+  {% if evidence_page and formal_item.copy_ready_zh %}
+    <h5>可复制表述</h5>
+    <p>{{ formal_item.copy_ready_zh }}</p>
+  {% endif %}
+  {% if evidence_page %}
+    <div class="action-row formal-evidence-actions">
+      <button class="button button-secondary" type="button" data-copy-text="{{ formal_item.citation_text or '' }}">复制原文证据</button>
+      <button class="button button-secondary" type="button" data-copy-text="{{ formal_item.copy_ready_zh or formal_item.evaluation_zh or '' }}">复制亮点评价</button>
+      <a class="button button-secondary" href="/scholar-sessions/{{ session_id }}/evidence?view={{ view }}&mode=debug#evidence-{{ formal_item.evidence_id }}">查看调试信息 / 编辑复核</a>
+    </div>
+  {% endif %}
+</article>

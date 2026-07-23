@@ -1,0 +1,40 @@
+{
+  "findings": [
+    {
+      "citation_text": "This Moiré phenomenon has been shown to be effective in various applications, such as pose [21] and camera position [37].",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "reasoning": "Citing MoiréPose [21] as an example of an application where Moiré phenomenon is effective, establishing prior work context.",
+      "highlight_keywords": ["pose", "effective"],
+      "keep": true
+    },
+    {
+      "citation_text": "Successful attempts have also been made to employ Moiré patterns for tracking camera and object positions [7, 37], as well as advancing to pose estimation [21, 24, 32, 33].",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "grouped_citation",
+      "reasoning": "MoiréPose [21] is listed among successful attempts for pose estimation using Moiré patterns, indicating it is part of a technical line. Grouped citation, so attribution is shared.",
+      "highlight_keywords": ["pose estimation", "Moiré patterns", "successful"],
+      "keep": true
+    },
+    {
+      "citation_text": "While there have been several attempts to use Moiré patterns for sensing and tracking objects [21], visualizing interactions [31], and analyzing mechanical properties [4], little has been studied about the use of Moiré patterns for indirectly sensing human interactions.",
+      "evidence_type": "representative_work",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "reasoning": "MoiréPose [21] is cited as a representative example of Moiré patterns used for sensing and tracking objects, positioning it as prior work that MoiréTag builds upon.",
+      "highlight_keywords": ["sensing", "tracking"], 
+      "keep": true
+    },
+    {
+      "citation_text": "MoiréTag adopted the validated methodology of calculating real displacement from Moiré pattern displacement and applied it in creating novel tangible user interfaces.",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "reasoning": "This sentence directly states that MoiréTag adopted the validated methodology from MoiréPose [21] (and/or related works) for calculating displacement, indicating method foundation. The context references [21] earlier in the same paragraph.",
+      "highlight_keywords": ["adopted", "validated methodology", "calculating real displacement"],
+      "keep": true
+    }
+  ]
+}

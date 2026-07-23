@@ -1,0 +1,1425 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Evaluate ACTIVE_EVIDENCE_TEMPLATES for every finding. Include matched_template_ids, template_match_reason, template_satisfied, and template_failure_reason. If a template is relevant but not satisfied, explain why.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true,
+      "matched_template_ids": [1],
+      "template_match_reason": "why this quote satisfies an active template",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Ambient Light Reflection-Based Eavesdropping Enhanced With cGAN
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [30]
+TARGET_REFERENCE_ENTRY: [30] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” Proc. ACM Interactive Mobile
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=In this section, we extensively review state-of-the-art work; context_type=formula_nearby; contains_formula=True
+iple non-acoustic sensors
+are fused for intelligible signal reconstruction. Maruri et al.
+[26] explores the use of vibration sensors in the nose pads of
+glasses for eavesdropping. Roy and Choudhury[27] employs a
+vibra-motor, vibrating due to the movement of magnetic sub-
+stances, as an acoustic sensor. Guri et al.[28] demonstrates how
+earphones can be transformed into eavesdropping microphones
+through malware, while[29] treats mechanical hard drives as
+synthetic microphones. Additionally,[22], [23] transforms the
+lidar sensing radar on a robotic vacuum cleaner into a laser
+microphone, and RFID[30] is also utilized for eavesdropping.
+It is worth noting that the aforementioned eavesdropping
+attacks are considered invasive attacks, requiring the eaves-
+dropper to either physically tamper with the victim’s device or
+install malware on it. On the other hand, some eavesdropping
+methods [10], [12], [13], [24], [25] rely on pre-established
+vocabulary of hot words and are limited to tasks such as word
+classiﬁcation, speaker identiﬁcation, or gender identiﬁcation. In
+contrast to these methods, our proposed approach belongs to a
+non-intrusive attack and does not rely on pre-established vocab-
+ula
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+72 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 1, JANUARY 2025
+Ambient Light Reﬂection-Based Eavesdropping
+Enhanced With cGAN
+Guoming Zhang ,H e q i a n gF u, Zhijie Xiang , Xinyan Zhou , Member , IEEE, Pengfei Hu ,
+Xiuzhen Cheng , Fellow, IEEE, and Yanni Yang
+Abstract—Sound eavesdropping using light has been an area
+of considerable interest and concern, as it can be achieved over
+long distances. However, previous work has often lacked stealth
+(e.g., active emission of laser beams) or been limited in the range
+of realistic applications (e.g., using direct light from a device’s
+indicator LED or a hanging light bulb). In this paper, we present
+EchoLight, a non-intrusive, passive and long-range sound eaves-
+dropping method that utilizes the extensive reﬂection of ambient
+light from vibrating objects to reconstruct sound. We analyze the
+relationship between reﬂection light signals and sound signals,
+particularly in situations where the frequency response of reﬂective
+objects and the efﬁciency of diffuse reﬂection are suboptimal.
+Based on this analysis, we have introduced an algorithm based
+on cGAN to address the issues of nonlinear distortion and spectral
+absence in the frequency domain of sound. We extensively evaluate
+EchoLight’s performance in a variety of real-world scenarios.
+It demonstrates the ability to accurately reconstruct audio from
+a variety of source distances, attack distances, sound levels, light
+sources, and reﬂective materials. Our results reveal that the recon-
+structed audio exhibits a high degree of similarity to the original
+audio over 40 meters of attack distance.
+Index Terms—Optical eavesdropping, ambient light, generative
+adversarial network.
+I. INTRODUCTION
+S
+OUND eavesdropping can secretly steal conﬁdential infor-
+mation without the victim’s consent during phone calls,
+online meetings, or even face-to-face conversations, etc., thus
+posing a great threat to privacy. In recent years, various new
+eavesdropping technologies have emerged, allowing attackers
+to easily intercept sounds near the victim using millimeter-wave
+radar [1], [2], [3], [4], [5], [6], [7], WiFi signal[8], [9], motion
+Received 4 February 2024; revised 16 July 2024; accepted 3 September 2024.
+Date of publication 13 September 2024; date of current version 4 December
+2024. This work was supported by the National Key Research and Development
+Program of China under Grant 2021YFB3100400, in part by the National Natural
+Science Foundation of China under Grant 62202276, Grant 62232010, Grant
+62202274, and Grant 62302274, and in part by the Department of Science and
+Technology of Shandong Province under Grant 2022HWYQ-038 and Grant
+2023TSGC0105. Recommended for acceptance by W. Wang.(Corresponding
+author: Yanni Yang.)
+Guoming Zhang, Heqiang Fu, Zhijie Xiang, Pengfei Hu, Xiuzhen Cheng, and
+Yanni Yang are with the School of Computer Science and Technology, Shan-
+dong University, Shandong 250100, China (e-mail: guomingzhang@sdu.edu.cn;
+fuheqiang@mail.sdu.edu.cn; 202215131@mail.sdu.edu.cn; phu@sdu.edu.cn;
+xzcheng@sdu.edu.cn; yanniyang@sdu.edu.cn).
+Xinyan Zhou is with the Faculty of Electrical Engineering and
+Computer Science, Ningbo University, Ningbo 315211, China (e-mail:
+zhouxinyan@nbu.edu.cn).
+Digital Object Identiﬁer 10.1109/TMC.2024.3460392
+Fig. 1. EchoLight eavesdropping attack. The light source can be either
+natural sunlight or artiﬁcial indoor lighting, while the sound to be recovered can
+be human speech or played through a loudspeaker.
+sensors [10], [11], [12], [13], electromagnetic radiation [14],
+and more. However, these methods suffer from one or more of
+the following limitations: 1) require intrusion into the victim’s
+device; 2) rely on active sensors; 3) have limited attack range.
+Optical eavesdropping attacks[15], [16], [17], [18], [19] have
+emerged as an intriguing avenue for extracting information.
+Glowworm [15], which recovers sound from a loudspeaker’s
+power indicator LED. However, it may not be applicable to
+most existing loudspeakers lacking an indicator LED, and it
+cannot recover sound from a live human. Lamphone[16] uses the
+acoustic response of a suspended light bulb on the roof to recover
+sound which requires that the loudspeaker be placed at a close
+distance (1 centimeter), which severely limits its applicability.
+Laser-based eavesdroppings[20], [21], [22], [23] are active
+methods that require the eavesdropper to direct a laser beam di-
+rected at a vibrating object and recover sound from the reﬂected
+laser beam. However, it can be easily detected by the victim due
+to the laser spot.
+In this paper, we ask a fundamental question: Is it possible
+to passively recover sound over long distances using ambient
+light? To answer this question, we designedEchoLight,a n
+approach to recover sound (including both loudspeakers and live
+human voices) by capturing ambient light (such as sunlight or
+indoor lighting) reﬂected or even diffusely reﬂected from nearby
+reﬂective objects. As shown in Fig.1, these reﬂective objects,
+situated close to the victim, experience slight vibrations induced
+by sound waves. Consequently, the reﬂection of ambient light
+is deﬂected when the object’s surface is displaced due to the
+vibrations caused by the audio signal. We employ a photodetec-
+tor to capture the deﬂection of ambient light resulting from the
+acoustic wave vibrations. The optical measurements obtained by
+the photodetector carry the vibration information of the acoustic
+wave within the room. By converting these optical measure-
+ments into an audio signal, we can directly reconstruct the sound.
+1536-1233 © 2024 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+ZHANG et al.: AMBIENT LIGHT REFLECTION-BASED EA VESDROPPING ENHANCED WITH cGAN 73
+To realize EchoLight, however, several challenges need
+to be overcome. First, the limited acoustic energy hitting the
+object, coupled with the object’s passive vibration, leads to poor
+frequency response in the reﬂective material. Second, to avoid
+detection and to be applicable to more scenarios, we utilize am-
+bient light that is reﬂected or even diffusely reﬂected to recover
+the sound. Consequently, the reﬂection efﬁciency and intensity
+of the light we ultimately capture is relatively poor. These factors
+result in a lower signal-to-noise ratio in the sound signals, and
+the sound also lacks high-frequency components. To address
+this challenge, we ﬁrst use signal processing and denoising
+techniques to enhance the quality of the signal and then employ a
+bandwidth extension method based on a conditional adversarial
+network (cGAN) architecture to reconstruct the sound.
+We implement and evaluate EchoLight in various sce-
+narios and settings. The evaluation results demonstrate that
+the audio reconstructed byEchoLight exhibits a signiﬁcant
+resemblance to the original audio. Our contributions can be
+summarized as follows:
+r We introduceEchoLight a non-invasive, passive eaves-
+dropping method that utilizes ambient light to directly
+reconstructed audio from the subtle vibrations of everyday
+reﬂective objects.
+r We employ a cGAN model to recover the high-frequency
+component of the captured light signals. This generative
+model is capable of reconstructing high-quality audio from
+preprocessed light signals.
+r We validate the effectiveness of EchoLight by con-
+ducting a comprehensive exploration of various settings,
+including sound source distance, attack distance, reﬂective
+material, sound level, and moving audio source.
+The remaining paper is organized as follows. SectionII dis-
+cusses the related work. In SectionIII, we present our attack
+scenario. SectionIV delves into the preliminaries, encompass-
+ing both the feasibility analysis, an exploration of the impact
+of desktop vibrations, and an introduction to the Generative
+Adversarial Network (GAN). In Section V, we describe our
+audio reconstruction method utilized for reconstructing audio
+from optical signals. In SectionVI, we analyze and explore the
+results under various experimental settings. In SectionVII,w e
+engage in discussions, and ﬁnally, we conclude in SectionVIII.
+II. RELATED WORK
+In this section, we extensively review state-of-the-art work
+related to eavesdropping. Certain eavesdropping techniques
+leverage the impact of speech on smartphone motion sensors
+(gyroscope and accelerometer) to gather private user information
+[10], [12], [24], [25].I n [13], multiple non-acoustic sensors
+are fused for intelligible signal reconstruction. Maruri et al.
+[26] explores the use of vibration sensors in the nose pads of
+glasses for eavesdropping. Roy and Choudhury[27] employs a
+vibra-motor, vibrating due to the movement of magnetic sub-
+stances, as an acoustic sensor. Guri et al.[28] demonstrates how
+earphones can be transformed into eavesdropping microphones
+through malware, while[29] treats mechanical hard drives as
+synthetic microphones. Additionally,[22], [23] transforms the
+lidar sensing radar on a robotic vacuum cleaner into a laser
+microphone, and RFID[30] is also utilized for eavesdropping.
+It is worth noting that the aforementioned eavesdropping
+attacks are considered invasive attacks, requiring the eaves-
+dropper to either physically tamper with the victim’s device or
+install malware on it. On the other hand, some eavesdropping
+methods [10], [12], [13], [24], [25] rely on pre-established
+vocabulary of hot words and are limited to tasks such as word
+classiﬁcation, speaker identiﬁcation, or gender identiﬁcation. In
+contrast to these methods, our proposed approach belongs to a
+non-intrusive attack and does not rely on pre-established vocab-
+ulary. This signiﬁcantly enhances its practicality in real-world
+scenarios.
+Non-intrusive eavesdropping attacks are continually being
+developed. For instance,[8], [9] employ WiFi Received Signal
+Strength (RSS) and Channel State Information (CSI) analysis,
+respectively, to identify speciﬁc words. Another approach[31],
+based on Impulse Radio Ultra-Wideband, recovers and separates
+sound from multiple sources. However, these methods face
+challenges such as limited vibration resolution due to longer
+wavelengths and the need for large antenna setups, which in-
+creases operational difﬁculty in real-world scenarios. Moreover,
+mmWave-based eavesdropping attacks have been explored. For
+instance, mmEve [4] captures mmWave signals emitted by
+smartphones in earphone mode to recover speech. Wavesdropper
+[32] uses millimeter waves to eavesdrop on human speech in
+through-wall scenarios. Another method proposed in[5] em-
+ploys piezoelectric ﬁlm and millimeter wave signals for voice
+eavesdropping. mmSpy [6] also utilizes mmWave for eaves-
+dropping on phone conversations but treats it as a classiﬁcation
+problem, limiting its ability to recognize speciﬁc keywords or
+numbers. Additionally,[7] can reconstruct high-quality sound
+from the user’s throat using millimeter-wave radar, but it requires
+the subject to remain motionless and maintain a short distance
+from the radar probe.
+Optical eavesdropping is the most relevant eavesdropping
+technique to this article. The visual microphone[33] captures
+subtle surface vibrations of objects using a high-speed camera
+(2200 FPS). However, this method demands signiﬁcant com-
+puting resources and high hardware requirements, resulting in
+several hours of processing time to recover a few seconds of
+audio. Laser microphones[20], [21], [22], [23], [34] use lidar
+sensors to illuminate vibrating objects and collect reﬂected sig-
+nals for audio reconstruction. However, these methods have sev-
+eral drawbacks: 1) They are active, relying on active sensors that
+require signal transmission and reception. 2) They lack sufﬁcient
+concealment, as specialized optical sensors can detect directed
+laser beams since the eavesdropper needs to inject the laser beam
+into the victim’s room. 3) They are position-sensitive, as laser
+transceivers require precise calibration during signal reception,
+and even slight positional deviations can affect the signal quality.
+4) Certain methods[22], [23] are considered intrusive attacks,
+requiring malware installation in the victim’s device to extract
+laser data. 5) They have equipment restrictions, as specialized
+equipment with limited availability (such as specialized laser
+transceivers) may be required, and these may only be accessible
+to speciﬁc national departments.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+74 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 1, JANUARY 2025
+Lamphone [16], on the other hand, captures indoor light
+bulb vibrations using a telescope and photoelectric sensor at
+a distance. However, this method is limited by the loudspeaker’s
+proximity to the light bulb, requiring a distance of 1 centimeter,
+which may not be practical in daily ofﬁces or meeting rooms.
+Additionally, [16], [33] require very high sound levels (over 100
+dB). In the case of Glowworm[15], it collects light signals from
+the LED indicator light of the power supply device using a tele-
+scope and photoelectric sensor to reconstruct audio. However,
+this method relies on hardware vulnerabilities (the power indica-
+tor LED is affected by power consumption ﬂuctuations), which
+manufacturers can easily prevent to counter this type of attack.
+There is also a category of methods that exploit optical side
+effects to retrieve information from optical emissions of victim
+devices. For example, some methods aim at recovering content
+from monitors [17], [35], [36], [37], or retrieving keystrokes
+from physical and virtual keyboards[18], [19], [38], [39], [40].
+However, it is worth noting that these attacks do not speciﬁcally
+target speech eavesdropping and audio reconstruction.
+III. THREAT MODEL
+The scenario we consider is that the victims are in an ofﬁce or
+conference room discussing conﬁdential business matters, and
+the meeting may or may not use loudspeakers. Sunlight enters
+the room through the window and shines on various everyday
+objects (called reﬂective objects), or indoor light sources (such
+as desk lamps) shine on reﬂective objects, and then the light is
+reﬂected out the window.
+The eavesdropper uses a telescope to capture the reﬂected
+ambient light (either sunlight or indoor lighting) and this cap-
+tured light is received by a photodetector. The photodetector
+is connected to a Data Acquisition Card (DAQ) to convert the
+analog signal to a digital format. After the digital signal is
+processed, the high-frequency information is recovered using
+a bandwidth extension algorithm. Finally, the eavesdropper re-
+ceives a reconstructed, high-quality sound.
+In this attack scenario, we assume that the eavesdropper has
+the following conditions and capabilities when launching an
+EchoLight attack:
+r The attacker cannot access or damage the victim’s device,
+nor can the attacker install any sensors in the victim’s room.
+r The victim’s room contains common everyday items, such
+as reﬂective objects like packing bag, vanity mirror, ﬁle
+folder, etc. Sound waves can induce minute vibrations in
+these reﬂective objects.
+r There must be an unobstructed line of sight between the
+telescope and the reﬂective object in the victim’s room,
+with the reﬂective object receiving light.
+r The attacker does not require knowledge of the speciﬁc
+words or any prior information spoken by the victim. They
+should be able to reconstruct audio from any complete
+sentence.
+r The attacker does not need expensive physical equipment;
+instead, they only require passive sensors, telescopes, and
+signal processing tools that are not categorized as spy
+equipment.
+IV . PRELIMINARIES
+In this section, we explore the feasibility of our eavesdrop-
+ping attack and introduce the Generative Adversarial Networks
+(GAN) for signal bandwidth extension.
+A. Feasibility Analysis
+To conduct a successful eavesdropping attack, we investigated
+whether the surface vibrations resulting from the acoustic wave
+are sufﬁcient to recover sound and whether the ambient light
+(such as sunlight or indoor desk lamp light) reﬂected from the
+surface carries enough information about the acoustic vibration.
+We selected various materials as reﬂective objects (e.g., mirror,
+photo frame, packing bag, ﬁle folder and gift box) and placed
+the speaker approximately 5cm away from the reﬂective object.
+During the experiment, we set the sound level of the loud-
+speaker to 90 dB and played a chirp signal with a frequency
+range from 100 Hz to 8 kHz, as well as speech audio. To capture
+the reﬂected ambient light, we placed a telescope at a distance of
+5 meters from the reﬂective object. A photodetector was placed
+behind the eyepiece of the telescope to detect the changing light
+signal received by the telescope. Subsequently, we used a DAQ
+to convert the optical analog signal detected by the photodetector
+into a digital signal for further analysis.
+Fig. 2 displays the results of the feasibility analysis using
+sunlight and indoor desk lamp light sources. It is evident that
+each material’s maximum response frequency to the chirp signal
+is quite high (around 4 - 7 kHz). The signal strength gradually
+decreases as the frequency increases, eventually leading to no
+response at certain high frequencies. On the other hand, each
+material’s maximum response frequency to the speech audio
+is relatively low (approximately 1000 Hz). This is attributed
+to the weak high-frequency component of the speech audio,
+which differs from the chirp signal that possesses a high am-
+plitude across all frequency bands. Additionally, the response
+of reﬂective objects to high frequencies is weaker than that to
+low frequencies, making it challenging for them to generate any
+substantial response at high frequencies. Moreover, we observed
+that the audio recovered using sunlight exhibits a higher response
+frequency compared to that obtained with a desk lamp light
+source, and it also contains relatively less noise.
+The results of our feasibility analysis show that there is a
+certain correlation between light signals and sound signals,
+both in the case of specular reﬂection (e.g., mirror) and diffuse
+reﬂection (other materials). The vibration of the object’s surface
+is capable of generating a signal that can be used for audio
+recovery, with a frequency response of around 1000 Hz. In
+addition, ambient light carries the information of the vibrations
+caused by the sound when reﬂected from the reﬂective object.
+Therefore, it is possible to use ambient light to recover sound
+from the vibrations of reﬂective objects.
+B. Exploring the Inﬂuence of Desktop Vibrations
+Some individuals may argue that it is due to placing the
+speaker and reﬂective objects on the same desktop, causing the
+table to transmit audio information through vibrations to the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+ZHANG et al.: AMBIENT LIGHT REFLECTION-BASED EA VESDROPPING ENHANCED WITH cGAN 75
+Fig. 2. Feasibility analysis results.
+Fig. 3. Desktop vibration impact results.
+reﬂective objects. To investigate the extent to which the speaker
+inﬂuences objects through air and the table, we designed the
+following comparative experiment. The results are illustrated in
+Fig. 3.
+First, we present the chirp and audio signal results directly
+generated from the optical signal under normal experimental
+conditions, as shown in the top row of Fig.3. Subsequently,
+under the same experimental conditions, we introduced a sound-
+proof board between the speaker and the reﬂective object to
+isolate the transmission of sound. This allowed us to solely inves-
+tigate the impact of table vibrations on the experimental results.
+The signals obtained are depicted in the second row of Fig.3.
+Due to the soundproof board effectively blocking most signals
+propagated through the air, the signal quality appears relatively
+poorer, with only low-frequency signals present. Nevertheless,
+we still attribute this subtle phenomenon to the incomplete sound
+insulation of the acoustic material, rather than the inﬂuence
+caused by desktop vibrations. Next, we elevated the speaker,
+effectively separating it from the tabletop, thus eliminating the
+factor of table vibrations. The results obtained are shown in the
+third row of Fig.3. Interestingly, even without tabletop vibra-
+tions, the obtained signals still exhibit relatively higher frequen-
+cies. It is evident that these experimental manipulations provide
+insights into the inﬂuence of table vibrations on our results.
+Based on the aforementioned experiments, we draw the fol-
+lowing conclusions:a) Vibrations induced in reﬂective objects by
+the propagation of sound waves through the air carry sufﬁcient
+original audio information and serve as the primary source of
+information.b) Table vibrations have the ability to inﬂuence
+reﬂective objects to some extent, with signals predominantly
+concentrated in the low-frequency range. While table vibrations
+may not be the primary means of attack in practical scenarios,
+they prove to be beneﬁcial in our speciﬁc attack. This under-
+scores their potential relevance in our overall strategy.
+C. Generative Adversarial Network
+Generative Adversarial Networks (GANs) were originally
+proposed by Ian Goodfellow et al.[41]. The architecture of
+GAN consists of a generator and a discriminator. The generator
+takes a random noise sequence as input and produces an image
+that appears realistic. On the other hand, the discriminator takes
+either a real image or an image generated by the generator
+as input and then determines whether the input image is real
+or fake. Through multiple alternating training iterations of the
+discriminator and the generator, the discriminator’s ability to
+distinguish between true and fake images gradually improves,
+while the generator’s capacity to create deceptive images to
+fool the discriminator also enhances. This process resembles
+a two-player minimax game, and it eventually reaches a Nash
+equilibrium state, where the generator and the discriminator
+cease to further improve their respective capabilities. As a result
+of this adversarial training, the generated images become so
+realistic that the discriminator discriminates the output of the
+image by the generator as real images with a probability of 0.5.
+Although GANs are capable of generating real-looking im-
+ages, they may not generate the speciﬁc images we desire.
+To address this limitation, conditional Generative Adversarial
+Networks (cGANs)[42] were introduced. The architecture of a
+cGAN is depicted in Fig.4. The generator takes both a noise
+vector z and a condition vectory as input and outputs an image
+G(z|y) that satisﬁes the given condition. On the other hand,
+the discriminator takes both the image (G(z|y) or x) and the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+76 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 1, JANUARY 2025
+Fig. 4. Architecture of conditional generative adversarial network.
+condition y as inputs. It only outputs “True” if both conditions
+are met: (1) the image to be discriminated is realistic enough,
+and (2) the image satisﬁes the speciﬁed condition y. Otherwise,
+it outputs “False.” The intersection of environmental audio and
+speech reconstruction is an emerging ﬁeld that presents un-
+precedented challenges. The task of reconstructing speech from
+environmental audio introduces novel difﬁculties, and cGAN
+models have emerged as innovative solutions to address this
+problem.
+V. EchoLight DESIGN
+In the previous section, we have veriﬁed the feasibility of
+ambient light eavesdropping and captured the changing light
+signal caused by the vibration of the object’s surface. Next, we
+proceed to reconstruct the optical signal acquired from the DAQ
+into an audio signal. However, if the optical signal is directly
+considered as an audio signal and written into a wav audio
+ﬁle, it will be accompanied by strong noise, which hinders the
+clear understanding of the audio. Therefore, we ﬁrst process the
+audio for speech enhancement. Additionally, we noticed that
+most of the collected optical signals only contain information
+in the low frequency band (below 1000 Hz). To address this
+limitation, we utilize a bandwidth extension method based on
+the cGAN architecture to recover the missing high frequencies
+from the audio, which initially contains only the low-frequency
+component. In conclusion, we obtain high-quality reconstructed
+audio through a two-step process involving speech enhancement
+and bandwidth extension. In this section, we describe the design
+details of each component inEchoLight.
+A. Speech Enhancement
+A direct transformation of the optical signal into audio intro-
+duces considerable noise, making it unrecognizable. Thus, we
+ﬁrst apply speech enhancement techniques to the optical signal.
+Speciﬁcally, our speech enhancement process consists of the
+following steps:
+r Filtering: Typically, household AC power operates at a
+frequency of 50Hz, and light bulbs function at this same
+frequency. However, since the AC cycle has two peaks
+(one positive and one negative), the brightness variation
+frequency of the bulb is twice the AC frequency, usually
+100Hz. As a result, the light signal captured by the photode-
+tector contains 100Hz and its harmonics (200Hz, 300Hz,
+etc.). We use a high-pass ﬁlter with a cutoff frequency of
+100 Hz to remove components below 100 Hz, and band-
+stop ﬁlters to remove the light frequency and its harmonics.
+Fig. 5. The inﬂuence of the three stages of speech enhancement.
+r Denoising: The captured optical signal exhibits pro-
+nounced noise, similar to white noise, which is not a result
+of the original audio. To deal with this, we leverage Sox
+- Sound eXchange[43], a widely used command-line tool
+for audio processing, to effectively diminish this type of
+interference. Speciﬁcally, we select a short segment of
+silent audio, extract its noise features, and then denoise
+the entire audio segment based on the noise features.
+r Peak Normalization: To adjust the dynamic range of the
+denoised signal, we normalize the audio peak to 0 dB and
+adjust other parts of the audio accordingly.
+The implementation results of each stage are illustrated in
+Fig. 5. The speech enhancement technology used in our study is
+lightweight and straightforward in nature. This approach allows
+us to obtain a relatively clean optical signal, which can then
+be fed into the trained model for rapid reconstruction of high-
+quality audio. This ensures a certain level of real-time capability
+in the eavesdropping process, which is a critical requirement for
+eavesdroppers.
+B. Bandwidth Extension
+Due to the poor frequency response of the reﬂective object
+and the reﬂection efﬁciency, the collected optical signal always
+lacks these high-frequency components. The goal of bandwidth
+extension is to recreate the high-frequency components based
+on the low-frequency components of the audio signal. This is
+achieved by learning the mapping relationship between low-
+frequency and high-frequency components in the sound. In our
+method, we design the bandwidth extension method based on
+cGAN.
+1) Model Input and Output:The application ﬁeld of cGAN
+primarily focuses on image translation and related tasks, where
+both the input and output are in the form of images. In our case,
+we apply the Short-Time Fourier Transform (STFT) to convert
+the input audio into a spectrogram, which is then used as the
+input and output form for the model. The calculation formula
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+ZHANG et al.: AMBIENT LIGHT REFLECTION-BASED EA VESDROPPING ENHANCED WITH cGAN 77
+Fig. 6. Model architecture for bandwidth extension.
+f o rS T F Ti sa sf o l l o w s ,
+STFT (t,f )=
+∫ ∞
+−∞
+x(τ)w(τ −t)e−j2πfτ dτ (1)
+Where w(τ −t) is the window function, typically ﬁnite and
+localized in the time domain,τ represents half the window size
+at timet, andx(τ) is the input signal.The audio has a sampling
+frequency of 16 kHz, and all audios are divided into segments
+with a length of 2.0240625 s (32385 sampling points). Each
+segment is transformed into a 256×256 magnitude spectrogram
+using STFT. We set the FFT size and window length to 510,
+which directly affects the frequency resolution. To balance the
+time resolution, we set the hop length, or the number of overlap-
+ping samples between adjacent windows, to 127. Subsequently,
+the generator’s output is also a 256× 256 spectrogram. We
+utilize the Grifﬁn-Lim (GL) algorithm and Inverse Short-Time
+Fourier Transform (iSTFT) to reconstruct the sound signal. It’s
+worth noting that the time cost for the integration process of
+audio reconstruction is relatively minimal and can be practically
+negligible. Speciﬁcally, we segment the audio data into approx-
+imately 2s segments. However, the time required for the model
+to reconstruct the high-frequency components is signiﬁcantly
+less than 2 s, thereby meeting the requirements for real-time
+processing.
+2) Model Architecture: Fig. 6 illustrates our model archi-
+tecture, where the spectrograms of the original audiox and
+the speech-enhanced light signal y are used as inputs to the
+model. The generator adopts a Unet architecture, consisting of
+8 Down-sampling and 8 Up-sampling processes. The Down-
+sampling introduces feature information into the corresponding
+Up-sampling process through skip connections. The output of
+the ﬁnal Up-sampling layer has the same dimension as the input
+spectrogram. On the other hand, the discriminator consists of 5
+layers of 2D convolutional layers. The last layer of the general
+discriminator is designed to output a scalar value representing
+probability. However, in our discriminator, the last layer em-
+ploys only 1 convolution kernel and outputs 30× 30 patches.
+Subsequently, each patch is discriminated as either real or fake.
+3) Objective Function: In our model, the generator’s ob-
+jective is to minimize the L1 distance between the generated
+spectrogram and the spectrograms of the original audio, while
+simultaneously making the discriminator output “True.” On the
+other hand, the discriminator aims to accurately distinguish
+between real and fake inputs. As a result, our objective function
+can be formulated as follows:
+Gloss = −Ey [log D(G(y))] +Ex,y [λ ∥ G(y) −x ∥1] (2)
+Dloss = −Ex [log D(x)] −Ey [log (1−D(G(y)))] (3)
+where Gloss and Dloss represent the losses of the generator G
+and the discriminator D, respectively.xdenotes the original real
+spectrogram, whileyrepresents the spectrogram containing only
+low-frequency components. The parameterλ is the weight of
+the L1 loss, and in our case, we have setλ = 100. Both the
+discriminator and the generator aim to minimize the objective
+function.
+4) Training Parameters: The training process involves 200
+epochs. During the initial 100 epochs, the learning rate is set
+to 0.0002, and then it gradually decays linearly to 0 over the
+last 100 epochs. We utilize the Adam optimizer with a ﬁrst-
+order momentum of 0.5 and a second-order momentum of 0.999
+to update the parameters. Throughout the training process, the
+discriminator and generator are trained alternately.
+5) Spectrogram to Audio: The spectrogram generated by
+the generator contains rich amplitude information for high-
+frequency components but lacks any phase-related information,
+making it challenging to directly reconstruct playable audio.
+To address this, we employ the classic phase reconstruction
+algorithm called Grifﬁn-Lim (GL) to recover the magnitude
+spectrum back to audio with reasonable phase information.
+The GL algorithm initiates with a random phase spectrum and
+utilizes the phase spectrum along with the input magnitude spec-
+trum to synthesize speech using iSTFT. Subsequently, STFT is
+performed on the synthesized speech to obtain a new magnitude
+spectrum and phase spectrum. The new magnitude spectrum is
+then discarded, and the original magnitude spectrum is com-
+bined with the new phase spectrum to synthesize speech again
+using iSTFT. Through successive iterations, the estimated phase
+spectrum converges to values close to the real phase spectrum,
+resulting in an audio reconstruction with minimal distortion.
+VI. IMPLEMENTATION
+In this section, we primarily introduce the experimental setup
+of EchoLight, along with details about the dataset employed
+for training and testing.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+78 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 1, JANUARY 2025
+Fig. 7. Experimental setup of forEchoLight eavesdropping attack.
+A. Experiment Setup
+Fig. 7(a) presents our experimental setup. We placed different
+reﬂective objects on the victim’s desk, and the attacker directed
+the telescope towards these reﬂective objects in the room. The
+photodetector captured the reﬂected ambient light through the
+telescope. During this process, when a loudspeaker played a
+sound or a live human spoke, the attacker could detect the
+vibrations caused by the sound and subsequently reconstruct
+the sound signal present in the room.
+The reﬂective materials employed in the experiment consisted
+of mirror, photo frame, packing bag, ﬁle folder, and gift box,
+as illustrated in Fig.7(b). The sampling rate of DAQ is set to
+16 kHz. In accordance with the Nyquist sampling theorem, this
+allowed for the reconstruction of audio signals with a maximum
+frequency of 8 kHz. For attack scenarios extending beyond
+15 meters, we utilized the CELESTRON NexStar 127 SLT
+telescope, while for those within 15 meters, the CELESTRON
+Libra 805 telescope was employed.
+B. Data Collection
+We evaluate the performance of the EchoLight on the
+VCTK [44] dataset, which contains speech data from 110 En-
+glish speakers with different accents. Each speaker reads ap-
+proximately 400 sentences. For our evaluation, we select audio
+recordings from 6 of these speakers (3 males and 3 females) as
+our training and testing data. These 6 speakers are labelled User1
+to User6, and the details of the dataset are given in TableI.N o t e
+that there is no overlap between the training and test data for
+each user. Speciﬁcally, the audio from User1 to User4 is used
+for training and evaluation, while the audio from User5 to User6
+is used for cross-user evaluation. In addition, we use a piece of
+music called “Let It Be” to evaluateEchoLight’s performance
+in reconstructing music.
+VII. EVA L UAT I O N
+In this section, we ﬁrst introduce the evaluation metrics. Next,
+we conduct an overall performance evaluation ofEchoLight.
+TABLE I
+THE DATASETUSED FOR EVA L UAT I N GEchoLight
+TABLE II
+MOS SCORES AND RATINGS
+Finally, we provide a comprehensive analysis of the impact of
+different inﬂuencing factors on the attack.
+A. Evaluation Metrics
+We utilize Mel Cepstral Distortion (MCD), Log Spectral
+Distance (LSD), and Mean Opinion Score (MOS) as evaluation
+metrics to assess the performance ofEchoLight.
+MCD and LSD are employed to measure the degree of differ-
+ence between two speech signals. MCD quantiﬁes the distortion
+between two sets of MFCCs, while LSD calculates the distance
+between their logarithmic spectrograms. The combined use of
+MCD and LSD provides a more comprehensive assessment
+of the quality of synthesized speech. Lower values of MCD
+and LSD indicate that the synthesized speech is closer to the
+original speech. Generally, speech recognition systems consider
+two sounds acceptable if their MCD values are less than 8.
+MOS is obtained through human subjective evaluation. As
+shown in TableII, scores range from 1 to 5, where 1 indicates
+very poor reconstruction quality and 5 indicates very good
+reconstruction quality. We recruited 16 volunteers (8 males and
+8 females) to rate our reconstructed audio. These volunteers
+participated in our experiments without any compensation.
+B. Overall Performance
+We evaluate the effectiveness of theEchoLight in recon-
+structing three categories of sound using two different ambient
+light sources. The three categories of sound include speech
+played through loudspeakers, music played through loudspeak-
+ers and live human voices. For the ambient light sources, we
+use both natural sunlight and an indoor desk lamp. For these
+experiments, we choose a packing bag as a reﬂective object and
+position the telescope 15 meters away from it. The loudspeakers
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+ZHANG et al.: AMBIENT LIGHT REFLECTION-BASED EA VESDROPPING ENHANCED WITH cGAN 79
+Fig. 8. Recovering speech (left) and music (right) using sunlight and indoor
+lighting as environment light sources.
+are placed 5 centimeters from the reﬂective object and the sound
+level is set to 90 dB.
+1) Recovering Speech: We played an 8s audio from User1
+through the loudspeaker in the victim’s room, with the audio
+content being “Please call Stella. Ask her to bring these things
+with her from the store. Six spoons of fresh snow peas.” After
+denoising the optical signal, we utilized the bandwidth extension
+model to reconstruct the high-frequency components. The model
+was pre-trained using User1’s audio, and there was no overlap
+between the training and testing audio (except for common
+words such as “a,” “the,” “of,” etc.).
+Fig. 8 (left) presents the spectrograms of the original audio,
+the optical signal acquired from the DAQ, and the audio re-
+constructed using the bandwidth extension model. We observed
+that the reconstructed audio exhibited a high similarity to the
+original audio compared to the acquired optical signal. This
+indicates the effectiveness of our bandwidth extension model in
+learning low-frequency features to recover high-frequency com-
+ponents. Additionally, during the outdoor experiment, the wind
+speed was categorized as level two, with wind speeds ranging
+from approximately 1.6 to 3.3 m/s. Fortunately, these moderate
+wind conditions did not signiﬁcantly impact the performance of
+EchoLight.
+2) Recovering Music: We used the loudspeakers to play the
+ﬁrst 8s segment of the music “Let It Be”, while the remaining
+portion is used for model training. The reconstruction result is
+shown in Fig. 8(right). It can be seen thatEchoLight has
+excellent reconstruction performance even for music.
+Furthermore, using sunlight as an ambient light source for
+audio reconstruction yielded better results than using indoor
+lights as an ambient light source. This improvement can be
+attributed to sunlight’s much higher light intensity compared to
+Fig. 9. Recovering live human voices using sunlight (left) and indoor lighting
+(right) as environment light source.
+indoor light sources. Consequently, eavesdropping attacks using
+light sources with higher light intensity are capable of recovering
+higher-quality audio.
+3) Recovering Live Human V oices:Given that the victim
+might not only use the loudspeaker to play the sound of an
+online meeting but also engage in conversation with other peo-
+ple, we conducted an additional test. The victim was asked to
+speak while standing at a distance of 5 centimeters from the
+reﬂective object. The speech content involved counting from
+“one”. Simultaneously, the voice was recorded using the mobile
+phone’s microphone to obtain the original audio. Finally, the
+ﬁrst 8s segment of the audio is used for testing, while the
+remaining portion is used for model training. Fig.9 presents
+the test results using sunlight and indoor desk lamp light as
+ambient light sources. The experimental results demonstrate that
+EchoLight exhibits commendable reconstruction capabilities
+for live human speech.
+In summary,EchoLight demonstrates a remarkable ability
+to effectively reconstruct sound close to the victim in the room,
+whether it is speech or music played by loudspeakers or live
+human voices.
+C. Experimental Analysis
+Next, we will investigate the impact of different settings on
+EchoLight. For this exploration, we select the indoor desk
+lamp as the light source and place the loudspeaker at a distance
+of 5 centimeters from the reﬂective object, with the sound level
+set to 80 dB. The telescope is placed 15 meters away from
+the reﬂective object. Throughout our experimental analysis,
+when a particular setting is not speciﬁed, we use this basic
+setting as our default conﬁguration. After conducting a series
+of experiments, we found that the MCD calculated from the
+audio obtained directly using the raw optical signal generally
+exceeds 20, indicating a high level of distortion. In contrast, the
+MCD values for the audio reconstructed using the cGAN model
+are generally below 8, as shown in the evaluation results below.
+Unless otherwise stated, all evaluation results refer to the audio
+reconstructed using the cGAN model.
+1) Impact of Sound Source Distances:In a real attack sce-
+nario, the distance between the loudspeakers and reﬂective
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+80 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 1, JANUARY 2025
+Fig. 10. The impact of different sound source distances.
+Fig. 11. The impact of different attack distances.
+objects may vary. To investigate the impact of sound source
+distances, we conducted experiments using a packing bag as the
+reﬂective object. The loudspeaker was placed at distances of 5,
+10, 20, 50, and 80 centimeters from the reﬂective object while
+playing the test audio from User1 to User4. The loudspeaker’s
+sound level (80 dB) and the distance between the telescope
+and the reﬂective object (15 meters) were set as the default
+conﬁguration.
+The performance of the reconstructed audio under different
+sound source distances is presented in Fig.10. As observed,
+increasing the distance from the sound source to the reﬂective
+object leads to sound wave attenuation, which in turn affects the
+audio reconstruction performance. Nonetheless,EchoLight
+demonstrated its capability to produce intelligible audio even
+with the source distance set to 80 centimeters (with an average
+MCD and LSD of 6.02 and 1.86, respectively).
+2) Impact of Attack Distances: A longer attack distance
+offers potential advantages to an attacker in performing the
+EchoLight eavesdropping attack. To thoroughly evaluate the
+effects of different attack distances, we conducted systematic
+experiments at distances of 5, 15, 25, and 40 meters from the
+reﬂective object, using a telescope for precise targeting. In these
+experiments, a mirror acted as a reﬂective surface, and audio
+tests from User1 to User4 were played through a loudspeaker.
+As shown in Fig.11, our results show a gradual increase in
+both MCD and LSD values as the attack distance increases. In
+particular, at a distance of 40 meters, the average MCD and LSD
+values are 5.75 and 1.86, respectively. Thus, with the sound
+level of the loudspeaker set at 80 dB,EchoLight is able to
+reconstruct sound intelligibly at an attack distance of 40 meters.
+Fig. 12. The impact of different sound levels.
+Fig. 13. The impact of moving audio sources.
+3) Impact of Sound Levels:The Speech Intelligibility Index
+(SII) standard provides guidelines for different levels of vocal
+effort. As mentioned in[45], the levels of normal, raised, loud
+speech and shouting are about 62.3 dB SPL (59.2dBA), 68.4 dB
+SPL (66.4 dBA), 74.8 dB SPL (73.9 dBA) and 82.3 dB SPL (82.2
+dBA) respectively. It’s important to recognise these levels as
+they represent real-life scenarios where people might raise their
+voices in a noisy environment. In order to investigate the impact
+of different sound levels on the performance ofEchoLight,
+we conducted experiments using a mirror as the reﬂective object.
+The loudspeaker played the test audio from User1 to User4 while
+setting the loudspeaker sound level to 70, 80, 90, and 100 dB.
+The evaluation results are depicted in Fig.12.
+As the sound level gradually increases, the vibration effect
+of the reﬂective object under the inﬂuence of sound waves is
+enhanced, resulting in improved attack performance. Even at a
+sound level of 70 dB, where the response frequency of the optical
+signal is only about 600 Hz, the audio reconstructed by band-
+width extension still exhibits a certain degree of intelligibility.
+This demonstrates thatEchoLight can be employed to launch
+an eavesdropping attack even at a normal meeting sound level
+of approximately 70 dB.
+4) Impact of Moving Audio Sources:In a real-world scenario,
+the victim may move around the room. In order to evaluate the
+effect of moving audio sources onEchoLight, we simulated
+this by moving the loudspeaker back and forth at a speed of
+20 cm/s while maintaining a distance of 10 centimeters to 50
+centimeters from a reﬂective object. For this experiment, we
+used a packing bag as the reﬂective object, and the evaluation
+results are shown in Fig.13.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+ZHANG et al.: AMBIENT LIGHT REFLECTION-BASED EA VESDROPPING ENHANCED WITH cGAN 81
+Fig. 14. The performance of audio reconstruction on different reﬂective
+materials.
+The medians of the MCD and LSD values are within 6
+and 2 respectively, although the range of variation is relatively
+large. This variance can be attributed to the performance of the
+loudspeaker, which improves as it gets closer to the target and
+deteriorates as it gets further away. Nevertheless,EchoLight
+demonstrates the ability to reconstruct intelligible audio from a
+moving audio source within a range of 80 centimeters.
+5) Impact of Materials: Due to the unique properties of
+different materials, various reﬂective objects respond to sound
+waves to varying degrees. Consequently, we conducted a com-
+prehensive evaluation of the attack performance using different
+materials, such as mirror, photo frame, packing bag, ﬁle folder,
+and gift box. The averaged results for User1-User4 are presented
+in Fig.14.
+The experimental results indicate that the ﬁle folder exhibits
+the best performance among the tested materials. This superior-
+ity can be attributed to its strong reﬂective effect and its ability to
+vibrate effectively under the inﬂuence of sound waves, resulting
+in lower MCD and LSD values and higher subjective evaluation
+scores. In contrast, the photo frame exhibits the highest LSD
+value and the lowest MOS value. This is primarily due to the
+weak elastic deformation ability and reﬂective effect of the photo
+frame’s surface. As a result, the vibration generated by the photo
+frame is very feeble, and only a small fraction of the light is
+reﬂected back. Additionally, the mirror also exhibits a high LSD
+value, possibly because it possesses a strong reﬂective ability but
+lacks the ability to vibrate effectively.
+In real attack scenarios, selecting an object with both a good
+reﬂective effect and vibration ability as the attack medium can
+signiﬁcantly enhance the attack’s effectiveness.
+6) Impact of Light Intensity: In real attack scenarios, it is
+common for light to pass through glass media, and the intensity
+of light decreases as the thickness of the glass increases. To
+investigate the impact of light intensity on the performance of
+EchoLight, we used a mirror as the reﬂective object and
+played test audio from User1 to User4 through a speaker. We
+placed different thicknesses of glass, including 5, 10, 20, and
+30mm, between the light source and the mirror. The measured
+light ﬂux at the reﬂecting object was found to be 2000, 1950,
+Fig. 15. The impact of light intensity.
+Fig. 16. The impact of multiple light sources.
+1750, and 1200 lux, respectively. The speciﬁc experimental
+results, as shown in Fig. 15, demonstrate a gradual decline
+in EchoLight’s performance as the light ﬂux gradually de-
+creases. However, even under the most severe conditions of
+light attenuation (i.e., when the light ﬂux drops to 1200 lux),
+the system maintains a certain level of effectiveness and com-
+prehensibility, successfully recovering audio information with
+high recognition capability.
+7) Impact of Multiple Light Sources:Since EchoLight uti-
+lizes reﬂected and even diffusely reﬂected light for eaves-
+dropping, the use of multiple light sources might affect the
+audio reconstruction quality. To evaluate this, we conducted
+experiments using a packaging bag as the reﬂective object and
+placed three identical light sources in different positions. When a
+single light source is activated, the illuminance at the packaging
+bag measures 1000 lx. When three light sources are activated
+simultaneously, the illuminance reaches 3000 lx.
+As shown in Fig.16, using a single light source results in
+moderate audio reconstruction quality, indicated by higher MCD
+and LSD values. Combining three light sources signiﬁcantly
+lowers MCD and LSD values, due to increased illuminance and
+enhanced reﬂected light intensity.
+Therefore, in practical eavesdropping scenarios, strategically
+using multiple light sources optimizes EchoLight’s perfor-
+mance.
+8) Impact of Cross-User Training:Since different users may
+have varying accents or pronunciation styles, and attackers might
+not have access to the victim’s voice samples beforehand, it is
+essential to perform cross-user training and testing to assess
+the generalization capability of EchoLight. We performed
+separate training on User1 to User4 and evaluated the trained
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+82 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 1, JANUARY 2025
+Fig. 17. Cross-user MCD evaluation.
+model on each user from User1 to User6. The experiment was
+conducted using the packing bag as the reﬂective object.
+The evaluation results are shown in Fig.17. It can be seen that
+optimal audio reconstruction performance is achieved by testing
+with User1 and training the model exclusively on User1’s data.
+Similar trends can be seen for the other users. Nevertheless, even
+in cross-user training and testing scenarios, the MCD values re-
+main consistently below 8. This demonstrates thatEchoLight
+is capable of effectively executing attacks across different users.
+In addition, we observed that the performance with respect to
+User5 is slightly below average, a phenomenon that may be due
+to pronounced differences in speaking speed or accent between
+User5 and Users 1 to 4.
+9) Impact of Glass Color:Considering real-world scenarios
+where light interacts with glass of various colors, it becomes evi-
+dent that each color exhibits distinct absorption and transmission
+properties for different wavelengths of light. Colors vary in their
+ability to absorb speciﬁc wavelengths, resulting in differences
+in transmission rates. This inherent diversity introduces the
+potential for light attenuation or modiﬁcation within the glass,
+thereby inﬂuencing the attack performance of EchoLight. To
+comprehensively investigate this phenomenon, we conducted
+experiments involving the strategic placement of 10 glass pieces
+of different colors between the light source and the mirror.
+Throughout these experiments, we played test audio for User1-4,
+and the corresponding outcomes are visually depicted in Fig.18.
+The experimental results indicate that when light passes
+through lighter-colored glass, the impact on EchoLight’s per-
+formance is minimal. Conversely, when light passes through
+darker-colored glass, a noticeable effect on EchoLight’s per-
+formance is observed. As shown in the ﬁgure, red, pink, yellow,
+orange, green, and blue exhibit similar lower MCD values, while
+dark blue, gray, and black display a pronounced upward trend in
+MCD values. This observed phenomenon is likely attributed to
+an increased degree of light absorption, leading to a signiﬁcant
+reduction in the intensity of transmitted light.
+VIII. DISCUSSION
+A. Limitations of Proposed Attacks
+EchoLight is able to perform eavesdropping attacks in a
+variety of lighting conditions, including both sunlight and indoor
+lighting scenarios. The high intensity of sunlight often produces
+better results than indoor desk lamp light, with effectiveness
+depending on the speciﬁc light intensity. While the sunlight
+EchoLight attack can provide high-quality audio reconstruc-
+tion, it presents certain challenges: (1) The movement of the sun,
+which is beyond human control, results in constant changes in il-
+lumination and reﬂection angles. As a result, attackers may need
+to dynamically adjust attack angles during an eavesdropping
+operation, especially if the time of eavesdropping is relatively
+long. (2)EchoLight’s performance can be affected by changes
+in weather conditions, with adverse weather or nighttime con-
+ditions potentially resulting in a failed eavesdropping attempt.
+Despite these limitations,EchoLight retains its effectiveness
+when using indoor desk lamp lights or similar ambient light
+sources, ensuring the recovery of intelligible audio. On clear
+and sunny days, attackers can still choose sunlight to initiate
+an EchoLight eavesdropping attack, achieving the highest
+quality audio reconstruction.
+In addition, the characteristics of reﬂective objects, such as
+their ability to vibrate and their reﬂective properties, signiﬁ-
+cantly affect the effectiveness ofEchoLight attacks. In fact,
+the passive vibration capacity of everyday objects, such as pack-
+ing bag, and ﬁle folder, is generally adequate. Another limitation
+is the minimal sound pressure hitting on these reﬂective objects.
+B. Inﬂuence of Breezy Conditions on Attack Performance
+In addition to the factors mentioned earlier, in practical attack
+scenarios, some relatively sturdy reﬂective objects (such as
+mirrors, picture frames, etc.) may be less susceptible to the
+inﬂuence of gentle breezes. However, other lightweight and thin
+reﬂective objects (such as packaging bags, folders, gift boxes,
+etc.) are often more prone to the effects of mild winds. To delve
+deeper into the impact of ambient air currents onEchoLight
+attacks, we conducted the following experiment. In this study, we
+selected a packaging bag as a reﬂective object highly sensitive
+to gentle winds. The speaker was positioned 5 cm behind the
+packaging bag, the light bulb was approximately 0.5 m away
+from the bag, and the telescope was situated 15 m from the bag
+to capture reﬂected light. Around the packaging bag, we placed
+a small fan with an approximate wind speed of 3 m/s, gener-
+ating mild air disturbances that resulted in the packaging bag
+experiencing gentle vibrations. We provide audio examples for
+the following scenarios: original audio, original audio captured
+in calm conditions, denoised audio in calm conditions, original
+audio captured in windy conditions, and denoised audio in windy
+conditions, as shown in the Fig.19.
+It can be observed that the original audio signal captured under
+windy conditions exhibits a relatively regular pattern of ﬂuctua-
+tions. This is attributed to the fact that the vibrations caused by
+the gentle breeze are predominantly low-frequency vibrations,
+and the resulting movements in the packaging bag may alter the
+angles of light reﬂection. If the vibrations are too intense, it could
+potentially lead to the failure of eavesdropping attacks. However,
+when the vibrations are within a certain range–allowing the
+reﬂected light to still be effectively received–the denoised results
+continue to display features highly correlated with the original
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+ZHANG et al.: AMBIENT LIGHT REFLECTION-BASED EA VESDROPPING ENHANCED WITH cGAN 83
+Fig. 18. The impact of glass color.
+Fig. 19. The impact of breeze in the air.
+audio. In practical attack scenarios, we recommend that attackers
+opt for materials with a more rigid nature, such as mirrors and
+picture frames, as reﬂective objects to enhance the robustness
+of EchoLight attacks. However, it is still feasible to select
+lightweight and thin reﬂective objects (such as packaging bags,
+folders, gift boxes, etc.) for the attack. This aids in improving the
+quality of audio recovery. Moreover, achieving wind speeds of 3
+m/s indoors is generally challenging unless in very demanding
+scenarios, as exempliﬁed in this experiment where a fan was
+positioned directly facing the reﬂective object.
+C. Suggestions for Improving Attack Strategies
+For the proposed attack method in this article, we have
+provided a feasible solution, but there is signiﬁcant room for
+improvement in practical applications. The following are some
+suggestions for optimizing the system components:
+1) Finer Experimental Equipment:In the pursuit of reﬁning
+the proposed attack methodology, attackers can enhance their
+experimental setup by incorporating more advanced optical
+instruments. Speciﬁcally, the utilization of professional-grade
+telescopes is beneﬁcial for focusing on the precise collection of
+modulated light signals from reﬂective objects. The effective-
+ness of telescopes is intricately linked to the size of their lenses,
+suggesting that choosing a telescope with a larger diameter
+contributes to the comprehensive capture of light signals, thereby
+optimizing the overall quality of the recovered audio. More-
+over, attackers can elevate the performance of their light-based
+eavesdropping systems by integrating light sensors endowed
+with higher internal gain. The internal gain of these sensors
+directly inﬂuences their sensitivity, rendering them more attuned
+to subtle variations in light signals. This heightened sensitivity
+enhances the system’s responsiveness to changes in ambient
+light, consequently bolstering the quality of audio recovery.
+To further reﬁne their experimental apparatus, attackers can
+deploy a DAQ with a higher sampling rate tailored for the light
+sensor. A higher sampling rate facilitates more frequent and
+precise sampling of the modulated light signals, ensuring a more
+accurate representation of the encoded audio information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+84 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 1, JANUARY 2025
+2) Improved Audio Recovery System:A more sophisticated
+audio restoration system: In the aspect of speech enhancement,
+our current approach involves ﬁltering out low-frequency noise
+and using Sox for denoising. However, even after this step, there
+may still be some residual noise remaining, thereby affecting
+the quality of the audio. In the future, more effective denois-
+ing techniques could be explored. As for the frequency band
+extension part, although our current model training strategy is
+quite effective, considering the diverse requirements of different
+eavesdropping scenarios, training speciﬁc models for particular
+scenarios could enhance the accuracy of audio frequency band
+extension.
+IX. CONCLUSION
+In this work, we have introducedEchoLight, an innovative
+method for ambient light eavesdropping that is capable of ef-
+fectively recovering sounds occurring in the vicinity of a target.
+EchoLight leverage ambient light, which is either reﬂected
+or diffused by a range of reﬂective objects commonly found
+in everyday life, to recover sound. To enhance the audio quality
+and reconstruct the missing high-frequency components present
+in the optical signal, we implemented a bandwidth extension
+model based on the cGAN architecture. Our evaluation results
+demonstrate the effectiveness ofEchoLight in reconstruct-
+ing intelligible sounds under various settings, such as different
+sound source distances, different reﬂective materials, and mov-
+ing audio sources. Additionally,EchoLight has the ability to
+launch attacks up to 40 meters away from the victim.
+ACKNOWLEDGMENT
+The authors would like to thank Fengyi Yuan for his help and
+contribution to this research.
+REFERENCES
+[1] P. Hu, W. Li, R. Spolaor, and X. Cheng, “mmEcho: A mmwave-based
+acoustic eavesdropping method,” inProc. IEEE Symp. Secur . Privacy,
+2022, pp. 836–852.
+[2] P. Hu et al., “Towards unconstrained vocabulary eavesdropping with
+mmWave radar using GAN,”IEEE Trans. Mobile Comput., vol. 23, no. 1,
+pp. 941–954, Jan. 2024.
+[3] P. Hu, Y . Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng, “Milliear:
+Millimeter-wave acoustic eavesdropping with unconstrained vocabulary,”
+in Proc. IEEE Conf. Comput. Commun., 2022, pp. 11–20.
+[4] C. Wang et al., “mmeve: Eavesdropping on smartphone’s earpiece via cots
+mmWave device,” inProc. 28th Annu. Int. Conf. Mobile Comput. Netw.,
+2022, pp. 338–351.
+[5] C. Wang et al., “mmphone: Acoustic eavesdropping on loudspeakers via
+mmWave-characterized piezoelectric effect,” inProc. IEEE Conf. Comput.
+Commun., 2022, pp. 820–829.
+[6] S. Basak and M. Gowda, “mmSpy: Spying phone calls using mmWave
+radars,” inProc. IEEE Symp. Secur . Privacy, 2022, pp. 1211–1228.
+[7] C. Xu et al., “WaveEar: Exploring a mmWave-based noise-resistant speech
+sensing for voice-user interface,” inProc. 17th Annu. Int. Conf. Mobile
+Syst. Appl. Serv., 2019, pp. 14–26.
+[8] G. Wang, Y . Zou, Z. Zhou, K. Wu, and L. M. Ni, “We can hear you
+with Wi-Fi!,” inProc. 20th Annu. Int. Conf. Mobile Comput. Netw., 2014,
+pp. 593–604.
+[9] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping through
+wireless vibrometry,” inProc. 21st Annu. Int. Conf. Mobile Comput. Netw.,
+2015, pp. 130–141.
+[10] Z. Ba et al., “Learning-based practical smartphone eavesdropping with
+built-in accelerometer,” inProc. Annu. Netw. Distrib. Syst. Secur . Symp.,
+2020, pp. 1–18.
+[11] P. Hu et al., “AccEar: Accelerometer acoustic eavesdropping with un-
+constrained vocabulary,” in Proc. IEEE Symp. Secur . Privacy, 2022,
+pp. 1757–1773.
+[12] S. A. Anand and N. Saxena, “Speechless: Analyzing the threat to speech
+privacy from smartphone motion sensors,” inProc. IEEE Symp. Secur .
+Privacy, 2018, pp. 1000–1017.
+[13] J. Han, A. J. Chung, and P. Tague, “Pitchln: Eavesdropping via intelligible
+speech reconstruction using non-acoustic sensor fusion,” inProc. 16th
+ACM/IEEE Int. Conf. Inf. Process. Sensor Netw., 2017, pp. 181–192.
+[14] J. Choi, H.-Y . Yang, and D.-H. Cho, “TEMPEST comeback: A realistic
+audio eavesdropping threat on mixed-signal SoCs,” inProc. ACM SIGSAC
+Conf. Comput. Commun. Secur ., 2020, pp. 1085–1101.
+[15] B. Nassi, Y . Pirutin, T. Galor, Y . Elovici, and B. Zadov, “Glowworm attack:
+Optical tempest sound recovery via a device’s power indicator led,” inProc.
+ACM SIGSAC Conf. Comput. Commun. Secur ., 2021, pp. 1900–1914.
+[16] B. Nassi, Y . Pirutin, A. Shamir, Y . Elovici, and B. Zadov, “Lamphone:
+Real-time passive sound recovery from light bulb vibrations,”Cryptology
+ePrint Arch., 2020.
+[17] M. G. Kuhn, “Optical time-domain eavesdropping risks of CRT displays,”
+in Proc. IEEE Symp. Secur . Privacy, 2002, pp. 3–18.
+[18] D. Balzarotti, M. Cova, and G. Vigna, “Clearshot: Eavesdropping on
+keyboard input from video,” inProc. IEEE Symp. Secur . Privacy, 2008,
+pp. 170–183.
+[19] Y . Xu, J. Heinly, A. M. White, F. Monrose, and J.-M. Frahm, “Seeing
+double: Reconstructing obscured typed input from repeated compromising
+reﬂections,” inProc. ACM SIGSAC Conf. Comput. Commun. Secur ., 2013,
+pp. 1063–1074.
+[20] R. P. Muscatell, “Laser microphone,”J. Acoustical Soc. Amer ., vol. 76,
+no. 4, pp. 1284–1284, 1984.
+[21] M. Chounlakone and J. Alverio, “The laser microphone,” 2002.
+[22] S. Sami, Y . Dai, S. R. X. Tan, N. Roy, and J. Han, “Spying with your robot
+vacuum cleaner: Eavesdropping via LiDAR sensors,” inProc. 18th Conf.
+Embedded Networked Sensor Syst., 2020, pp. 354–367.
+[23] S. Sami, S. R. X. Tan, Y . Dai, N. Roy, and J. Han, “Lidarphone: Acoustic
+eavesdropping using a LiDAR sensor,” inProc. 18th Conf. Embedded
+Networked Sensor Syst., 2020, pp. 701–702.
+[24] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” inProc. 23rd USENIX Secur . Symp., 2014,
+pp. 1053–1067.
+[25] L. Zhang, P. H. Pathak, M. Wu, Y . Zhao, and P. Mohapatra, “Accelword:
+Energy efﬁcient hotword detection through accelerometer,” inProc. 13th
+Annu. Int. Conf. Mobile Syst. Appl. Serv., 2015, pp. 301–315.
+[26] H. A. C. Maruri, P. Lopez-Meyer, J. Huang, W. M. Beltman, L. Nach-
+man, and H. Lu, “V-speech: Noise-robust speech capturing glasses using
+vibration sensors,”Proc. ACM Interactive Mobile Wearable Ubiquitous
+Technol., vol. 2, no. 4, pp. 1–23, 2018.
+[27] N. Roy and R. Roy Choudhury, “Listening through a vibration mo-
+tor,” in Proc. 14th Annu. Int. Conf. Mobile Syst. Appl. Serv. , 2016,
+pp. 57–69.
+[28] M. Guri, Y . Solewicz, A. Daidakulov, and Y . Elovici, “{SPEAKE (a) R}:
+Turn speakers to microphones for fun and proﬁt,” inProc. 11th USENIX
+Workshop Offensive Technol., 2017.
+[29] A. Kwong, W. Xu, and K. Fu, “Hard drive of hearing: Disks that eavesdrop
+with a synthesized microphone,” inProc. IEEE Symp. Secur . Privacy,
+2019, pp. 905–919.
+[30] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” Proc. ACM Interactive Mobile
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+[31] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M.B. Srivastava,
+“UWHear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” inProc. 18th Conf. Embedded Networked Sensor
+Syst., 2020, pp. 1–14.
+[32] C. Wang, F. Lin, Z. Ba, F. Zhang, W. Xu, and K. Ren, “Wavesdropper:
+Through-wall word detection of human speech via commercial mmWave
+devices,” Proc. ACM Interactive Mobile Wearable Ubiquitous Technol.,
+vol. 6, no. 2, pp. 1–26, 2022.
+[33] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and W. T.
+Freeman, “The visual microphone: Passive recovery of sound from video,”
+ACM Trans. Graph., vol. 33, 2014, Art. no. 79.
+[34] R. Peng, B. Xu, G. Li, C. Zheng, and X. Li, “Long-range speech acquire-
+ment and enhancement with dual-point laser doppler vibrometers,” inProc.
+IEEE 23rd Int. Conf. Digit. Signal Process., 2018, pp. 1–5.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.
+ZHANG et al.: AMBIENT LIGHT REFLECTION-BASED EA VESDROPPING ENHANCED WITH cGAN 85
+[35] M. Backes, T. Chen, M. Dürmuth, H. P. Lensch, and M. Welk, “Tempest in
+a teapot: Compromising reﬂections revisited,” inProc. 30th IEEE Symp.
+Secur . Privacy, 2009, pp. 315–327.
+[36] M. Backes, M. Dürmuth, and D. Unruh, “Compromising reﬂections-or-
+how to read LCD monitors around the corner,” inProc. IEEE Symp. Secur .
+Privacy, 2008, pp. 158–169.
+[37] S. Chakraborty, W. Ouyang, and M. Srivastava, “LightSpy: Optical eaves-
+dropping on displays using light sensors on mobile devices,” inProc. IEEE
+Int. Conf. Big Data, 2017, pp. 2980–2989.
+[38] K. Mowery, S. Meiklejohn, and S. Savage, “Heat of the moment: Char-
+acterizing the efﬁcacy of thermal{Camera-Based} attacks,” inproc. 5th
+USENIX Workshop Offensive Technol., 2011.
+[39] R. Raguram, A. M. White, D. Goswami, F. Monrose, and J.-M. Frahm,
+“iSpy: Automatic reconstruction of typed input from compromising re-
+ﬂections,” in Proc. 18th ACM Conf. Comput. Commun. Secur ., 2011,
+pp. 527–536.
+[40] D. Shukla, R. Kumar, A. Serwadda, and V . V . Phoha, “Beware, your hands
+reveal your secrets!,” inProc. ACM SIGSAC Conf. Comput. Commun.
+Secur ., 2014, pp. 904–917.
+[41] I. Goodfellow et al., “Generative adversarial nets,” inProc. Adv. Neural
+Inf. Process. Syst., 2014, pp. 2672–2680.
+[42] M. Mirza and S. Osindero, “Conditional generative adversarial nets,”
+2014, arXiv:1411.1784.
+[43] B. Barras, “SoX: Sound exchange,”Flash Informatique, no. 9, pp. 3–6,
+2012.
+[44] J. Yamagishi, C. Veaux, and K. MacDonald, “CSTR VCTK Corpus:
+English multi-speaker corpus for CSTR voice cloning toolkit (version
+0.92),” 2019.
+[45] A. S. 5, “Methods for calculation of the speech intelligibility index,”
+American National Standard, 1997.
+Guoming Zhang received the BS degree in mechan-
+ical engineering from Ludong University, in 2013,
+the MS degree degree in mechanical and electronic
+engineering from the Beijing Institute of Technology,
+in 2016, and the PhD degree in electrical engineering
+from Zhejiang University, in 2021. He is now an assis-
+tant professor with the School of Computer Science
+and Technology of Shandong University. His research
+interests include the areas of IoT security, AI security,
+especially for the security of speech recognition sys-
+tem. He won the best paper awards of ACM CCS
+2017, Qshine 2019, W ASA 2022.
+Heqiang Fu received the bachelor’s degree in soft-
+ware engineering from the Nanjing University of
+Posts and Telecommunications. He is currently work-
+ing towards a master’s degree with the School of
+Computer Science, Shandong University, China. His
+recent research has centered around Internet of Things
+(IoT) security.
+Zhijie Xiang received the BS degree from the School
+of Information Science and Engineering, Shandong
+Normal University, China, in 2022. He is currently
+working toward the MS degree with the School of
+Computer Science and technology, Shandong Univer-
+sity, China. His research interests include the areas of
+IoT security and machine learning.
+Xinyan Zhou (Member, IEEE) received the BS de-
+gree in electronic information & technology and
+instrumentation science from Zhejiang University,
+Hangzhou, China, in 2010, and the PhD degree from
+the Department of Computer Science, Hong Kong
+University of Science and Technology, in 2015. From
+2015 to 2016. He is now an associate professor with
+the Department of Electrical Engineering, Zhejiang
+University, he was a researcher with Huawei Future
+Networking Theory Lab in Hong Kong. His research
+interests include IoT security, and wireless communi-
+cation protocol design, especially with cross-layer techniques. He won the best
+paper awards of ACM CCS 2017, ACM ASIACCS 2018 and IEEE Trustcom
+2014.
+Pengfei Hu received the PhD degree in computer sci-
+ence from UC Davis. He is a professor with the School
+of Computer Science and Technology, Shandong Uni-
+versity, China. His research interests include the areas
+of IoT security, AI security, mobile computing. He
+has published more than 30 papers in premier confer-
+ences and journals on these topics, e.g. IEEE S&P,
+ACM CCS, IEEE INFOCOM, IEEE Transactions
+on Mobile Computing, etc. He also served as TPC
+for numerous prestigious conferences and associate
+editors for IEEE TWC and IoTJ.
+Xiuzhen Cheng (Fellow, IEEE) received the MS and
+PhD degrees in computer science from the University
+of Minnesota Twin Cities, in 2000 and 2002. She
+is currently a professor with the School of Com-
+puter Science and Technology, Shandong University,
+China. Her current research interests include focus
+on privacy-aware computing, wireless and mobile
+security, dynamic spectrum access, mobile handset
+networking systems (mobile health and safety), cog-
+nitive radio networks, and algorithm design and anal-
+ysis. She has served on the Editorial Boards of sev-
+eral technical publications and the Technical Program Committees of various
+professional conferences/workshops. She has also chaired several international
+conferences. She worked as a program director for the U.S. National Science
+Foundation (NSF) from April to October 2006 (full time), and from April 2008
+to May 2010 (part time). She published more than 300 peer-reviewed papers.
+Yanni Yang received the BE and MSc degrees from
+the Ocean University of China, in Qingdao, in 2014
+and 2017, respectively, and the PhD degree in com-
+puter science from the Hong Kong Polytechnic Uni-
+versity, in 2021. She is currently an assistant professor
+with the School of Computing Science and Technol-
+ogy, Shandong University. She visited the Media Lab
+at MIT in 2019 as a visiting student. Her research
+interests include wireless human sensing, pervasive
+and mobile computing, and Internet of Things. She
+has published more than 20 papers in top academic
+conferences and journals.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:30:53 UTC from IEEE Xplore.  Restrictions apply.

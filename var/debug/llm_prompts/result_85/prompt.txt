@@ -1,0 +1,855 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components
+CITED_PAPER_TITLE: MoiréPose: ultra high precision camera-to-screen pose estimation based on Moiré pattern
+CITED_PAPER_YEAR: 2022
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3495243.3560537
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Yi Li 0062, Yingying Chen 0001, Yanling Bu, Baoliu Ye, Sanglu Lu
+TARGET_REFERENCE_MARKER: [21]
+TARGET_REFERENCE_ENTRY: [21] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu, Baoliu Ye, and Sanglu Lu. 2022. MoiréPose: ultra high precision
+camera-to-screen pose estimation based on Moiré pattern. In Proceedings of the 28th Annual International Conference
+on Mobile Computing And Networking . 106–119. https://doi.org/10.1145/3495243.3560537
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=On the other hand, recent advancements in computer vision and machine learning algorithms; context_type=exact_marker; contains_formula=False
+bles camera-based sensing of
+precise movement from physical interactions. It utilizes the Moiré phenomenon, which is seen
+when two repetitive patterns with similar spacings are superimposed in the form of dark and
+light fringes. If one of the superimposed patterns moves, the Moiré fringe will also move, but at
+a different rate than the pattern movement. This allows the small displacement caused by the
+subtle interaction to be significantly magnified so that it can be easily captured by a regular camera.
+This Moiré phenomenon has been shown to be effective in various applications, such as pose [21]
+and camera position [37]. With the well-established theory framework of Moiré pattern as the
+basis, MoiréTag provides an easy way for people to use the Moiré phenomenon to create and use
+ad-hoc interfaces. MoiréTag consists of two overlapping paper layers that have stripe patterns
+with different grating periods that create Moiré fringes that serve as a displacement magnifier for
+a camera to precisely capture the displacement. We implemented an image processing pipeline
+that recognizes the MoiréTag from a camera image and detects the movement of the Moiré fringes.
+Our technical evaluation show
+
+[Context 2] section_heading=However, these approaches require camera stability or a stationary background, constraints that; context_type=grouped_marker; contains_formula=False
+een the object and the background, Moiré pattern sensing does not directly
+sense the object itself, thereby avoiding this issue.
+Because Moiré patterns can be generated in various ways and have the capability to consistently
+show the movements of constituent layers or the camera, they have been used in many other
+displacement-related measurement methods. Circular Moiré patterns have been used to measure
+crack growth on the surface [26, 42]. Successful attempts have also been made to employ Moiré
+patterns for tracking camera and object positions [7, 37], as well as advancing to pose estimation
+[21, 24, 32, 33]. MoiréTag adopted the validated methodology of calculating real displacement from
+Moiré pattern displacement and applied it in creating novel tangible user interfaces. Furthermore,
+Moiré patterns may be used to indirectly measure subtle changes in other physical properties.
+Takaki et al. [31] built an endoscopic surgical instrument that visualizes force applied with Moiré
+patterns for surgeons by converting the force to Moiré patterns’ displacement using an elastic
+structure. While this study demonstrated the potential of Moiré patterns in effectively visualizing
+changes in force, it was desi
+
+[Context 3] section_heading=However, these approaches require camera stability or a stationary background, constraints that; context_type=exact_marker; contains_formula=False
+ns for surgeons by converting the force to Moiré patterns’ displacement using an elastic
+structure. While this study demonstrated the potential of Moiré patterns in effectively visualizing
+changes in force, it was designed for surgeons to visually monitor the force. Ding et al. [6] measured
+intraocular pressure by monitoring changes in Moiré patterns formed by ring gratings on contact
+lenses and pre-stored digital line gratings. Chen et al. [4] proposed a sheer stress sensor utilizing
+Moiré patterns.
+While there have been several attempts to use Moiré patterns for sensing and tracking objects [21],
+visualizing interactions [31], and analyzing mechanical properties [4], little has been studied about
+the use of Moiré patterns for indirectly sensing human interactions. Building upon the findings
+from Moiré-based sensing methods, we present a low-cost tag-like module and accompanying
+mechanisms to create various types of tangible interfaces for precise tangible interactions with just
+a regular camera.
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 52
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+
+FULL_EXTRACTED_TEXT:
+MoiréTag: A Low-Cost Tag for High-Precision Tangible
+Interactions without Active Components
+PEIYU ZHANG, University of Virginia, USA
+WEN YING, University of Virginia, USA
+SARA L RIGGS, University of Virginia, USA
+SEONGKOOK HEO, University of Virginia, USA
+Fig. 1. a) Illustration of MoiréTag’s structure. b) MoiréTag can measure small displacement and be used to
+create a tangible controller with the addition of a handle that moves the pattern. c) With an elastic material
+added to MoiréTag, it can be used to measure contact forces to create force-sensing interfaces. d) By adding a
+strap that wraps around an object, MoiréTag can detect the changes in volume, which may enable sensing of
+physiological signals such as respiratory rate.
+In this paper, we present MoiréTag—a novel tag-like device that magnifies displacement without active
+components for indirect sensing of subtle tangible interactions. The device consists of two overlapping layers
+of stripe patterns with distinct pattern frequencies. These layers create Moiré fringes that can move faster
+than the actual movement of a layer. Using a customized image processing pipeline, we show that MoiréTag
+can reliably detect sub-mm movement in real-time (mean error = 0.043 mm) under varying lighting conditions,
+camera angles, and camera distances. We also demonstrate five applications of MoiréTag to showcase its
+potential as a low-cost solution to capture and monitor small changes in movement and other physical
+properties, such as force and volume, by converting them into displacement.
+CCS Concepts: • Human-centered computing→Human computer interaction (HCI).
+Additional Key Words and Phrases: Moiré pattern, wearable sensor, displacement magnification, force sensing,
+force visualization, tangible interface
+ACM Reference Format:
+Peiyu Zhang, Wen Ying, Sara L Riggs, and Seongkook Heo. 2024. MoiréTag: A Low-Cost Tag for High-Precision
+Tangible Interactions without Active Components. Proc. ACM Hum.-Comput. Interact. 8, ISS, Article 525
+(December 2024), 19 pages. https://doi.org/10.1145/3698113
+Authors’ Contact Information: Peiyu Zhang, University of Virginia, Charlottesville, USA, pz3sf@virginia.edu; Wen Ying,
+University of Virginia, Charlottesville, USA, wy7yv@virginia.edu; Sara L Riggs, University of Virginia, Charlottesville, USA,
+sriggs@virginia.edu; Seongkook Heo, University of Virginia, Charlottesville, USA, seongkook@virginia.edu.
+© 2024 Copyright held by the owner/author(s).
+ACM 2573-0142/2024/12-ART525
+https://doi.org/10.1145/3698113
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+525:2 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+1 Introduction
+With the advancements in computing technologies, computers are now more closely connected to
+the real world than ever. Computers sense and utilize interactions that happen in the real world,
+such as tapping and scratching of a surface [12, 13, 41], and interacting with physical objects [17],
+enabling tangible interactions in scenarios where traditional user interfaces are not available or
+not effective. Many of these are done through active sensors worn on the user’s body [17, 41] or
+attached to the object surface [12, 13]. Some use conductive material to cover the object surface
+to sense interaction with the surface [ 44]. While useful, these methods need wires and active
+components to be worn on the user’s body or active circuits to be instrumented on the object
+surface.
+On the other hand, recent advancements in computer vision and machine learning algorithms
+enabled non-contact indirect sensing of real-world input using a camera. For example, MediaPipe
+[1] and DeepPose [34] allow human body posture and movement to be tracked with a regular 2D
+camera by using deep learning algorithms, and YOLACT allows sensing and tracking of objects in
+a video [3] without instrumenting the user or the object with active sensors. These vision-based
+methods have the limitation of precision and stability of the sensed movement, making it more
+suitable for sensing large-scale movements such as moving an arm or a hand. However, in the real
+world, people also utilize small movements, such as precisely aligning objects, and even tiny actions
+that may not be easily noticeable, such as applying a force on a physical object. Other studies have
+shown that using laser speckles can enable high-accuracy sensing of small movements, such as
+the movement of hand and object [ 45] and the movement caused by the force interaction [ 23].
+However, methods that use laser speckle require a speckle projector and a speckle sensor [45] or a
+defocused camera [23].
+In this paper, we present MoiréTag, a novel low-cost tag that enables camera-based sensing of
+precise movement from physical interactions. It utilizes the Moiré phenomenon, which is seen
+when two repetitive patterns with similar spacings are superimposed in the form of dark and
+light fringes. If one of the superimposed patterns moves, the Moiré fringe will also move, but at
+a different rate than the pattern movement. This allows the small displacement caused by the
+subtle interaction to be significantly magnified so that it can be easily captured by a regular camera.
+This Moiré phenomenon has been shown to be effective in various applications, such as pose [21]
+and camera position [37]. With the well-established theory framework of Moiré pattern as the
+basis, MoiréTag provides an easy way for people to use the Moiré phenomenon to create and use
+ad-hoc interfaces. MoiréTag consists of two overlapping paper layers that have stripe patterns
+with different grating periods that create Moiré fringes that serve as a displacement magnifier for
+a camera to precisely capture the displacement. We implemented an image processing pipeline
+that recognizes the MoiréTag from a camera image and detects the movement of the Moiré fringes.
+Our technical evaluation showed that MoiréTag and the image processing pipeline could enable
+the sensing of sub-mm displacement using a regular smartphone camera with an average error of
+0.043 mm. The evaluation also showed that the displacement could be reliably detected in various
+lighting conditions and when captured from different camera angles and distances.
+MoiréTags can be configured in various ways to be used for measuring different types of physical
+properties. For example, MoiréTags with a handle attached to the moving layer can be used as a
+tangible user interface for applications requiring multiple precise inputs, such as video editing.
+When coupled with an elastic material, MoiréTags can serve as a force sensor by magnifying the
+small displacement caused by the compression or extension of the elastic material. MoiréTags can
+also be attached to a strap wrapped around the human chest to measure chest volume changes
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:3
+during breathing. Our evaluation showed that the force and the breathing count can be accurately
+measured using MoiréTags.
+In summary, the main contributions of this work include the development of MoiréTag, a novel
+tag device that enables low-cost and precise camera-based sensing of subtle changes in displacement
+for tangible interactions, and the design and implementation of force and volume change sensing
+mechanisms using MoiréTag.
+2 Related Work
+In this section, we summarize prior work on indirect interaction sensing methods and sensing
+techniques that utilize Moiré patterns.
+2.1 Non-contact Interaction Sensing Methods
+Kinematic and kinetic interactions, such as moving objects and applying forces, are commonly used
+in human-computer interaction. While these interactions are often sensed using active sensors
+placed at the location of the interaction, many methods have been developed to enable the non-
+contact sensing of such interactions.
+Motion and displacement are commonly used to control computers, and using cameras is a
+popular way of sensing the movements of hands and objects. Previous studies have shown that
+using a depth camera can allow users to perform touch interactions on unequipped surfaces
+[11, 38, 39]. Recent improvements in machine learning based computer vision algorithms enabled
+reliable sensing and tracking of objects and body parts in a 2D image [ 1]. However, measuring
+small changes in the movement using vision-based methods is challenging due to the resolution
+of the images. Some methods use optical artifacts to enable high-precision position and motion
+sensing with a camera. For example, SpeckleSense [ 45] uses the laser speckle projected to the
+surface and achieves high-precision and high-speed tracking of hands without wearing any devices.
+For sensing small changes in the video, Wu et al. demonstrated the use of spatial decomposition
+and temporal filtering can magnify subtle color changes and motions[35]. Another approach is to
+use the acoustic signal. Lamello [28] uses 3D-printed objects with comb-like structures that make
+unique sounds as the user manipulates the objects so that the movement can be captured by a
+microphone attached to the device.
+Force is also a commonly used modality for interaction. Sensing forces often requires an active
+sensor to be placed between two objects, which necessitates wires or batteries to be connected
+to the sensor. Researchers have demonstrated that transforming force into wireless signals can
+make the forces sensor a low-powered device and allow force to be measured and transmitted
+using limited power sources such as energy harvesting [10]. However, this method may still require
+an electric force sensor to be fabricated and installed at the force measuring point. To enable
+force sensing without active components, researchers have been investigating camera-based force
+sensing methods. Since force is not visible, many sensing methods measure the deformation of the
+surface where the force is exerted. For example, Lee et al. introduced a camera-based approach
+that captured the deformation of a viscoelastic mat when a person stands on it and subsequently
+estimated their weight, which was the force applied to the mat [19]. Several methods have shown
+that using optical artifacts and sensing the changes in the distribution of the optical artifacts caused
+by the force-induced deformation could enable accurate force sensing without making contact.
+For example, ForceSight estimates the magnitude of force applied by measuring the laser speckle
+shifts on a deformed surface resulting from touch force [23]. Kamiyama et al. developed a method
+that uses elastic blocks containing spherical markers [15] for capturing the traction fields using
+the movement of spherical markers caused by the force interaction with a camera. Other methods
+proposed to measure the interaction forces from the color changes of the fingertip using a camera
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:4 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+[9, 29, 30]. While these methods have demonstrated high detection accuracy, the sensible force
+range varies in different regions of the fingertip, and a controlled light condition is required [30].
+While many methods have been developed to enable sensing of displacement and force interac-
+tions, indirectly measuring small movements and forces without special equipment, such as a laser
+speckle projector, in a non-light-controlled setting still remains a challenge.
+2.2 Moiré-based Sensing Methods
+To enable the indirect vision-based sensing of small movements, we utilize Moiré patterns. Moiré
+patterns are produced when two periodic patterns are superimposed [22], and they can amplify
+the feature along one dimension compared to the original pattern [14]. The geometric properties
+of Moiré patterns have been well studied [2]. The movement of the constituent layers of Moiré
+patterns will lead to a more pronounced movement of the Moiré patterns themselves. Additionally,
+if there is a gap between the planes of two layers, subtle camera movement can also lead to an
+amplified movement of the Moiré patterns. Previous research has explored various approaches of
+using Moiré patterns’ amplification characteristics to detect displacement at sub-millimeter levels
+[25, 36, 43], offering an alternative to traditional sensors like the fiber optic displacement sensor
+(FODS) [5, 40] and the laser displacement sensor (LDS) [8, 27]. Compared to traditional sensors
+like LDS and FODS, camera-based displacement sensing using Moiré patterns is more robust to
+environmental noise induced by sensor movement, measurement angle, inaccurate calibration, and
+interfering signals. Other camera-based methods employing computer vision techniques may also
+detect displacement by comparing pixel locations of corresponding features across frames [16, 20].
+However, these approaches require camera stability or a stationary background, constraints that
+do not apply to Moiré-based methods. In contrast to computer vision approaches that require
+distinguishing between the object and the background, Moiré pattern sensing does not directly
+sense the object itself, thereby avoiding this issue.
+Because Moiré patterns can be generated in various ways and have the capability to consistently
+show the movements of constituent layers or the camera, they have been used in many other
+displacement-related measurement methods. Circular Moiré patterns have been used to measure
+crack growth on the surface [26, 42]. Successful attempts have also been made to employ Moiré
+patterns for tracking camera and object positions [7, 37], as well as advancing to pose estimation
+[21, 24, 32, 33]. MoiréTag adopted the validated methodology of calculating real displacement from
+Moiré pattern displacement and applied it in creating novel tangible user interfaces. Furthermore,
+Moiré patterns may be used to indirectly measure subtle changes in other physical properties.
+Takaki et al. [31] built an endoscopic surgical instrument that visualizes force applied with Moiré
+patterns for surgeons by converting the force to Moiré patterns’ displacement using an elastic
+structure. While this study demonstrated the potential of Moiré patterns in effectively visualizing
+changes in force, it was designed for surgeons to visually monitor the force. Ding et al. [6] measured
+intraocular pressure by monitoring changes in Moiré patterns formed by ring gratings on contact
+lenses and pre-stored digital line gratings. Chen et al. [4] proposed a sheer stress sensor utilizing
+Moiré patterns.
+While there have been several attempts to use Moiré patterns for sensing and tracking objects [21],
+visualizing interactions [31], and analyzing mechanical properties [4], little has been studied about
+the use of Moiré patterns for indirectly sensing human interactions. Building upon the findings
+from Moiré-based sensing methods, we present a low-cost tag-like module and accompanying
+mechanisms to create various types of tangible interfaces for precise tangible interactions with just
+a regular camera.
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:5
+Fig. 2. An example of displacement magnification caused by Moiré fringes: a slight shift in the alignment of
+a layer of stripe patterns can result in a much larger shift in Moiré fringes.
+3 MoiréTag
+3.1 Moiré Fringes for Displacement Magnification
+If the two superimposed patterns are alternating dark and bright lines (line-gratings), then the
+Moiré pattern produced will be alternating dark and highlight lines with enlarged grating periods
+known as Moiré fringes [14]. MoiréTag’s ability to sense subtle changes in displacement relies on
+the magnification characteristic of Moiré fringes, which is shown in Figure2.
+MoiréTag utilizes this characteristic by using two paper layers with stripe patterns with different
+grating periods. When these two layers are superimposed, they create Moiré fringes with larger
+grating periods. We use a similar method to create and detect displacement of Moiré fringes as
+MoiréBoard [37]. However, our approach is designed for unidimensional movement only. The dark
+lines on the top layer 𝐴are hollowed whereas the dark lines on the bottom layer 𝐵are printed on
+white paper. The top layer to be attached to the MoiréTag has a grating period of𝑇𝐴 that is larger
+than the grating period𝑇𝐵 of the bottom layer. The bottom layer𝐵can slide along the MoiréTag and
+create moving Moiré fringes. The grating period of Moiré fringes 𝑇𝑀 can be calculated from 𝑇𝐴 and
+𝑇𝐵 using Equation 1 [37]. When the bottom layer 𝐵moves by a full grating period (𝑇𝐵), the Moiré
+fringes also move by a full grating period ( 𝑇𝑀) in the same direction. The division in Equation
+1 guarantees that the grating period of the resultant Moiré fringes ( 𝑇𝑀) will exceed the grating
+period of the line grating on the bottom paper layers (𝑇𝐵), therefore amplifying the movement of
+the bottom layer (𝐵).
+𝑇𝑀 = 𝑇𝐴𝑇𝐵
+𝑇𝐴 −𝑇𝐵
+(1)
+The displacement of Moiré fringes, Δ𝑀, is captured by a digital camera. To prevent shifts in the
+observed Moiré fringes when the camera moves, the distance between the two paper layers 𝐴and
+𝐵should be minimal. Δ𝑀 will be translated to the movement of the sliding bottom layer Δ𝐵 using
+Equation 2 [37]. By tuning 𝑇𝐴 and 𝑇𝐵, we can control the amplification gain ( Δ𝑀
+Δ𝐵
+) based on the
+user’s decision on the tradeoff of the sensing range and precision.
+Δ𝐵 = Δ𝑀
+𝑇𝐴 −𝑇𝐵
+𝑇𝐴
+(2)
+3.2 Hardware Implementation
+The main structure of MoiréTag includes four components as shown in Figure 1a. The 3D printed
+part has a small opening at the top, which functions as a screen for displaying Moiré fringes. A
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:6 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+Fig. 3. The workflow of the MoiréTag image processing pipeline. The steps are described in section 3.3.
+rectangular white paper border, with a marker for orientation detection, is affixed around the
+screen. The two paper layers that create Moiré fringes are placed inside the 3D-printed tag. The
+top layer 𝐴, made with light black cardstock with machine-cut gaps, is attached to the screen and
+remains stationary. The bottom layer 𝐵, printed on white paper with smaller gaps than the top
+layer, passes through the 3D-printed tag and its movement results in a larger movement of Moiré
+fringes. Lastly, a rectangular piece of paper serving as an ID is positioned on the bottom half of the
+screen, above the fixed paper layer 𝐴. This paper is divided into four sections, each representing
+a digit in a four-bit binary number, allowing for 16 possible IDs ranging from 0 to 15. In Figure
+1a, for example, the displayed ID is 11. Given the simplicity of the MoiréTag structure that only
+requires a sliding frame with a window, it can also be made with thick paper (See Figure. 1b).
+3.3 Image Processing Pipeline
+The customized image processing pipeline can be summarized into the 6 steps below:
+1) Receive input image and locate the MoiréTag using the convolutional neural network object
+detection tool.
+2) In the cropped image from step 1, start to locate rectangle areas within the white boarder for
+displaying Moiré fringes by extracting all contours with four edge points and filtering out
+the ones with incorrect height-to-width ratios.
+3) Among the remaining contours, adjust the orientation based on the dark marker along the
+white border. Iterate through the contours to crop, resize, and rectify the regions within them,
+and stop once determined the cropped region is correct for proceeding.
+4) Extract the binary ID attached to the MoiréTag.
+5) Extract the average pixel location of fringes.
+6) Mitigate the potential jittering induced by the contour detection method and output the
+calculated displacement of the bottom paper layer 𝐵.
+As shown in Figure 3, the pipeline begins by taking a frame from a live camera feed or a video as
+the input. We use YOLACT [3], a convolution neural network object detection and segmentation
+model trained on MoiréTag images, to locate the MoiréTag from the noisy background and at a
+distance. We trained a custom YOLACT model with 300 images generated using three MoiréTag
+foreground images and ten noisy background images. The model was trained using 15,000 iterations,
+and no failure was observed in the test set of 100 different images. If the YOLACT model fails to
+detect the MoireTag in one frame, this frame will be skipped. This will not affect displacement
+detection if the tracking loss is minimal, as the Moiré fringe location in the next frame will reflect
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:7
+the cumulative movement over time. YOLACT is not used to directly locate the fringes from the
+input frame because precise separation of fringes across frames is required to calculate the fringes’
+displacement accurately. To achieve this, we added additional steps to crop the areas within the
+white paper border on the screen that contains the Moiré fringes, which are described in the next
+paragraph.
+After cropping the MoiréTag from the original image using YOLACT, the pipeline converts it into
+greyscale and applies a threshold for contour detection using OpenCV. Given we intend to crop the
+rectangle area inside the white border around the screen, all contours that have an incorrect number
+of vertices or ratio of length and width are filtered. Each of the remaining contours is rotated based
+on its ratio of length and width. Then the algorithm locates the dark marker on the top left corner of
+the white border to adjust the orientation of the contour accordingly. This is achieved by comparing
+the average RGB pixel values of the outer regions of all four corners and identifying the darkest
+region. Next, the area inside each contour is cropped, resized to 600 ×600 pixels, and rectified.
+Then the top 200 rows that only contain fringes are hashed by Python’s ImageHash library. If the
+difference between the hash values of the cropped image and of a pre-stored image of Moiré fringes’
+display area is below a preset threshold, the pipeline considers it as the correct match and proceeds
+to the next step.
+On the 600 ×600 pixels cropped image, 80 pixels are removed from each side to delete the
+remaining areas of screen edges from the image and only keep the Moiré fringes. The bottom 200
+rows of pixels are dedicated to ID detection, while the top 200 rows that only contain fringes, are
+used for displacement detection. During the ID detection stage, the cropped image of the ID area is
+divided into four equal sections vertically. If the average RGB pixel value of a section is below a set
+threshold, it is classified as dark, otherwise, it is classified as white. The dark region is assigned a
+value of 1, while the white region is assigned a value of 0. The results of these classifications are
+then combined to create a four-digit binary number(e.g., 1011 in Figure 1a) which is then converted
+to a decimal ID number.
+The rows that only contain fringes are flattened to 1 pixel in the y-direction for faster calculation
+speed since the fringes move in the x-direction. Because the fringes are repetitive, we can extract
+some columns of pixels after calculation and concatenate them on the left and right sides to extend
+the width of the image. A Gaussian blur is then applied to produce qualified waveforms of pixel
+brightness for calculation. The extended width ensures that the columns of pixels in the original
+cropped image are well blurred. Finally, we cut out these columns from the extended image and
+use them for fringe detection.
+The brightness of pixels on the blurred image will be distributed as inverted bell curves as shown
+in Figure 3. The pixel locations of the valleys in the curves indicate the positions of the centers of
+the Moiré fringes. To detect the valleys, the slope of the curve is analyzed for zero-crossing points.
+To determine the displacement, we calculate the difference between the averages of the previous
+and the current valley locations.
+When using OpenCV contour detection to identify the edge points of the rectangle inside the
+white border, slight variations may occur between frames, leading to jittering in the locations
+of the detected valleys even when there is no actual displacement. To mitigate this, we average
+the currently detected and previous four displacements and use it as the current displacement,
+while also storing the raw data for future calculations. This helps to reduce the jittering to within
+approximately negative to positive 5 pixels. Finally, we use Equation 2 to calculate the actual
+displacement of the moving paper layers 𝐵from the detected displacement of the Moiré fringes.
+Each iteration of image processing takes 38.52 ms on average across 10 measurements on a
+laptop with an Intel Core i7-11800H processor and an NVIDIA GeForce RTX 3070 GPU. Within each
+iteration, MoiréTag detection using YOLACT takes 22.75 ms on average. This allows the program to
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:8 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+output the detected displacement at a rate of around 26 frames per second. The image processing
+was done online. Since the main focus of this work was to prove the concept of using Moiré fringes
+for remote sensing of interactions, the phone streamed images to the laptop for processing for
+more efficient development. While our implementation utilizes the laptop’s computing capabilities,
+we believe that it is feasible to execute the algorithm on a mobile device in real-time by using
+a lightweight object detection and segmentation model, such as mobileYOLACT [ 18]. With the
+increasing computing power of mobile devices and the integration of neural computation modules,
+we anticipate that future mobile devices will handle our algorithm even more efficiently.
+3.4 Validation
+To evaluate the performance of MoiréTag in sensing small displacements under different lighting
+conditions, camera angles, and camera distances, we conducted three sets of validation experiments
+using a linear translation stage with a step size of 0.01 mm to create small movements precisely.
+The moving strip layer was pasted onto the translation stage’s moving surface and pushed by the
+pillar, while the screen and fixed paper layer of MoiréTag were attached to a 3D-printed supporting
+structure. To prevent accidental movement, the translation stage and supporting structure were
+securely taped to the table. By twisting the handle of the translation stage, moving Moiré fringes
+were created for an iPhone 13 Pro’s wide lens camera (equivalent focal length: 26 mm) to capture
+from the top.
+In this experiment, the grating period of the fixed layer of stripe patterns 𝑇𝐴 is 1.752 mm and
+the grating period of the moving layer 𝑇𝐵 is 1.422 mm. Together they create Moiré fringes with a
+grating period 𝑇𝑀 of 7.651 mm. This indicated that for every 1 mm movement of the moving layer,
+there would be a 5.378 mm movement of Moiré fringes. We used Cricut (144 dpi: 0.176 mm/step) to
+cut the fixed layer and a laser printer (1200 dpi: 0.021 mm/step) to print the moving layer. While
+the printing resolution affects the precision of an individual strip, the Moiré fringe is created based
+on the frequency of the multiple strips and the effect of printing resolution on the overall accuracy
+becomes smaller, because the error from the printing resolution does not accumulate over the
+distance.
+For each condition displayed in the tables below, we conducted five measurements. In each mea-
+surement, we tested the bidirectional movements in the range of 0 mm and 2 mm. We documented
+the corresponding values of detected Moiré fringe movements output by the image processing
+pipeline when the mark on the translation stage showed an additional 0.2 mm of movement. The
+default condition featured an illumination level of 275 lux, and the camera was positioned directly
+above the MoiréTag at a distance of 60 cm with no tilting.
+3.4.1 Lighting Condition Validation. To assess the performance of the image processing pipeline
+under varying levels of illumination, we conducted validation experiments using four illumination
+levels including the default: 275 lux, 200 lux, 125 lux, and 50 lux, corresponding to different preset
+levels of a floor lamp. The illumination levels are shown in Figure 4, which was taken by a camera
+with fixed exposure for comparison (F/2.8, 1/200s, ISO 400). Illumination was measured using a
+light meter positioned at the MoiréTag location. During the illumination changes, the camera
+was placed directly above the MoiréTag at a fixed distance of 60 cm without tilting, resulting in a
+camera angle of 0 degrees. The average detected movements across five measurements for each
+condition can be found in Figure 5. Additionally, Table 1 presents the average errors, average
+standard deviations, and average relative absolute errors (|𝐷𝑒𝑡𝑒𝑐𝑡𝑒𝑑𝑑𝑖𝑠𝑝𝑙𝑎𝑐𝑒𝑚𝑒𝑛𝑡 −𝐴𝑐𝑡𝑢𝑎𝑙𝑑𝑖𝑠𝑝𝑙𝑎𝑐𝑒𝑚𝑒𝑛𝑡 |
+𝐴𝑐𝑡𝑢𝑎𝑙𝑑𝑖𝑠𝑝𝑙𝑎𝑐𝑒𝑚𝑒𝑛𝑡 )
+across five measurements for the 22 sample points under four different conditions.
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:9
+Fig. 4. Four lighting conditions (275 lux, 200 lux, 125 lux, and 50 lux) shot by a camera with fixed lens settings.
+Table 1. Results of validation for different lighting conditions
+Illumination (lux) Angle ( ◦) Distance (cm) Avg Err (mm) Avg SD (mm) Avg Relative Err
+275 0 60 0.043 0.042 0.067
+200 0 60 0.038 0.035 0.032
+125 0 60 0.038 0.023 0.032
+50 0 60 0.042 0.039 0.056
+Fig. 5. Plotted results of lighting condition validation. The blue line represents the results of forward movement,
+while the red line represents the results of backward movement. The bar plots at the bottom show the average
+absolute errors.
+3.4.2 Camera Angle Validation. To assess the performance of the image processing pipeline under
+varying camera angles, we conducted validation experiments with three different angles including
+the default: 0 degree, 30 degrees, and 60 degrees. Camera angle is defined as the angle formed
+between the straight line connecting the lens and the MoiréTag and the straight line perpendicular
+to the MoiréTag. The straight-line distance between the lens and the MoiréTag was maintained at
+60 cm. And the illumination was maintained at 275 lux. The average detected movements across
+five measurements for each condition, apart from the default, can be found in Figure 6. Additionally,
+Table 2 presents the average errors, average standard deviations, and average relative absolute
+errors across five measurements for the 22 sample points under the two conditions.
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:10 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+Table 2. Results of validation for different camera angles
+Angle ( ◦) Illumination (lux) Distance (cm) Avg Err (mm) Avg SD (mm) Avg Relative Err
+0 275 60 0.043 0.042 0.067
+30 275 60 0.062 0.025 0.069
+60 275 60 0.037 0.036 0.055
+Fig. 6. Plotted results of camera angle validation. The blue line represents the results of forward movement,
+while the red line represents the results of backward movement. The bar plots at the bottom show the average
+absolute errors.
+3.4.3 Camera Distance Validation. To assess the performance of the image processing pipeline
+under varying camera distances, we conducted validation experiments with three different distances
+including the default: 60 cm, 100 cm, and 140 cm. The distance is defined as the straight-line distance
+between the camera lens and the MoiréTag. The camera was placed directly above the MoiréTag
+without tilting, resulting in a camera angle of 0 degrees. And the illumination was maintained at 275
+lux. The average detected movements across five measurements for each condition, apart from the
+default, can be found in Figure 7. Additionally, Table 3 presents the average errors, average standard
+deviations, and average relative absolute errors across five measurements for the 22 sample points
+under the two different conditions.
+Table 3. Results of validation for different camera distances.
+Distance (cm) Illumination (lux) Angle ( ◦) Avg Err (mm) Avg SD (mm) Avg Relative Err
+60 275 0 0.043 0.042 0.067
+100 275 0 0.033 0.027 0.042
+140 275 0 0.048 0.044 0.090
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:11
+Fig. 7. Plotted results of camera distance validation. The blue line represents the results of forward movement,
+while the red line represents the results of backward movement. The bar plots at the bottom show the average
+absolute errors.
+3.4.4 Discussion. The results of the three validation experiments showed that the detected dis-
+placement of the Moiré fringes exhibited a nearly linear relation with the actual displacement of
+the moving paper layer. The average error remained no greater than 0.043 mm when measuring
+bidirectional movements spanning 4 mm with a step size of 0.2 mm. The highest average relative
+error was 0.09, recorded at a camera distance of 140 cm. This was caused by the average absolute
+error of around 0.03 mm when the displacement was small (0.2 and 0.4 mm). The absolute errors did
+not exhibit any consistent relationship with the displacement, although in some of the conditions,
+the absolute errors increased with the displacement. This demonstrates the suitability of Moiré-
+Tag for applications that may involve varying lighting conditions and camera positions. Notably,
+measurement errors and misalignment between detected forward and backward movements were
+primarily attributed to the jittering introduced during the image cropping process using OpenCV’s
+contour detection method, as described in section 3.3. Overall, no noticeable pattern was observed
+in how illumination level, camera angle, and camera distance affected the sensing process.
+4 Applications
+In order to exemplify how MoiréTag can integrate into everyday scenarios for detecting minor
+changes in displacement and other physical properties like force and volume, we designed five
+applications with customized prototypes. Additionally, to illustrate MoiréTag’s practicality in force
+and volume change sensing, we conducted two validation experiments.
+4.1 Displacement Sensing
+A popular use case for displacement as an input signal is the sliders found on devices such as
+light switches, air conditioning control panels, and music synthesizers. Given that MoiréTag can
+sense subtle displacements and involves paper sliding, it can be used to create a tangible slider for
+continuously controlling parameters. To demonstrate its utility, we implemented a mobile video
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:12 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+editing application that uses a camera to detect MoiréTags. Since MoiréTags can be implemented
+using paper, users can easily build a collection of tangible controls for adjusting multiple video
+editing parameters. This will allow users to preserve the limited mobile screen real estate for
+displaying video content and use the MoiréTag-enabled physical controls to locate video frames
+and adjust the brightness and saturation levels of the video.
+Fig. 8. Video editing on smartphone using modified paper prototypes of MoiréTag
+4.1.1 Hardware Implementation. To demonstrate the accessibility of MoiréTag, we modified the
+paper prototype of MoiréTag by attaching the bottom layer of stripe patterns to a paper handle, as
+shown in Figure 1b and Figure 8. By sliding the handle, the user can create movements of Moiré
+fringes for a camera to capture. The top and bottom of the two sides of the folded paper are taped
+together, creating a constrained range of movement for the moving layer underneath the screen
+area. The prototype can be easily secured to a surface using tape, allowing the user to control the
+slider with one hand.
+4.1.2 Software Application. We created a control panel with three MoiréTag sliders and a mobile
+video editing interface, as shown in Figure 8. The wide lens camera of a Google Pixel 7 (equivalent
+focal length: 24 mm) was used to capture the movements of Moiré fringes on the three tags. A
+window on the smartphone screen shows a specific frame of the video being edited. By moving
+the horizontally placed slider, the user can control the video playback speed to locate the desired
+frame for editing. The other two vertically placed sliders allow the user to adjust the brightness
+and saturation of the frame by sliding up and down. The positioning of the sliders was mapped to
+the layout of the control bars on the user interface. This demonstrates the potential of MoiréTag as
+a low-cost solution for providing displacement input.
+4.2 Touch Force Sensing
+When an object is subjected to external forces, it can either move or deform. Therefore, it is
+natural to convert the force into displacement during the interaction. As we have demonstrated,
+MoiréTag can detect subtle displacements. By using an elastic material to convert touch forces into
+displacements, we can now use MoiréTag to sense subtle force changes. By attaching the sliding
+strip layer directly to the surface of an elastic material, the deformation of the material is directly
+translated into the same amount of movement of the moving paper layer (Δ𝐵), which leads to a
+larger movement of Moiré fringes (Δ𝑀). After acquiring Δ𝐵 from Equation 2, we can then calculate
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:13
+Fig. 9. a) Components of MoiréTouch. b) Rear view of MoiréTouch. c) Bird’s eye view of MoiréTouch. d) Side
+view of the finger holder structure. e) Components of MoiréPen.
+the touch force using Hooke’s Law and the spring constant 𝑘 of the elastic material, as shown in
+Equation 3.
+𝐹 = 𝑘Δ𝐵 (3)
+We developed two applications that utilize modified versions of MoiréTag to sense the force
+applied at the fingertip and pen tip. Additionally, we conducted a validation experiment to evaluate
+the ability to sense force changes from the movements of Moiré fringes using our prototypes.
+4.2.1 Hardware Implementation. Figure 9a displays the components of the touch force sensor
+named MoiréTouch, which can be worn on the fingertip to sense applied forces when pressing
+objects. The extension to the MoiréTag includes three 3D printed parts and a silicone rubber layer
+for converting touch force into the displacement of the moving layer of stripe patterns. The 3D-
+printed parts include a side wall that constrains the direction of the sliding layer’s movement, a
+finger rest for pressing with a fingertip, and a sleeve-like holder.
+The 3D-printed screen is 30.6 mm long, 17 mm wide, and 4.5 mm high. The hollow part at the
+center of the screen creates a 21.4 mm ×7.3 mm display of Moiré fringes. The fixed paper layer is
+placed on top of the sliding layer inside a rail through the screen, which guides the sliding layer to
+move parallel to the direction pointed by the finger. Since the fingertip pressing produces vertical
+instead of horizontal movements, we make a rounded side edge on the screen and have the sliding
+layer fall from it. While the portion of the sliding layer that is within the rail is printed on paper,
+we use a narrower cardstock to pull down and push back the printed paper.
+The side wall is tightly pasted to the screen to quickly change the direction of sliding. After
+falling from the rounded edge of the screen, the sliding layer goes through the vertical rail inside
+the side wall, which ensures that the movement is vertical. The end of the sliding layer is then
+pasted to the side and bottom of the finger rest, which is pressed by the fingertip and lifted by
+the elastic material beneath it. There are four 3D-printed hollow tubes on the finger rest and the
+bottom of the holder that is placed on the left and right sides of the finger. These tubes together
+with the two metal nails that pass through them can prevent the finger rest from titling while being
+pressed and lifted. We also strapped a rubber band between the two nails to prevent MoiréTouch
+from sliding off when the finger is moving. In the prototype shown in Figure 9b, we use a silicone
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:14 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+Fig. 10. Screenshots of a) the pressure sensing application using MoiréTouch and b) the drawing application
+using MoiréPen.
+rubber with a Shore hardness of 00-10 as the elastic material. The device is 32.8mm ×26.6mm ×
+27.3mm and weighs 7.78 g.
+The components of the pen tip force sensor, MoiréPen, are illustrated in Figure 9e. The 3D-printed
+screen area for Moiré fringes is printed together with the body of the pen. The fixed layer of stripe
+patterns is attached to the screen, while the moving layer is attached to a pad located inside the
+hollow space below the screen. The hollow body of the pen allows for a long cube to pass through,
+with one end serving as the pen tip and the other end squeezing into the hole on the pad to push
+it towards the top of the pen. The conversion of touch force into the displacement of the moving
+layer of stripe patterns is achieved through a silicone rubber layer situated between the pad and
+the top of the pen. The screen area is 34 mm ×26 mm ×9 mm, while the body of the pen is 97 mm
+in length.
+4.2.2 Software Application. We developed two applications using MoiréTouch for controlling
+games and sensing pressure, and an application using MoiréPen for drawing virtual lines.
+We made a modified version of the Flappy Bird game where the user can control the height of
+the bird using the MoiréTouch sensor worn on a finger. With a camera on top of the MoiréTouch
+capturing the displacement of Moiré fringes, the user can press their finger and the movement of
+Moiré fringes will be detected and mapped to the height of the bird. Pressing harder causes the
+bird to go higher, and releasing the finger causes the bird to drop. This may offer an alternative
+way of controlling the bird without the need for traditional keyboard controls.
+The second application of MoiréTouch is a force visualizer for remote meetings. As shown in
+Figure 10a, the force can be visualized with a camera capturing the movement of Moiré fringes,
+the program can display both the amount of force applied to a surface through a progress bar and
+the resulting surface deformation simultaneously in a window. It is often difficult to determine the
+amount of touch force applied from the video, and with the help of a progress bar visualization,
+if the viewer also has a MoiréTouch, they can replicate the visualization of the touch force they
+see while watching the demonstration and obtain a better understanding of the amount of force
+applied by the demonstrator.
+Lastly, we developed a virtual drawing application using MoiréPen as shown in Figure 10b. We
+attached a colored sticker to the pen tip and tracked its location using a customized OpenCV color
+blob detector. With a camera facing the screen area of the MoiréPen and capturing the pen tip in
+view, we tracked the displacement of the Moiré fringes and the location of the pen tip concurrently.
+When the force detected on the pen tip exceeds a certain threshold, the program begins to render a
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:15
+Fig. 11. Plotted results of force sensing validation. The blue line represents the measured pixel displacement
+of Moiré fringes during the pressing phase, while the red line represents the measured pixel displacement
+of Moiré fringes during the releasing phase. The grey line is the best-fitted line obtained from the linear
+regression result.
+line at the pen tip location. The thickness of the line increases as more force being applied, and the
+rendering of the line breaks if the force drops below the threshold. This application is especially
+useful for quickly drawing shapes with adjustable thickness during virtual meetings.
+We conducted an experiment to validate the force-sensing performance of MoiréTouch. To
+precisely apply the force to the MoiréTouch prototype, we attached an aluminum extrusion to a
+three-axis translation stage. The other end of the aluminum extrusion was placed on the finger rest
+of the MoiréTouch prototype, which was placed on a precision electronic scale. The movements
+of resulting Moiré fringes were captured by an iPhone 13 pro camera (equivalent focal length: 26
+mm). The two layers of patterns we chose have grating periods of 1.726 mm and 1.429 mm, and
+they created Moiré fringes with a grating period of 8.305 mm. This indicated that for every 1 mm
+movement of the sliding layer, there would be a 5.812 mm movement of Moiré fringes. For each
+sample point, we collected ten samples. In each measurement, we used the translation stage to
+increase the force from 0 to 6N and then decrease the force to 0N. We recorded the detected total
+displacements of MoiréTouch fringe at every 0.4 N of force change between 0-6 N and therefore
+had a total of 32 sample points, including the start and end points at 0 N.
+To obtain the transfer function for estimating the force based on the displacement, we performed
+a linear regression using the recorded displacements of Moiré fringes in both force directions to
+predict the force values. The resulting model has an adjusted R-squared of 0.964. The average
+standard deviation across the ten measurements for the 32 sample points was 3.085 pixels, and the
+average displacement of Moiré fringes in response to a 0.2 N force change was 4.86 pixels. Figure
+11 shows a close-to-linear relationship between the detected displacement of Moiré fringes and the
+applied force, both during pressing and releasing actions. This indicates that the Moiré fringes’
+displacement mirrors the continuous changes in force applied on the silicone rubber, enabling
+MoiréTouch to serve as a sensor for subtle force changes.
+4.3 Volume Change Sensing
+MoiréTag can be used with a strap that wraps around an object to measure the changes in the object
+volume. For example, a MoiréTag attached to a chest strap may be used to measure the volume
+changes caused by a person’s breathing, as the changes in the chest volume change the length of
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:16 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+Fig. 12. a) Components of the MoiréTag breath counter prototype. b) Breath counter user interface. c)
+Validation setup for respiratory rate sensing.
+the strap. While this volume change is subtle, the magnifying property of Moiré fringes allows
+a regular camera to accurately capture the changes. To demonstrate this sensing capability, we
+implemented a breathing counter prototype as an example. We also conducted an experiment to
+assess the accuracy of counting the number of breaths using MoiréTag.
+4.3.1 Hardware Implementation. As shown in Figure 1d, a MoiréTag is connected to a chest strap
+that is adjustable in length. One end of the strap is attached to the moving strip layer, which is
+pulled outward during inhalation by the strap and inward during exhalation by a rubber band
+connected to the body of the 3D printed structure shown in Figure 12a. The other end of the strap
+is taped to the body of the 3D-printed structure. The 3D printed structure has dimensions of 68
+mm ×30 mm ×5.5 mm and a total weight of 8.2 g.
+4.3.2 Software Application. As shown in Figure 12b, we developed a user interface that could
+be valuable in telehealth or remote physical training situations that demand measurement of
+respiratory rate. The user can wear the adjustable strap around their chest and the interface renders
+their breathing rate and trend in real-time for others to see during virtual meetings. This low-cost
+breath visualization setup presented in the application can provide a novel way for doctors or
+personal trainers to monitor their clients’ respiration.
+To assess the accuracy of the breath counter, we conducted a preliminary validation experiment.
+As illustrated in Figure 12c, an experimenter wore the breath counter while facing an iPhone 13 Pro
+camera (equivalent focal length: 26 mm) mounted on a laptop. Ten measurements were conducted,
+each lasting one minute. The experimenter began breathing when the timer started and counted
+the number of breaths themselves. Once the timer stopped, both the number of breaths detected by
+the program and the actual number of breaths were recorded. In eight out of the ten measurements,
+the breath counter made no error, while in the remaining two measurements, it detected one less
+breath than the actual count. This resulted in an average accuracy rate of 0.990, indicating that the
+breath counter is highly reliable and accurate in measuring breathing patterns.
+5 Discussion and Conclusion
+We presented a novel camera-based approach to detect small displacement changes in daily in-
+teractions by utilizing a low-cost passive tag that magnifies displacement using Moiré fringes.
+The validation experiments show consistent and accurate sensing of displacement under vary-
+ing lighting conditions, camera angles, and camera distances. Additionally, we demonstrate the
+conversion of touch force and volume changes into displacement and the ability to sense them
+using repurposed MoiréTag prototypes and our image processing pipeline in practical applications.
+MoiréTag offers the following advantages over existing sensing methods:
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:17
+- Affordable and easy-to-make tag design. The prototype can be made with paper alone,
+using a printable template and machine-cut stripe patterns for the fixed layer. If the chosen
+grating period for the fixed paper layer is sufficiently large, it can also be printed and manually
+cut.
+- Robust sensing in various lighting and different camera placements. The customized
+image processing pipeline is able to detect displacement with sub-mm errors under different
+lighting conditions and from varying camera angles and distances.
+- Adjustable sensing range and sensitivity. The sensing range can be adjusted by changing
+the grating periods of the two overlapping paper layers of stripe patterns to meet the different
+sensing needs.
+- Versatile sensing capabilities. MoiréTag can be repurposed as a sensor for touch force or
+volume changes during respiration by adding an elastic block or a strap.
+Like all camera-based sensing methods, MoiréTag requires uninterrupted visibility within the
+camera’s field of view, without any obstructions. Our validation results indicate that MoiréTag can
+function effectively with a camera angle of 60 degrees with a camera distance of 60 cm. A greater
+camera angle might cause the camera to fail in capturing the Moiré fringes. Using a lens with a
+wider field of view may enable detection with a larger camera angle. Moreover, an extended camera
+distance may render MoiréTag too small for detection or cause the Moiré fringes to become too
+blurry for tracking. However, these issues could potentially be mitigated by employing a MoiréTag
+with a larger size or a camera with a higher resolution.
+In addition to the jittering of cropped Moiré fringes resulting from slight variations in contours
+detected by OpenCV across frames, another issue contributing to errors in displacement sensing
+is related to drastic camera movement and angle changes. The gap between two layers of stripe
+patterns may also affect the grating period of Moiré fringes, and may cause noticeable movement if
+the camera moves drastically. In our design of prototypes, we tried to avoid creating such a gap
+with the 3D-printed structures, and tapes for the paper prototype. If the camera angles change
+greatly, for example from left perpendicular to the tag to right perpendicular to the tag, the structure
+above the screen may affect the rectification of the fringes and thus lead to detected Moiré fringes
+movement. Lastly, it is important to note that if the camera moves too quickly, motion blur can
+potentially impact the detection and tracking of Moiré fringes, especially in low-light conditions. If
+Moiré fringes move rapidly, the image processing pipeline’s ability to detect displacement changes
+may be constrained by the frame rate. A future work will be needed to investigate the tracking
+performance in more dynamic use scenarios and to optimize the pipeline to improve the frame rate.
+MoiréTag was designed to measure movement in only one direction. One potential future
+improvement that could be made to MoiréTag is the use of Moiré patterns with different shapes, such
+as circular ones, to enable displacement measurement in multiple directions. Another improvement
+could be creating Moiré fringes on multiple surfaces to allow for displacement detection from
+more camera angles. Overall, MoiréTag demonstrates the potential of using Moiré fringes to
+accurately detect small displacements and indirectly infer various physical properties during
+everyday interactions.
+References
+[1] [n. d.]. MediaPipe | Google Developers. https://developers.google.com/mediapipe/solutions
+[2] Isaac Amidror. 2009. The Theory of the Moiré Phenomenon: Volume I: Periodic Layers . Vol. 38. Springer Science &
+Business Media.
+[3] Daniel Bolya, Chong Zhou, Fanyi Xiao, and Yong Jae Lee. 2019. Yolact: Real-time instance segmentation. InProceedings
+of the IEEE/CVF international conference on computer vision . 9157–9166.
+[4] Tai-An Chen, David Mills, Vijay Chandrasekharan, Henry Zmuda, and Mark Sheplak. 2010. Optical miniaturization of
+a MEMS-based floating element shear stress sensor with moiré amplification. In 48th AIAA Aerospace Sciences Meeting
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+525:18 Peiyu Zhang, Wen Ying, Sara L. Riggs, and Seongkook Heo
+Including the New Horizons Forum and Aerospace Exposition . 498. https://doi.org/10.2514/6.2010-498
+[5] Pepe G Davis, Jeff Bush, and Gregory S Maurer. 1998. Fiber optic displacement sensor. In Fourth Pacific Northwest Fiber
+Optic Sensor Workshop , Vol. 3489. SPIE, 18–22. https://doi.org/10.1117/12.323427
+[6] Xiaoke Ding, Mingze Chen, Xiaogan Liang, and Long Que. 2022. Soft Contact Lens With Embedded Moiré Patterns-
+Based Intraocular Pressure Sensors. Journal of Microelectromechanical Systems 31, 6 (2022), 971–976. https://doi.org/
+10.1109/JMEMS.2022.3206712
+[7] Ramon Estana and Heinz Woern. 2003. Moire-based positioning system for microrobots. In Optical Measurement
+Systems for Industrial Inspection III , Vol. 5144. SPIE, 431–442. https://doi.org/10.1117/12.499920
+[8] Paritosh Giri and Sergey Kharkovsky. 2016. Detection of surface crack in concrete using measurement technique
+with laser displacement sensor. IEEE Transactions on Instrumentation and Measurement 65, 8 (2016), 1951–1953.
+https://doi.org/10.1109/TIM.2016.2541358
+[9] Thomas R. Grieve, John M. Hollerbach, and Stephen A. Mascaro. 2015. 3-D fingertip touch force prediction using
+fingernail imaging with automated calibration. IEEE Transactions on Robotics 31, 5 (2015), 1116–1129. https://doi.org/
+10.1109/tro.2015.2459411
+[10] Agrim Gupta, Daegue Park, Shayaun Bashar, Cedric Girerd, Nagarjun Bhat, Siddhi Mundhra, Tania K Morimoto, and
+Dinesh Bharadia. 2023. ForceSticker: Wireless, Batteryless, Thin & Flexible Force Sensors. Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technologies 7, 1 (2023), 1–32. https://doi.org/10.1145/3580793
+[11] Chris Harrison, Hrvoje Benko, and Andrew D Wilson. 2011. OmniTouch: wearable multitouch interaction everywhere.
+In Proceedings of the 24th annual ACM symposium on User interface software and technology . 441–450. https://doi.org/
+10.1145/2047196.2047255
+[12] Chris Harrison and Scott E Hudson. 2008. Scratch input: creating large, inexpensive, unpowered and mobile finger
+input surfaces. In Proceedings of the 21st annual ACM symposium on User interface software and technology . 205–208.
+https://doi.org/10.1145/1449715.1449747
+[13] Chris Harrison, Julia Schwarz, and Scott E Hudson. 2011. TapSense: enhancing finger interaction on touch surfaces. In
+Proceedings of the 24th annual ACM symposium on User interface software and technology . 627–636. https://doi.org/10.
+1145/2047196.2047279
+[14] Roger David Hersch and Sylvain Chosson. 2004. Band moiré images. ACM Transactions on Graphics 23, 3 (2004),
+239–247. https://doi.org/10.1145/1015706.1015709
+[15] Kazuto Kamiyama, Kevin Vlack, Terukazu Mizota, Hiroyuki Kajimoto, K Kawakami, and Susumu Tachi. 2005. Vision-
+based sensor for real-time measuring of surface traction fields. IEEE Computer Graphics and Applications 25, 1 (2005),
+68–75. https://doi.org/10.1109/MCG.2005.27
+[16] Tung Khuc and F Necati Catbas. 2018. Computer vision-based displacement and vibration monitoring without using
+physical target on structures. In Bridge Design, Assessment and Monitoring . Routledge, 89–100.
+[17] Gierad Laput and Chris Harrison. 2019. Sensing fine-grained hand activity with smartwatches. In Proceedings of the
+2019 CHI Conference on Human Factors in Computing Systems . 1–13. https://doi.org/10.1145/3290605.3300568
+[18] Juwon Lee, Seungjae Lee, and Jong Gook Ko. 2021. Mobile YOLACT: Toward Lightweight Instance Segmentation for
+Mobile Devices. In 2021 International Conference on Information and Communication Technology Convergence (ICTC) .
+IEEE, 1456–1460. https://doi.org/10.1109/ICTC52510.2021.9621125
+[19] Jong Taek Lee, Yu Kai Lim, Shijia Pan, and Jun Han. 2023. Don’t" Weight" to Board: Augmenting Vision-based
+Passenger Weight Prediction via Viscoelastic Mat. Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies 6, 4 (2023), 1–22. https://doi.org/10.1145/3569465
+[20] Longxi Luo and Maria Q Feng. 2018. Edge-enhanced matching for gradient-based computer vision displacement
+measurement. Computer-Aided Civil and Infrastructure Engineering 33, 12 (2018), 1019–1040. https://doi.org/10.1111/
+mice.12415
+[21] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu, Baoliu Ye, and Sanglu Lu. 2022. MoiréPose: ultra high precision
+camera-to-screen pose estimation based on Moiré pattern. In Proceedings of the 28th Annual International Conference
+on Mobile Computing And Networking . 106–119. https://doi.org/10.1145/3495243.3560537
+[22] Gerald Oster and Yasunori Nishijima. 1963. Moiré patterns. Scientific American 208, 5 (1963), 54–63. https://doi.org/10.
+1038/scientificamerican0563-54
+[23] Siyou Pei, Pradyumna Chari, Xue Wang, Xiaoying Yang, Achuta Kadambi, and Yang Zhang. 2022. ForceSight: Non-
+Contact Force Sensing with Laser Speckle Imaging. In Proceedings of the 35th Annual ACM Symposium on User Interface
+Software and Technology . 1–11. https://doi.org/10.1145/3526113.3545622
+[24] Simeng Qiu, Hadi Amata, and Wolfgang Heidrich. 2023. MoiréTag: Angular Measurement and Tracking with a Passive
+Marker. In ACM SIGGRAPH 2023 Conference Proceedings . 1–10. https://doi.org/10.1145/3588432.3591538
+[25] Saifollah Rasouli and Mostafa Shahmohammadi. 2018. Portable and long-range displacement and vibration sensor that
+chases moving moiré fringes using the three-point intensity detection method. OSA Continuum 1, 3 (2018), 1012–1025.
+https://doi.org/10.1364/OSAC.1.001012
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.
+MoiréTag: A Low-Cost Tag for High-Precision Tangible Interactions without Active Components 525:19
+[26] Mani Maran Ratnam, Boon Yaik Ooi, and Kin Sam Yen. 2019. Novel moiré-based crack monitoring system with
+smartphone interface and cloud processing. Structural Control and Health Monitoring 26, 10 (2019), e2420. https:
+//doi.org/10.1002/stc.2420
+[27] Jakub Sandak and Chiaki Tanaka. 2003. Evaluation of surface smoothness by laser displacement sensor 1: Effect of
+wood species. Journal of Wood Science 49 (2003), 305–311. https://doi.org/10.1007/s10086-002-0486-6
+[28] Valkyrie Savage, Andrew Head, Björn Hartmann, Dan B. Goldman, Gautham Mysore, and Wilmot Li. 2015. Lamello:
+Passive Acoustic Sensing for Tangible Input Components. InProceedings of the 33rd Annual ACM Conference on Human
+Factors in Computing Systems (Seoul, Republic of Korea) (CHI ’15). Association for Computing Machinery, New York,
+NY, USA, 1277–1280. https://doi.org/10.1145/2702123.2702207
+[29] Yu Sun, J.M. Hollerbach, and S.A. Mascaro. 2006. Measuring fingertip forces by imaging the fingernail.14th Symposium
+on Haptic Interfaces for Virtual Environment and Teleoperator Systems (2006). https://doi.org/10.1109/haptic.2006.1627083
+[30] Yu Sun, J.M. Hollerbach, and S.A. Mascaro. 2009. Estimation of fingertip force direction with computer vision. IEEE
+Transactions on Robotics 25, 6 (2009), 1356–1369. https://doi.org/10.1109/tro.2009.2032954
+[31] Takeshi Takaki, Youhei Omasa, Idaku Ishii, Tomohiro Kawahara, and Masazumi Okajima. 2010. Force visualization
+mechanism using a moire fringe applied to endoscopic surgical instruments. In 2010 IEEE international conference on
+robotics and automation . IEEE, 3648–3653. https://doi.org/10.1109/ROBOT.2010.5509708
+[32] Hideyuki Tanaka, Yasushi Sumi, and Yoshio Matsumoto. 2012. Avisual marker for precise pose estimation based
+on lenticular lenses. In 2012 IEEE International Conference on Robotics and Automation . IEEE, 5222–5227. https:
+//doi.org/10.1109/ICRA.2012.6225114
+[33] Hideyuki Tanaka, Yasushi Sumi, and Yoshio Matsumoto. 2012. A high-accuracy visual marker based on a microlens
+array. In 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems . IEEE, 4192–4197. https://doi.org/10.
+1109/IROS.2012.6386052
+[34] Alexander Toshev and Christian Szegedy. 2014. Deeppose: Human pose estimation via deep neural networks. In
+Proceedings of the IEEE conference on computer vision and pattern recognition . 1653–1660.
+[35] Hao-Yu Wu, Michael Rubinstein, Eugene Shih, John Guttag, Frédo Durand, and William Freeman. 2012. Eulerian
+video magnification for revealing subtle changes in the world. ACM transactions on graphics (TOG) 31, 4 (2012), 1–8.
+https://doi.org/10.1145/2185520.2185561
+[36] Jian Wu, Ting-ting Zhou, Bo Yuan, and Li-qiang Wang. 2016. A digital moiré fringe method for displacement sensors.
+Frontiers of Information Technology & Electronic Engineering 17, 9 (2016), 946–953. https://doi.org/10.1631/fitee.1500270
+[37] Chang Xiao and Changxi Zheng. 2021. MoiréBoard: A stable, accurate and low-cost camera tracking method. The 34th
+Annual ACM Symposium on User Interface Software and Technology (2021). https://doi.org/10.1145/3472749.3474793
+[38] Robert Xiao, Chris Harrison, and Scott E Hudson. 2013. WorldKit: rapid and easy creation of ad-hoc interactive
+applications on everyday surfaces. In Proceedings of the SIGCHI Conference on Human Factors in Computing Systems .
+879–888. https://doi.org/10.1145/2470654.2466113
+[39] Robert Xiao, Julia Schwarz, Nick Throm, Andrew D Wilson, and Hrvoje Benko. 2018. MRTouch: Adding touch input
+to head-mounted mixed reality. IEEE transactions on visualization and computer graphics 24, 4 (2018), 1653–1660.
+https://doi.org/10.1109/TVCG.2018.2794222
+[40] Hang Zhou Yang, Xue Guang Qiao, Dong Luo, Kok Sing Lim, WuYi Chong, and Sulaiman Wadi Harun. 2014. A review
+of recent developed and applications of plastic fiber optic displacement sensors. Measurement 48 (2014), 333–345.
+https://doi.org/10.1016/j.measurement.2013.11.007
+[41] Xing-Dong Yang, Tovi Grossman, Daniel Wigdor, and George Fitzmaurice. 2012. Magic finger: always-available input
+through finger instrumentation. In Proceedings of the 25th annual ACM symposium on User interface software and
+technology. 147–156. https://doi.org/10.1145/2380116.2380137
+[42] KS Yen and MM Ratnam. 2011. 2-D crack growth measurement using circular grating moiré fringes and pattern
+matching. Structural Control and Health Monitoring 18, 4 (2011), 404–415. https://doi.org/10.1002/stc.376
+[43] Kin Yen and Mani Ratnam. 2011. In-plane displacement sensing from circular grating moiré fringes using graphical
+analysis approach. Sensor Review 31, 4 (2011), 358–367. https://doi.org/10.1108/02602281111169776
+[44] Yang Zhang, Gierad Laput, and Chris Harrison. 2017. Electrick: Low-cost touch sensing using electric field tomography.
+In Proceedings of the 2017 CHI Conference on Human Factors in Computing Systems . 1–14. https://doi.org/10.1145/
+3025453.3025842
+[45] Jan Zizka, Alex Olwal, and Ramesh Raskar. 2011. SpeckleSense: fast, precise, low-cost and compact motion sensing
+using laser speckle. InProceedings of the 24th annual ACM symposium on User interface software and technology . 489–498.
+https://doi.org/10.1145/2047196.2047261
+Proc. ACM Hum.-Comput. Interact., Vol. 8, No. ISS, Article 525. Publication date: December 2024.

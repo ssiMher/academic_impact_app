@@ -1,0 +1,131 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "TABLE I: Comparison of Eavesdropping Attack Methodologies. \"GT Req.\" indicates whether ground truth data is required for training. Symbol legend:#= Low,G #= Medium, = High. Previous WorkHardwareMax. Dist.Thru-WallGT Req.Preset Input?MobilityGeneralizabilityUser Env.WaveEar [18]mmWave Radar2 m ✗ ✓ ✗ # G #G #AccelEve [19]Accelerometer0 m ✗ ✓ ✓ - G #G #UWHear [20]IR-UWB Radar8 m ✓ ✗ ✗ - G #G #Tag-Bug [21]RFID Tag 2 m ✓ ✓ ✓ - G #G #AccEar [22]Accelerometer0 m ✗ ✓ ✗ G #G #G #MILLIEAR [23]mmWave Radar5 m ✓ ✓ ✗ - G #G #mmSpy [24]mmWave Radar1.8 m ✗ ✓ ✓ # G #G #mmPhone [25]mmWave Radar5 m ✓ ✗ ✓ - G #G #Wavesdropper [1]mmWave Radar5 m ✓ ✓ ✓ G ## G #mmEve [5]mmWave Radar8 m ✗ ✓ ✗ G #G #G #RADIOMIC [4]mmWave Radar4 m ✓ ✗ ✗ G #G #G #AmbiEar [3]mmWave Radar2.5 m ✗ ✓ ✗ G #G #G #Radio2Text [2]mmWave Radar1.5 m ✓ ✓ ✗ - G #G #Shiet al. [6]mmWave Radar11 m ✓ ✓ ✓ G #G #G #mmEav [26]mmWave Radar3 m ✗ ✓ ✓ - G ##RFSpy [7] RFID Tag 3.5 m ✓ ✓ ✗ G #G #G #VibSpeech [10]mmWave Radar5 m ✓ ✗ ✗ # G #G #mmEar [27]mmWave",
+      "reasoning": "Table I lists Tag-Bug [21] as an RFID-based system for eavesdropping with through-wall capability. The citation is grouped with other works, and the context only provides a comparison of attributes, not detailed discussion. Since the target reference marker [21] appears, but the evidence is merely a comparative table entry, it is classified as background/grouped citation.",
+      "keywords": [
+        "Tag-Bug [21]",
+        "RFID Tag",
+        "through-wall"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid",
+            "rfid tag",
+            "through-wall",
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Backscatter-based systems like RFSpy [7] and RF-Parrot [8] utilize passive tags or conductive paths to capture vibrations, yet depend on resonant structures or wired access.",
+      "reasoning": "In Section VI-A, the citing paper categorizes backscatter-based systems, mentioning that they capture vibrations. However, the target reference [21] is not explicitly cited in this sentence; the cited references are [7] and [8]. Thus, this sentence does not directly discuss the target paper. No evidence for the target.",
+      "keywords": [],
+      "keep": false,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "citation_text does not anchor to target paper",
+          "matched_terms": [
+            "capture"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "TABLE I: Comparison of Eavesdropping Attack Methodologies. \"GT Req.\" indicates whether ground truth data is required for training. Symbol legend:#= Low,G #= Medium, = High. Previous WorkHardwareMax. Dist.Thru-WallGT Req.Preset Input?Mobilit...",
+      "evidence_type": "detailed_comparison",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[21]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Table I lists Tag-Bug [21] as an RFID-based system for eavesdropping with through-wall capability. The citation is grouped with other works, and the context only provides a comparison of attributes, not detailed discussion. Since the target reference marker [21] appears, but the evidence is merely a comparative table entry, it is classified as background/grouped citation.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Backscatter-based systems like RFSpy [7] and RF-Parrot [8] utilize passive tags or conductive paths to capture vibrations, yet depend on resonant structures or wired access.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[21]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "keep_false",
+      "generated_strong_evidence": false,
+      "reasoning": "In Section VI-A, the citing paper categorizes backscatter-based systems, mentioning that they capture vibrations. However, the target reference [21] is not explicitly cited in this sentence; the cited references are [7] and [8]. Thus, this sentence does not directly discuss the target paper. No evidence for the target.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

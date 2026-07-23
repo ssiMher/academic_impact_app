@@ -1,0 +1,52 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "The moiré pattern can be canceled if the magnitudes of spatial displaying vectors a,b are exact integer multiples of those of the spatial re-sampling vectors dc,ec, respectively [26]. However, without careful calibration and adjustment, the mentioned condition is not easy to meet when shooting a document image casually. The MSPs generated from the near-integer multiple (NM) relation between the sampling periods in the displaying and imaging devices are, therefore, observable in most recaptured document images.",
+      "reasoning": "The citing paper references the MoiréPose paper [36] in a methodological context, specifically regarding near-integer multiple moiré patterns, but the citation is used to support a general point about moiré cancellation conditions rather than discussing the cited paper's specific contributions or evaluation.",
+      "keywords": [
+        "MoiréPose",
+        "moiré pattern",
+        "near-integer multiple"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "The second type of MSPs is generated due to the frequency difference (FD) between the pair of displaying and imaging devices in the recapturing process [36].",
+      "reasoning": "The citing paper uses the cited paper as a reference for the concept of frequency difference generating moiré spectral peaks, which is a theoretical foundation for their method.",
+      "keywords": [
+        "frequency difference",
+        "MoiréPose",
+        "MSPs"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "The moiré pattern can be canceled if the magnitudes of spatial displaying vectors a,b are exact integer multiples of those of the spatial re-sampling vectors dc,ec, respectively [26]. However, without careful calibration and adjustment, the...",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "filter_reason": "background_only",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper references the MoiréPose paper [36] in a methodological context, specifically regarding near-integer multiple moiré patterns, but the citation is used to support a general point about moiré cancellation conditions rather than discussing the cited paper's specific contributions or evaluation."
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "The second type of MSPs is generated due to the frequency difference (FD) between the pair of displaying and imaging devices in the recapturing process [36].",
+      "evidence_type": "theoretical_foundation",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "filter_reason": "no_body_anchor",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper uses the cited paper as a reference for the concept of frequency difference generating moiré spectral peaks, which is a theoretical foundation for their method."
+    }
+  ]
+}

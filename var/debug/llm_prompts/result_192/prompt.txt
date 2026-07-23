@@ -1,0 +1,1707 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Evaluate ACTIVE_EVIDENCE_TEMPLATES for every finding. Include matched_template_ids, template_match_reason, template_satisfied, and template_failure_reason. If a template is relevant but not satisfied, explain why.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true,
+      "matched_template_ids": [1],
+      "template_match_reason": "why this quote satisfies an active template",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: A Batteryless Wireless Microphone Using RF Backscatter
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [41]
+TARGET_REFERENCE_ENTRY: [41] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping
+on loudspeakers via RFID by capturing sub-mm level vibration.Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies5, 4 (2021), 1–25.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=6.2 Non-backscatter RF-based Sound Sensing; context_type=formula_nearby; contains_formula=True
+ghlightingTagMic’s distinctive integration of frequency
+separation, analog modulation, and support for continuous, battery-free operation.
+6.2 Non-backscatter RF-based Sound Sensing
+In addition to RF backscatter techniques, other RF techniques have been studied to detect sound or voice from human.
+One popular approach is radar-based sound Sensing. Systems like RadioMic [20, 21], Radio2Speech [54], mmspy [3],
+mmecho [11], RFMic-Phone [32], and others [7–9, 38–40, 43–45, 49] use mmWave radar to detect minute vibrations
+caused by sound waves. They can offer capabilities like through-wall sensing [ 41] and noise resilience [ 23, 25],
+sometimes combining radar with traditional microphones [32]. However, these sensing methods typically require
+significantly more complex hardware and higher power consumption compared to RF backscatter tags [5, 20–23, 50–
+52, 54]. Other than FMCW mmWave radar, UWB radar is another sensor used for sound sensing. Prior work like
+UWHear [42] use UWB radar for audio separation, while RADIOSES [ 24] combines audio and RF modalities to
+improve speech separation quality. These demonstrate sophisticated capabilities but also entail system complexity
+and energy demands.
+
+TARGET_ALIAS_CONTEXTS:
+[Context 1] section_heading=ACM 2474-9567/2025/12-ART219; context_type=alias_context; contains_formula=False
+st Lansing, USA, phyan@msu.edu; Shichen Zhang,
+Michigan State University, East Lansing, USA, sczhang@msu.edu; Huacheng Zeng, Michigan State University, East Lansing, USA, hzeng@msu.edu.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+©2025 Copyright held by the owner/author(s).
+ACM 2474-9567/2025/12-ART219
+https://doi.org/10.1145/3770673
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:2•Wang et al.
+by ambient energy sources. Battery-Free Phone [34] achieves analog voice communication by modulating a JFET’s
+impedance with microphone signals, bypassing ADCs and operating on harvested RF and light. It presents a landmark
+analog backscatter design that enables real-time speech communication while consuming only a few microwatts of
+power.
+Despite the advancement, most of the above RF backscatter approaches rely on the accumulation of harvested
+energy over a certain period of time to power the
+
+[Context 2] section_heading=In light of the issues with harmonic RF tags, we propose a new backscatter tag design forTagMic, which utilizes; context_type=alias_context; contains_formula=True
+tag design forTagMic, which utilizes
+dual LC resonators to generate an oscillation signal at a frequency different from its excitation signal. Similar to
+harmonic tags, our LC dual-resonator tag also leverages the nonlinear properties of varactor diodes to alter the
+resonance frequency based on the external voice signal. Unlike harmonic tags, our LC tag does not require the
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:4•Wang et al.
+varactor diode to be activated in the nonlinear region to generate harmonics. Instead, it utilizes the voltage-tunable
+capacitance feature of the varactor diode to dynamically change its resonance frequency. More importantly, the voice
+signal can be directly modulated onto the resonance frequency, achieving frequency modulation without the need for
+voice signal digitization. We present our design in the following section.
+3 DESIGN: RF BACKSCATTER TAG
+3.1 Preliminaries
+LC Resonator.An LC resonat
+
+[Context 3] section_heading=In this part, we explain the operation principles of VSR and PR, and show that the generated oscillation signal is; context_type=alias_context; contains_formula=True
+y resolving the self-interference problem. The separation
+of the excitation frequency 𝑓𝑒𝑥 and reflection frequency 𝑓𝑐 makes it easy for an RF reader to demodulate the voice
+signal over a long distance.
+3.3 Operation Principles
+In this part, we explain the operation principles of VSR and PR, and show that the generated oscillation signal is
+frequency-modulated by voice sound.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:6•Wang et al.
+- + vs
+2
+vs
+2-
+Fig. 3. Architectural diagram of VSR.
+Voltage-Sensing Resonator.Fig. 3 illustrates the VSR operating on its own (without PR). Denote 𝑉𝑠 as the bias
+voltage generated by the piezoelectric sensor. Denote𝑓1 as the resonance frequency of the VSR. When the bias voltage
+𝑉𝑠 is applied to the sensing electrodes, which are connected to the resonator’s virtual grounds, it alters the capacitance
+of the varactor diodes and consequently shifts the resonance frequency𝑓1:
+𝑓1 = 1
+2𝜋
+√︂
+2
+𝐿1𝐶1
+=
+
+[Context 4] section_heading=4.1 Challenges and Approaches; context_type=alias_context; contains_formula=True
+nal to ensure accurate voice recovery.
+The second challenge stems from the inherent nonlinear characteristics of the fabricated RF backscatter tag. While
+the tag is designed for ideal frequency modulation, its behavior often diverges in practice due to the imperfections
+caused by electronic components and PCB, rendering the theoretical model inaccurate. Furthermore, the weak
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:8•Wang et al.
+RF ADCN-point segmentationN-pointFFT Shift IF signal to zero-IF (by Δf)CFO Δf trackingN-pointIFFT
+Resample to voice 16 kHz
+CFO estimation and compensationAI-assisted voice enhancementRecoveredvoicesignal
+Down-converting to  IF (~40 kHz)
+FM demodulation
+Fig. 5. Signal processing pipeline.
+55504540353025Magnitude
+Frequency (kHz)
+f4
+f2 f0
+f1
+f3
+Fig. 6. Illustration of the multiple frequency-modulated carriers and their corresponding CFOs.
+backscattered signal recovered at the RF reader is sus
+
+[Context 5] section_heading=𝑀∑︁; context_type=alias_context; contains_formula=True
+ergence
+and magnitude terms:
+L𝑠 =
+𝑀∑︁
+𝑘=1
+∥S𝑘(𝑦)−S 𝑘(ˆ𝑦)∥𝐹
+∥S𝑘(𝑦)∥𝐹
++ 1
+𝑁∥logS 𝑘(𝑦)−logS 𝑘(ˆ𝑦)∥1,(7)
+where 𝑆𝑘(·)returns the amplitude of a target signal after the𝑘-point STFT operation, ∥·∥𝐹 and ∥·∥1 denote Frobenius
+and 𝐿1 norms, respectively. 𝑀 is an empirical parameter representing the number of STFT resolutions. The total loss
+used to train the model isLoverall =L𝑤 +L𝑠.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:10•Wang et al.
+Encoder1Encoder2
+EncoderLLSTM
+02468 1 0A
+ noisy
+02468 1 0A
+ clean
+……
+Decoder1Decoder2
+DecoderL……
+Input or Encoderi-1
+Conv1d-ReLUConv1d-GLUDecoderi Encoderi+1 or LSTM
+Conv1d-GLUTConv1D
+Decoderi+1 or LSTM
+Output or ReLU & Decoderi-1
+Encoderi
+Fig. 9. A deep learning model for voice enhancement.
+0.0 0.2 0.4−1.0
+−0.5
+0.0
+0.5
+1.0  Noisy voice signal Enhanced voice signal
+Magnitude
+Time (s)
+Voice ‘three’Noise Noise Fig. 10. Demodulated voice signal before and after enhancement.
+Extensive data from the
+
+[Context 6] section_heading=We employ both signal-level and perceptual-level metrics to evaluate the performance of voice recovery at the RF; context_type=alias_context; contains_formula=False
+l metric)represents the Scale-Invariant signal-to-Distortion ratio. It measures the level of signal
+preservation by calculating the ratio of the target signal to the distortion.
+•LLR (signal-Level metric)represents the Log-Likelihood ratio. It measures the distortion in speech by comparing
+the linear predictive coding (LPC) coefficients of the original and processed speech.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:12•Wang et al.
+Table 2. TagMic’s performance at different distances.
+SI-SDR↑ LLR↓ STOI↑ PESQ↑ MOS↑
+w/o AI w/ AI w/o AI w/ AI w/o AI w/ AI w/o AI w/ AI w/o AI w/ AI
+50 cm 12.1 14.65 0.25 0.21 0.82 0.97 3.21 3.65 4.5 4.5
+100 cm 9.95 11.33 0.27 0.24 0.77 0.91 3.04 3.57 4.3 4.5
+150 cm 8.90 9.81 0.37 0.3 0.75 0.82 2.98 3.20 4.0 4.2
+200 cm 7.15 8.57 0.49 0.41 0.69 0.76 2.85 2.93 3.5 4.0
+250 cm 5.64 7.42 0.65 0.52 0.61 0.73 2.71 2.88 3.0 3.5
+300 cm 4.97 7.05 0.71 0.53 0.55 0.72 2.49 2.73 3.0 3.5
+350 cm 4.05 6.86 0.8
+
+[Context 7] section_heading=5.6 Resilience to Blockage; context_type=alias_context; contains_formula=True
+reader was approximately 3 meters.
+Fig. 15 presents the experimental results as mel spectrograms (a standard method for sound analysis) along with
+the corresponding metric values. The findings demonstrate that, with the AI model,TagMiceffectively reconstructs
+voice signals with high similarity to the ground-truth voice. Notably,TagMicexhibits strong resilience to all three
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:14•Wang et al.
+TagRF readerTag
+RF reader
+Fig. 16. Mobility study.
+RF reader
+Tag
+RF reader Tag ATag B Fig. 17. Multi-user support.
+Zoomed-In Signal Segment of Tag A
+Zoomed-In Signal Segment of Tag B
+Fig. 18. Spectrogram of two RF tags’ reflection signal.
+blockage scenarios. Specifically, in most cases involving furniture,TagMiccan recover intelligible voice signals even
+without the AI model.
+5.7 Mobility
+A wireless microphone must support mobility for practical use. To validate the usability ofTagMic, we condu
+
+[Context 8] section_heading=It also relies on time-multiplexed synchronization and digital pulse modulation schemes, introducing hardware; context_type=alias_context; contains_formula=True
+ing.
+It also relies on time-multiplexed synchronization and digital pulse modulation schemes, introducing hardware
+complexity and requiring coordinated multi-channel sampling. TagMic instead uses a fully analog architecture
+with passive frequency modulation, removing the need for synchronization or digital logic and supporting scalable
+deployment in multi-user environments.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:16•Wang et al.
+Despite the unique design tradeoffs of these systems, they all share a fundamental limitation: the self-interference
+challenge inherent in conventional backscatter, where the tag’s reflective signal overlaps with the reader’s excitation
+frequency [1, 13, 14, 17, 26, 28, 34, 35, 37, 53]. This overlap arises because the excitation signal is orders of magnitude
+stronger than the weak backscattered reflection, significantly impairing signal demodulation. Although harmonic
+backscatter [18, 48] offer
+
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+A Batteryless Wireless Microphone Using RF Backscatter
+QIJUN WANG,Michigan State University, USA
+CHUNQI QIAN,Michigan State University, USA
+PEIHAO YAN,Michigan State University, USA
+SHICHEN ZHANG,Michigan State University, USA
+HUACHENG ZENG,Michigan State University, USA
+Wireless microphones are essential tools in business, education, entertainment, and other domains. However, most existing designs
+rely on batteries, leading to the inconvenience of frequent recharging and the risk of unexpected power failure during use. In this
+paper, we presentTagMic, a battery-free wireless microphone enabled by a novel radio frequency (RF) backscatter technology.
+TagMicis built on two key innovations.(i) Parametric backscatter tag design:This design enables the RF tag to operate at separate
+excitation and reflection frequencies, fundamentally mitigating the self-interference problem inherent in conventional RFID
+systems. Unlike harmonic backscatter approaches, it also requires a significantly lower activation voltage, resulting in a longer
+communication range.(ii) Voice modulation via RF coupling:A passive piezoelectric sensor is integrated with the RF tag through
+RF coupling to enable analog-domain frequency modulation (FM), directly encoding voice signals onto the backscattered signal.
+This eliminates the need for digital signal processing, allowing for truly continuous voice streaming. We have built a prototype of
+TagMicand evaluated it under realistic conditions. Extensive experiments demonstrate its effectiveness in achieving battery-free,
+continuous, and seamless wireless voice streaming in realistic applications.
+CCS Concepts:•Human-centered computing →Ubiquitous and mobile computing systems and tools;•Hardware →
+Sensor devices and platforms.
+Additional Key Words and Phrases: Batteryless microphone, backscatter communications, energy-efficient data transmission, radio
+frequency tags
+ACM Reference Format:
+Qijun Wang, Chunqi Qian, Peihao Yan, Shichen Zhang, and Huacheng Zeng. 2025. A Batteryless Wireless Microphone Using RF
+Backscatter.Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.9, 4, Article 219 (December 2025), 18 pages. https://doi.org/10.
+1145/3770673
+1 INTRODUCTION
+Wireless microphones play a crucial role in diverse daily-life applications, including entertainment, education,
+business, and healthcare [4, 15, 16, 30, 36]. They eliminate physical constraints, enabling users to perform, present, or
+interact with greater freedom and efficiency. This makes them indispensable tools in both professional and everyday
+environments. However, most existing wireless microphones rely on batteries for operations [2, 10, 12, 19, 33]. This
+reliance creates an inconvenience for users, requiring frequent battery recharging or replacement to maintain their
+seamless voice communications. Moreover, the reliance on batteries introduces the risk of unexpected power failures,
+which can disrupt critical tasks or performances. These limitations underscore the need for battery-free solutions to
+enhance user experience and reliability.
+RF backscatter has been studied for batteryless microphone applications using both analog and digital modulations.
+Digital backscatter devices, such as Wireless Identification and Sensing Platform (WISP) [17] and MultiScatter [14], first
+digitize the voice signal and modulate it onto RF waves for communications. Their approaches are actually not limited
+to voice communications but also applicable to other sensing signals and modalities. In contrast, analog backscatter
+devices, such as RF Bandaid [26], MARS [1], Battery-Free Phone [34], aim to reduce or completely remove the need
+for power-hungry digital circuits and rely on analog circuits for voice sensing and communications. RF Bandaid [26]
+eliminates digital circuitry by mapping sensor output directly to frequency modulation (FM), enabling ultra-low-power
+wearable sensing. MARS [1] further reduces power consumption to below 1µW for speech transmission, powered
+Authors’ Contact Information: Qijun Wang, Michigan State University, East Lansing, USA, qjwang@msu.edu; Chunqi Qian, Michigan State
+University, East Lansing, USA, qianchu1@msu.edu; Peihao Yan, Michigan State University, East Lansing, USA, phyan@msu.edu; Shichen Zhang,
+Michigan State University, East Lansing, USA, sczhang@msu.edu; Huacheng Zeng, Michigan State University, East Lansing, USA, hzeng@msu.edu.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+©2025 Copyright held by the owner/author(s).
+ACM 2474-9567/2025/12-ART219
+https://doi.org/10.1145/3770673
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:2•Wang et al.
+by ambient energy sources. Battery-Free Phone [34] achieves analog voice communication by modulating a JFET’s
+impedance with microphone signals, bypassing ADCs and operating on harvested RF and light. It presents a landmark
+analog backscatter design that enables real-time speech communication while consuming only a few microwatts of
+power.
+Despite the advancement, most of the above RF backscatter approaches rely on the accumulation of harvested
+energy over a certain period of time to power the RF tag circuits, resulting in a “low-duty-cycle” operation. To date,
+little progress has been made in the design of viable solutions that can supportcontinuous, seamless, and reliablevoice
+streaming from a batteryless device to an anchor device (see §6 and Table 1 for details). To achievecontinuousvoice
+streaming, an RF backscatter should address the following two challenges.
+•Challenge #1: Self-Interference.Most RF backscatter tags, such as RFID, reflect radio signals at the same
+frequency as their excitation signals. Since the excitation signal is orders of magnitude stronger than the reflected
+signal, the latter is severely corrupted by self-interference from the excitation signal at the RF reader. This self-
+interference significantly reduces the sensitivity of the RF reader, resulting in a limited communication range
+and a high packet error rate (PER) in practical scenarios. While a high PER may be tolerable for time-insensitive
+RFID applications, it poses a fundamental challenge for voice streaming, which requires a reliable communication
+channel for uninterrupted data transmission. Therefore, addressing self-interference is critical for enabling effective
+and robust voice streaming applications.
+•Challenge #2: Voice Signal Modulation.The power harvested by a typical RF backscatter tag is extremely
+limited, making it insufficient to support digital voice signal modulation. Analog modulation schemes, which
+have been explored in prior work [1, 26, 34, 53], appear to be a plausible alternative. However, existing analog
+modulation techniques are not power-efficient enough for an RF backscatter tag to support continuous voice
+streaming. This highlights the need for innovations in the design and integration of voice modulation and
+transmission for batteryless RF tags.
+In this paper, we presentTagMic, the first-of-its-kind batteryless wireless microphone powered by RF backscatter
+technology that supportscontinuousvoice streaming.TagMicconsists of two key components: (i) an RF backscatter
+tag integrated with a piezoelectric sensor to capture voice signals and (ii) an RF reader responsible for transmit-
+ting excitation signals and demodulating voice signals. The RF tag operates by modulating voice signals from the
+piezoelectric sensor onto the reflective signals. This modulation is achieved by dynamically altering the reflective
+capacitance properties of the tag, effectively encoding the voice waveform onto the reflected signal. The RF reader
+then demodulates the backscattered signals to retrieve voice data, enablingcontinuousvoice communication without
+requiring active transmission or an onboard power source on the RF backscatter tag.
+TagMicaddresses the above two challenges by introducing an innovative backscatter tag design featuring dual
+resonators: a voltage-sensing resonator (VSR) and a parametric resonator (PR). Both resonators are passive components
+that leverage non-linear elements (varactor diodes) to produce voltage-tunable resonance frequencies distinct from
+the excitation signal frequency. The VSR features an∞-shaped conductor structure with two varactor diodes arranged
+in a head-to-head configuration. The piezoelectric sensor converts voice sounds into voltage signals, which alter
+the capacitance of the VSR’s varactor diodes, thereby modulating its resonance frequency. This results in a radio
+signal whose frequency shift is approximately linearly related to the voice signal. The PR acts as a signal amplifier
+for the VSR. It consists of a circular conductor structure split by a pair of varactor diodes, also in a head-to-head
+configuration, and is tightly coupled with the VSR. The resonance frequency shift of the VSR is transduced into an
+oscillation frequency shift in the PR, producing a frequency-modulated signal that can be wirelessly detected by an
+anchor RF reader.
+This new structure provides three key advantages for the existing backscatter tag. First, its excitation and reflection
+signals are largely separated in the frequency domain, thereby fundamentally mitigating the self-interference issue in
+conventional backscatter communications. Second, voice signals are modulated onto the tag’s resonance frequency
+by altering the varactor diode’s capacitance, eliminating the need for digitalization. This enables continuous voice
+streaming on a batteryless backscatter tag, addressing the second challenge. Third, the tag achieves frequency
+modulation, establishing a linear relationship between the tag’s resonance frequency shift and the voice signal
+amplitude. This simplifies voice recovery at the RF reader.
+In addition to the backscatter tag, we have developed a signal processing pipeline for the RF reader to optimize
+voice recovery. Our design deals with tag imperfections, such as resonance frequency drift and multi-carrier frequency
+suppression, to ensure reliable voice streaming. Notably, we develop a robust algorithm for carrier frequency offset
+(CFO) compensation and implement a lightweight deep learning model that leverages inherent voice properties
+to mitigate nonlinear noise, enhancing voice quality. We have fabricated the proposed backscatter tag and built a
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:3
+Table 1. Comparison of RF Backscatter-based Microphone.
+Feature
+Continuous
+Voice
+Streaming?
+Self-
+Interference Batteryless? Multiple
+Tags? Circuit Type Modulation Communication
+Range
+Hybrid A/D [35] No Yes Yes No Analog + Digital ASK/PSK + AM 2.7 m
+Battery Free Phone [34] No Yes Yes No Analog + Digital OOK/ASK + AM 9.4 m
+RF Bandaid [26] No Yes Yes No Analog FM 4 m
+Multi Scatter [14] No Yes Yes Yes Digital FSK + ASK 45.7 m
+MARS [1] No Yes Yes Yes Analog FM 9 m
+MicArray [53]† Yes Yes No No Analog + Digital PM 28 m
+WISP 6.0 [17] No Yes Yes No Analog + Digital ASK/PSK + FM0 1.5 m
+TagMic(This work) Yes No Yes Yes Analog FM 8 m
+†MicArray targets batteryless operation, but its implementation relies on external power for FPGA-based digital processing on the backscatter tag.
+prototype ofTagMic. Extensive experiments demonstrate thatTagMicprovides a satisfactory voice performance
+under various realistic conditions and supports the simultaneous operation of multiple tags.
+Table 1 comparesTagMicagainst existing RF backscatter work. The contributions of this work are summarized as
+follows:
+•We design and demonstrate a batteryless wireless microphone with significant potential for continuous voice
+streaming applications across various fields.
+•We propose a dual-resonator RF backscatter tag that modulates voice signals onto its resonance oscillation
+frequency, enabling reliable far-field detection.
+•We demonstrateTagMicin realistic scenarios, with extensive experiments confirming its superior performance,
+multi-tag accessibility, and practical feasibility.
+2 OVERVIEW
+As explained in §1, self-interference is a grand challenge in the design of backscatter-based solutions for battery-free
+wireless microphones. If the backscatter reflects radio signals at the same frequency as its excitation signal, it becomes
+difficult for the RF reader to demodulate the voice signal. This is because the excitation signal generated by the
+RF reader is orders of magnitude stronger than the backscattered signal from the tag. Completely mitigating the
+self-interference from the excitation signal is extremely challenging for the demodulation of the backscattered signal.
+Even after self-interference suppression, the residual interference remains dominant compared to the backscattered
+signal. One approach to addressing the self-interference issue is to separate the frequencies of the excitation and
+reflection radio waves. If these two frequencies are sufficiently separated, the RF reader can easily mitigate the
+self-interference from the excitation signal in the frequency domain when decoding the reflective signals from the tag.
+One way to achieve this separation is by utilizing harmonic RF tags [18, 48]. Unlike traditional RF tags, harmonic
+RF tags exploit thenon-linearproperties of the tag’s circuit to generateharmonicsignals. When an RF signal is
+transmitted to the tag, the circuit reacts nonlinearly, generating harmonic frequencies (e.g., doubling or tripling the
+frequency of the incoming signal). These harmonic signals then propagate back to the reader, carrying the tag’s
+information bits. The RF reader decodes the information from the harmonic signals, rather than from the fundamental
+frequency. By eliminating self-interference, the RF reader achieves better signal detection sensitivity, offering several
+advantages over traditional RF backscatter tags, including higher data transfer rates, lower packet error rates, and
+greater resilience to environmental noise.
+While existing harmonic backscatter systems can mitigate self-interference, they are not well-suited for microphone
+applications for the following reasons:First, harmonic backscatter tags rely on non-linear diodes (or other non-linear
+elements) working in their nonlinear region to generate harmonic signals. Non-linear diodes, however, have a
+minimum threshold voltage that must be reached before they exhibit non-linear behavior and generate harmonics.
+This means that the incident (excitation) signal must be strong enough to bias the diode into its non-linear region. This
+limits the communication range of harmonic tags.Second, and more importantly, since the harmonics are generated
+by a single device such as a diode or transistor, it is extremely difficult to modulate an analog voice signal onto the
+harmonic radio wave without digitizing the voice signal. This leaves the second challenge (voice signal modulation,
+see §1) unaddressed.
+In light of the issues with harmonic RF tags, we propose a new backscatter tag design forTagMic, which utilizes
+dual LC resonators to generate an oscillation signal at a frequency different from its excitation signal. Similar to
+harmonic tags, our LC dual-resonator tag also leverages the nonlinear properties of varactor diodes to alter the
+resonance frequency based on the external voice signal. Unlike harmonic tags, our LC tag does not require the
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:4•Wang et al.
+varactor diode to be activated in the nonlinear region to generate harmonics. Instead, it utilizes the voltage-tunable
+capacitance feature of the varactor diode to dynamically change its resonance frequency. More importantly, the voice
+signal can be directly modulated onto the resonance frequency, achieving frequency modulation without the need for
+voice signal digitization. We present our design in the following section.
+3 DESIGN: RF BACKSCATTER TAG
+3.1 Preliminaries
+LC Resonator.An LC resonator is an electrical circuit consisting of an inductor (L) and a capacitor (C) connected in
+a specific configuration that exhibits resonance at a particular frequency. When an excitation RF signal is applied
+to the LC resonator, it oscillates at its resonant frequency, which is determined by the values of the inductor and
+capacitor. The resonant frequency is a function of the inductance (L) and capacitance (C) values, and can be adjusted
+by modifying these components. This characteristic makes LC resonators ideal for various applications, such as
+frequency generation and filtering, where the resonator produces a predictable and stable output frequency when
+energized by an external signal. LC resonators are widely used in communication systems, RF circuits, and sensors
+due to their simplicity, efficiency, and ability to generate precise frequencies with low power consumption.
+Voltage Sensing Resonator (VSR).A VSR is an electrical resonator, typically based on an inductor-capacitor (LC)
+configuration, specifically designed so that its resonance frequency is responsive to an applied external voltage. This
+voltage sensitivity is generally achieved by incorporating nonlinear components, most commonly varactor diodes,
+whose capacitance varies with the applied bias voltage. When a sensing voltage is connected across specific points of
+the VSR circuit (often via dedicated sensing electrodes linked to virtual grounds), it modulates the capacitance of
+these varactors. This change in capacitance alters the total equivalent capacitance of the resonator, thereby shifting
+its characteristic resonance frequency. This principle allows the VSR to effectively transduce a voltage input into a
+measurable frequency variation, serving as a core element in various passive sensing applications. Under conditions
+where the sensing voltage is significantly smaller than the varactor’s inherent junction potential, the relationship
+between the input voltage and the resulting frequency shift is often approximately linear. This property makes the
+VSR suitable for encoding analog voltage signals—such as those generated by a piezoelectric sensor responding to
+voice—directly into frequency variations, enabling frequency modulation of a radio signal.
+Parametric Resonator (PR).A PR is a resonator that generates and controls oscillations through a nonlinear
+parametric process, where the resonance frequency is modulated by an external signal (e.g., voice signal). Unlike
+traditional resonators, which have a fixed resonance frequency determined by their physical components (such
+as inductance and capacitance in LC circuits), a PR’s frequency is dynamically adjusted by modulating a system
+parameter, such as capacitance, inductance, or nonlinearity of the circuit. This process allows the resonator to produce
+oscillations at different frequencies depending on the modulation signal.
+In a frequency-modulated PR, the resonance frequency is influenced by an external time-varying signal. This
+modulation causes the resonator to oscillate at varying frequencies over time, producing frequency-modulated signals.
+The frequency modulation arises because the resonator’s response is dependent on how the system parameters
+change, effectively causing the resonant frequency to vary with the modulation signal. This behavior is often achieved
+using nonlinear components, such as varactors or other types of nonlinear capacitors and inductors, that allow for
+periodic adjustments in the resonance frequency.
+3.2 Our Design
+Tag Structure.Fig. 1 shows our design of the RF backscatter tag. It includes a VSR, a PR, and a piezoelectric sensor,
+all of which are passive devices without the need for a battery. The piezoelectric sensor converts voice sound to a
+voltage signal, which alters the capacitance of the varactor diodes and therefore changes the resonance frequency
+of the VSR. The VSR has an ∞-shaped conductor structure made of an enameled copper wire wrapped around two
+parallel rods. The wire’s two end edges are soldered to two varactor diodes connected in a head-to-head configuration.
+To improve the detectability, we place the VSR across the edge of the PR, which operates as a local signal enhancer.
+The PR has a circular-shaped conductor pattern split by a pair of varactor diodes connected in a head-to-head
+configuration, creating a resonance mode with the circular-shaped current flow. The PR also has a continuous center
+conductor to create a second resonance mode with the butterfly-shaped current flow. Therefore, the PR has two
+resonance modes:circularmode andbutterflymode, as shown in Fig. 2. Through repeated signal mixing of these two
+modes, the net effect is a significant amplification of signals near both resonance frequencies.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:5
+Parametric 
+resonator (PR)
+Substrate
+Varactor diode
+Varactor diode
+Voltage sensing 
+resonator (VSR)
+Varactor diode
+Piezoelectric 
+sensor
+-
++
+vs
+Resistor (10 kΩ)
+Fig. 1. The RF tag includes a voltage sensing resonator (VSR), a parametric resonator (PR), and a piezoelectric sensor (PS). The VSR
+has a ∞-shaped conductor structure with two head-to-head varactor diodes. The PR has a circular-shaped conductor with two
+head-to-head varactor diodes as well. The VSR is sitting at the edge of the PR, creating effective coupling with PR for frequency
+generation.
+Ground Isolation
+Circular mode. Butterfly mode.
+Fig. 2. The PR operates in the circular resonance mode (left), where the circuit has zero voltages in the center plane, making the
+circular mode equivalent to two half-loops sharing the same center ground. The PR operates in the butterfly resonance mode
+(right), where two separate current flows are confined within their individual meshes, making the butterfly mode equivalent to
+two half-loops that are electrically isolated in the center plane.
+Since the VSR overlaps along the edge of the PR, this configuration establishes effective magnetic coupling between
+the VSR’s resonance and the PR’s circular-mode resonance. Because the loops of the VSR are symmetrically aligned
+with the horizontal center conductor of the PR, the VSR is decoupled from the PR’s butterfly mode. Consequently, any
+shift in the VSR’s resonance frequency—caused by voice sound—will be reflected in the PR’s circular-mode resonance
+frequency.
+Separation of Excitation and Reflection Frequencies.When the tag is activated by a wireless excitation signal at
+the sum frequency of the circular and butterfly mode resonance frequencies of the PR, the varactor diodes in the PR can
+convert wireless pumping power into sustained current flows at the PR’s resonance modes, thus sustaining continuous
+circuit oscillation. When acoustic sound hits the piezoelectric sensor, it creates a bias voltage to modulate the VSR’s
+resonance frequency. Because the VSR couples only to the circular resonance mode of the PR, the resonance frequency
+shift of the VSR is converted into circular-mode oscillation frequency shift of the PR, creating a frequency-modulated
+oscillation signal that can be wirelessly detected by a remote RF reader.
+Mathematically, denote 𝑓𝑐 and 𝑓𝑏 as the oscillation frequencies of the PR operating in circular and butterfly modes,
+respectively. These two frequencies are determined by the design of the tag parameters, materials, layout, etc. Then,
+the excitation frequency of the tag should be 𝑓𝑒𝑥 =𝑓𝑐 +𝑓𝑏, and the reflection frequency of the tag is 𝑓𝑐. The excitation
+and reflection frequencies of the tag are distinct, fundamentally resolving the self-interference problem. The separation
+of the excitation frequency 𝑓𝑒𝑥 and reflection frequency 𝑓𝑐 makes it easy for an RF reader to demodulate the voice
+signal over a long distance.
+3.3 Operation Principles
+In this part, we explain the operation principles of VSR and PR, and show that the generated oscillation signal is
+frequency-modulated by voice sound.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:6•Wang et al.
+- + vs
+2
+vs
+2-
+Fig. 3. Architectural diagram of VSR.
+Voltage-Sensing Resonator.Fig. 3 illustrates the VSR operating on its own (without PR). Denote 𝑉𝑠 as the bias
+voltage generated by the piezoelectric sensor. Denote𝑓1 as the resonance frequency of the VSR. When the bias voltage
+𝑉𝑠 is applied to the sensing electrodes, which are connected to the resonator’s virtual grounds, it alters the capacitance
+of the varactor diodes and consequently shifts the resonance frequency𝑓1:
+𝑓1 = 1
+2𝜋
+√︂
+2
+𝐿1𝐶1
+= 1
+2𝜋
+vut 2
+𝐿1𝐶10
+
+1− 𝑉𝑠
+Φ1
+−𝜆1
+,(1)
+where 𝐿1 and 𝐶1 are the VSR’s inductance and capacitance, respectively; 𝐶10 is its capacitance when the bias voltage
+is 0.Φ 1 is the varactor diode’s junction potential.𝜆1 is a constant related to the property of the varactor diode.
+Consider the case where the sensing voltage 𝑉𝑠 is much smaller than the diode’s junction potential Φ1. Based on
+Taylor series approximation, Eq. (1) can be approximated as:
+𝑓1 ≈ 1
+2𝜋
+√︂
+2
+𝐿1𝐶10
+
+1− 𝜆1𝑉𝑠
+Φ1
+
+(𝑎)
+=𝑓 10
+
+1− 𝜆1𝑉𝑠
+Φ1
+
+,(2)
+where Eq. (a) follows our definition that 𝑓10 ≡ 1
+2𝜋
+√︃
+2
+𝐿1𝐶10
+. Conceptually, 𝑓10 is the VSR’s resonance frequency when
+the bias voltage is zero.
+Eq. (2) reveals that when the sensing voltage 𝑉𝑠 is much smaller than the varactor diode’s junction potential Φ1,
+the resonance frequency of the VSR has an approximately linear relationship with the sensing voltage 𝑉𝑠. This is
+essentially frequency modulation, with the sensing voltage 𝑉𝑠 acting as the original signal and 𝑓1 as the carrier
+frequency. In our design, we place two large resistors with the VSR’s varactor diode (see Fig. 1), ensuring that𝑉𝑠 is
+much smaller thanΦ 1.
+Parametric Resonator.The PR is a signal enhancer for the VSR to improve the signal emission. Due to circuit
+symmetry, the PR can be equivalently modeled as two single-frequency resonators, where the effective inductance
+depends on the resonance mode under consideration. When the PR is powered by an electromotive force oscillating
+at frequency 𝑓𝑝, which is wirelessly provided by the RF reader, the junction capacitance of its varactor diodes can
+be considered modulated by an effective voltage 𝑉𝑝. By setting the pumping frequency approximately equal to the
+sum of the resonance frequencies of the circular resonance mode and the butterfly resonance mode, i.e., 𝑓𝑝 ≈𝑓𝑐 +𝑓𝑏,
+the PR leverages the nonlinear capacitance of its varactor diodes to convert external pumping power into enlarged
+backscattered signals near its circular-mode resonance frequency.
+Denote 𝑓𝑐 as the frequency of the backscattered signals generated by the PR. Recall that𝑉𝑠 is the bias voltage signal
+generated by the voice sound. Then, by analyzing the oscillation frequencies at VSR and PR as well as their coupling
+relationship, we have:
+𝜕𝑓𝑐
+𝜕𝑉𝑠
+=
+
+−𝜆1 𝑓10
+2Φ1
+  𝐿𝑐
+𝑅𝑐
+𝐿𝑐
+𝑅𝑐
++𝐿𝑏
+𝑅𝑏
+!  
+𝑓3
+𝐿
+2𝑓3
+1
+!
+©­­
+«
+1+
+𝑓2
+2
+𝑓2
+1
+−1+2
+𝑓2
+1
+𝑓2
+𝐿
+−1
+ 𝑓2
+2
+𝑓2
+𝐿
+−1
+
+2
+𝑓2
+2
+𝑓2
+𝐿
+−
+𝑓2
+2
+𝑓2
+1
+−1
+
+ª®®
+¬
+,(3)
+where 𝑓1 and 𝑓2 are the stand-alone resonance frequencies of VSR and PR, respectively. 𝑓𝐿 is the lower resonance
+frequency of the coupled VSR and PR resonators. 𝑅𝑐 and 𝐿𝑐 are the effective resistance and inductance of the PR in its
+circular mode.𝑅𝑏 and𝐿𝑏 are the effective resistance and inductance of the PR in its butterfly mode.
+Evidently, Eq. (3) indicates that the oscillation frequency 𝑓𝑐 of PR, which is used by the RF reader to demodulate
+the voice signal, is linearly modulated by the bias voltage 𝑉𝑠 provided by the piezoelectric sensor. This confirms the
+frequency modulation property of the proposed tag.
+3.4 Multi-Carrier Frequency Modulation (FM)
+Single-Carrier FM.Ideally, the RF tag modulates the voice signal using frequency modulation, establishing a linear
+relationship between the voltage from the voice sensor and the instantaneous frequency of the radio signal. Denote
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:7
+2 4 6 8 10 12 14 16
+Time (s)
+10
+20
+30
+40
+50
+60Frequency (kHz)
+-80
+-60
+-40
+-20
+0
+20
+dB
+12/6/24, 12:57 AM spec.svg
+ﬁle:///Users/qijun/Downloads/spec.svg 1/1
+Fig. 4. Spectrogram of the RF tag’s reflection signal. The voice signal is frequency-modulated on multiple carriers.
+𝑣(𝑡) as the voice signal and 𝑓𝑐 as the frequency of the radio signal emitted by the RF backscatter tag when there is no
+bias voltage. Then, the ideal FM signal can be written as:
+𝑠(𝑡)=𝛼exp
+
+2𝜋𝑓𝑐𝑡+2𝜋Δ
+∫ 𝑡
+0
+𝑣(𝜏)𝑑𝜏
+
+,(4)
+where 𝛼 is the signal amplitude, 𝑓Δ is the peak frequency deviation, which controls the extent of frequency shift due
+to the modulation.
+Multi-Carrier FM.However, the imperfections of the electronic devices, such as varactors and other components in
+the backscatter tag, introduce multiple center frequencies in the backscattered radio signal. The reflection signal from
+the RF tag can be modeled as:
+𝑠(𝑡)=
+𝐾∑︁
+𝑘=1
+𝛼𝑘 exp
+
+2𝜋𝑓𝑐𝑘 𝑡+2𝜋Δ 𝑘
+∫ 𝑡
+0
+𝑣(𝜏)𝑑𝜏
+
++𝑤,(5)
+where 𝑓𝑐𝑘 is the 𝑘th carrier’s center frequency and 𝛼𝑘 is its amplitude, Δ𝑘 is the frequency deviation sensitivity, and
+𝑤is the effect of modeling noise and other imperfections of the backscatter tag.
+Experimental Observations.Fig. 4 presents a sample of the measured reflection signals from the RF tag when a
+voice signal is present. The spectrogram shows approximately six carriers, each representing a copy of a frequency-
+modulated voice signal. The frequency gaps between these FM carriers are identical. Each carrier can be independently
+decoded to recover the voice signal. Given that the carriers exhibit varying amplitudes and power levels, different
+strategies can be employed to leverage spectrum diversity. For instance, the carrier with the largest amplitude can be
+selected for voice recovery, or all six carriers can be decoded and combined using maximum-ratio combining (MRC)
+to optimize voice quality.
+4 RF READER: VOICE RECOVERY
+In this section, we present our design for the RF reader to demodulate the backscattered radio signals from the RF tag
+for voice recovery.
+4.1 Challenges and Approaches
+In designing a voice signal recovery system, we face two significant challenges. The first challenge lies in the carrier
+frequency offset (CFO) estimation and compensation. The center frequency of the radio signal generated by the
+backscatter tag is not stable. It fluctuates due to factors such as the tag’s orientation, the movement of surrounding
+objects, and the frequency drift of the excitation signal. Since FM is sensitive to CFO, this drift degrades the quality of
+the recovered voice signal at the RF reader. To mitigate this issue, we have developed a CFO estimation algorithm
+that leverages the signal profile signature to estimate the center frequency offset in real-time. This estimated offset is
+then compensated for the baseband signal to ensure accurate voice recovery.
+The second challenge stems from the inherent nonlinear characteristics of the fabricated RF backscatter tag. While
+the tag is designed for ideal frequency modulation, its behavior often diverges in practice due to the imperfections
+caused by electronic components and PCB, rendering the theoretical model inaccurate. Furthermore, the weak
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:8•Wang et al.
+RF ADCN-point segmentationN-pointFFT Shift IF signal to zero-IF (by Δf)CFO Δf trackingN-pointIFFT
+Resample to voice 16 kHz
+CFO estimation and compensationAI-assisted voice enhancementRecoveredvoicesignal
+Down-converting to  IF (~40 kHz)
+FM demodulation
+Fig. 5. Signal processing pipeline.
+55504540353025Magnitude
+Frequency (kHz)
+f4
+f2 f0
+f1
+f3
+Fig. 6. Illustration of the multiple frequency-modulated carriers and their corresponding CFOs.
+backscattered signal recovered at the RF reader is susceptible to multipath propagation effects and residual CFO
+distortions. These imperfections appear to be non-stationary and complex. Accurately modeling these imperfections
+through analytical means or addressing them using traditional filtering techniques is extremely difficult. To address
+this challenge, we propose a learning-based approach that employs a neural network. This data-driven strategy is
+adept at learning the complex, potentially non-linear mappings between the demodulated, noisy signal and the clean
+voice counterpart, implicitly capturing and compensating for the system imperfections without requiring explicit
+mathematical models, thereby enabling robust voice signal recovery and enhancement.
+4.2 Signal Processing Pipeline
+Overview.Combining the above approaches, we propose a real-time signal processing pipeline, as illustrated in Fig. 5,
+for the RF reader to recover voice signals. At the RF reader, the radio signal is first down-converted to an intermediate
+frequency (IF) (e.g., 40 kHz) and then sampled for digital signal processing. The reason why we convert the radio
+signal to IF rather than baseband (zero-IF) is twofold. First, voice signals contain rich low-frequency components
+(typically below 100 Hz), and the RF front end often suffers from disturbances near the DC component. Therefore,
+using IF will avoid interference at low frequencies. Second, the radio frequency suffers from CFO. Since the subsequent
+process needs to compensate the CFO, using IF will not incur an additional processing burden.
+The digitalized signal samples are then processed by a sequence of blocks for CFO compensation (marked yellow
+in Fig. 5). In this process, the CFO is tracked over time and compensated for individual segmented signal frames.
+Furthermore, one carrier frequency is selected for frequency demodulation, while others are mitigated in the frequency
+domain for simplicity. After CFO compensation, the signal is FM demodulated and resampled to the voice sample
+rate. A lightweight learning-based model has been developed and trained to enhance the voice quality by tackling
+imperfections of the system including device nonlinearity and unexpected spectral spurs.
+CFO Compensation.Our CFO estimation and compensation are performed in the frequency domain. As shown
+in Fig. 5 (with those blocks highlighted yellow), the signal stream is first segmented and then processed with an
+FFT operation, converting the signal from the time domain to the frequency domain for CFO estimation, tracking,
+and compensation. The time duration of each segment is an empirical parameter (e.g., 50 ms). Fig. 6 shows an
+example of one segment, which has multiple frequency peaks corresponding to multiple carrier frequencies from
+the RF tag. Among these carrier frequencies, we choose one (e.g., the one with the highest amplitude) for voice
+signal demodulation. Denote Δ𝑓𝑘 as the center frequency of the 𝑘th carrier. We intend to use the one withΔ𝑓0 for
+voice demodulation. Since voice has rich low-frequency components, Δ𝑓0 must be accurately estimated for CFO
+compensation.
+To enhance the CFO estimation accuracy, we employ two strategies:(i) Averaging over carriers.Experimental
+measurement shows that the frequency gap of those carriers is identical. Based on this observation, we first estimate
+all five CFOs (i.e., Δ𝑓0, Δ𝑓1, ... , Δ𝑓4) using their peak positions, and then calculate Δ𝑓0 = 1/5 Í4
+𝑘=0 Δ ˆ𝑓𝑘, where Δ ˆ𝑓𝑘
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:9
+0 100 200 300 400
+30
+40
+50
+60 CFO (kHz)
+Time (s)
+ f0 before LPF
+ f0 after LPF
+Fig. 7. Measured CFO before and after an LPF.
+15 105 0−5−10−15Magnitude
+Frequency (kHz)
+f4
+f2 f0
+f1
+f3
+A LPF is applied Fig. 8. Shift voice signal from IF to baseband and mitigate
+unintended carriers.
+is the measured CFO of carrier 𝑘.(ii) Averaging over time.The carrier frequency drift is a slow, stationary process.
+Therefore, we employ an LPF to enhance the estimate of CFO over segments. DenoteΔ𝑓0 (𝑡)as the CFO of the selected
+carrier in segment 𝑡. Fig. 7 exhibits an example of the measured Δ𝑓0 (𝑡)before and after an LPF with 2 kHz bandwidth.
+Based on the resultant Δ𝑓0 (𝑡), we shift the center frequency of the intended carrier to zero, generating the zero-IF
+signal. Then, another LPF is applied to the zero-IF signal to remove other carriers. Fig. 8 shows these operations.
+Frequency Demodulation.We use thephase differentiationapproach to demodulate the zero-IF FM signal. Specif-
+ically, referring to Eq. (4), the zero-IF signal after the LPF can be written as: 𝑟(𝑡)=𝛽exp
+
+2𝜋Δ
+∫ 𝑡
+0 𝑣(𝜏)𝑑𝜏
+
+. Then,
+the extracted phase can be expressed as: ∠𝑟(𝑡)= 2𝜋Δ
+∫ 𝑡
+0 𝑣(𝜏)𝑑𝜏 . Then, we have: ∠𝑟(𝑡2)−∠𝑟(𝑡 1)= 2𝜋Δ
+∫ 𝑡2
+𝑡1
+𝑣(𝜏)𝑑𝜏≈
+2𝜋Δ𝑣(𝑡1)(𝑡2 −𝑡1), provided thatΔ=𝑡 2 −𝑡1 is small enough. Therefore, the voice signal can be estimated by
+𝑣(𝑡)= 𝑓𝑠
+2𝜋Δ
+
+∠𝑟(𝑡2)−∠𝑟(𝑡 1)
+
+.(6)
+where𝑓𝑠 is the sampling rate of𝑟(𝑡).
+4.3 AI-Assisted Voice Enhancement
+The resampled voice signal is already audible and intelligible, but sometimes with low-frequency and spurious noise.
+To enhance the voice quality, we employ a lightweight AI model that leverages the inherent voice properties for noise
+suppression. We chose an AI-based approach because the distortions inTagMicare nonlinear and time-varying, arising
+from hardware imperfections and multipath effects. Such distortions are difficult to capture with fixed-parameter
+filters, whereas a neural network can directly learn the mapping from noisy to clean signals. While the literature has
+a large body of work in this field, we follow the approaches in [6, 31, 46, 47] to create a solution that operates directly
+on raw waveforms. This approach does not need to convert the voice signal between time and frequency domains,
+and thus has a relatively low computation cost.
+Fig. 9 shows our AI model, which was built based on the DEMUCS [ 6] architecture. Essentially, it is a causal
+encoder-decoder framework, augmented with skip connections and LSTM layers for temporal attention. The encoder
+processes the noisy signal into a latent representation, 𝑧=𝐸(𝑥) , which is then refined by a sequence model
+ˆ𝑧=𝑅(𝑧)=𝐿𝑆𝑇𝑀(𝑧)+𝑧 . Then, the decoder reconstructs the clean signal, ˆ𝑦=𝐷( ˆ𝑧). The Skip connections ensure that
+fine-grained details from the input are preserved across layers, enhancing the output quality.
+The training objective is to minimize both waveform-level and spectrogram-domain losses. At the waveform level,
+the model minimizes the 𝐿1 loss: L𝑤 = 1
+𝑁 ∥𝑦− ˆ𝑦∥1, which directly measures the difference between the clean signal 𝑦
+and the enhanced signal ˆ𝑦, where 𝑁 represents the length of the voice signal. To further enhance perceptual quality, a
+multi-resolution STFT (Short-Time Fourier Transform) loss L𝑠 is employed. This loss combines spectral convergence
+and magnitude terms:
+L𝑠 =
+𝑀∑︁
+𝑘=1
+∥S𝑘(𝑦)−S 𝑘(ˆ𝑦)∥𝐹
+∥S𝑘(𝑦)∥𝐹
++ 1
+𝑁∥logS 𝑘(𝑦)−logS 𝑘(ˆ𝑦)∥1,(7)
+where 𝑆𝑘(·)returns the amplitude of a target signal after the𝑘-point STFT operation, ∥·∥𝐹 and ∥·∥1 denote Frobenius
+and 𝐿1 norms, respectively. 𝑀 is an empirical parameter representing the number of STFT resolutions. The total loss
+used to train the model isLoverall =L𝑤 +L𝑠.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:10•Wang et al.
+Encoder1Encoder2
+EncoderLLSTM
+02468 1 0A
+ noisy
+02468 1 0A
+ clean
+……
+Decoder1Decoder2
+DecoderL……
+Input or Encoderi-1
+Conv1d-ReLUConv1d-GLUDecoderi Encoderi+1 or LSTM
+Conv1d-GLUTConv1D
+Decoderi+1 or LSTM
+Output or ReLU & Decoderi-1
+Encoderi
+Fig. 9. A deep learning model for voice enhancement.
+0.0 0.2 0.4−1.0
+−0.5
+0.0
+0.5
+1.0  Noisy voice signal Enhanced voice signal
+Magnitude
+Time (s)
+Voice ‘three’Noise Noise Fig. 10. Demodulated voice signal before and after enhancement.
+Extensive data from the RF tag, along with its corresponding clean voice data, has been collected to train the AI
+model. Fig. 10 illustrates an example from the model’s inference stage, showing the input (noisy voice signal) and the
+output (enhanced voice signal). The results demonstrate that the model effectively suppresses noise and enhances the
+quality of the voice signal.
+5 EXPERIMENTAL EVALUATION
+In this section, we build a prototype ofTagMicand evaluate its performance and robustness in realistic scenarios.
+Specifically, we aim to seek answers to the following questions.
+•Distance (§5.4).What is the usual communication distance with an RF reader that has ordinary transmission
+power (e.g., 1W)?
+•Robustness (§5.5 and §5.6).How doesTagMicperform when the backscatter tag faces different orientations or is
+in occluded scenarios?
+•Mobility (§5.7).DoesTagMicwork when used by walking speakers or in dynamic environments?
+•Multi-User Support (§5.8).Can an RF reader work with multiple tags at the same time?
+5.1 Implementation
+RF Tag.Fig. 11 shows a picture of our fabricated tag, which consists of a VSR and a PR as well as a piezoelectric
+sensor. This PR includes a circular inductor with an inner diameter of 13.5 mm and an outer diameter of 14.5 mm
+etched on the surface of a 0.8-mm G10 board. The upper/right and lower/left half circles have split gaps that were
+filled by varactor diodes with an equivalent capacitance of 9.1 pF, creating a circular resonance mode. The butterfly
+resonance mode is created by connecting the two virtual voltage grounds of the circular mode with a horizontal
+conductor.
+The VSR is fabricated by wrapping a 32-G enameled copper wire around two 1.5-mm diameter rods that are
+separated by 1.8 mm. Five counterclockwise turns in the first rod are followed by a clockwise turn in the second
+rod, before the wire’s two end terminals are connected to two varactors (3 pF) placed in head-to-head direction. The
+piezoelectric transducer is connected to the common cathode with a sensing electrode and to the common anode with
+another sensing electrode. If needed, a half-wave dipole antenna can be wrapped around the edge of the PR’s circular
+conductor pattern to increase its inductive coupling with the PR. Our prototype uses off-the-shelf components with
+an estimated material cost of $1.8 per tag. While the current design is handcrafted, we anticipate that the cost can be
+significantly reduced (to $0.95) with mass production and PCB integration.
+RF Reader.Fig. 11 also shows the system setup of the RF reader, which consists of a USRP N310, a power amplifier
+(PA), two directional antennas, and a PC. The frequency of the excitation signal is 915 MHz, and its transmission
+power is about 30 dBm. When powered by the excitation signal, the backscatter tag generates reflective signals at
+about 515 MHz. The entire signal processing pipeline is implemented using GNU Radio on the PC for real-time voice
+signal demodulation.
+To train the AI model in the signal processing pipeline, we collected data in two scenarios.(i) Human Voice:Volunteers
+haveTagMicattached to the front of their clothing. Ground-truth voice data was recorded using a smartphone, while
+the demodulated backscattered signals fromTagMicwere captured by the RF reader.(ii) Audio/Video Playback:To
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:11
+TXRX
+USRP
+Desktop
+Voltage sensingresonator
+Piezosensor
+CasePower Amplifier
+Parametric resonator
+Varactor diode
+US quarter2.246 cm
+Fig. 11. A picture of the RF reader (left) and a picture of the backscatter tag (right).
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+After
+AI
+Voice 2 Voice 3 Voice 4
+Ground 
+Truth
+Voice 1
+Before 
+AI
+SI-SDR
+LLR
+STOI
+PESQ
+12.04
+0.27
+0.86
+3.37
+13.94
+0.25
+0.91
+3.44
+12.28
+0.32
+0.94
+3.51
+12.56
+0.37
+0.83
+3.28
+9.53
+0.76
+0.79
+2.45
+7.88
+1.02
+0.71
+2.32
+8.97
+0.69
+0.82
+2.36
+4.42
+1.3
+0.41
+1.54
+Voice 1 Voice 2 Voice 3 Voice 4
+MOS 4.34.54.34.4
+4.03.94.03.1
+SI-SDR
+LLR
+STOI
+PESQ
+MOS
+Voice 6 Voice 7Voice 5 Voice 8
+02468 1 0 1 2 1 4 1 6 1 8
+Time
+ Amplitude
+02468 1 0 1 2 1 4 1 6 1 8
+Time
+ Amplitude
+02468 1 0 1 2 1 4 1 6 1 8
+Time
+ Amplitude
+11.73
+0.25
+0.84
+3.16
+5.67
+1.15
+0.67
+1.63
+4.2
+3.3
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+02468 1 0
+Time
+ Amplitude
+14.32
+0.23
+0.91
+3.45
+4.69
+1.48
+0.74
+1.66
+4.4
+3.2
+−1 0 1 2 3 4 5 6 7
+Time
+ Amplitude
+−1 0 1 2 3 4 5 6 7
+Time
+ Amplitude
+−1 0 1 2 3 4 5 6 7
+Time
+ Amplitude
+10.35
+0.33
+0.88
+3.09
+4.3
+5.97
+0.94
+0.58
+2.38
+3.4
+02468 1 0 1 2 1 4 1 6 1 8 2 0 2 2 2 4 2 6 2 8
+Time
+ Amplitude
+02468 1 0 1 2 1 4 1 6 1 8 2 0 2 2 2 4 2 6 2 8
+Time
+ Amplitude
+02468 1 0 1 2 1 4 1 6 1 8 2 0 2 2 2 4 2 6 2 8
+Time
+ Amplitude
+8.56
+0.41
+0.85
+3.26
+4.05
+1.33
+0.49
+2.02
+4.3
+3.2
+Fig. 12. Case studies on the recovered voice signal waveform before and after the AI model as well as their metrics.
+reduce human effort, a smartphone playing YouTube videos was used to collect recovered voice data from the RF
+reader alongside the corresponding ground-truth voice recordings.
+For both methods, data were collected across varying tag distances (50 cm to 550 cm in 50 cm increments) and
+tag orientations (0°to 180°in 30°increments) to ensure robustness. For each condition, 10–15 minutes of voice data
+were recorded. The dataset was split into 80% for training and 20% for testing. Voice recordings were segmented into
+smaller durations (3 to 15 seconds) to improve model robustness, accounting for variable-length input utterances. The
+AI model was trained for 500 epochs using the loss function described in Sec. 4.3. The Adam optimizer was employed
+with a learning rate of3 ×10−4, and momentum parameters 𝛽1 = 0.9and 𝛽2 = 0.999. All audio is resampled at 16 kHz.
+Our trained model comprises approximately 33.6 million parameters (file size: 128MB), achieves real-time inference
+on an Intel i7 CPU with an average latency of 73ms, and has a computational cost of 10.2 GMACs.
+Ethical Considerations.All user studies conducted in this work follow the ethical standards and guidelines
+for research involving human participants. The study protocol was reviewed and approved by the Institutional
+Review Board (IRB) of the authors’ institution. Before participation, all volunteers were informed about the purpose,
+procedures, and potential risks of the study, and provided their written consent. Participation was entirely voluntary,
+and participants could withdraw at any time without penalty. During experiments, only audio data relevant to the
+evaluation ofTagMicwas collected, and all recorded data were anonymized to protect privacy and confidentiality.
+5.2 Performance Metrics
+We employ both signal-level and perceptual-level metrics to evaluate the performance of voice recovery at the RF
+reader. The signal-level metrics are objective assessments, while the perceptual-level metrics are subjective evaluations.
+Specifically, we use the following metrics for evaluation.
+•SI-SDR (signal metric)represents the Scale-Invariant signal-to-Distortion ratio. It measures the level of signal
+preservation by calculating the ratio of the target signal to the distortion.
+•LLR (signal-Level metric)represents the Log-Likelihood ratio. It measures the distortion in speech by comparing
+the linear predictive coding (LPC) coefficients of the original and processed speech.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:12•Wang et al.
+Table 2. TagMic’s performance at different distances.
+SI-SDR↑ LLR↓ STOI↑ PESQ↑ MOS↑
+w/o AI w/ AI w/o AI w/ AI w/o AI w/ AI w/o AI w/ AI w/o AI w/ AI
+50 cm 12.1 14.65 0.25 0.21 0.82 0.97 3.21 3.65 4.5 4.5
+100 cm 9.95 11.33 0.27 0.24 0.77 0.91 3.04 3.57 4.3 4.5
+150 cm 8.90 9.81 0.37 0.3 0.75 0.82 2.98 3.20 4.0 4.2
+200 cm 7.15 8.57 0.49 0.41 0.69 0.76 2.85 2.93 3.5 4.0
+250 cm 5.64 7.42 0.65 0.52 0.61 0.73 2.71 2.88 3.0 3.5
+300 cm 4.97 7.05 0.71 0.53 0.55 0.72 2.49 2.73 3.0 3.5
+350 cm 4.05 6.86 0.82 0.58 0.52 0.67 2.33 2.61 2.7 3.5
+400 cm 3.16 6.11 0.86 0.61 0.40 0.65 1.95 2.55 2.5 3.35
+450 cm 2.45 4.63 0.99 0.77 0.38 0.6 1.78 2.17 2.0 3.2
+500 cm 2.05 3.56 1.10 0.89 0.35 0.56 1.66 2.01 2.0 3.1
+550 cm 1.77 3.27 1.35 0.97 0.30 0.55 1.42 1.93 1.5 2.85
+•STOI (perceptual-level metric)represents the Short-Time objective intelligibility, ranging from 0 to 1. This
+metric measures the intelligibility of speech by evaluating the similarity between the short-time spectral envelopes
+of the clean and enhanced signals.
+•PESQ (perceptual-level metric)is a perceptual evaluation of speech quality, ranging from 1 to 4.5. This metric
+measures the perceptual quality of speech signals by comparing a reference signal with an enhanced signal.
+•MOS (perceptual-level metric)represents the Mean Opinion Score. It measures the speech quality based on
+human ratings, typically ranging from 1 to 5.
+For LLR, lower values are preferable. For other metrics, higher scores indicate better-recovered voice quality.
+5.3 Case Studies
+To visually examine the recovered voice signal waveform and better interpret the corresponding metric values, we
+conducted a set of case studies comparing the recovered voice waveforms against their ground-truth counterparts.
+In these cases, the recovered voice waveform data was collected while the tag was attached to a person standing
+approximately 80 cm away from the RF reader.
+Fig. 12 presents our measurement results, showing the voice waveform before and after the AI model alongside
+the ground-truth voice waveform. The comparisons reveal that the RF reader can recover the voice waveform with
+high fidelity across all studied cases. Perceptually, one can understand the content of all voice segments almost
+perfectly. Notably, the AI model enhances the similarity of the recovered waveform to the ground truth. For example,
+the recovered ‘Voice 1’ waveform before applying the AI model considerably deviates from the original waveform.
+However, after the process of the AI model, the waveform closely resembles the ground truth, demonstrating the
+AI model’s effectiveness in voice waveform recovery. Meanwhile, the recovered waveforms for ‘Voice 2, ’ ‘Voice 3, ’
+and ‘Voice 4’ before applying the AI model already exhibit strong similarity to their corresponding ground-truth
+waveforms. This indicates that, even without the AI model, the proposed signal processing pipeline effectively decodes
+the voice signal in most cases.
+Additionally, Fig. 12 includes the metric values for each recovered voice waveform, both before and after the AI
+model. These values provide a quantitative understanding of waveform quality, complementing the visual analysis. We
+hope this combination of visual and numerical data will aid in interpreting the metric values presented in subsequent
+sections.
+5.4 Tag Distance
+Communication distance is a critical parameter for a wireless microphone. We evaluate the quality of the recovered
+voice at the RF reader when placingTagMicat different distances. Specifically,TagMicis attached to a participant’s
+clothing, and the participant speaks at varying distances from the RF reader, ranging from 50 cm to 550 cm in 50 cm
+increments.
+Perceptually, all recovered voice segments remain clearly intelligible. Table 2 presents the quantitative values
+for those metrics at their 50th percentile. When the distance betweenTagMicand the RF reader is less than 2 m,
+the difference in audio quality between the original and recovered voices is perceptually negligible. As the distance
+increases,TagMic’s performance degrades. However, the AI model’s enhancement becomes more pronounced at
+greater distances.
+It is worth noting that our experimental observations suggest that those metric values do not always correlate
+directly with human perception. This observation aligns with the findings in prior work [27]: voice signals can remain
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:13
+0 30
+60
+90
+120
+150180
+1
+2
+3
+4
+5
+1
+2
+3
+4
+5
+1m2m3m4m5m
+0 30
+60
+90
+120
+150180
+12345
+12345
+1m2m3m4m5m°
+° ° ° ° °
+°°
+° ° ° ° °
+°
+Fig. 13. Measured SI-SDR when TagMic Orientations
+Tag
+RF readerTagRF reader
+RF reader
+Tag Fig. 14. Blockage study.
+After
+AI
+Voice 2 Voice 3 Voice 4
+Ground 
+Truth
+Voice 1
+Before 
+AI
+SI-SDR
+LLR
+STOI
+PESQ
+8.76
+0.39
+0.80
+3.06
+14.16
+0.21
+0.93
+3.55
+11.95
+0.28
+0.89
+3.37
+4.27
+1.37
+0.46
+1.95
+4.64
+1.51
+0.75
+1.68
+5.46
+1.12
+0.63
+1.77
+Blockage 1 Blockage 2 Blockage 3 Mobility 1
+MOS 4.24.54.3
+3.33.13.2
+SI-SDR
+LLR
+STOI
+PESQ
+MOS
+Mobility 2
+10.23
+0.35
+0.90
+3.12
+4.4
+6.12
+0.98
+0.54
+2.41
+3.5
+9.59
+0.26
+0.85
+3.17
+6.45
+0.76
+0.81
+2.55
+4.2
+3.9
+Fig. 15. Mel spectrogram of the recovered and original voices in the presence of blockage and mobility.
+intelligible even when metric values are low. With the assistance of the AI model,TagMicremains functional and
+delivers intelligible voice signals even at a distance of 8 m.
+5.5 Tag Orientation
+A key component ofTagMicis the parametric resonator (see Fig. 11), designed in a circular shape to efficiently harvest
+energy from excitation signals. We hypothesize that the energy-harvesting efficiency ofTagMicis dependent on
+its orientation relative to the RF reader. Theoretically,TagMicachieves maximum efficiency when the RF reader is
+positioned perpendicular to the resonator. To validate this hypothesis, we evaluatedTagMic’s performance across
+various orientations (0°to 180°in 30°increments) and distances (1 m to 5 m in 1 m increments).
+In all cases, the recovered voice at the RF reader was intelligible. Fig. 13 shows the SI-SDR results measured at
+the RF reader. The left panel illustrates the SI-SDR of the recovered voice signal without AI enhancement, while the
+right panel depicts the SI-SDR after AI enhancement. The results indicate that the SI-SDR performance ofTagMicis
+primarily influenced by the distance to the RF reader, with orientation playing a less significant role than expected.
+This could be attributed to the rich scattering properties of indoor environments, which help maintain consistent
+energy harvesting and voice recovery performance regardless of orientation.
+5.6 Resilience to Blockage
+Blockage is an important factor in indoor environments. To evaluateTagMic’s resilience to blockages, we conducted
+experiments to evaluate the performance ofTagMicin three typical scenarios: (i) the speaker faces away from the RF
+reader (see the left image in Fig. 14); (ii) a person obstructs the line-of-sight path betweenTagMicand the RF reader
+(see the top-right image in Fig. 14); and (iii) a piece of furniture blocks the line-of-sight path betweenTagMicand the
+RF reader (see the bottom-right image in Fig. 14). These scenarios are referred to as ‘Blockage 1, ’ ‘Blockage 2, ’ and
+‘Blockage 3, ’ respectively. In all cases, the distance betweenTagMicand the RF reader was approximately 3 meters.
+Fig. 15 presents the experimental results as mel spectrograms (a standard method for sound analysis) along with
+the corresponding metric values. The findings demonstrate that, with the AI model,TagMiceffectively reconstructs
+voice signals with high similarity to the ground-truth voice. Notably,TagMicexhibits strong resilience to all three
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:14•Wang et al.
+TagRF readerTag
+RF reader
+Fig. 16. Mobility study.
+RF reader
+Tag
+RF reader Tag ATag B Fig. 17. Multi-user support.
+Zoomed-In Signal Segment of Tag A
+Zoomed-In Signal Segment of Tag B
+Fig. 18. Spectrogram of two RF tags’ reflection signal.
+blockage scenarios. Specifically, in most cases involving furniture,TagMiccan recover intelligible voice signals even
+without the AI model.
+5.7 Mobility
+A wireless microphone must support mobility for practical use. To validate the usability ofTagMic, we conducted
+mobility tests in two cases: (i) the speaker walks in front of the RF reader, with the distance varying from 2.5 m to 5.0 m
+(see the top image in Fig. 16); and (ii) the speaker remains seated on a chair while an interfering person moves around
+the speaker and the RF reader (see the bottom image in Fig. 16). These scenarios are referred to as ‘Mobility 1’ and
+‘Mobility 2, ’ respectively. Fig. 15 presents our experimental results. The findings indicate thatTagMic’s performance
+degrades slightly when the speaker is in motion. However,TagMicconsistently maintains satisfactory performance
+in both scenarios, with all recovered voices being of high quality.
+5.8 Multi-user Support
+TagMiccan support multi-user operation through frequency division. By adjusting the number of coil windings, the
+’circular-mode’ resonance frequency (𝑓𝑐) ofTagMiccan be tuned to a unique operation frequency. To validate this
+feature, we fabricated a secondTagMictag that has a different number of coil windings from the first tag. Fig. 17
+illustrates the multi-user testing scenario, where two participants wear Tag A and Tag B, respectively. Fig. 18 presents
+the spectrogram captured when both tags were concurrently active and modulated by voice signals. The spectrogram
+shows two separate clusters of frequency-modulated carriers, each from one tag, centered around distinct frequencies.
+In this experiment, the frequency separation was approximately 380 kHz. This frequency separation is sufficiently
+large to prevent mutual interference, allowing the RF reader to isolate and demodulate each voice stream. After
+AI enhancement, the demodulated voice streams from Tag A and Tag B achieved quality comparable to single-tag
+operation, with SI-SDR values of 11.75 and 12.37, LLR values of 0.29 and 0.23, STOI values of 0.91 and 0.93, PESQ
+values of 3.35 and 3.46, and MOS values of 4.1 and 4.3, respectively. More importantly, our experimental results
+demonstrate that this frequency separation remains stable regardless of the relative distance between the tags, their
+individual orientations, or their operational status (stationary or mobile). This ensures reliable signal separation under
+diverse real-world conditions.
+5.9 Overall Performance
+We conducted extensive experiments to evaluateTagMic’s performance across a wide range of scenarios, considering
+factors such as varying tag distances, orientations, mobility speeds, and voice source types. Our objective was to
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:15
+Before AI After AI
+−5
+0
+5
+1
+0
+15
+20 SI-SDR (dB)
+ 25%~75%
+ Range within 1.5IQR
+ Median
+(a) SI-SDR.
+Before AI After AI
+0.0
+0
+.2
+0.4
+0.6
+0.8
+1.0
+1.2
+1.4
+1.6
+1.8
+2.0 LLR
+ 25%~75%
+ Range within 1.5IQR
+ Median (b) LLR.
+Before AI After AI
+0.0
+0
+.2
+0.4
+0.6
+0.8
+1.0 STOI
+ 25%~75%
+ Range within 1.5IQR
+ Median (c) STOI.
+Before AI After AI
+0.5
+1
+.0
+1.5
+2.0
+2.5
+3.0
+3.5
+4.0 PESQ
+ 25%~75%
+ Range within 1.5IQR
+ Median (d) PESQ.
+Fig. 19. Overall performance of TagMic in various conditions.
+comprehensively assess its effectiveness and reliability under real-world conditions. A total of 1500 minutes of voice
+data were collected for this evaluation.
+Twelve volunteers participated in a perceptual evaluation, classifying the recovered voices into three categories:
+low quality, medium quality, and high quality. Approximately 20% of the voices were classified as low quality, 45%
+as medium quality, and 35% as high quality. In addition to this subjective evaluation, Fig. 19 presents a statistical
+summary of the metric values across all scenarios. The results demonstrate that the AI model significantly enhances
+the overall voice quality, ensuring that the majority of the voices are intelligible after processing.
+6 RELATED WORK
+6.1 Batteryless Microphones Using RF Backscatter
+RF backscatter offers a compelling pathway for ultra-low-power communication by reflecting ambient RF signals. In
+general, two types of RF backscatter systems have been explored to realize batteryless data communications.
+•Digital Backscatter Microphones:Platforms like the Wireless Identification and Sensing Platform (WISP) [ 17] and
+networked systems like MultiScatter [14] can be utilized to implement a batteryless wireless microphone. They
+digitize the audio signal before modulating it onto the backscattered carrier frequency, offering programmability
+and compatibility with standards like EPC Gen2 [17]. However, the energy required for signal digitization and
+digital data processing limits its operation in a continuous fashion due to their reliance on energy harvesting
+circuits. As a result, these approaches are limited to a low-duty-cycle operation and cannot support continuous
+voice streaming [14, 17, 34].
+•Analog Backscatter Microphones:To overcome the power limitations of digital components, researchers have
+developed purely analog systems. Early concepts like the Great Seal Bug [29] demonstrated direct modulation
+of RF carriers via physical vibrations. Three modulations have been exploited for this purpose. The first one is
+Frequency Modulation (FM). For example, RF Bandaid [26] directly maps sensor outputs to frequency changes,
+achieving FM without digital conversion. MARS [ 1] advances this, operating below 1µW using a modified
+Clapp oscillator. The second one is Amplitude Modulation (AM) and Impedance Modulation. For instance, the
+Battery-Free Phone [34] modulated a JFET’s impedance using an electret microphone’s output. The third one is
+Advanced Modulation and Arrays. For example, MicArray [53] employed Pulse Position Modulation (PPM) and
+Differential PPM (DPPM) for synchronous multi-track audio recording.
+While these works demonstrate important design insights, they are constrained by tradeoffs that limit their
+suitability for continuous, high-quality voice streaming. Specifically, Battery-Free Phone [ 34] employs a hybrid
+analog-digital design involving a microcontroller, impedance modulation, and energy storage, which necessitates
+duty cycling and limits communication continuity. In contrast, TagMic eliminates all active electronics and digital
+control logic, relying entirely on passive components for continuous, real-time analog frequency modulation. Its dual-
+resonator design separates the excitation and reflection frequencies, fundamentally resolving self-interference and
+enabling reliable multi-tag operation. MARS [1] is designed for general-purpose low-power sensing (e.g., touch, swipe,
+and short speech bursts), but its minimalist design sacrifices signal fidelity and consistency. TagMic, by comparison,
+achieves continuous analog modulation with enhanced resilience through its multi-carrier architecture and precise
+separation of oscillation frequencies. It also avoids complex components like zero-threshold MOSFETs used in MARS.
+MicArray [53] targets batteryless operation but depends on external power for FPGA-based digital signal processing.
+It also relies on time-multiplexed synchronization and digital pulse modulation schemes, introducing hardware
+complexity and requiring coordinated multi-channel sampling. TagMic instead uses a fully analog architecture
+with passive frequency modulation, removing the need for synchronization or digital logic and supporting scalable
+deployment in multi-user environments.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:16•Wang et al.
+Despite the unique design tradeoffs of these systems, they all share a fundamental limitation: the self-interference
+challenge inherent in conventional backscatter, where the tag’s reflective signal overlaps with the reader’s excitation
+frequency [1, 13, 14, 17, 26, 28, 34, 35, 37, 53]. This overlap arises because the excitation signal is orders of magnitude
+stronger than the weak backscattered reflection, significantly impairing signal demodulation. Although harmonic
+backscatter [18, 48] offers one solution by reflecting at integer multiples of the excitation frequency, this approach
+typically requires higher activation power for the nonlinear components, making it difficult to directly modulate
+analog voice signals.
+Table 1 provides a comparative summary of prior systems, highlightingTagMic’s distinctive integration of frequency
+separation, analog modulation, and support for continuous, battery-free operation.
+6.2 Non-backscatter RF-based Sound Sensing
+In addition to RF backscatter techniques, other RF techniques have been studied to detect sound or voice from human.
+One popular approach is radar-based sound Sensing. Systems like RadioMic [20, 21], Radio2Speech [54], mmspy [3],
+mmecho [11], RFMic-Phone [32], and others [7–9, 38–40, 43–45, 49] use mmWave radar to detect minute vibrations
+caused by sound waves. They can offer capabilities like through-wall sensing [ 41] and noise resilience [ 23, 25],
+sometimes combining radar with traditional microphones [32]. However, these sensing methods typically require
+significantly more complex hardware and higher power consumption compared to RF backscatter tags [5, 20–23, 50–
+52, 54]. Other than FMCW mmWave radar, UWB radar is another sensor used for sound sensing. Prior work like
+UWHear [42] use UWB radar for audio separation, while RADIOSES [ 24] combines audio and RF modalities to
+improve speech separation quality. These demonstrate sophisticated capabilities but also entail system complexity
+and energy demands. While these alternative RF methods offer unique advantages (e.g., privacy, environmental
+robustness),TagMicdiffers from them by providing a reliable, continuous voice streaming solution. This is because
+this radar-based approach can only work in a controllable setting where the sound source is static and its location is
+known a priori. In contrast,TagMiccan work in a generic setting and for mobile voice sources.
+7 CONCLUDING REMARKS
+In this paper, we introduced a batteryless wireless microphone through the meticulous design of a backscatter
+tag. Unlike traditional backscatter tags, our tag reflects radio signals at a frequency different from its excitation
+signal, effectively addressing the notorious self-interference issue in conventional RF backscatter tags. By adopting
+a dual-resonator structure, the tag modulates the voice signal onto its resonance frequency, eliminating the need
+for digitalization and creating an energy-efficient voice FM system. We have fabricatedTagMicand evaluated its
+performance in realistic scenarios. Experimental results confirm its practicality and efficiency under various conditions.
+WhileTagMichas demonstrated significant potential and reliable performance, it has several limitations that
+warrant discussion:(i) Dependence on reader infrastructure.TagMicrequires an excitation signal from a dedicated RF
+reader. This dependency on custom infrastructure may limit plug-and-play deployment in environments that lack
+compatible RF readers or regulated RF spectrum access.(ii) Limited communication range compared to active systems.
+Although our system achieves up to 8 meters of communication distance, this range is shorter than conventional
+battery-powered wireless microphones, which can operate over tens of meters with actively transmitted signals.
+The reliance on passive backscatter inherently limits the available signal power and thus the effective range.(iii)
+Scalability with large numbers of tags remains unexplored.While our system supports two concurrent tags through
+frequency division, scalability to tens or hundreds of users has not been studied. In dense acoustic scenarios, ensuring
+sufficient spectral separation and mitigating inter-tag interference may present additional challenges, particularly in
+mobile or ad-hoc deployments. We envision that some of these limitations can be addressed through future advances
+in low-power RF front-end design, integrated reader hardware, and adaptive signal processing pipelines. Overall,
+TagMicshould be regarded as a lab-validated prototype rather than a ready-to-deploy commercial system. While
+our experiments demonstrate the feasibility of continuous, battery-free voice streaming, the current design has been
+evaluated under controlled laboratory conditions with research-grade hardware. Additional engineering efforts, such
+as developing dedicated low-cost RF readers, optimizing the hardware form factor, and compressing the AI model for
+edge deployment, will be necessary beforeTagMiccan transition from a prototype to practical real-world applications.
+Acknowledgments
+The authors sincerely thank the anonymous editors and reviewers for their constructive comments and valuable
+feedback. This work was supported in part by NSF Grant ECCS-2225337 (Q. Wang, P. Yan, S. Zhang, and H. Zeng) and
+in part by NSF Grant ECCS-2144138 (C. Qian).
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+A Batteryless Wireless Microphone Using RF Backscatter•219:17
+References
+[1] Nivedita Arora, Ali Mirzazadeh, Injoo Moon, Charles Ramey, Yuhui Zhao, Daniela C Rodriguez, Gregory D Abowd, and Thad Starner. 2021.
+Mars: Nano-power battery-free wireless interfaces for touch, swipe and speech input. InThe 34th Annual ACM Symposium on User Interface
+Software and Technology. 1305–1325.
+[2] Nivedita Arora, Steven L Zhang, Fereshteh Shahmiri, Diego Osorio, Yi-Cheng Wang, Mohit Gupta, Zhengjun Wang, Thad Starner, Zhong Lin
+Wang, and Gregory D Abowd. 2018. SATURN: A thin and flexible self-powered microphone leveraging triboelectric nanogenerator.Proceedings
+of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies2, 2 (2018), 1–28.
+[3] Suryoday Basak and Mahanth Gowda. 2022. mmspy: Spying phone calls using mmwave radars. In2022 IEEE Symposium on Security and
+Privacy (SP). IEEE, 1211–1228.
+[4] Jing Chen, Zhe Wang, Ruijuan Dong, Xinxing Fu, Yuan Wang, and Shuo Wang. 2021. Effects of wireless remote microphone on speech
+recognition in noise for hearing aid users in China.Frontiers in Neuroscience15 (2021), 643205.
+[5] Yunzhong Chen, Jiadi Yu, Linghe Kong, Hao Kong, Yanmin Zhu, and Yi-Chao Chen. 2023. RF-Mic: Live Voice Eavesdropping via Capturing
+Subtle Facial Speech Dynamics Leveraging RFID.Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies7, 2
+(2023), 1–25.
+[6] Alexandre Défossez, Nicolas Usunier, Léon Bottou, and Francis Bach. 2019. Music source separation in the waveform domain.arXiv preprint
+arXiv:1911.13254(2019).
+[7] Yiwen Feng, Kai Zhang, Chuyu Wang, Lei Xie, Jingyi Ning, and Shijia Chen. 2023. mmeavesdropper: Signal augmentation-based directional
+eavesdropping with mmwave radar. InIEEE INFOCOM 2023-IEEE Conference on Computer Communications. IEEE, 1–10.
+[8] Eloi Guerrero, Josep Brugués, Jordi Verdú, and Pedro de Paco. 2020. Microwave microphone using a general purpose 24-GHz FMCW radar.
+IEEE Sensors Letters4, 6 (2020), 1–4.
+[9] Kawon Han and Songcheol Hong. 2021. Vocal signal detection and speaking-human localization with MIMO FMCW radar.IEEE Transactions
+on Microwave Theory and Techniques69, 11 (2021), 4791–4802.
+[10] Andrew P Hill, Peter Prince, Jake L Snaddon, C Patrick Doncaster, and Alex Rogers. 2019. AudioMoth: A low-cost acoustic device for
+monitoring biodiversity and the environment.HardwareX6 (2019), e00073.
+[11] Pengfei Hu, Wenhao Li, Riccardo Spolaor, and Xiuzhen Cheng. 2023. mmecho: A mmwave-based acoustic eavesdropping method. In
+Proceedings of the ACM Turing Award Celebration Conference-China 2023. 138–140.
+[12] Jens Karrenbauer, Sven Schönewald, Simon Klein, Meinolf Blawat, Jens Benndorf, and Holger Blume. 2023. A High-Performance, Low Power
+Research Hearing Aid featuring a High-Level Programmable Custom 22nm FDSOI SoC. In2023 45th Annual International Conference of the
+IEEE Engineering in Medicine & Biology Society (EMBC). IEEE, 1–5.
+[13] Mohamad Katanbaf, Vivek Jain, and Joshua R Smith. 2020. Relacks: Reliable backscatter communication in indoor environments.Proceedings
+of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies4, 2 (2020), 1–24.
+[14] Mohamad Katanbaf, Ali Saffari, and Joshua R Smith. 2021. Multiscatter: Multistatic backscatter networking for battery-free sensors. In
+Proceedings of the 19th ACM Conference on Embedded Networked Sensor Systems. 69–83.
+[15] Yu-Cheng Lin, Ying-Hui Lai, Hsiu-Wen Chang, Yu Tsao, Yi-ping Chang, and Ronald Y Chang. 2015. SmartHear: A smartphone-based remote
+microphone hearing assistive system using wireless technologies.IEEE Systems Journal12, 1 (2015), 20–29.
+[16] Daniel J Mennill, Matthew Battiston, David R Wilson, Jennifer R Foote, and Stephanie M Doucet. 2012. Field test of an affordable, portable,
+wireless microphone array for spatial monitoring of animal ecology and behaviour.Methods in Ecology and Evolution3, 4 (2012), 704–712.
+[17] Rohan Menon, Rohit Gujarathi, Ali Saffari, and Joshua R Smith. 2022. Wireless identification and sensing platform version 6.0. InProceedings
+of the 20th ACM Conference on Embedded Networked Sensor Systems. 899–905.
+[18] Saikat Mondal and Premjeet Chahal. 2019. A passive harmonic RFID tag and interrogator development.IEEE Journal of Radio Frequency
+Identification3, 2 (2019), 98–107.
+[19] Geoffrey Ottoy, Bart Thoen, and Lieven De Strycker. 2016. A low-power MEMS microphone array for wireless acoustic sensors. In2016 IEEE
+Sensors Applications Symposium (SAS). IEEE, 1–6.
+[20] Muhammed Zahid Ozturk, Chenshu Wu, Beibei Wang, and KJ Liu. 2021. Radiomic: Sound sensing via mmwave signals.arXiv preprint
+arXiv:2108.03164(2021).
+[21] Muhammed Zahid Ozturk, Chenshu Wu, Beibei Wang, and KJ Ray Liu. 2022. RadioMic: Sound sensing via radio signals.IEEE Internet of
+Things Journal10, 5 (2022), 4431–4448.
+[22] Muhammed Zahid Ozturk, Chenshu Wu, Beibei Wang, and KJ Ray Liu. 2022. Toward mmWave-based sound enhancement and separation. In
+ICASSP 2022-2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 6852–6856.
+[23] Muhammed Zahid Ozturk, Chenshu Wu, Beibei Wang, Min Wu, and KJ Ray Liu. 2022. Beyond Microphone: mmWave-based interference-
+resilient voice activity detection. InProceedings of the 1st ACM International Workshop on Intelligent Acoustic Systems and Applications.
+7–12.
+[24] Muhammed Zahid Ozturk, Chenshu Wu, Beibei Wang, Min Wu, and KJ Ray Liu. 2023. Radio SES: mmWave-Based Audioradio Speech
+Enhancement and Separation System.IEEE/ACM Transactions on Audio, Speech, and Language Processing31 (2023), 1333–1347.
+[25] Muhammed Zahid Ozturk, Chenshu Wu, Beibei Wang, Min Wu, and KJ Ray Liu. 2024. RadioVAD: mmWave-Based Noise and Interference-
+Resilient Voice Activity Detection.IEEE Internet of Things Journal(2024).
+[26] Vaishnavi Ranganathan, Sidhant Gupta, Jonathan Lester, Joshua R Smith, and Desney Tan. 2018. Rf bandaid: A fully-analog and passive
+wireless interface for wearable sensors.Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies2, 2 (2018), 1–21.
+[27] Chandan KA Reddy, Ebrahim Beyrami, Jamie Pool, Ross Cutler, Sriram Srinivasan, and Johannes Gehrke. 2019. A scalable noisy speech
+dataset and online subjective test framework.arXiv preprint arXiv:1909.08050(2019).
+[28] Chao Ren and Luchuan Liu. 2023. Toward full passive internet of things: Symbiotic localization and ambient backscatter communication.
+IEEE Internet of Things Journal10, 22 (2023), 19495–19506.
+[29] Paul Reuvers and Marc Simons. 2015. The Thing. https://www.cryptomuseum.com/covert/bugs/thing/.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.
+219:18•Wang et al.
+[30] Krishna S Rodemerk and Jason A Galster. 2015. The benefit of remote microphones using four wireless protocols.Journal of the American
+Academy of Audiology26, 08 (2015), 724–731.
+[31] Olaf Ronneberger, Philipp Fischer, and Thomas Brox. 2015. U-net: Convolutional networks for biomedical image segmentation. InMedical image
+computing and computer-assisted intervention–MICCAI 2015: 18th international conference, Munich, Germany, October 5-9, 2015, proceedings,
+part III 18. Springer, 234–241.
+[32] Xiangtian Shen, Yuyong Xiong, Songxu Li, and Zhike Peng. 2022. RFMic-phone: Robust sound acquisition combining millimeter-wave radar
+and microphone.IEEE Sensors Letters6, 11 (2022), 1–4.
+[33] Ayesha Sultana, Md Mehebub Alam, Sujoy Kumar Ghosh, Tapas Ranjan Middya, and Dipankar Mandal. 2019. Energy harvesting and
+self-powered microphone application on multifunctional inorganic-organic hybrid nanogenerator.Energy166 (2019), 963–971.
+[34] Vamsi Talla, Bryce Kellogg, Shyamnath Gollakota, and Joshua R Smith. 2017. Battery-free cellphone.Proceedings of the ACM on Interactive,
+Mobile, Wearable and Ubiquitous Technologies1, 2 (2017), 1–20.
+[35] Vamsi Talla and Joshua R Smith. 2013. Hybrid analog-digital backscatter: A new approach for battery-free sensing. In2013 IEEE international
+conference on RFID (RFID). IEEE, 74–81.
+[36] Linda M Thibodeau. 2020. Benefits in speech recognition in noise with remote wireless microphones in group settings.Journal of the American
+Academy of Audiology31, 06 (2020), 404–411.
+[37] Nguyen Van Huynh, Dinh Thai Hoang, Xiao Lu, Dusit Niyato, Ping Wang, and Dong In Kim. 2018. Ambient backscatter communications: A
+contemporary survey.IEEE Communications surveys & tutorials20, 4 (2018), 2889–2922.
+[38] Chao Wang, Feng Lin, Zhongjie Ba, Fan Zhang, Wenyao Xu, and Kui Ren. 2022. Wavesdropper: Through-wall word detection of human
+speech via commercial mmWave devices.Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies6, 2 (2022),
+1–26.
+[39] Chao Wang, Feng Lin, Tiantian Liu, Ziwei Liu, Yijie Shen, Zhongjie Ba, Li Lu, Wenyao Xu, and Kui Ren. 2022. mmphone: Acoustic eavesdropping
+on loudspeakers via mmwave-characterized piezoelectric effect. InIEEE INFOCOM 2022-IEEE Conference on Computer Communications. IEEE,
+820–829.
+[40] Chao Wang, Feng Lin, Tiantian Liu, Kaidi Zheng, Zhibo Wang, Zhengxiong Li, Ming-Chun Huang, Wenyao Xu, and Kui Ren. 2022. mmEve:
+eavesdropping on smartphone’s earpiece via COTS mmWave device. InProceedings of the 28th Annual International Conference on Mobile
+Computing And Networking. 338–351.
+[41] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping
+on loudspeakers via RFID by capturing sub-mm level vibration.Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies5, 4 (2021), 1–25.
+[42] Ziqi Wang, Zhe Chen, Akash Deep Singh, Luis Garcia, Jun Luo, and Mani B Srivastava. 2020. UWHear: Through-wall extraction and separation
+of audio vibrations using wireless signals. InProceedings of the 18th Conference on Embedded Networked Sensor Systems. 1–14.
+[43] Li Wen, Yuchen Li, Yangtao Ye, Changzhan Gu, and Jun-Fa Mao. 2021. Audio recovery via noncontact vibration detection with 120 ghz
+millimeter-wave radar sensing. In2021 International Conference on Microwave and Millimeter Wave Technology (ICMMT). IEEE, 1–3.
+[44] Yuyong Xiong, Xiangyi Tang, Songxu Li, Haibin Meng, Dong Wang, Guang Meng, and Zhike Peng. 2023. mmAcoustic: Full-field Sound
+Source Localization, Identification and Area-selectable Sound Recovery via Millimeter-wave Vibration Monitoring.IEEE Transactions on
+Instrumentation and Measurement(2023).
+[45] Chenhan Xu, Zhengxiong Li, Hanbin Zhang, Aditya Singh Rathore, Huining Li, Chen Song, Kun Wang, and Wenyao Xu. 2019. Waveear:
+Exploring a mmwave-based noise-resistant speech sensing for voice-user interface. InProceedings of the 17th Annual International Conference
+on Mobile Systems, Applications, and Services. 14–26.
+[46] Ryuichi Yamamoto, Eunwoo Song, and Jae-Min Kim. 2019. Probability density distillation with generative adversarial networks for high-quality
+parallel waveform generation.arXiv preprint arXiv:1904.04472(2019).
+[47] Ryuichi Yamamoto, Eunwoo Song, and Jae-Min Kim. 2020. Parallel WaveGAN: A fast waveform generation model based on generative
+adversarial networks with multi-resolution spectrogram. InICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal
+Processing (ICASSP). IEEE, 6199–6203.
+[48] Zhilu Ye, Minye Yang, Yichong Ren, Cheng-Hsien Jonathan Hung, Chung-Tse Michael Wu, and Pai-Yen Chen. 2023. Review on Recent
+Advances and Applications of Passive Harmonic RFID Systems.IEEE journal of radio frequency identification7 (2023), 118–133.
+[49] Jia Zhang, Yinian Zhou, Rui Xi, Shuai Li, Junchen Guo, and Yuan He. 2022. Ambiear: mmwave based voice recognition in nlos scenarios.
+Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies6, 3 (2022), 1–25.
+[50] Shichen Zhang, Pedram Kheirkhah Sangdeh, Hossein Pirayesh, Huacheng Zeng, Qiben Yan, and Kai Zeng. 2022. Authiot: A transferable
+wireless authentication scheme for iot devices without input interface.IEEE Internet of Things Journal9, 22 (2022), 23072–23085.
+[51] Shichen Zhang, Qijun Wang, Maolin Gan, Zhichao Cao, and Huacheng Zeng. 2025. Radsee: See your handwriting through walls using fmcw
+radar. InProceedings of Network and Distributed System Security Symposium (NDSS).
+[52] Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng Zeng. 2025. RadEye: Tracking Eye Motion Using FMCW Radar. In
+Proceedings of the 2025 CHI Conference on Human Factors in Computing Systems. 1–13.
+[53] Jia Zhao, Wei Gong, and Jiangchuan Liu. 2021. Microphone array backscatter: An application-driven design for lightweight spatial sound
+recording over the air. InProceedings of the 27th annual international conference on mobile computing and networking. 710–722.
+[54] Running Zhao, Jiangtao Yu, Tingle Li, Hang Zhao, and Edith CH Ngai. 2022. Radio2Speech: High quality speech recovery from radio frequency
+signals.arXiv preprint arXiv:2206.11066(2022).
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 4, Article 219. Publication date: December 2025.

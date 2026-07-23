@@ -1,0 +1,20 @@
+{% from "components/status_badge.html" import status_badge %}
+
+{% macro task_card(task) -%}
+  <article class="task-card card">
+    <div class="card-row card-row-between">
+      <div>
+        <div class="eyebrow">任务 #{{ task.id }}</div>
+        <h3>{{ task.task_type }}</h3>
+      </div>
+      {{ status_badge(task.status) }}
+    </div>
+    <p class="muted">进度：{{ task.progress_current }}/{{ task.progress_total }}</p>
+    {% if task.stage_message %}<p class="task-message">{{ task.stage_message }}</p>{% endif %}
+    {% if task.error_message %}<p class="task-error">{{ task.error_message }}</p>{% endif %}
+    <dl class="meta-grid">
+      <div><dt>创建时间</dt><dd>{{ task.created_at }}</dd></div>
+      <div><dt>更新时间</dt><dd>{{ task.updated_at }}</dd></div>
+    </dl>
+  </article>
+{%- endmacro %}

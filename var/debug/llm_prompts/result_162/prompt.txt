@@ -1,0 +1,1698 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Rf-mic: Live voice eavesdropping via capturing subtle facial speech dynamics leveraging rfid
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [34]
+TARGET_REFERENCE_ENTRY: [34] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, and Yingying Chen et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via RFID
+by Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.5, 4 (2021), 182:1–182:25.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=According to; context_type=formula_nearby; contains_formula=True
+ristics
+over time. Hence, when a user speaks, we can infer the frequency 𝑓 of facial speech dynamics from the received
+phase 𝜃 (𝑡)of RF signals, which could be used to eavesdrop on live voice.
+2.2 Feasibility Study of Live Voice Eavesdropping Leveraging RF Signals
+Based on the constructed propagation model of RF signals, phase of RF signals for a tag on glasses could sense
+users’ facial speech dynamics while speaking. Since users’ facial speech dynamics are unique for different speak
+contents[8, 25, 30], we consider leveraging the phase of RF signals for live voice eavesdropping.
+According to [34], when we focus on the human voice with complicated frequency bands, USRP reader with
+a higher sampling rate is more suitable for eavesdropping than the COTS RFID reader. Besides, harmonics of
+RF signal’s wavelength is far shorter than that of the fundamental frequency, which is more sensitive to tag
+displacements[20]. Hence, we choose the USRP N210 reader to monitor the third-order harmonic signals at the
+frequency of 2761.89𝑀𝐻𝑧 with the sampling frequency of 2𝑀𝐻𝑧 and utilize the phase acquisition method in [20]
+for improving the accuracy of voice eavesdropping. Since RF signals received by t
+
+[Context 2] section_heading=Recently, with the rise of wireless sensing technology, voice eavesdropping has received a lot of attention over; context_type=formula_nearby; contains_formula=True
+onments and can only work in line-of-sight (LOS) situations. Besides vision, the motion sensor-
+based voice eavesdropping methods are also explored extensively, such as accelerator[2, 14, 48], gyroscope[22] or
+lidar[28], etc. However, the study in work[1] demonstrates that a shared surface that can propagate conductive
+vibrations [2, 14, 22] or a high voice volume [ 28, 48] could be required to successfully achieve sensor-based
+voice eavesdropping. In addition, some researchers explore utilizing Wi-Fi [38] and mmWave[12, 13]to sense
+loudspeaker vibrations for human voice eavesdropping. Tag-Bug[ 34] utilizes RFID to sense nearby objects
+vibrations caused by the sound from loudspeaker for voice eavesdropping, but it fails to eavesdrop on live human
+speech due to large wind noise. WaveEar[42] leverages mmWave to sense users throat vocal vibrations for voice
+eavesdropping, but it needs a customized hardware. In addition, some works, such as [11, 15], utilize microphone
+of smartphone to record and recognize the sound, which can be used for voice eavesdropping. However, the
+surrounding noise interfere with sound recovery, so it is possible to result in failed voice eavesdropping. In recent
+ye
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。
+- 首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。
+FULL_EXTRACTED_TEXT:
+49
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech
+Dynamics Leveraging RFID
+YUNZHONG CHEN, Shanghai Jiao Tong University, China
+JIADI YU∗, Shanghai Jiao Tong University, China
+LINGHE KONG∗, Shanghai Jiao Tong University, China
+HAO KONG, Shanghai Jiao Tong University, China
+YANMIN ZHU, Shanghai Jiao Tong University, China
+YI-CHAO CHEN, Shanghai Jiao Tong University, China
+Eavesdropping on human voice is one of the most common but harmful threats to personal privacy. Glasses are in direct
+contact with human face, which could sense facial motions when users speak, so human speech contents could be inferred by
+sensing the movements of glasses. In this paper, we present a live voice eavesdropping method,RF-Mic, which utilizes common
+glasses attached with a low-cost RFID tag to sense subtle facial speech dynamics for inferring possible voice contents. When a
+user with a glasses, which is attached an RFID tag on the glass bridge, is speaking, RF-Mic first collects RF signals through
+forward propagation and backscattering. Then, body motion interference is eliminated from the collected RF signals through
+a proposed Conditional Denoising AutoEncoder (CDAE) network. Next, RF-Mic extracts three kinds of facial speech dynamic
+features (i.e., facial movements, bone-borne vibrations, and airborne vibrations) by designing three different deep-learning
+models. Based on the extracted features, a facial speech dynamics model is constructed for live voice eavesdropping. Extensive
+experiments in different real environments demonstrate that RF-Mic can achieve robust and accurate human live voice
+eavesdropping.
+CCS Concepts: • Security and privacy→Mobile and wireless security; • Human-centered computing→Human
+computer interaction (HCI).
+Additional Key Words and Phrases: RFID, voice eavesdropping, glasses, facial dynamics
+ACM Reference Format:
+Yunzhong Chen, Jiadi Yu, Linghe Kong, Hao Kong, Yanmin Zhu, and Yi-Chao Chen. 2023.RF-Mic: Live Voice Eavesdropping
+via Capturing Subtle Facial Speech Dynamics Leveraging RFID. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.7, 2,
+Article 49 (June 2023), 25 pages. https://doi.org/10.1145/3596259
+∗Jiadi Yu and Linghe Kong are the co-corresponding authors, Email: jiadiyu@sjtu.edu.cn,linghe.kong@sjtu.edu.cn
+Authors’ addresses: Yunzhong Chen, Shanghai Jiao Tong University, Department of Computer Science and Engineering, 800 Dongchuan Rd,
+Shanghai, China, 200240, chenyzh@sjtu.edu.cn; Jiadi Yu, Shanghai Jiao Tong University, Department of Computer Science and Engineering,
+800 Dongchuan Rd, Shanghai, China, 200240, jiadiyu@sjtu.edu.cn; Linghe Kong, Shanghai Jiao Tong University, Department of Computer
+Science and Engineering, 800 Dongchuan Rd, Shanghai, China, 200240, linghe.kong@sjtu.edu.cn; Hao Kong, Shanghai Jiao Tong University,
+Department of Computer Science and Engineering, 800 Dongchuan Rd, Shanghai, China, 200240, hao.kong@sjtu.edu.cn; Yanmin Zhu, Shanghai
+Jiao Tong University, Department of Computer Science and Engineering, 800 Dongchuan Rd, Shanghai, China, 200240, yzhu@cs.sjtu.edu.cn;
+Yi-Chao Chen, Shanghai Jiao Tong University, Department of Computer Science and Engineering, 800 Dongchuan Rd, Shanghai, China,
+200240, yichao@sjtu.edu.cn.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that
+copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.
+Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy
+otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from
+permissions@acm.org.
+© 2023 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+2474-9567/2023/6-ART49 $15.00
+https://doi.org/10.1145/3596259
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:2 • Chen et al.
+1 INTRODUCTION
+Voice eavesdropping has become one of the most concerning security issues in recent years, as voice commu-
+nication between users is an unencrypted transmission channel, making it easy to obtain personal sensitive
+information. Nowadays, people often wear glasses in daily life due to various reasons, such as myopia, aesthetics,
+and sunshade requirement. Glasses are in direct contact with human face, which could sense facial motions (i.e.,
+facial speech dynamics) when users speak. Since human facial speech dynamics and voice contents are closely
+related [25], it is possible to eavesdrop on the voice by sensing facial speech dynamics leveraging glasses worn
+by users. Recently, some researchers explore utilizing customized glasses equipped with various sensors to sense
+facial speech dynamics for human voice eavesdropping. For example, Face-Mic[30] leverages motion sensors on
+AR/VR headsets to sense subtle facial dynamics for inferring human speech contents. V-Speech [21] captures
+voice signals with a vibration sensor located in the nasal pads of smart glasses for speech eavesdropping. However,
+these methods employ either VR headsets that are only used in certain situations, or specially customized glasses
+that equipped with motion sensor, which leads to a high cost and limits their application scenarios greatly.
+Recently, Radio-frequency identification (RFID) technology has been widely exploited from communication to
+lots of sensing tasks, such as localization[40], activity recognition[9], and vital signs monitoring[33], etc. RFID
+tag has the advantages of small size, deploying crypticity, and low cost, so it is suitable to be attached to various
+common glasses for sensing human facial motions, which provides the possibility of live voice eavesdropping
+leveraging RF signals. To achieve live voice eavesdropping with an RFID tag attached on glasses, we face several
+challenges in practice. First, we should accurately capture the subtle facial dynamics of users leveraging RF signals
+when users speak to achieve accurate voice eavesdropping. Second, we should effectively extract comprehensive
+facial speech dynamics features including facial movements, bone-borne vibrations, etc., from RF signals to
+construct an adaptable speech eavesdropping model. Third, we should remove various interference, such as
+human body motion interference from collected RF signals and user specificity from extracted features to achieve
+robust live voice eavesdropping.
+In this paper, we first explore the feasibility of live voice eavesdropping leveraging an RFID tag attached on
+glasses, and find that RF signals can capture subtle facial speech dynamics including facial movements, bone-
+borne vibrations, and airborne vibrations. Motivated by the observations, we propose a live voice eavesdropping
+system, RF-Mic, which utilizes an RFID tag on glasses to achieve human voice eavesdropping. Specifically, in
+RF-Mic, the signal transmitting antenna first sends electromagnetic signals to activate the RFID tag attached
+on the glasses bridge, and then the activated tag reflects RF signals to the signal receiving antenna. When a
+user who wears the glasses is speaking, RF-Mic collects RF signals reflected from the RFID tag to sense the
+user’s subtle facial speech dynamics. RF-Mic first pre-processes the collected RF signals to eliminate body motion
+interference for facial speech dynamics sensing through a Conditional Denoising AutoEncoder (CDAE) network.
+According to the pre-processed RF signals,RF-Mic extracts facial movements, bone-borne vibrations, and airborne
+vibration features by designing Recurrent Neural Network (RNN)-based model, Convolutional Recurrent Neural
+Network (CRNN)-based model, and Deep Residual Shrinkage Network (DRSN)-based model, respectively, and
+then fuses the three kinds of extracted features based on a self-attention method. Further, RF-Mic removes the
+user specificity in the fused facial speech dynamics features by utilizing a contrast learning network to obtain
+user-irrelevant but voice content-related facial speech dynamics features for voice eavesdropping. Finally, based
+on the user-irrelevant features, a facial speech dynamics model is constructed for live voice eavesdropping. We
+validate the performance of RF-Mic by conducting extensive experiments in real-world environments. The results
+demonstrate that RF-Mic can effectively eavesdrop on live voice in different scenarios.
+We highlight our main contributions as follows:
+•We propose a RF-Mic system, which can sense facial speech dynamics for voice eavesdropping through
+common glasses attached with an RFID tag.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:3
+RFID 
+Antennas 
+܌ 
+࢒
+࢒૙
+A
+B
+࢚ࢌ࣊ 
+࢘
+࢕
+ݔܶ 
+ݔܴ 
+Tag 
+Fig. 1. Transmission model of RF signals.
+•We design RNN-based model, CRNN-based model, and DRSN-based model to extract facial movement
+features, bone-borne vibration features, and airborne vibration features, respectively, for facial speech
+dynamic sensing.
+•We present a CDAE and contrast learning network to remove body motions and user specificity interference,
+respectively, for constructing a robust live voice eavesdropping model.
+•We conduct extensive experiments in various real environments, and the results demonstrate that RF-Mic
+can achieve accurate live voice eavesdropping in different scenarios.
+The rest of this paper is organized as follows. We first model facial speech dynamics upon RF signals and
+explore the feasibility of sensing subtle facial speech dynamics for human live voice eavesdropping leveraging RF
+signals in Section 2. Then, the system overview of RF-Mic is presented in Section 3. Next, We illustrate design
+details of RF-Mic in Section 4, 5, and 6. Further, the evaluation results ofRF-Mic are shown in Section 7. After
+that, we review the related works of RF-Mic in Section 8. Finally, we conclude the paper in Section ??.
+2 PRELIMINARY
+In this section, we first model facial speech dynamics features upon RF signals reflected by a tag on glasses, and
+then explore the feasibility of live voice eavesdropping via capturing subtle facial speech dynamics leveraging RF
+signals.
+2.1 Modeling Facial Speech Dynamics upon RF Signals
+When a user with a glasses, which is attached an RFID tag on the bridge, is speaking, the user’s facial speech
+dynamics drive the glasses vibrations, so that the RFID tag on the glasses could sense the user’s facial speech
+dynamics. Hence, we consider modeling facial speech dynamics features by analyzing the RF signals reflected by
+the tag.
+Specifically, as shown in Fig. 1, supposing the signal transmitter and receiver antennas are located at the same
+position, the signal transmitting antenna 𝑇𝑥 first sends electromagnetic signals to activate the RFID tag on the
+glasses, and the activated tag feedbacks RF signals through back-scattering to the signal receiving antenna 𝑅𝑥.
+When the user speaks, the glasses frame could rotate around dynamic center𝑂, i.e., the positions of glasses frame
+in contact with ears, and the tag moves from position A to position B accordingly. Hence, the distance difference
+|𝑙0 −𝑙|of signal propagation paths from position A to position B can be approximately expressed as
+|𝑙0 −𝑙|≈Δd = 𝑟(1 −cos(2𝜋𝑓𝑡 )), (1)
+where 𝑟 is the length between dynamic center 𝑂 and RFID tag, 𝑡 is time, and 𝑓 is the frequency of facial speech
+dynamics. Because of the back-scattering characteristics of RF signal, the actual signal transmission distance
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:4 • Chen et al.
+Tag 
+(a) Glasses A.
+Tag (b) Glasses B.
+Fig. 2. Illustration of two types of glasses.
+    	
+ 
+(a) Glass A.
+    	
+ (b) Glass B.
+Fig. 3. Phase of RF signals when a user speaks words "one", "two", "three", "hello", and "excellent" for glasses A and B.
+from antennas to 𝐵can be described as 2 (𝑙+△𝑑). Thus, according to [5, 18], the phase of RF signals at B can be
+approximately expressed as
+𝜃(𝑡)≈
+
+2𝜋×2 (𝑙+△𝑑)
+𝜆
+
+mod 2𝜋, (2)
+where 𝜆is the wavelength of RF signals. Combining Equation 1 and Equation 2, we have
+𝜃 (𝑡)= 4𝜋
+𝜆 (𝑙+𝑟)−4𝜋𝑟
+𝜆 𝑐𝑜𝑠 (2𝜋𝑓𝑡 ). (3)
+Since 4𝜋
+𝜆 (𝑙+𝑟)is a constant, RF signals caused by facial speech dynamics satisfy cosine variation characteristics
+over time. Hence, when a user speaks, we can infer the frequency 𝑓 of facial speech dynamics from the received
+phase 𝜃 (𝑡)of RF signals, which could be used to eavesdrop on live voice.
+2.2 Feasibility Study of Live Voice Eavesdropping Leveraging RF Signals
+Based on the constructed propagation model of RF signals, phase of RF signals for a tag on glasses could sense
+users’ facial speech dynamics while speaking. Since users’ facial speech dynamics are unique for different speak
+contents[8, 25, 30], we consider leveraging the phase of RF signals for live voice eavesdropping.
+According to [34], when we focus on the human voice with complicated frequency bands, USRP reader with
+a higher sampling rate is more suitable for eavesdropping than the COTS RFID reader. Besides, harmonics of
+RF signal’s wavelength is far shorter than that of the fundamental frequency, which is more sensitive to tag
+displacements[20]. Hence, we choose the USRP N210 reader to monitor the third-order harmonic signals at the
+frequency of 2761.89𝑀𝐻𝑧 with the sampling frequency of 2𝑀𝐻𝑧 and utilize the phase acquisition method in [20]
+for improving the accuracy of voice eavesdropping. Since RF signals received by the USRP reader are too weak to
+sense facial speech dynamics, we utilize the method in [44] to magnify the received RF signals. We recruit a
+user with two types of glasses (i.e., Fig. 2) to conduct experiments. The user is required to speak towards the
+antennas from 1𝑚away. The phase of RF signals for tag on glasses A and B when the user speaks words "one",
+"two", "three", "hello", and "excellent" are shown in Fig. 3(a) and (b), respectively. We can observe from the figures
+that the phase of RF signals shows significant fluctuations when the user speaks words "one", "two", "three",
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:5
+"hello", and "excellent". These results show the high sensitivity of RF signals to human facial speech dynamics.
+Furthermore, we analyze the RF signals in time-frequency domain by applying short-time Fourier transform and
+obtain spectrograms as shown in Fig. 4(a). It can be observed that there is high energy components at not only
+at low-frequency (i.e., < 100𝐻𝑧) but also at high frequencies (i.e., > 100𝐻𝑧) in the spectrogram when the user
+speaks "one", "two", "three", "hello", and "excellent". Hence, RF signals can sense both the high-frequency and
+low-frequency facial speech dynamics. Besides, we conduct experiments to present the spectrograms of speaking
+words. The results demonstrate that both single-syllable words and multi-syllabic words can be effectively
+distinguished based on the spectrograms of RF signals. For example, Fig. 4(a) shows the spectrograms of RF
+signals corresponding to single-syllable words (i.e., "one", "two", and "three") and multi-syllabic words (i.e., "hello"
+and "excellent"). We calculate the correlation coefficients of spectrograms corresponding to these words, and the
+results show that the correlation coefficients of different words for glasses A and B are all less than 0.5, and that
+of the same words for glasses A and B are all larger than 0.8. Hence, both single-syllable words and multi-syllabic
+words can be effectively distinguished based on the spectrograms of RF signals.
+2.3 Capturing Different Facial Speech Dynamics via RF Signals
+Human speech contents are encoded by a set of facial speech dynamics, such as facial movements, bone-borne
+vibrations, and airborne vibrations, etc. [8, 25, 30]. We first utilize RF signals to sense these facial speech dynamics
+and then study the influence of different speech contents on these facial speech dynamics.
+We attach an RFID tag on glasses A and B and invite a user with the glasses to speak single-syllable words
+(i.e., "one", "two", and "three") and multi-syllabic words (i.e., "hello" and "excellent") without pronouncing, so
+only facial movements are sensed by RF signals. The corresponding spectrograms of RF signals for glasses A
+and B are shown in Fig. 4 (b). From the figure, we can observe that the spectrograms corresponding to facial
+movements are distributed at low frequencies. Hence, human facial movements can bring low-frequency signal
+responses when users speak. Furthermore, to study the influence of airborne vibrations, we replay the speech (i.e.,
+"one", "two", "three", "hello", and "excellent") with a smartphone towards the glasses on the user’s face. As shown
+in Fig. 4(c), RF signals at high-frequency (i.e., > 100𝐻𝑧) can be observed. Hence, airborne vibrations can bring
+high-frequency signal responses when users speak. Since RF signals corresponding to bone-borne vibrations can
+not be measured directly, we remove the corresponding parts of Fig. 4 (b) and 4 (c) from Fig. 4 (a) and obtain
+the spectrograms of RF signals corresponding to bone-borne vibrations. As shown in Fig. 4 (d), the bone-borne
+vibrations mainly impact spectrograms of RF signals at high-frequency. Hence, bone-borne vibrations can bring
+high-frequency signal responses when users speak. Moreover, the influence of the three kinds of facial speech
+dynamics (i.e., facial movements, bone-borne vibrations, and airborne vibrations) are various for different speech
+contents. According to Fig. 4, we further calculate the proportion of three facial speech dynamics, the results
+show that when the user speak word "one", the proportion of facial movements, bone-borne vibrations, and
+airborne vibrations are 0.33, 0.56, and 0.11, respectively. When the user speaks word "three", the proportion of
+facial movements, bone-borne vibrations, and airborne vibrations are 0.48, 0.37, and 0.15, respectively. Hence, we
+consider employing the self-attention mechanism[32] for feature fusion, which can fuse features of the three
+kinds of facial speech dynamics with adaptive weights for different speech contents.
+Based on the above observations, we can conclude that RF signals can sense different facial speech dynamics
+(i.e., facial movements, bone-borne vibrations, and airborne vibrations) for both single-syllable and multi-syllabic
+words when users speak. The facial movements mainly influence RF signals at low-frequency (i.e.,<100Hz),
+while the bone-borne vibrations and airborne vibrations mainly impact the RF signals at high frequencies (i.e.,
+>100Hz). For facial movements, time-domain features of RF signals can be extracted to capture low-frequency
+facial dynamics. For bone-borne vibrations and airborne vibrations, time-frequency features of RF signals can be
+extracted to capture high-frequency facial dynamics. All the three kinds of facial speech dynamics are helpful for
+the implementation of human live voice eavesdropping. To obtain a good voice eavesdropping performance, we
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:6 • Chen et al.
+	
+ 
+
+	 
+
+ 
+ 
+ 
+	
+ 
+
+ 
+ 
+ 
+    	
+     	
+ 
+        
+
+	 
+        
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+(a) Facial Speech dynamics sensed by RF signals.
+	
+
+
+
+
+ 
+
+
+ 
+
+
+ 
+    	
+     	
+ 
+	
+ 
+
+
+
+ 
+
+
+ 
+
+
+ 
+	 
+
+     
+   
+	 
+
+     
+   
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+(b) Facila movements sensed by RF signals.
+)UHTXHQF\+] 
+
+ 
+ 
+ 
+)UHTXHQF\+] 
+
+ 
+ 
+ 
+7LPHV 
+        
+7LPHV 
+        
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+three two one hello excellent one two hello three excellent 
+(c) Airborne vibrations sensed by RF signals.
+	
+ 
+
+
+
+ 
+
+
+ 
+
+
+ 
+    	
+ 
+	
+ 
+
+
+
+ 
+
+
+ 
+
+
+ 
+    	
+ 
+	 
+
+     
+   
+	 
+
+     
+   
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+(d) Boneborne vibrations sensed by RF signals.
+Fig. 4. The frequency responses of tag on the glasses A (on the left) and the glasses B (on the right).
+consider utilizing all the three facial speech dynamics (i.e., facial movement, bone-borne vibrations, and airborne
+vibrations) to achieve human live voice eavesdropping.
+3 SYSTEM OVERVIEW
+To infer possible speech contents leveraging RF signals, we propose a live voice eavesdropping system, RF-Mic,
+which utilizes common glasses attached with an RFID tag to sense subtle facial speech dynamics for live voice
+eavesdropping. In this section, we first introduce the attack model and eavesdropping scenario, and then we
+present the system overview of RF-Mic.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:7
+Signal 
+Preprocessing 
+Signal 
+Segmentation 
+Body Motion 
+Interference 
+Removal 
+Feature Extraction 
+Signals 
+for Facial 
+Movement 
+Signals for 
+Bone-borne 
+Vibration 
+Signals for 
+Airborne 
+Vibration 
+GRU GRU GRU 瀖
+Users Specificity 
+Removal 
+Possible Speech Contents 
+CRNN Model 
+RNN Models 
+DRSN Model 
+Live V oice 
+Eavesdropping 
+Model Construction 
+Feature 
+Fusion 
+Model Construction 
+濷
+GRU GRU GRU 瀖
+濷
+CNN Bi-LSTM 
+ݔܴݔܶ 
+Facial 
+Movement 
+Feature 
+Bone-borne 
+Vibration 
+Feature 
+Airborne 
+Vibration 
+Feature 
+濆澺澽澸 
+ 濆澺澽澸 
+Fig. 5. System framework of RF-Mic.
+3.1 Attack Model and Eavesdropping Scenario
+3.1.1 Attack Model. Human speech contents are encoded by a set of facial speech dynamics, such as facial
+movements, bone-borne vibrations, and airborne vibrations[8, 25, 30]. Since glasses are in direct contact with
+users’ faces, the facial speech dynamics could drive subtle glasses vibrations when users speak, which offers a
+possibility of capturing the facial speech dynamics through the vibrations of the glasses. In a practical deployment
+scenario, an attacker secretly attaches a small RFID tag on a victim’s glasses bridge, and the victim cannot realize
+the existence of the RFID tag on his/her glasses. By capturing the human facial speech dynamics leveraging the
+RFID tag on glasses, the attacker can launch human live voice eavesdropping without the victim’s permission.
+With the rapid development of RFID technology, the size of RFID tags is becoming smaller and smaller. Nowadays,
+the size of the smallest RFID tag is only 2 ×3 ×0.55𝑚𝑚and the cost of such an RFID tag is not high[ 27], so
+attackers can attach such a small RFID tag on victims’ glasses that victims cannot notice it to achieve live voice
+eavesdropping. Through the RFID-based live voice eavesdropping, attackers can infer key speech contents (e.g.,
+digits, hot-words, and phrases) when victims speak. These speech contents may contain some private sensitive
+information, such as telephone numbers, credit card passwords, and social security numbers, etc. Hence, attackers
+could eavesdrop on victims’ private sensitive information from the speaking contents. Exposing such private
+sensitive information could result in identity theft, credit card fraud, and confidential information leakage, etc.,
+which puts users’ security and privacy at high risk.
+3.1.2 Eavesdropping Scenario. In a practical deployment scenario, attackers can launch live voice eavesdropping
+attacks without victims’ permission when victims with glasses attached on an RFID tag speak at home or in a
+meeting room/office. Assuming that an attacker secretly attaches a small RFID tag on a victim’s glasses bridge,
+and the RFID antenna is camouflaged into decorations and placed on the meeting table/bookshelf in the meeting
+room/office. When the victim with the glasses is speaking, the victim’s facial speech dynamics drive the glasses
+vibrations, so the RFID tag on the glasses could sense the victim’s facial speech dynamics. The attacker leverages
+the camouflaged RFID antenna to collect RF signals continuously when the victim speaks. By analyzing the
+spectrogram energy distribution of RF signals, the attacker can infer possible speech contents from RF signals.
+3.2 System Overview
+Fig. 5 shows the system framework of RF-Mic, which is composed by the following modules:
+3.2.1 Signal Preprocessing. In the model, RF-Mic leverages RF signals to sense subtle facial speech dynamics.
+The signal transmitting antenna first sends electromagnetic signals to activate the RFID tag on the glasses. Then,
+the activated tag feedbacks RF signals through back-scattering, and the signals are received by signal receiving
+antenna. Finally, the received RF signals are pre-processed to sense subtle facial speech dynamics.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:8 • Chen et al.
+ 
+	
+ 	
+ 	
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+  
+Fig. 6. Illustration of signals segmentation leveraging energy.
+3.2.2 Feature Extraction. This module is designed to extract facial speech dynamic features from the pre-
+processed RF signals. RF-Mic first separates RF signals corresponding to facial movements, bone-borne vibrations,
+and airborne vibrations, respectively. Then, RF-Mic extracts facial movement features, bone-borne vibration
+features, and airborne vibration features through the designed RNN model, CRNN model, and DRSN model,
+respectively. Finally, the three kinds of extracted features are fused by a self-attention method for constructing
+voice eavesdropping model.
+3.2.3 Model Construction for Live Voice Eavesdropping. In the module, RF-Mic first removes users’ specificity
+from all the facial speech dynamics features by a contrast learning network, and the extracted features are only
+related to speech contents and user-irrelevant. Based on the user-irrelevant features, a live voice eavesdropping
+model is constructed through a cross-entropy loss function to identify possible speech contents.
+4 SIGNALS PRE-PROCESSING
+In RF-Mic, RF signal transmitting antenna first sends electromagnetic signals to activate the RFID tag on the
+glasses. Then, the activated tag feedbacks RF signals through back-scattering, and the signals are received by
+the signal receiving antenna. The received RF signals need to be pre-processed before extracting facial speech
+dynamics features. In this section, we first segment the received RF signals into episodes that represent each
+speaking word, and then body motion interference is removed from the segmented RF signals.
+4.1 Signal Segmentation
+To achieve live voice eavesdropping upon RF signals, RF-Mic should first segment RF signals into episodes,
+and each episode corresponds to a word. According to [36], there is usually a short time interval between two
+successive words spoken by users. The top part of Fig. 6 shows phase of RF signals when a user speaks three
+words "how" "are" and "you". It can be observed from the figure that the time intervals between two successive
+words are significant. To segment the RF signals, we propose an energy-based sliding window signal segmentation
+method based on the fact that fluctuation of RF signals becomes larger when a user speaks. The energy of RF
+signals can be calculated as:
+𝐸𝑝 (𝑖)=
+𝐿∑︁
+𝑙=1
+𝜃2 (𝑖+𝑙), (4)
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:9
+Spectrograms with body 
+motion interference 
+Reconstruction error 
+Encode 
+error(KL) 
+Output ො
+label y 
+Encoder Decoder 
+Spectrograms without 
+body motion interference 
+z(Latent 
+represent  of 
+input) 
+ܳఈܲݔ ఉ z, ݕ
+label y 
+Input  ݔ
+Ground truth 
+  | , Q z x y D
+| , P x z y E
+§ · 
+¨ ¸ 
+© ¹ 
+Fig. 7. Illustration of CDAE structure.
+where 𝜃 (𝑖)is phase reading of the𝑖-𝑡ℎsampling point, 𝐿denotes the length of sliding window, and𝑙is the sample
+index. After that, we utilize a normalization function to normalize the energy of RF signals to the range of [0,1],
+which can be described as:
+𝐸𝑛(𝑖)= 𝐸𝑝 (𝑖)
+𝑚𝑎𝑥  𝐸𝑝 (𝑖), (5)
+where 𝐸𝑛(𝑖)is the normalized signal energy of the 𝑖-𝑡ℎ sampling point. The bottom part of Fig. 6 shows energy
+of RF signals obtained from Equation.5. We can observe from the figure that when the user speaks, there exists a
+significant energy enhancement when the user speaks the three words "how", "are", and "you", which exceeds a
+predefined threshold obviously. RF-Mic regards each time interval between two successive words as an inactive
+period, and the energy in all inactive periods are all less than a threshold. Hence, RF-Mic can utilize sliding
+windows to compare the energy of RF signals with the predefined threshold for capturing the starting and ending
+point of an episode, which corresponds to a word. The threshold can be obtained through empirical studies. After
+the energy-based signal segmentation, RF signals correspond to each word are obtained.
+4.2 Body Motion Interference Removal
+In addition to facial speech dynamics, human body motions can also be sensed by RF signals, which affects the
+sensing of facial speech dynamics. To achieve accurate live voice eavesdropping, the body motion interference
+need to be removed from the received RF signals.
+To remove body motion interference in RF signals, we design a Conditional Denoising AutoEncoder (CDAE)
+based on signal generate technique[16] to generate spectrograms of RF signals without body motion interference
+from the collected RF signals. The CDAE can remove the impact of various body motions, which contains
+both small body motions (such as nodding/shaking head) and large body motions (such as walking/gesturing).
+As shown in Figure. 7, we collect RF signals’ spectrograms containing signal response for facial movements,
+bone-borne vibrations, and airborne vibrations as ground truth when users speak (which do not involve body
+motions), and record the corresponding label 𝑦, i.e., the name of each speaking word. RF signals’ spectrograms
+with body motions are collected as the input 𝑥 of CDAE, which contains signal response for body motions, facial
+movements, bone-borne vibrations, and airborne vibrations. In the CDAE, the spectrograms with body motions
+(i.e., input 𝑥, which contains signals response for body motions, facial movements, bone-borne vibrations, and
+airborne vibrations) are processed by the encoder and decoder to generate a new spectrogram (i.e., output ˆ𝑥,
+which contains signals response for facial movements, bone-borne vibrations, and airborne vibrations). The
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:10 • Chen et al.
+generation process takes spectrograms without body motions (i.e., ground truth) as the goal. Hence, CDAE can
+eliminate the influence of both small and large body motions effectively.
+The CDAE contains two structures, i.e., encoder and decoder. First, the input𝑥and the corresponding label𝑦are
+fed into the encoder to obtain a latent represent𝑧. The encoder models a probability distribution𝑄𝛼 (𝑧 |𝑥,𝑦)from
+𝑥 to 𝑧. Then, the latent represent 𝑧and label 𝑦are input to the decoder for obtaining the output ˆ𝑥. The decoder
+models a probability distribution𝑃𝛽 (ˆ𝑥 |𝑧,𝑦)from latent represent𝑧to output ˆ𝑥. The output ˆ𝑥is the generated RF
+signals’ spectrograms without body motion interference. The CDAE aims to minimize the encode error between
+probability distribution 𝑄𝛼 (𝑧 |𝑥,𝑦)and latent represent distribution 𝑃(𝑧)while maximize likelihood function of
+probability distribution 𝑃𝛽 (ˆ𝑥 |𝑧,𝑦)between latent represent 𝑧and the generated spectrograms ˆ𝑥. Hence, the
+target function of the CDAE can be described as:
+L(𝛼,𝛽; 𝑥,𝑦)= E[log 𝑃𝛽(ˆ𝑥 |𝑧,𝑦)]− 𝐷𝐾𝐿[𝑄𝛼(𝑧 |𝑥,𝑦)∥𝑃(𝑧)], (6)
+where E[log 𝑃(ˆ𝑥 |𝑧,𝑦)]is the reconstruction error between ˆ𝑥 and ground truth, 𝛼 is the encoder parameter, 𝛽
+is the decoder parameter, and 𝐷𝐾𝐿[𝑄(𝑧 |𝑥,𝑦)∥𝑃(𝑧)]is the KL divergence between 𝑄(𝑧 |𝑥,𝑦)and 𝑃(𝑧), which
+represents the encode error.
+The spectrograms in Fig. 7 show the effects of body motion interference removal. We can observe from the
+figures that the input spectrograms ˆ𝑥 contains low-frequency response from body motion interference, which
+are different from the RF signals’ spectrograms without body motion interference, i.e, ground truth. The output
+spectrograms ˆ𝑥 shows the effect after removing body motion interference. From the figure, we can observe
+that after utilizing CDAE, the low-frequency body motion interference can be removed effectively. Besides, we
+calculate correlation coefficients of spectrograms between 𝑥, ˆ𝑥 and the ground truth, and find that the correlation
+coefficients between output ˆ𝑥 and ground truth increase significantly compared with the correlation coefficients
+between input 𝑥 and the ground truth. The results validate the proposed CDAE can remove body motion
+interference effectively.
+5 FEATURE EXTRACTION
+Based on the pre-processed RF signals, RF-Mic further extracts features of facial speech dynamics, i.e, facial
+movements, bone-borne vibrations, and airborne vibrations, respectively. In this section, we first introduce feature
+extraction of different facial speech dynamics based on their own signal characteristics, and then an adaptive
+weights method is introduced for feature fusion.
+5.1 Facial Movements Feature Extraction
+The received RF signals correspond to three kinds of facial speech dynamics, i.e, facial movements, bone-
+borne vibrations, and airborne vibrations. To extract facial movement features, RF-Mic first separates RF signals
+corresponding to facial movements from the received signals. As analyzed in Section 2.3, RF signals corresponding
+to facial movements are presented at low frequency (i.e., 100𝐻𝑧), so a low-pass filter with a cut-off frequency of
+100𝐻𝑧 is utilized to separate and obtain RF signals corresponding to facial movements.
+After that, we further extract facial movement features from the separated RF signals corresponding to facial
+movements. Human speaking behaviors drive facial movements, which causes facial muscles contract and relax
+randomly during speaking. Facial muscles encode both speech characteristics (e.g., phoneme, rhythm, and loud-
+ness) and bio-metric characteristics (e.g., speaking behaviors, facial shapes change, and tissue movements)[25].
+Since the speech and bio-metric characteristics are time-varying, we consider utilizing RNN models to extract
+temporal features corresponding to facial movements. To capture human facial movement features as comprehen-
+sively as possible when users speak, we choose 10 most commonly used time-domain statistical characteristics
+(i.e., maximum values, minimum values, mean values, variance, range, root mean square, median, quartile,
+skewness, and kurtosis) in statistics to describe human facial movement characteristics. From a statistical view,
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:11
+RF signals 
+Statistic characteristics 
+濷ݔܽ݉ ଵݔܽ݉ ଶݔܽ݉ ୬濷
+RNN models 
+濷݊݅݉ ଵ݊݅݉ ଶ݊݅݉ ୬濷
+濷ݎݑ݇ ଵݎݑ݇ ଶݎݑ݇ ୬濷
+#
+Feature matrix 
+GRU GRU GRU 瀖
+GRU GRU GRU 瀖
+GRU GRU GRU 瀖
+# #
+Feature vector 
+Feature vector 
+Feature vector 
+Fig. 8. Illustration of human facial movement features extraction based on RNN models.
+the 10 statistical characteristics can describe the characteristics of a signal as comprehensively as possible [17].
+The description of these 10 characteristics is shown in Table 1. The 10 statistical characteristics encode the
+magnitude, speed, and speed change, etc. of facial muscle movements, which describes human facial movement
+characteristics. Fig. 8 shows the structure of RNN based facial movements feature extraction. RF-Mic extracts
+temporal facial movement features by calculating the 10 time-domain statistical characteristics for phase of RF
+signals corresponding to facial movements. For each statistic characteristic, RF-Mic extracts temporal features
+of facial movements utilizing a RNN model, respectively. To extract temporal features in long time series with
+limited parameters, we employ GRU-based RNN as the basis for temporal feature extraction. Each RNN model
+outputs a facial movement features vector, and all the feature vectors are integrated into a feature matrix, which
+represents the extracted facial movement features when users speak.
+5.2 Bone-borne Vibration Feature Extraction
+After separating RF signals corresponding to facial movements from the received RF signals, RF-Mic further
+separates RF signals corresponding to bone-borne vibrations. Since RF signals corresponding to bone-borne
+vibrations and airborne vibration are distributed at similar frequencies, which can not be separated by simple
+filters. However, because the two kinds of RF signals come from different signal sources, we utilize a signal source
+separation technique[35] to separate RF signals corresponding to bone-borne vibrations and airborne vibrations.
+Based on the signal source separation technique, we separate RF signals corresponding to bone-borne vibrations
+from the mixed signals of bone-borne vibrations and airborne vibrations.
+Since bone-borne vibrations are presented at high-frequency, RF-Mic designs a CRNN model based on [29]
+to extract time-frequency features of bone-borne vibrations. As shown in Fig. 9, the CRNN model contains a
+Table 1. Description of 10 Statistical Characteristics.
+Statistic Characteristic Description
+Maximum values Maximum magnitude of facial muscles movements
+Minimum values Minimum magnitude of facial muscles movements
+Mean value Central tendency of facial muscles movements magnitude
+Variance Magnitude fluctuation of facial muscles movements
+Range Magnitude range of facial muscles movements
+Root mean square Magnitude deviation degree of facial muscles movements
+Median Magnitude distribution of facial muscles movements
+Quartile Magnitude trend of facial muscles movements
+Skewness Speed change of facial muscles movements
+Kurtosis Speed of facial muscles movements
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:12 • Chen et al.
+# # # # # # #
+Feature 
+sequences 
+CNN 
+model 
+Bidirectional 
+LSTM 
+Input 
+spectrogram 
+Feature 
+matrix 
+Convolution 
+layer 
+Max pooling 
+layer 
+Batch normalization 
+layer 
+Bi-LSTM Unit Intermediate 
+output 
+Bi-LSTM Unit 
+Feature vector 
+Feature vector 
+Feature vector 
+Fig. 9. Illustration of bone-borne vibration feature extraction based on CRNN model.
+CNN structure and a bidirectional LSTM structure. The CNN structure extracts frequency features of bone-borne
+vibrations while the bidirectional LSTM structure extracts time features of bone-borne vibrations. Specifically, we
+first calculate spectrograms for RF signals corresponding to bone-borne vibrations and use them as the input of
+CNN structure. The CNN structure contains a batch normalization layer, 3 convolution layers, and 3 max-pooling
+layers. The batch normalization layer speeds up training process and prevents over-fitting. The convolution layers
+extract outline of high-frequency bone-borne vibration features. Due to the large size of the input spectrograms,
+a max-pooling layer is attached to each convolution layer for dimension reduction. After utilizing the above CNN
+model, feature sequences of bone-borne vibrations are obtained, which represents the frequency features from
+bone-borne vibrations. Then, all the feature sequences are input to a bidirectional LSTM structure to extract time
+features of bone-borne vibrations. The bidirectional LSTM model contains two bidirectional LSTM units, which
+extracts time features of bone-borne vibrations from two opposite directions. First, all the feature sequences
+are input to the first Bi-LSTM unit to extract basic time features, which obtains an intermediate output. After
+that, the intermediate output is input to the second Bi-LSTM unit to extract deep time features, which outputs
+time-frequency feature vectors. Finally, all the extracted feature vectors are integrated to a feature matrix, which
+represents the extracted time-frequency features from bone-borne vibrations.
+5.3 Airborne Vibration Feature Extraction
+According to signal source separation technique, we separate the RF signals corresponding to airborne vibrations
+from the mixed signals of bone-borne vibrations and airborne vibrations. Since the airborne vibrations are usually
+affected by wind noise[26], we need to extract airborne vibration features without wind noise.
+Deep Residual Shrinkage Network (DRSN)[49] is a feature extraction algorithm that can extract features from
+signals with noise, so we consider utilizing DRSN to extract features of airborne vibrations from spectrograms
+of RF signals containing wind noise. Fig. 10 shows the architecture of DRSN, which includes two convolution-
+pooling units and 3 ResNet blocks. Each convolution-pooling unit is composed of a convolution layer and a
+pooling layer. The RF signals’ spectrogram with wind noise is first input to the convolution-pooling units for
+learning the relationship between time and frequency. Due to the large size of spectrogram, a max-pooling layer
+is attached to each convolution layer for dimension reduction in the convolution-pooling units. The output of
+convolution-pooling units is a feature representation of spectrogram with wind noise. After that, the feature
+representation is input to three ResNet blocks for wind noise removal and feature extraction. Each ResNet block
+contains three convolution layers and a sub-network. The feature representation is first convoluted by three
+convolution layers in the ResNet blocks for obtaining a fine-grained feature representation, which is a features
+matrix. Then, the fine-grained feature representation is input to a sub-network at two paths, which can learn
+an adaptive soft threshold for the spectrogram to remove wind noise. The output of path 1 is the fine-grained
+feature representation after global average pooling, and the output of path 2 is a parameter 𝛼 in range of [0,1]
+that represents the importance of fine-grained feature representation. The product of two paths is the adaptive
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:13
+	
+ 
+ 
+ 
+	 
+
+	
+
+ 
+
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+			 
+ 
+ 
+
+ 
+
+
+ 
+ 
+
+ 
+
+	
+ 
+Fig. 10. Illustration of airborne vibration feature extraction based on DRSN.
+soft threshold. If the values of feature matrix are lower than the threshold, it is regarded as noise and be removed.
+After the three ResNet blocks, we get a feature map, i.e., feature matrix, which represents the extracted airborne
+vibration features without wind noise.
+5.4 Feature Fusion Based on Self-Attention
+The extracted three kinds of facial speech dynamics features reflect human speaking characteristics of facial
+movements, bone-borne vibrations, and airborne vibrations, respectively. To comprehensively describe the
+characteristics of human speech, RF-Mic needs to fuse the three kinds of facial speech dynamics features
+for constructing voice eavesdropping model. In the process of feature fusion, a straightforward method is to
+concatenate the three kinds of facial speech dynamics features for describing human speaking characteristics.
+However, the influence of the three kinds of facial speech dynamics features are various for different speech
+contents. For example, as shown in Fig. 4 (a) in Section 2.3, when a user speaks "three", the proportion of facial
+movements in all facial speech dynamics is larger than that when the user speaks "one", i.e, when a user speaks
+"three", the influence of facial movements is larger than the user speaks "one". When the user speaks word "one",
+the proportion of bone-borne vibrations in all facial speech dynamics is larger than that when the user speaks
+"three", i.e, when a user speaks "one", the influence of bone-borne vibrations is larger than when the user speaks
+"three". Hence, we consider employing the self-attention mechanism[32] for feature fusion, which can fuse the
+features of three kinds of facial speech dynamics with adaptive weights for different speech contents.
+The self-attention-based feature fusion structure is illustrated in Fig. 11. As shown in the figure, the structure
+contains three kinds of input, i.e, 𝐾𝑒𝑦𝑖 , 𝑉𝑎𝑙𝑢𝑒𝑖, and 𝑄𝑢𝑒𝑟𝑦. 𝐾𝑒𝑦𝑖 represents the feature matrices corresponding
+to facial movements, bone-borne vibrations, and airborne vibrations, respectively. Query represents the desired
+feature fusion results, which is set randomly before fusion. Usually, 𝑉𝑎𝑙𝑢𝑒𝑖 is set the same as 𝐾𝑒𝑦𝑖. The three
+kinds of feature matrices 𝐾𝑒𝑦𝑖 are first normalized to a uniform size. RF-Mic calculates the similarity between
+𝑄𝑢𝑒𝑟𝑦 and 𝐾𝑒𝑦𝑖 by functions 𝐹 (𝑄𝑢𝑒𝑟𝑦,𝐾𝑒𝑦 𝑖)to obtain similarity scores 𝑠𝑖, respectively.𝑠𝑖 is normalized to range
+[0,1]by a softmax function and obtain the attention parameters 𝑎𝑖. 𝑎𝑖 and 𝑉𝑎𝑙𝑢𝑒𝑖 are weight summed to get the
+attention-based feature fusion results, i.e.,
+𝑆𝑒𝑙𝑓 -𝐴𝑡𝑡𝑒𝑛𝑡𝑖𝑜𝑛 (𝑄𝑢𝑒𝑟𝑦,𝐾𝑒𝑦,𝑉𝑎𝑙𝑢𝑒 )=
+3∑︁
+𝑖=1
+𝑠𝑜𝑓𝑡𝑚𝑎𝑥 (𝑄𝑢𝑒𝑟𝑦 ·𝐾𝑒𝑦𝑇
+𝑖√𝑑𝑘
+)𝑉𝑎𝑙𝑢𝑒𝑖, (7)
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:14 • Chen et al.
+Query 
+(Desired feature 
+fusion) 
+Key 1 
+(Feature matrix for 
+facial movements) 
+Key 2 
+(Feature matrix for  
+bone-borne vibrations) 
+Key 3 
+(Feature matrix for 
+airborne vibrations) 
+F(Query, ݕ݁ܭ ଵ ) F(Query, ܭey ଶ)
+ݏଵݏଶݏଷ
+SoftMax( ڄ)
+ܽଵܽଶܽଷ
+כ澽Attention-based 
+feature fusion 澽
+Value 1 
+(Feature matrix for 
+facial movements) 
+Value 2 
+(Feature matrix for  
+bone-borne vibrations) 
+Value 3 
+(Feature matrix for 
+airborne vibrations) 
+F(Query, ܭey ଷ)
+Fig. 11. Illustration of self-attention based feature fusion.
+where 𝑄𝑢𝑒𝑟𝑦 is the desired feature fusion results, 𝐾𝑒𝑦𝑖 and 𝑉𝑎𝑙𝑢𝑒𝑖 represents the feature matrices for different
+facial speech dynamics, and 𝑑𝑘 is the dimension of 𝐾𝑒𝑦𝑖. Next, the attention-based feature fusion results are
+integrated with 𝐾𝑒𝑦𝑖 and 𝑉𝑎𝑙𝑢𝑒𝑖 to obtain new input, and Query is also updated by gradient descent method.
+The training process continues until the feature distance between different 𝑉𝑎𝑙𝑢𝑒𝑖 reaches maximum, i.e.,
+𝐿= 𝑚𝑎𝑥𝐷𝑖𝑠𝑡𝑎𝑛𝑐𝑒 [(𝑉𝑎𝑙𝑢𝑒1,𝑉𝑎𝑙𝑢𝑒2)+( 𝑉𝑎𝑙𝑢𝑒2,𝑉𝑎𝑙𝑢𝑒3)+( 𝑉𝑎𝑙𝑢𝑒1,𝑉𝑎𝑙𝑢𝑒3)], (8)
+where 𝐷𝑖𝑠𝑡𝑎𝑛𝑐𝑒(𝑉𝑎𝑙𝑢𝑒𝑖,𝑉𝑎𝑙𝑢𝑒 𝑗)represents the feature distance between 𝑉𝑎𝑙𝑢𝑒𝑖 and 𝑉𝑎𝑙𝑢𝑒𝑗. When the distance
+between different 𝑉𝑎𝑙𝑢𝑒𝑖 is maximum, RF-Mic learns more distinguishing features between different facial speech
+dynamics. Finally, RF-Mic outputs the final attention-based feature fusion results, which is the fused features of
+different facial speech dynamics with adaptive weights.
+6 MODEL CONSTRUCTION FOR LIVE VOICE EAVESDROPOING
+Based on the extracted facial speech dynamics features, we further construct a live voice eavesdropping model to
+infer possible speech contents. Since human facial speech dynamics usually contain user specificity, such as speech
+behavior, face shapes, and tissue properties, we need to first remove the user specificity in the extracted facial
+speech dynamics features. After that, we construct a facial speech dynamics model for live voice eavesdropping
+based on the user-irrelevant features.
+6.1 User Specificity Removal Based on Contrast Learning
+To construct a user-irrelevant voice eavesdropping model, we employ a contrast learning network to remove
+the user specificity in the extracted facial speech dynamics features and obtain features only related to speech
+contents. The structure of the contrast learning network is shown in Fig. 12. As shown in the Figure, the contrast
+learning network is mainly composed of three components, i.e., encoder, projector, and contrast loss. 𝑥𝑖 is an
+input of the contrast learning network, which is a collection of signal features corresponding to the same speech
+word from different users. For any input words pair 𝑥𝑖 and 𝑥𝑗, an encoder 𝑓𝜃(·)is first utilized to obtain their
+feature embedding ℎ𝑖 and ℎ𝑗, respectively. Then, the feature embedding is further input to a projector 𝑔𝜃(·)
+for obtaining the corresponding feature representation 𝑧. Based on the feature representation 𝑧, a contrast loss
+function is employed to guide the training process, which can be formalized as:
+𝐿= −𝑙𝑜𝑔
+Í
+(𝑚,𝑛)𝜖𝑘 𝑒𝑠(𝑧𝑚
+𝑖 ,𝑧𝑛
+𝑖 )/𝜏
+Í
+(𝑖,𝑗)𝜖𝑐 𝑒𝑠(𝑧𝑖,𝑧𝑗 )/𝜏 , (9)
+where 𝑐 represents the number of sample categories, 𝑘 represents the samples number of a certain category, 𝑠(.)
+represents the similarity function between samples, and 𝜏 represents the training parameter. The contrast loss
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:15
+ݔ௜ݔ୨
+݂ఏ
+Encoder 
+Ș
+݃ఏProjector 
+attract attract 
+repel 
+Ș
+݄௜݄୨
+ݖ௜
+௠
+Feature 
+embedding 
+ݖ௜
+௡ݖ௝
+௠ݖ௝
+௡
+݃ఏ݃ఏ݃ఏ
+݂ఏ݂ఏ݂ఏ
+濷 濷
+Contrast 
+loss 
+Fig. 12. Contrast Learning based users specificity removal.
+function can guide facial speech dynamics features of the same speech words attract each other while the features
+of different speech words repel each other in feature space. Hence, the extracted features have the characteristics
+of intra-class compactness and inter-class separability. Finally, when the contrast loss function converges,RF-Mic
+obtains the feature embedding, which is user-irrelevant and only related to voice contents.
+6.2 Model Construction and Voice Contents Eavesdropping
+Based on the obtained feature embedding, RF-Mic further employs a cross-entropy loss function to train a model
+for eavesdropping on voice contents. Specifically, RF-Mic first collects RF signals corresponding to common
+voice contents. Then, facial speech dynamics features are extracted by the feature extraction networks. Next, the
+user specificity of facial speech dynamics features are removed based on a contrast learning network, which
+outputs feature embedding related to voice contents. After that, the feature embedding is input to the cross-
+entropy loss function for voice eavesdropping model construction. The cross-entropy loss function is described
+as 𝐻 (𝑝,𝑞)= −Í𝑐
+𝑖=1 𝑝(𝑥𝑖)𝑙𝑜𝑔(𝑞(𝑥𝑖)), where 𝑝(𝑥𝑖)is distribution of actual label, 𝑞(𝑥𝑖)is the distribution of
+predicted output, and 𝑐 is the categories of sample. Based on the above cross-entropy loss function, RF-Mic
+conducts model iteration until the loss function converges and the voice eavesdropping model is constructed.
+When implementing voice eavesdropping, RF-Mic uses the constructed voice eavesdropping model and RF
+signals corresponding to the victim’s voice contents for inferring possible voice contents. Specifically, supposing
+𝑘words have been trained in the model, so there are 𝑘templates corresponds to the 𝑘words, i.e., 𝑤1,𝑤2,...,𝑤 𝑘 in
+the trained model. When the victim speaks word𝑤during eavesdropping process, RF-Mic first extracts the word’s
+features 𝑤𝑖 from the received RF signals, and then RF-Mic compares 𝑤𝑖 with all the 𝑘 templates by calculating
+Euclidean distance between𝑤𝑖 and the 𝑘templates, respectively. Based on the𝑘distances, the word𝑤is identified
+as the word with the smallest distance among the 𝑘 distances. Finally, all the eavesdropping words are connected
+to be whole eavesdropping contents.
+7 EXPERIMENTAL EVALUATION
+In this section, we conduct experiments to evaluate the performance of RF-Mic in real environments.
+7.1 Evaluation Setup
+We implement RF-Mic using an Impinj Speedway R420 COTS RFID reader to transmit RF signals and a USRP
+N210 with a SBX daughter-board according to the open source project [23] for capturing the harmonic RF signals.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:16 • Chen et al.
+USRP N210 
+Impinj R420 
+Transmitting 
+antenna 
+Receiving 
+antenna 
+RFID tag 
+RFID tag on glasses 
+Fig. 13. Illustration of experimental settings.
+The COTS reader and USRP device utilize an antenna with gain of 15𝑑𝐵𝑖 working at 920𝑀𝐻𝑧 and an antenna
+with gain of 16𝑑𝐵𝑖 working at 2.4𝐺𝐻𝑧, respectively. A passive RFID tag is attached on the bridge of glasses for
+sensing human voice speech dynamics. The ImpinJ RFID reader is set to query the RFID tag at a carrier frequency
+of 920.63𝑀𝐻𝑧, while the USRP device monitors the harmonic backscatter signals at the frequency of2761.89𝑀𝐻𝑧
+with a sampling frequency of 2𝑀𝐻𝑧. The harmonic RF signals are captured and pre-processed by a Lenovo
+computer.
+Fig. 13 shows the environmental settings where the signal transmitting antenna continuously emits RF signals
+and the signal receiving antenna collects RF signals that can sense human facial speech dynamics. We recruit 12
+volunteers wearing their own glasses from our campus to participate in the experiments. Among these volunteers,
+there are two males and two females at the ages of 20 ∼30 years old, 30 ∼40 years old, and 40 ∼50 years old,
+respectively. The volunteers are required to speak naturally with an RFID tag attached on their glasses. Since
+English is international common language, we choose standard English production in our experiments. We select
+single-words and phrases to evaluate the performance ofRF-Mic. For single-words, since the English pronunciation
+of word "oh" and digit 0 is similar, we collect 11 words consisting of digits 0 ∼9 and word "oh" to evaluate the
+performance of RF-Mic. Besides digits, we select 10 frequently used hot-words (i.e., "word", "code", "password",
+"secret", "key", "bank", "number", "account", "salary", "encoder") in the experiments. For phrases, we select 12
+frequently used phrases from Word Frequency [ 3] in the experiments to evaluate the phrase eavesdropping
+performance of RF-Mic. Each phrase contains 1 ∼4 words, and each word in the phrase has various lengths and
+phonemes. We collect the experimental data once a week, and collect it four times in total during one month. For
+once data collection, the recruited volunteers are required to read some paragraphs including the above digits,
+hot-words, and phrases 10 times according to their speaking habits, and then we evaluate the performance of
+RF-Mic for capturing the selected digits, hot-words, and phrases. The experiments are conducted in three different
+environments, including a meeting room, lab, and corridor.
+We utilize 4-fold cross validation to evaluate the performance of RF-Mic. Specifically, 12 volunteers are divide
+into four groups, and each group contains three users. We select three group volunteers to speak some paragraphs
+including the selected digits, hot-words, and phrases in each environments for constructing a voice eavesdropping
+model, and another one group volunteers that do not participate in the model construction to evaluate the
+performance of RF-Mic. The above process is repeated for 4 times, and the average value of the above 4 times
+results is the final result. To evaluate the performance of RF-Mic, we define several metrics as follows.
+•Accuracy. For single-word eavesdropping, accuracy represents the probability that a word 𝑤𝑖 is correctly
+identified for all types of words.
+•Precision. For single-word eavesdropping, precision represents the probability that the identification for a
+word 𝑤𝑖 is exactly 𝑤𝑖 in ground truth.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:17
+0.04 0.01 0.01 0.00 0.03 0.00 0.02 0.02 0.00 0.00 0.90
+0.00 0.00 0.00 0.03 0.00 0.04 0.00 0.00 0.02 0.92 0.00
+0.00 0.00 0.02 0.00 0.00 0.00 0.03 0.04 0.93 0.00 0.02
+0.00 0.00 0.00 0.04 0.00 0.02 0.00 0.86 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.01 0.00 0.89 0.03 0.00 0.02 0.00
+0.00 0.00 0.01 0.00 0.00 0.92 0.00 0.00 0.00 0.00 0.00
+0.03 0.00 0.00 0.02 0.91 0.02 0.03 0.00 0.00 0.00 0.03
+0.00 0.01 0.00 0.88 0.00 0.00 0.00 0.03 0.03 0.03 0.01
+0.00 0.00 0.93 0.00 0.01 0.00 0.03 0.00 0.00 0.03 0.00
+0.00 0.96 0.00 0.03 0.00 0.00 0.00 0.02 0.00 0.00 0.00
+0.93 0.02 0.03 0.00 0.02 0.00 0.00 0.00 0.02 0.00 0.04
+zero one two threefour five six seveneightnine oh
+oh
+nine
+eight
+seven
+six
+five
+four
+three
+two
+one
+zero
+Predict Result
+Ground Truth
+Fig. 14. Confusion matrix of RF-Mic for
+digit eavesdropping.
+0.03 0.02 0.05 0.00 0.03 0.03 0.03 0.00 0.02 0.88
+0.00 0.00 0.00 0.05 0.05 0.00 0.00 0.02 0.90 0.00
+0.03 0.02 0.03 0.00 0.00 0.00 0.00 0.86 0.00 0.00
+0.00 0.00 0.00 0.05 0.00 0.00 0.91 0.00 0.00 0.02
+0.00 0.00 0.03 0.00 0.00 0.93 0.00 0.00 0.00 0.00
+0.02 0.02 0.00 0.00 0.88 0.00 0.00 0.03 0.00 0.03
+0.00 0.00 0.00 0.87 0.00 0.00 0.00 0.03 0.05 0.04
+0.00 0.00 0.86 0.00 0.00 0.00 0.02 0.00 0.00 0.00
+0.03 0.92 0.00 0.03 0.04 0.04 0.00 0.06 0.03 0.00
+0.89 0.02 0.03 0.00 0.00 0.00 0.04 0.00 0.00 0.03
+wordcode passwordsecretkey bank numberaccountsalaryencoderencoder
+salary
+account
+number
+bank
+key
+secret
+password
+code
+word
+Predict Result
+Ground Truth
+Fig. 15. Confusion matrix of RF-Mic for
+hot-word eavesdropping.
+1 2 3 4 5 6 7 8 9 10 11 12
+0
+20
+40
+60
+80
+100Accuracy(%)
+User ID
+ Digit
+ Hot-word
+ Overall
+Fig. 16. Single-word eavesdropping per-
+formance of RF-Mic for different users.
+•Confusion Matrix.For single-word eavesdropping, each row of the matrix represents the recognition
+results while each column represents the ground truth. The entry of the 𝑖𝑡ℎ row and 𝑗𝑡ℎ column of the
+matrix describes the probability of samples that are identified as the 𝑖-th class while actually the 𝑗-th class,
+i.e., the precision.
+•Word Correct Rate (WCR).For phrase eavesdropping, WCR is formalized as 𝑊𝐶𝑅 = 𝐶
+𝑁, where 𝐶
+represents the number of words are identified correctly and 𝑁 represents the number of words in ground
+truth.
+•Word Error Rate (WER). For phrase eavesdropping, WER is formalized as 𝑊𝐸𝑅 = 𝑆+𝐷+𝐼
+𝑁 , where 𝑆
+represents the number of words are substituted, 𝐷represents the number of words are deleted, 𝐼 represents
+the number of words are inserted, and 𝑁 represents the number of words in ground truth.
+7.2 Overall Performance
+We first evaluate the voice eavesdropping performance of RF-Mic for single-word (i.e., digit and hot-word), and
+the results show that the digit, hot-word and overall single-word eavesdropping accuracies of RF-Mic are 90.64%,
+88.1%, and 89.37%, respectively. Then, we evaluate the single-word eavesdropping precision of each word for
+all the 12 volunteers, and the results are shown in Fig. 14 and Fig. 15. Specifically, Fig. 14 shows the confusion
+matrix of RF-Mic for digit eavesdropping, each entry of which is the digits eavesdropping overall precision for all
+the 12 volunteers. We can observe from the figure that RF-Mic achieves an average precision of 91.23% for digit
+eavesdropping and the eavesdropping precision for all digits are above 86%. Fig. 15 shows the confusion matrix
+of RF-Mic for hot-word eavesdropping, each entry of which is the overall hot-word eavesdropping precision
+for all the 12 volunteers. It can be observed that RF-Mic achieves an average precision of 89.32% for hot-word
+eavesdropping and the eavesdropping precision for all hot-words are above 85%. These results demonstrate
+that RF-Mic can effectively eavesdrop on single-words (i.e., digit and hot-word). Moreover, compared with the
+precision of 91.23% for digit eavesdropping, the precision of 89.32% for hot-word eavesdropping is slightly
+lower, this is because hot-words generally have more phonemes than digits. We also evaluate the single-word
+eavesdropping performance of RF-Mic for different volunteers, and the results are shown in Fig. 16. From the
+figure we can observe that the single-word eavesdropping accuracies for all volunteers are larger than88%. These
+results indicates that RF-Mic can eavesdrop on single-words for all the volunteers.
+Then, we evaluate the overall performance of RF-Mic for phrase eavesdropping, and the results are shown in
+Fig. 17. From the figure we can observe thatRF-Mic achieves an overall WCR of88.56% and overall WER of 12.41%
+for all the phrases. Besides, the phrase eavesdropping performance of RF-Mic for different volunteers are also
+evaluated, and the results are shown in Fig. 18. It can be observed from the figure that the phrase eavesdropping
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:18 • Chen et al.
+0
+20
+40
+60
+80
+100WCR(%)
+ WCR
+1 2 3 4 5 6 7 8 9 10 11 12
+0
+4
+8
+12
+16
+20WER(%)
+Phrase num
+ WER
+Fig. 17. Performance of RF-Mic for
+phrase eavesdropping for different
+phrases.
+0
+20
+40
+60
+80
+100WCR(%)
+ WCR
+1 2 3 4 5 6 7 8 9 10 11 12
+0
+4
+8
+12
+16
+20WER(%)
+User ID
+ WER
+Fig. 18. Performance of RF-Mic for
+phrase eavesdropping for different
+users.
+Meeting room Lab Corridor
+0
+20
+40
+60
+80
+100Accuracy(%) Digit(RF-Mic)
+ Digit(Microphone)
+ Hot-word(RF-Mic)
+ Hot-word(Microphone)
+Fig. 19. Single-word eavesdropping per-
+formance in different environments.
+WCR for all volunteers are larger than 87%, and the WER for all volunteers are less than 14%. These results
+indicates that RF-Mic is accurate in eavesdropping on phrase for all the volunteers. Moreover, we can see that the
+performance difference of different volunteers are not insignificant, which demonstrates that RF-Mic can achieve
+robust performance for all the volunteers.
+7.3 Impact of Different Environments
+To explore the robustness of RF-Mic to environments, we further evaluate the single-word and phrase eaves-
+dropping performance of RF-Mic in different environments. The experimental environments include meeting
+room (quiet and few people walking around), lab (noisy but few people walking around), and corridor (noisy and
+some people walking around). Fig. 19 shows the single-word eavesdropping accuracies of RF-Mic in the three
+different environments, we can observe from the figure that RF-Mic obtains a overall eavesdropping accuracy of
+90.37% , 89.17%, and 88.59%, in meeting room, lab, and corridor, respectively. Fig. 20 shows the WCR and WER
+for phrase eavesdropping of RF-Mic in the three different environments. From the figure, we can observe that
+the WCR for phrase eavesdropping of RF-Mic in meeting room, lab, and corridor are 90.2% , 88.22%, and 87.27%,
+respectively, and the WER for phrase eavesdropping of RF-Mic in meeting room, lab, and corridor are 11.82% ,
+12.2%, and 13.22%, respectively. The above results show that RF-Mic can accurately eavesdrop on single-words
+and phrases in different environments and the performance difference in different environments is very small.
+In noisy environments (e.g., lab and corridor), surrounding voice signals only have a limited impact on the
+performance of RF-Mic. This is because RF-Mic realizes voice eavesdropping by sensing human facial speech
+dynamics, which are not susceptible to the surrounding voice signals.
+Moreover, we conduct experiments to compare the voice eavesdropping performance ofRF-Mic and microphone-
+based voice recognition systems. When volunteers speak, a smartphone with a microphone is placed at the same
+location as the RFID antennas and records the sound, and then we use the sound-to-text tool in the smartphone
+to recognize the speech contents recorded by the microphone. We use the similar metrics to evaluate the voice
+eavesdropping performance of RF-Mic and the microphone-based voice recognition systems. Fig. 19 shows the
+single-word eavesdropping accuracies ofRF-Mic and the microphone-based voice recognition systems, and Fig. 20
+shows the phrase eavesdropping WCR and WER of RF-Mic and the microphone-based voice recognition systems.
+From the figures, we can observe that although the voice eavesdropping accuracy/WCR of RF-Mic in quiet
+environments is slightly lower than the microphone-based voice recognition systems, the voice eavesdropping
+accuracy/WCR of RF-Mic is significantly higher than that of microphone-based methods in noisy scenarios. This
+is because traditional microphone-based voice recognition systems are usually interfered by environmental noise.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:19
+0
+20
+40
+60
+80
+100Percentage(%) WCR(RF-Mic)
+ WCR(Microphone)
+Meeting room Lab Corridor
+0
+5
+10
+15
+20
+25
+30Percentage(%)
+ WER(RF-Mic)
+ WER(Microphone)
+Fig. 20. Phrase eavesdropping perfor-
+mance in different environments.
+0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8 2.0 2.2 2.4 2.6
+0
+20
+40
+60
+80
+100Percentage(%)
+Distance(m)
+ Accuracy for digit
+ Accuracy for hot-word
+ WCR for phrase
+Fig. 21. Performance of RF-Mic for dif-
+ferent antenna-tag distance.
+ݔܴݔܶ 
+ܱ
+ܥܤܣ 
+െ૟૙ ° 澪૙°
+૙°
+tag 
+Fig. 22. Illustration of user orientation.
+In contrast, since RF-Mic recovery live voice by sensing facial speech dynamics, surrounding environmental noise
+has limited impact on the sensing of facial speech dynamics.
+7.4 Impact of Distance
+RF signals attenuate as propagating through a distance, so the distance between RFID antenna and the tag on
+glasses has a certain impact on the performance of RF-Mic. To explore the impact of distance on the performance
+of RF-Mic, we change the distance between RFID antenna and tag on glasses to conduct experiments for all the
+12 volunteers and the results are shown in Fig. 21. From the figure, we can observe that both the accuracies and
+WCR decrease as the distance increases. This is because as the distance increases, the signal strength of received
+RF signals significantly decreases, which induces a low Signal-Noise-Ratio (SNR) and reduces the resolution of
+extracted features for voice eavesdropping. However, the performance of RF-Mic dose not decline significantly
+in the distance range of 0 ∼1.8𝑚. Specifically, when the distance is 0.2𝑚, the digit eavesdropping accuracy,
+hot-word eavesdropping accuracy, and phrase eavesdropping WCR ofRF-Mic are 92.75%, 90.86%, and 91.95%,
+respectively. When the distance is within 1.8𝑚, both the single-word (i.e., digit and hot-word) eavesdropping
+accuracy and phrase eavesdropping WCR are higher than 85%. Such a distance range is applicable for most voice
+eavesdropping scenarios, such as the meeting room/office. Usually, the distance from the meeting table to the
+seats in the meeting room and the distance from the desk to the bookshelf in the office are within the range.
+Hence, eavesdroppers can employ RF-Mic to achieve natural human live voice eavesdropping within such a
+distance range.
+7.5 Impact of Orientation
+Except for the distance, the orientation of users could also affect the voice eavesdropping performance of RF-Mic.
+As shown in Fig. 22, when users are on the line 𝑂𝐴(e.g., position 𝐴), the orientation of users is defined as 0◦, and
+the orientation is positive when users are on the right side of 𝑂𝐴, and vice versa. In this experiment, we fix the
+distance between RFID antenna and tag on glasses as 1𝑚for variable control, and change the orientation from
+−60◦to 60◦with 15◦steps. Fig. 23 shows the single-word eavesdropping accuracy and phrase eavesdropping
+WCR of RF-Mic for all the 12 volunteers at different orientations. We can observe from the figure that both
+the accuracies and WCR decrease as the orientation deviates from 0◦. This is because when there is an angle
+between the RFID antenna and tag on glasses, the amplitude of glasses vibrations sensed by RF signals is linearly
+reduced, resulting in voice dynamic features resolution decrease. But when the orientation is within the range of
+[−45◦,45◦], both the single-word eavesdropping accuracy and phrase eavesdropping WCR are above 85%. Such a
+orientation range is applicable for most voice eavesdropping scenarios, such as the meeting room/office.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:20 • Chen et al.
+-60 -45 -30 -15 0 15 30 45 60
+0
+20
+40
+60
+80
+100Percentage(%)
+Orientation
+ Digit accuracy 
+ Hot-word accuracy 
+ Phrase WCR
+Fig. 23. Performance of RF-Mic for dif-
+ferent orientations.
+[40,45) [45,50) [50,55) [55,60) [60,65)
+0
+20
+40
+60
+80
+100Percentage(%)
+Voice volume(dB)
+ Digit accuracy
+ Hot-word accuracy
+ Phrase WCR
+Fig. 24. Performance of RF-Mic for dif-
+ferent voice volume.
+One step
+forward
+One step 
+backward
+Nodding
+head
+Shaking
+head
+0
+20
+40
+60
+80
+100Percentage(%)
+ Digit(w CDAE)
+ Digit(w/o CDAE)
+ Hot-word(w/ CDAE)
+ Hot-word(w/o CDAE)
+ Phrase WCR(w/ CDAE)
+ Phrase WCR(w/o CDAE)
+Fig. 25. Performance of RF-Mic with dif-
+ferent body motions.
+7.6 Impact of Voice Volume
+Usually, the voice volume of human normal conversation is 40 ∼60 decibels (dB) and it is like whispering when
+the sound is below 30 decibels. A higher human voice volume could bring a larger magnitude of facial speech
+dynamics, so the volume of a person’s voice may affect the performance ofRF-Mic. We measure the speech volume
+using a smartphone at a distance of 0.5𝑚from the volunteers’ mouths. To explore the impact of voice volume for
+RF-Mic, we collect RF signals correspond to human speaking and divide the RF signals into groups according to
+the volunteer’s speaking voice volume from 40 to 60𝑑𝐵 with 5𝑑𝐵 steps. Fig. 24 shows the single-word and phrase
+eavesdropping performance of RF-Mic for different voice volumes. It can be seen that a higher voice volume leads
+to a better voice eavesdropping performance. When human voice volume is 60 ∼65𝑑𝐵, RF-Mic achieves a digit
+eavesdropping accuracy of 92.54%, hot-word eavesdropping accuracy of 91.36%, and phrase eavesdropping WCR
+of 91.75%. Moreover, when human voice volume is large than 40𝑑𝐵, both single-word eavesdropping accuracy
+and phrase eavesdropping WCR are larger than 85%. These results can be attributed to that RF-Mic can fuse facial
+movement, bone-borne vibration, and airborne vibration features with adaptive weights.
+7.7 Impact of Body Motions
+To explore the impact of body motions on the voice eavesdropping performance ofRF-Mic, we require all the 12 vol-
+unteers to speak with body motions, which includes large body motions (i.e., moving one step forward/backward)
+and small body motions (i.e., nodding/shaking head). When performing body motions, the volunteers are asked
+to move one step forward/backward or nod/shake head and speak at the same time. Fig. 25 shows the voice
+eavesdropping accuracies/WCR of RF-Mic under the interference of large or small body motions with/without
+the CDAE. From the figure, we can observe that the voice eavesdropping performance of RF-Mic with the CDAE
+is significantly better than that without CDAE for both large and small body motions. For example, under the
+interference of one step forward body movements with the CDAE,RF-Mic achieves a digit eavesdropping accuracy,
+hot-word eavesdropping accuracy, and phrase eavesdropping WCR of 88.87%, 87.8%, and 88.2%, respectively,
+while the digit eavesdropping accuracy, hot-word eavesdropping accuracy, and phrase eavesdropping WCR of
+RF-Mic under the interference of one step forward body movements without the CDAE are only 77.8%, 76.3%,
+and 76.7%, respectively. This is because the CDAE can effectively eliminate the influence of both small and large
+body motions on the voice eavesdropping performance of RF-Mic.
+7.8 Impact of User Gender
+Usually, females speak at a high pitch while males speak at a low pitch, which could cause differences in the
+voice eavesdropping performance of RF-Mic between females and males. Hence, we evaluate the impact of gender
+on the voice eavesdropping performance of RF-Mic, and the experimental results are shown in Fig. 26. From the
+figure, we can observe that the digit eavesdropping accuracies, hot-words eavesdropping accuracies, and phrase
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:21
+Female Male
+0
+20
+40
+60
+80
+100Percentage(%)
+Gender
+ Digit accuracy
+ Hot-word accuracy
+ Phrase WCR
+Fig. 26. Performance of RF-Mic for dif-
+ferent user gender.
+[20,30) [30,40) [40,50)
+0
+20
+40
+60
+80
+100Percentage(%)
+Age range
+ Digit accuracy
+ Hot-word accuracy
+ Phrase WCR
+Fig. 27. Performance of RF-Mic for dif-
+ferent user age range.
+Plate frames Alloy Resin
+0
+20
+40
+60
+80
+100Percentage(%)
+Glasses material
+ Digit accuracy
+ Hot-word accuracy
+ Phrase WCR
+Fig. 28. Performance of RF-Mic for dif-
+ferent glasses materials.
+eavesdropping WCR of RF-Mic for females are 90.75%, 88.21%, and 87.94%, respectively, and that of males are
+90.53%, 87.99%, and 89.18%, respectively. Hence, there is little difference in the voice eavesdropping performance
+of RF-Mic between females and males. This is because RF-Mic employs a contrast learning network to remove
+the user specificity in the extracted facial speech dynamics features and obtain features only related to speech
+contents.
+7.9 Impact of User Age
+We also conduct experiments to evaluate the impact of user age on the voice eavesdropping performance of
+RF-Mic. Fig. 27 shows the experimental results for users with different age ranges (i.e., [20,30), [30,40), and
+[40,50)). From the figure, we can observe that the digit eavesdropping accuracies, hot-words eavesdropping
+accuracies, and phrase eavesdropping WCR of RF-Mic for users at age of [20,30)are 90.2%, 88.6%, and 88.18%,
+respectively, that for users at age of [30,40)are 91.11%, 88.51%, and 89.24%, respectively, and that for user at age
+of [40,50)are 90.62%, 87.21%, and 88.26%, respectively. Hence, there is little difference in the voice eavesdropping
+performance of RF-Mic for users of different ages. This is because RF-Mic employs a contrast learning network to
+remove the user specificity in the extracted facial speech dynamics features and obtain features only related to
+speech contents.
+7.10 Impact of Glasses Material
+In general, different types of glasses are made of various materials, which could affect the voice eavesdropping
+performance of RF-Mic. Hence, it is necessary to evaluate the impact of glasses materials on the performance of
+RF-Mic. We recruit 12 volunteers wearing their own glasses to participate in the experiments, and the involved
+glasses materials can be divided into three categories (i.e., plate frames, alloy, and resin). We evaluate the voice
+eavesdropping performance of RF-Mic with glasses of three different materials, and the results are shown in Fig.
+28. From the figure, we can observe that the digit eavesdropping accuracies, hot-words eavesdropping accuracies,
+and phrase eavesdropping WCR of RF-Mic for glasses with material of plate frames are 91.13%, 88.65%, and
+89.68%, respectively, that for glasses with material of alloy are 89.45%, 86.81%, and 87.24%, respectively, and that
+for glasses with material of resin are 91.34%, 88.84%, and 88.76%, respectively. Hence, there is little difference in
+the voice eavesdropping performance of RF-Mic for glasses with different materials. This is because that RF-Mic
+eavesdrops on human live voice by sensing human facial speech dynamics, and the different materials do not
+interfere with the sensing of these facial speech dynamics.
+7.11 Impact of Training Data Size
+The size of training data is the number of a user’s speaking times for constructing a voice eavesdropping model.
+More times of a user’s speaking provide more data for model training, which leads to higher accuracy on voice
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:22 • Chen et al.
+1 2 3 4 5 6 7 8 9 10
+0
+20
+40
+60
+80
+100Percentage(%)
+Number of Training Samples
+ Digit accuracy
+ Hot-word accuracy
+ Phrase WCR
+Fig. 29. Performance of RF-Mic for dif-
+ferent sizes of training data.
+Self-attention model Unified model
+0
+20
+40
+60
+80
+100Percentage(%)
+ Digit accuracy
+ Hot-word accuracy
+ Phrase WCR
+Fig. 30. Performance comparison of RF-
+Mic utilizing the unified model with that
+utilizing the self-attention model.
+W/ contrast learning W/o contrast learning
+0
+20
+40
+60
+80
+100Percentage(%)
+ Digit accuracy
+ Hot-word accuracy
+ Phrase WCR
+Fig. 31. Performance comparison of RF-
+Mic with/without the contrast learning
+network.
+eavesdropping. However, too many speaking times significantly increases the difficulty of voice eavesdropping
+model construction. To explore the appropriate training set size for model construction, we conduct experiments
+to evaluate the impact of training set size for the performance of RF-Mic. Fig. 29 shows the single-word (i.e., digit
+and hot-word) and phrase eavesdropping performance of RF-Mic under different sizes of training data. We can
+see from the figure that as the size of training data increases, the single-word eavesdropping accuracy and phrase
+eavesdropping WCR first increase and then remain stable. When a user speaks over 7 times for model construction,
+RF-Mic can achieve a digit eavesdropping accuracy of 91.64%, hot-word eavesdropping accuracy of 88.1%, and
+phrase eavesdropping WCR of 88.56%. More speaking times do not contribute to an obvious improvement in
+the performance of RF-Mic, so we set the size of training set to 7 for voice eavesdropping model construction.
+Usually, the speaking times of 7 is acceptable for voice eavesdropping model construction, which demonstrates
+the low training requirement of RF-Mic.
+7.12 Impact of Self-attention Model
+We conduct experiments to compare the performance of RF-Mic utilizing a unified model (i.e., using an RNN to
+extract three facial speech dynamic features simultaneously) with that utilizing the proposed self-attention model,
+and the results are shown in Fig. 30. From the figure, we can observe that the digit eavesdropping accuracies,
+hot-words eavesdropping accuracies, and phrase eavesdropping WCR ofRF-Mic utilizing the self-attention model
+are 90.64%, 88.1%, and 88.56%, respectively, while that utilizing the unified model are only 78.62%, 75.18%, and
+71.18%, respectively. Hence, the voice eavesdropping performance of RF-Mic utilizing the self-attention model is
+obviously better than that utilizing the unified model. This is because the self-attention model can fuse the three
+kinds of features with adaptive weights for achieving human live voice eavesdropping.
+7.13 Impact of Contrast Learning Network
+To validate the effect of the contrast learning network for removing user specificity, we conduct experiments to
+compare the voice eavesdropping performance of RF-Mic with/without the contrast learning network, and the
+results are shown in Fig. 31. It can be observed from the figure that the digit eavesdropping accuracies, hot-words
+eavesdropping accuracies, and phrase eavesdropping WCR of RF-Mic utilizing the contrast learning network
+are 90.64%, 88.1%, and 88.56%, respectively, while that without utilizing the contrast learning network are only
+78.65%, 75.68%, and 76.68%, respectively. Hence, the voice eavesdropping performance ofRF-Mic with the contrast
+learning network is significantly better than that without the contrast learning network. The results validate the
+effectiveness of the proposed contrast learning network for removing user specificity.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:23
+8 RELATED WORK
+In this section, we review existing works about RFID-based sensing and voice eavesdropping.
+RFID-based sensing.Due to the advantages of low cost and deploy flexibility, RFID tag have been exploited
+in lots of sensing applications, such as localization[40], activity recognition[7, 9], and vital signs monitoring[33],
+etc. Meanwhile, because of the excellent sensing ability of RF signals, recent years have witnessed the rapid
+development of RFID-based vibration detection[19, 41, 45, 46]. For example, TagSound[19] utilizes the harmonic
+backscattering of an RFID tag to recover high-frequency and tiny mechanical vibrations. Further, RF-Ear[46]
+proposes a contactless vibration sensing system using COTS RFID hardware, which can monitor mechanical
+vibrations of multiple devices using a single tag. Recently, RF-DJ[10] leverages a RFID tag to sense the vibrations
+of ukulele surface for single tone music recognition.
+Remote voice eavesdropping.The rapid development of IoT brings many applications, such as [4, 39, 50].
+Recently, with the rise of wireless sensing technology, voice eavesdropping has received a lot of attention over
+the past few decades. Some researchers use vision-based approaches[6, 24] to monitor medium vibrations, such as
+foiltogo[6] and light bulb[24], for voice eavesdropping. However, these methods usually depend on the lighting
+conditions of environments and can only work in line-of-sight (LOS) situations. Besides vision, the motion sensor-
+based voice eavesdropping methods are also explored extensively, such as accelerator[2, 14, 48], gyroscope[22] or
+lidar[28], etc. However, the study in work[1] demonstrates that a shared surface that can propagate conductive
+vibrations [2, 14, 22] or a high voice volume [ 28, 48] could be required to successfully achieve sensor-based
+voice eavesdropping. In addition, some researchers explore utilizing Wi-Fi [38] and mmWave[12, 13]to sense
+loudspeaker vibrations for human voice eavesdropping. Tag-Bug[ 34] utilizes RFID to sense nearby objects
+vibrations caused by the sound from loudspeaker for voice eavesdropping, but it fails to eavesdrop on live human
+speech due to large wind noise. WaveEar[42] leverages mmWave to sense users throat vocal vibrations for voice
+eavesdropping, but it needs a customized hardware. In addition, some works, such as [11, 15], utilize microphone
+of smartphone to record and recognize the sound, which can be used for voice eavesdropping. However, the
+surrounding noise interfere with sound recovery, so it is possible to result in failed voice eavesdropping. In recent
+years, some works [37, 43, 47] utilize sound signals to achieve behavior-based sensing, such as finger 3D tracking
+[47], toothprint-based user authentication[37], and early recognition of inattentive driving[43]. Although these
+works can accurately sense human behavior by sound signals, they cannot achieve voice eavesdropping.
+Voice eavesdropping through sensing facial speech dynamics.In recent years, some researchers explore
+utilizing facial speech dynamics for voice eavesdropping. Vibphone[31] uses accelerator in smartphone to sense
+facial speech dynamics for voice eavesdropping, which needs the physical contact between the smartphone and
+human cheek. Face-Mic[30] explores utilizing motion sensors on AR/VR headsets to sense subtle facial dynamics
+for inferring highly sensitive information from live human speech, including speaker gender, identity, and speech
+content. However, VR headsets are only used in certain situations and require a continuous power supply. Besides,
+V-Speech [21] leverages a vibration sensor located in the nasal pads of smart glasses to achieve noise-robust
+speech eavesdropping. However, this method requires specially customized smart glasses, which brings a high
+cost and limits its application greatly.
+Different from these works, RF-Mic leverages a cryptic RFID tag attached on common glasses for live voice
+eavesdropping based on RF signals in a natural, low-cost, and robust manner. Moreover,RF-Mic can be applied to
+other forms of applications, such as voice eavesdropping or voice assistant in a noisy environment, because it
+can recovery human live voice by capturing subtle facial speech dynamics.
+9 CONCLUSION
+In this paper, we propose a live voice eavesdropping system, RF-Mic, which utilizes common glasses attached on
+a low-cost RFID tag to infer possible voice contents. RF-Mic first pre-processes the collected RF signals. Then,
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+49:24 • Chen et al.
+RF-Mic extracts three kinds of facial speech dynamic features by designing different deep-learning models, and
+then fuses the extracted speech dynamic features based on a self-attention method. After that, RF-Mic removes
+user specificity in the facial speech dynamic features to construct a user-irrelevant voice eavesdropping model
+by utilizing a contrast learning network. Finally, a facial speech dynamics model is constructed for live voice
+eavesdropping. Extensive experiments in real environments demonstrate the effectiveness of RF-Mic on human
+live voice eavesdropping.
+ACKNOWLEDGMENTS
+This research is sponsored by National Natural Science Foundation of China (No. 62172277, 62072304).
+REFERENCES
+[1] S. Abhishek Anand and Nitesh Saxena. 2018. Speechless: Analyzing the Threat to Speech Privacy from Smartphone Motion Sensors. In
+Proc. IEEE Symposium on Security and Privacy. San Francisco, USA, 1000–1017.
+[2] Zhongjie Ba, Tianhang Zheng, Xinyu Zhang, Zhan Qin, Baochun Li, Xue Liu, and Kui Ren. 2020. Learning-based Practical Smartphone
+Eavesdropping with Built-in Accelerometer. In proc. NDSS. San Diego, USA, 23–26.
+[3] C. BYU. 2020. Word frequency: based on 450 million word coca corpus. [Online]. Available: https://www.wordfrequency.info/.
+[4] Zhe Chen, Tianyue Zheng, Chao Cai, and Jun Luo. 2021. MoVi-Fi: motion-robust vital signs waveform recovery via deep interpreted RF
+sensing. In Proc. ACM Mobicom. New Orleans, USA, 392–405.
+[5] M Dobhn Daniel et al. 2008. The rf in rfid passive uhf rfid in practice. In Elsevier.
+[6] Abe Davis, Michae Rubinstein, Nea Wadhwa, Gautham J. Mysore, Fredo Durand, and William T. Freeman. 2014. The visual microphone:
+Passive recovery of sound from video. Acm Transactions on Graphics33 (2014), 79–88.
+[7] Han Ding, Longfei Shangguan, Zheng Yang, Jinsong Han, Zimu Zhou, Panlong Yang, Wei Xi, and Jizhong Zhao. 2015. FEMO: A Platform
+for Free-weight Exercise Monitoring with RFIDs. In Proc SenSys. Seoul, South Korea, 141–154.
+[8] Pierre Divenyi, Steven Greenberg, and Georg Meyer. 2006. Dynamics of speech production and perception. Vol. 374. Ios Press.
+[9] Chao Feng, Jie Xiong, Liqiong Chang, Fuwei Wang, Ju Wang, and Dingyi Fang. 2021. RF-Identity: Non-Intrusive Person Identification
+Based on Commodity RFID Devices. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.(2021), 1–23.
+[10] Yuanhao Feng, Panlong Yang, Yanyong Zhang, Xiang-Yang Li, Ziyang Chen, and Gang Huang. 2019. Demo: The RFID Can Hear Your
+Music Play. In Proc. MobiCom. Los Cabos, Mexico, 21–25.
+[11] Google. 2023. Google Assistant, your own personal Google. [Online]. Available: https://assistant.google.com/.
+[12] Pengfei Hu, Wenhao Li, Yifan Ma, Panneer Selvam Santhalingam, Parth Pathak, Hong Li, Huanle Zhang, Guoming Zhang, Xiuzhen
+Cheng, and Prasant Mohapatra. 2022. Towards Unconstrained Vocabulary Eavesdropping With Mmwave Radar Using GAN. IEEE
+Transactions on Mobile Computing01 (2022), 1–14.
+[13] Pengfei Hu, Yifan Ma, Panneer Selvam Santhalingam, Parth H Pathak, and Xiuzhen Cheng. 2022. Milliear: Millimeter-wave acoustic
+eavesdropping with unconstrained vocabulary. In Proc. INFOCOM. Virtual Conference, 11–20.
+[14] Pengfei Hu, Hui Zhuang, Panneer Selvam Santhalingam, Riccardo Spolaor, Parth Pathak, Guoming Zhang, and Xiuzhen Cheng. 2022.
+AccEar: Accelerometer Acoustic Eavesdropping with Unconstrained Vocabulary. InProc. IEEE Symposium on Security and Privacy (SP).
+San Francisco, CA, USA, 1530–1530.
+[15] iflytek. 2022. iFlytek Input. [Online]. Available: https://srf.xunfei.cn/.
+[16] Diederik P Kingma and Max Welling. 2013. Auto-encoding variational bayes. arXiv preprint arXiv:1312.6114(2013).
+[17] Martin G Larson. 2006. Descriptive statistics and graphical displays. Circulation 114, 1 (2006), 76–81.
+[18] Mike Lenehan. 2021. Impinj, Inc. Application Note - Low Level User Data Support. [Online]. Available: https://support.impinj.com/hc/en-
+us/articles/202755318-Application-Note-Low-Level-User-Data-Support.
+[19] Ping Li, Zhenlin An, Lei Yang, and Panlong Yang. 2019. Towards Physical-Layer Vibration Sensing with RFIDs. In Proc. INFOCOM. Paris,
+France, 892–900.
+[20] Ping Li, Zhenlin An, Lei Yang, Panlong Yang, and QiongZheng Lin. 2019. RFID harmonic for vibration sensing. IEEE Transactions on
+Mobile Computing20, 4 (2019), 1614–1626.
+[21] Héctor A. Cordourier Maruri, Paulo Lopez-Meyer, Jonathan Huang, Willem Marco Beltman, Lama Nachman, and Hong Lu. 2018.
+V-Speech: Noise-Robust Speech Capturing Glasses Using Vibration Sensors. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.2, 4
+(2018), 180:1–180:23.
+[22] Yan Michalevsky, Dan Boneh, and Gabi Nakibly. 2014. Gyrophone: Recognizing Speech from Gyroscope Signals. In Proc. USENIX. San
+Diego, CA,USA, 1053–1067.
+[23] F. Mavromatis N. Kargas and A. Bletsas. 2019. USRP reader. [Online]. Available: https://github.com/nkargas/Gen2-UHF-RFID-Reader.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.
+RF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:25
+[24] Ben Nassi, Yaron Pirutin, Adi Shamir, Yuval Elovici, and Boris Zadov. 2020. Lamphone: Real-Time Passive Sound Recovery from Light
+Bulb Vibrations. Cryptology ePrint Archive, Paper 2020/708.
+[25] Louis C.W. Pols. 2011. SPEECH DYNAMICS. In Plenary Lecture.
+[26] Richard Raspet, Jeremy Webster, and Kevin Dillion. 2006. Framework for wind noise studies. The Journal of the Acoustical Society of
+America 119, 2 (2006), 834–843.
+[27] rfidhy. 2022. The Smallest RFID Tag as Thin as Sand. [Online]. Available: https://www.rfidhy.com/the-smallest-rfid-tag-as-thin-as-sand/.
+[28] Sriram Sami, Yimin Dai, Sean Rui Xiang Tan, Nirupam Roy, and Jun Han. 2020. Spying with Your Robot Vacuum Cleaner: Eavesdropping
+via Lidar Sensors. In Proc. SenSys. Yokohama, Japan, 354–367.
+[29] Baoguang Shi, Xiang Bai, and Cong Yao. 2016. An end-to-end trainable neural network for image-based sequence recognition and its
+application to scene text recognition. IEEE transactions on pattern analysis and machine intelligence39, 11 (2016), 2298–2304.
+[30] Cong Shi, Xiangyu Xu, Tianfang Zhang, Payton Walker, Yi Wu, Jian Liu, Nitesh Saxena, Yingying Chen, and Jiadi Yu. 2021. Face-Mic:
+inferring live speech and speaker identity via subtle facial dynamics captured by AR/VR motion sensors. InProc. MobiCom. New Orleans,
+United States, 478–490.
+[31] Weigao Su, Daibo Liu, Taiyuan Zhang, and Hongbo Jiang. 2021. Towards Device Independent Eavesdropping on Telephone Conversations
+with Built-in Accelerometer. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.5, 4 (2021), 177:1–177:29.
+[32] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017.
+Attention is all you need. Advances in neural information processing systems30 (2017).
+[33] Chuyu Wang and Lei Xie. 2018. Rf-ecg: Heart rate variability assessment based on cots rfid tag array. Proc. ACM Interact. Mob. Wearable
+Ubiquitous Technol.2, 2 (2018), 1–26.
+[34] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, and Yingying Chen et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via RFID
+by Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.5, 4 (2021), 182:1–182:25.
+[35] DeLiang Wang. 2005. On ideal binary mask as the computational goal of auditory scene analysis. In Speech separation by humans and
+machines. Springer, 181–197.
+[36] Guanhua Wang, Yongpan Zou, Zimu Zhou, Kaishun Wu, and Lionel M Ni. 2016. We can hear you with Wi-Fi!IEEE Transactions on
+Mobile Computing15, 11 (2016), 2907–2920.
+[37] Zi Wang, Yili Ren, Yingying Chen, and Jie Yang. 2022. Toothsonic: Earable authentication via acoustic toothprint. Proceedings of the
+ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies6, 2 (2022), 1–24.
+[38] Teng Wei, Shu Wang, Anfu Zhou, and Xinyu Zhang. 2015. Acoustic Eavesdropping through Wireless Vibrometry. InProc. MobiCom.
+Paris, France, 130–141.
+[39] Zhichen Wu, Jianda Li, Jiadi Yu, Yanmin Zhu, Guangtao Xue, and Minglu Li. 2016. L3: Sensing driving conditions for vehicle lane-level
+localization on highways. In Proc. IEEE INFOCOM. San Francisco, CA, USA, 1–9.
+[40] Fu Xiao, Zhongqin Wang, Ning Ye, Ruchuan Wang, and Xiang-Yang Li. 2017. One more tag enables fine-grained RFID localization and
+tracking. IEEE/ACM Transactions on Networking26, 1 (2017), 161–174.
+[41] Binbin Xie, Jie Xiong, Xiaojiang Chen, and Dingyi Fang. 2020. Exploring commodity rfid for contactless sub-millimeter vibration sensing.
+In Proc. ACM Sensys. Yokohama, Japan, 15–27.
+[42] Chenhan Xu, Zhengxiong Li, Hanbin Zhang, Aditya Singh Rathore, Huining Li, Chen Song, Kun Wang, and Wenyao Xu. 2019. WaveEar:
+Exploring a mmWave-based Noise-resistant Speech Sensing for Voice-User Interface. InProc. MobiSys. Seoul, Korea, 14–26.
+[43] Xiangyu Xu, Jiadi Yu, Yingying Chen, Yanmin Zhu, Shiyou Qian, and Minglu Li. 2017. Leveraging audio signals for early recognition of
+inattentive driving with smartphones. IEEE Transactions on Mobile Computing17, 7 (2017), 1553–1567.
+[44] Lei Yang, Yao Li, Qiongzheng Lin, Huanyu Jia, Xiang-Yang Li, and Yunhao Liu. 2017. Tagbeat: Sensing mechanical vibration period with
+cots rfid systems. IEEE/ACM transactions on networking25, 6 (2017), 3823–3835.
+[45] Lei Yang, Yao Li, Qiongzheng Lin, Xiang-Yang Li, and Yunhao Liu. 2016. Making sense of mechanical vibration period with sub-millisecond
+accuracy using backscatter signals. In Proc. MobiCom. New York City, NY, USA, 16–28.
+[46] Panlong Yang, Yuanhao Feng, Jie Xiong, Ziyang Chen, and Xiang-Yang Li. 2020. RF-Ear: Contactless Multi-device Vibration Sensing and
+Identification Using COTS RFID. In Proc. INFOCOM. Toronto, ON, Canada, 297–306.
+[47] Cheng Zhang, Qiuyue Xue, Anandghan Waghmare, Sumeet Jain, Yiming Pu, Sinan Hersek, Kent Lyons, Kenneth A Cunefare, Omer T
+Inan, and Gregory D Abowd. 2017. Soundtrak: Continuous 3d tracking of a finger using active acoustics. Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technologies1, 2 (2017), 1–25.
+[48] Li Zhang, Parth H. Pathak, Muchen Wu, Yixin Zhao, and Prasant Mohapatra. 2015. AccelWord: Energy Efficient Hotword Detection
+through Accelerometer. In Proc. MobiSys. Florence, Italy, 301–315.
+[49] Minghang Zhao, Shisheng Zhong, Xuyun Fu, Baoping Tang, and Michael Pecht. 2019. Deep residual shrinkage networks for fault
+diagnosis. IEEE Transactions on Industrial Informatics16, 7 (2019), 4681–4690.
+[50] Yanmin Zhu, Ruobing Jiang, Jiadi Yu, Zhi Li, and Minglu Li. 2014. Geographic routing based on predictive locations in vehicular ad hoc
+networks. EURASIP Journal on Wireless Communications and Networking2014 (2014), 1–9.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.

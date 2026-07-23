@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang et al., \"Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,\" Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1-25, 2021.",
+  "paper_level_summary_zh": "该文在相关工作中简要提及了目标论文，将其归为基于RFID的窃听方法之一，但未详细描述其方法或能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim's room.",
+      "evidence_context": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim's room.",
+      "reference_entry": "C. Wang et al., \"Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,\" Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1-25, 2021.",
+      "why_this_judgment_zh": "原文引用标记为[15]，而非目标标记[23]，属于误引。",
+      "copy_ready_zh": "该文使用[15]引用目标论文，但目标论文在参考文献中标记为[23]，因此该引用为误引。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "[23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals.",
+      "evidence_context": "Authors in [17] used mmWave to acquire high-quality voice from user's vocal vibrations from near-throat region. [23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals.",
+      "reference_entry": "C. Wang et al., \"Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,\" Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1-25, 2021.",
+      "why_this_judgment_zh": "该句引用[23]描述‘a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals’，但目标论文实际是RFID亚毫米级振动窃听，非压电薄膜和mmWave信号，描述与目标论文不符，属于误引。",
+      "copy_ready_zh": "该文声称[23]提出了一种利用压电薄膜和mmWave信号的语音窃听方法，但目标论文实际利用RFID感知亚毫米级振动，因此该引用不准确。",
+      "confidence": "high"
+    }
+  ]
+}

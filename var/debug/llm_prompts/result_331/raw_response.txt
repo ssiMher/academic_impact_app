@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang et al., \"mmPhone: Acoustic eavesdropping on loudspeakers via mmWave-characterized piezoelectric effect,\" in Proc. IEEE Conf. Comput. Commun., 2022, pp. 820–829.",
+  "paper_level_summary_zh": "该论文在相关工作部分简要提及了[23]，将其归类为使用压电薄膜和毫米波信号的语音窃听方法，但并未将其作为主要对比或使用对象，属于普通相关文献引用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "[23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals.",
+      "evidence_context": "In other similar research, [21] and [22] use mmWave radar to recover audio below 1 kHz, but the performance of the human audio reconstruction has not been evaluated. mmSpy [18] can eavesdrop on phone calls by using mmWave and machine learning. However, mmSpy studies eavesdropping on constrained vocabulary (hot words and numbers). Authors in [17] used mmWave to acquire high-quality voice from user’s vocal vibrations from near-throat region. [23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals. [24] proposed a remote and through-wall screen attack that used mmWave to remotely collect information from LCD screens.",
+      "reference_entry": "C. Wang et al., \"mmPhone: Acoustic eavesdropping on loudspeakers via mmWave-characterized piezoelectric effect,\" in Proc. IEEE Conf. Comput. Commun., 2022, pp. 820–829.",
+      "why_this_judgment_zh": "该引用出现在普通相关工作列举段落中，未对目标论文的具体能力（如亚毫米级、RFID、through-wall）进行任何描述或认可，属于普通引用。且目标论文标题包含'RFID'和'sub-mm'，但引用中未体现这些关键词。",
+      "copy_ready_zh": "引用论文未在正文中明确描述目标论文的RFID亚毫米级感知或穿墙窃听能力，仅将其列为普通相关工作。",
+      "confidence": "high"
+    }
+  ]
+}

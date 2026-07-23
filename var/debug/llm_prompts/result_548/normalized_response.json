@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[5]",
+  "target_reference_entry": "[5] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via RFID by capturing\nsub-mm level vibration,”Proc. ACM IMWUT, vol. 5, no. 4, pp. 1–25,\n2021.",
+  "paper_level_summary_zh": "该引用论文在相关工作部分的“多模态融合”小节中，将目标论文作为视觉与毫米波融合的一个例子进行群体引用，并未单独描述或突出目标论文的创新或能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Wang et al. [23] combine the train speed calculated by the mmWave and the loop closure detection result of camera data to accurately locate the train.",
+      "evidence_context": "ReID [24] achieves cross-modal human re-identification by analyzing human gait data from vision and mmWave radar. Wang et al. [23] combine the train speed calculated by the mmWave and the loop closure detection result of camera data to accurately locate the train.",
+      "reference_entry": "Z. Wang, G. Yu, B. Zhou, P. Wang, and X. Wu, \"A train positioning method based-on vision and millimeter-wave radar data fusion,\" IEEE Transactions on Intelligent Transportation Systems, vol. 23, no. 5, pp. 4603-4613, 2021.",
+      "why_this_judgment_zh": "引用[23]对应的参考文献条目是Wang等人2021年关于列车定位的论文，而非目标论文（Thru-the-wall Eavesdropping on Loudspeakers via RFID）。因此，这是一个错误的归因，属于误引用。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文在群体引用中将目标论文错误指向了另一篇列车定位论文，未涉及目标论文的RFID亚毫米级感知能力。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[5]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Z. Wang, G. Y u, B. Zhou, P . Wang, and X. Wu, “A train positioning\nmethod based-on vision and millimeter-wave radar data fusion,”IEEE\nTransactions on Intelligent Transportation Systems, vol. 23, no. 5, pp.\n4603–4613, 2021.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[5] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via RFID by capturing\nsub-mm level vibration,”Proc. ACM IMWUT, vol. 5, no. 4, pp. 1–25,\n2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

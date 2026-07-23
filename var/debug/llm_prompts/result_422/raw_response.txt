@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "P. Hu, Y. Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng, \"Milliear: Millimeter-wave acoustic eavesdropping with unconstrained vocabulary,\" in IEEE INFOCOM 2022-IEEE Conference on Computer Communications. IEEE, 2022, pp. 11–20.",
+  "paper_level_summary_zh": "该文在相关工作中将 [23]（Milliear）作为毫米波雷达语音窃听的代表性工作之一进行归类，未单独描述其方法细节或能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Existing efforts include mmWave-based voice detection [1]–[6], RFID-based voice detection [7]–[9], and UWB-based voice detection [10].",
+      "evidence_context": "Since voice-based acoustic signals are easily blocked by soundproof materials, direct acoustic eavesdropping from outside a private space is often infeasible. As a result, Radio Frequency (RF)-based communication and sensing technologies have been explored in increasingly sophisticated forms for eavesdropping applications. Existing efforts include mmWave-based voice detection [1]–[6], RFID-based voice detection [7]–[9], and UWB-based voice detection [10].",
+      "reference_entry": "P. Hu, Y. Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng, \"Milliear: Millimeter-wave acoustic eavesdropping with unconstrained vocabulary,\" in IEEE INFOCOM 2022-IEEE Conference on Computer Communications. IEEE, 2022, pp. 11–20.",
+      "why_this_judgment_zh": "引用 [23] 但列表中包含 [1]-[6]，属于综述性列举，[23] 并未被单独描述或赋予特定能力，且引用标记不在证据引用中直接出现。",
+      "copy_ready_zh": "该文仅在相关工作中将目标论文列为 mmWave 语音检测的参考文献之一，未作具体评述。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Backscatter-based systems like RFSpy [7] and RF-Parrot [8] utilize passive tags or conductive paths to capture vibrations, yet depend on resonant structures or wired access.",
+      "evidence_context": "Backscatter-based systems like RFSpy [7] and RF-Parrot [8] utilize passive tags or conductive paths to capture vibrations, yet depend on resonant structures or wired access.",
+      "reference_entry": "P. Hu, Y. Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng, \"Milliear: Millimeter-wave acoustic eavesdropping with unconstrained vocabulary,\" in IEEE INFOCOM 2022-IEEE Conference on Computer Communications. IEEE, 2022, pp. 11–20.",
+      "why_this_judgment_zh": "该引文属于相关工作中对 backscatter-based 系统的泛泛描述，[23] 未出现在该句子中。且 [23] 是 mmWave 系统，不是 backscatter 系统。",
+      "copy_ready_zh": "该文未在相关工作中正面引用目标论文或其方法。",
+      "confidence": "high"
+    }
+  ]
+}

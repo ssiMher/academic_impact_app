@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Academic Impact App{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/app.css">
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <div class="app-shell">
+      {% include "components/nav.html" %}
+      <main class="main-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+    <script src="/static/js/app.js" defer></script>
+  </body>
+</html>

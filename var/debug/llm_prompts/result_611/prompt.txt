@@ -1,0 +1,1519 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: LoCal
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+199
+LoCal: An Automatic Location Attribute Calibration Approach for
+Large-Scale Deployment of mmWave-based Sensing Systems
+DUO ZHANG, Peking University, China
+XUSHENG ZHANG, Peking University, China
+YAXIONG XIE, University at Buffalo, United States
+FUSANG ZHANG, Institute of Software, Chinese Academy of Sciences and University of Chinese Academy of Sciences, China
+XUANZHI WANG,Peking University, China
+YANG LI, Peking University, China
+DAQING ZHANG∗, Peking University, China and Institut Polytechnique de Paris, France
+Millimeter wave (mmWave) radar excels in accurately estimating the distance, speed, and angle of the signal reflectors
+relative to the radar. However, for diverse sensing applications reliant on radar’s tracking capability, these estimates must
+be transformed from radar to room coordinates. This transformation hinges on the mmWave radar’s location attribute,
+encompassing its position and orientation in room coordinates. Traditional outdoor calibration solutions for autonomous
+driving utilize corner reflectors as static reference points to derive the location attribute. When deployed in the indoor
+environment, it is challenging, even for the mmWave radar with GHz bandwidth and a large antenna array, to separate the
+static reference points from other multipath reflectors. To tackle the static multipath, we propose to deploy a moving reference
+point (a moving robot) to fully harness the velocity resolution of mmWave radar. Specifically, we select a SLAM-capable robot
+to accurately obtain its locations under room coordinates during motion, without requiring human intervention. Accurately
+pairing the locations of the robot under two coordinate systems requires tight synchronization between the mmWave radar
+and the robot. We therefore propose a novel trajectory correspondence based calibration algorithm that takes the estimated
+trajectories of two systems as input, decoupling the operations of two systems to the maximum. Extensive experimental
+results demonstrate that the proposed calibration solution exhibits very high accuracy (1.74 cm and0.43◦accuracy for location
+and orientation respectively) and could ensure outstanding performance in three representative applications: fall detection,
+point cloud fusion, and long-distance human tracking.
+CCS Concepts: • Human-centered computing →Ubiquitous and mobile computing .
+Additional Key Words and Phrases: RF sensing, mmWave Radar sensing, Location attribute calibration, Point cloud, Tracking
+∗This is the corresponding author.
+Authors’ addresses: Duo Zhang, zhangduo@stu.pku.edu.cn, Key Laboratory of High Confidence Software Technologies (Ministry of Education),
+school of Computer Science, Peking University, Beijing, China, 100871; Xusheng Zhang, zhangxusheng@stu.pku.edu.cn, Key Laboratory of
+High Confidence Software Technologies (Ministry of Education), school of Computer Science, Peking University, Beijing, China, 100871;
+Yaxiong Xie, University at Buffalo, Buffalo, New York, United States, yaxiongx@buffalo.edu; Fusang Zhang, fusang@iscas.ac.cn, Institute
+of Software, Chinese Academy of Sciences and University of Chinese Academy of Sciences, Beijing, China, 100190; Xuanzhi Wang, Key
+Laboratory of High Confidence Software Technologies (Ministry of Education), school of Computer Science, Peking University, Beijing,
+China, xuanzhiwang@stu.pku.edu.cn; Yang Li, Key Laboratory of High Confidence Software Technologies (Ministry of Education), school of
+Computer Science, Peking University, Beijing, China, liyang@stu.pku.edu.cn; Daqing Zhang, Key Laboratory of High Confidence Software
+Technologies (Ministry of Education), school of Computer Science, Peking University, Beijing, China, Telecom SudParis and Institut
+Polytechnique de Paris, Paris, France, dqzhang@sei.pku.edu.cn.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that
+copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.
+Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy
+otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from
+permissions@acm.org.
+© 2023 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+2474-9567/2023/12-ART199 $15.00
+https://doi.org/10.1145/3631436
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:2 • Zhang et al.
+ACM Reference Format:
+Duo Zhang, Xusheng Zhang, Yaxiong Xie, Fusang Zhang, Xuanzhi Wang, Yang Li, and Daqing Zhang. 2023. LoCal: An
+Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems. Proc.
+ACM Interact. Mob. Wearable Ubiquitous Technol. 7, 4, Article 199 (December 2023), 27 pages. https://doi.org/10.1145/3631436
+1 INTRODUCTION
+Indoor mmWave-based sensing applications have attracted significant attention from both academia [1, 26] as
+well as industries [7, 24, 43]. Benefiting from its tracking accuracy of about0.15𝑚for targets [79], mmWave radar
+has been successfully applied to human tracking [79], fall detection [28, 70], etc. However, these applications still
+have not come into our daily life on a large scale. The key reason for this inability is that we lack an accurate
+correspondence between the real physical coordinate system (for example, room coordinate) and the radar
+coordinate system when practically deploying these systems on a large scale.
+The bridge that connects the two coordinate systems is the radar’s location and orientation in the physical
+map coordinate system, which we refer to as the radar’s location attribute . As shown in Figure 1(a), the mmWave
+radar can only measure the user’s distance, angle, and radial velocity relative to the radar, which needs to be
+transformed into the room coordinate to obtain the user’s location in the room. Such a transformation relies on
+the 3D location and orientation of the radar antenna array in the physical map, i.e., the location attribute [39, 54].
+As seen in Figure 1(b), a small error in the radar’s orientation will be magnified by the distance of the target from
+the radar. At a target distance of 4𝑚from the radar, an orientation error of five degrees will result in a target
+localization error of 0.17𝑚, which is comparable to the systematic error of 0.15𝑚for a mmWave tracking system.
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+Radar
+𝑦𝑟
+𝑥𝑟 𝑧𝑟
+Pitch
+Roll Yaw
+Radar’s location attribute: location 𝑃𝑟𝑎𝑑𝑎𝑟 = (𝑥,𝑦,𝑧)and 
+orientation (roll, pitch, and yaw) in the physical map coordinate system 
+Subscript p means 
+physical map
+(a) Radar’s Location attribute.
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+Radar
+Predicted user 
+location
+Actual user 
+location
+𝑒𝑟𝑟𝑜𝑟 = 𝑑 ∙𝑡𝑎𝑛(𝜃
+2)
+𝑑 = 4𝑚,𝜃 = 5°,𝑒𝑟𝑟𝑜𝑟 = 0.17𝑚
+𝑑 = 30𝑚,𝜃 = 5°,𝑒𝑟𝑟𝑜𝑟 = 1.31𝑚
+𝜃
+Incorrect 
+orientation 
+(b) Tracking the user.
+Fig. 1. Radar’s location attribute and its effect on the tracking error. (a) The location attribute of radar refers to the 3D
+location and orientation (pitch, yaw, and roll) in physical map coordinate system. (b) The farther the distance of the target,
+the larger the tracking error.
+The error in estimating the radar’s location attribute could severely degrade the performance of diverse
+mmWave-based sensing systems relying on the radar’s tracking capability. For example, the mmWave-based fall
+detection system [70] relies on tracking the human’s height via radar to determine whether the human is falling
+onto the ground or lying on the bed. These two possible status becomes indistinguishable in the presence of
+orientation-induced error and systematic error. The challenge intensifies if we want to obtain dense point clouds
+of one object by combining the sparse 4D point clouds of the same object extracted by different radars. However,
+an orientation-induced error can lead to improper fusion of point clouds, where, for instance, the arms’ point
+cloud from one radar inaccurately fuses with the chest point cloud of another radar. The improper fusion may
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:3
+Fusion result with our 
+proposed system
+Misaligned Fusion result 
+with manual measurement
+Fig. 2. The aggregated point clouds of a person walking with arms
+outstretched after fusing the sparse point clouds collected from two
+mmWave radar. Compared to manual measurement, we can see that
+the person’s posture is better presented with the fusion using LoCal.
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+Unknown radar
+LiDAR
+SLAM-based 
+autonomous robot  
+Automatic and 
+accurate calibration
+Fig. 3. After the autonomous robot travels a trajec-
+tory in the new environment, the location attribute
+of the unknown radar is calibrated automatically and
+accurately.
+instead severely degrade the quality of the point cloud, as shown in Figure 2. The last example is long-distance
+human tracking in indoor environments, such as extended corridors and factories [10, 18, 25, 51] that may be
+more than 30𝑚in length. In this case, a five-degree orientation error will induce a positioning error of 1.3𝑚,
+making the tracking results no longer credible.
+Current systems implicitly assume that the location attributes are known. In fact, every time a radar is deployed
+to a new environment, it needs to be calibrated with respect to its location attribute in that environment. It is,
+however, challenging to measure the location attribute accurately. One can endeavor to manually measure the
+location attribute of each radar in every environment, but that will inevitably be laborious, time-consuming,
+error-prone, and even impossible sometimes due to several factors. Firstly, radars may be deployed in high
+places, such as ceilings, posing high inconvenience and potential safety risks for manual measurements. Secondly,
+radars are often encapsulated by the manufacturer, making it extremely difficult to know the exact antenna
+array location on the radar. Finally, even if we can measure the location of the radar antenna array, manual
+measurement of the radar 3D orientation (pitch, yaw, and roll) is difficult to achieve the required accuracy.
+The calibration of radar location attributes has received significant attention in the realm of autonomous
+driving [16, 31, 35, 38–41]. With the mmWave radar on vehicles capable of sensing up to one hundred meters,
+even a minor orientation error could yield meter-level inaccuracies in pedestrian localization. In autonomous
+driving scenarios [39, 40], the key task of the location attribute calibration is to find the point correspondences :
+the coordinates of one point under two different coordinate systems, such as radar and vehicle coordinates. They
+leverage the corner reflector (CR) as the reference point and manually measure the CR’s coordinate in the vehicle
+coordinate system. Given the CR’s substantial radar cross-section, the CR’s coordinate in the radar coordinate can
+also be sensed by the mmWave radar. They obtain a point correspondence by pairing CR coordinates across both
+vehicle and radar systems. Multiple correspondences are gathered through CR placement at diverse positions
+within a low-multipath environment. Based on the point correspondences, the radar’s location attribute can be
+solved [29].
+In indoor radar deployments, conventional calibration algorithms from the autonomous driving domain
+encounter challenges for the following reasons. Firstly, manually measuring the coordinates of reference points
+is time-consuming and laborious. Unlike vehicles, which can be calibrated uniformly in a wide workshop at
+the factory, deploying reference points for calibration in every new environment is impractical when the radar
+is deployed on a large scale. Secondly, indoor calibration is complicated by intricate multipath effects. For the
+vehicle, we can drive the vehicle to an open area with minimum multipath. It is, however, impossible to move the
+reflectors with the large radar cross-section in the indoor environment, such as walls, tables, and floors. Amidst
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:4 • Zhang et al.
+such demanding conditions, it is an arduous task even for the mmWave radar with a bandwidth of gigahertz to
+separate the reflection of the static reference point from the ambient environmental reflections, let alone locate
+the reference point. In a hypothetical scenario where the radar’s spatial resolution can separate these reflections,
+the radar still cannot identify which reflector is the reference point because both the reference point and nearby
+reflectors are static and thus we lack the features to distinguish them. Since the inefficacy of locating the reference
+points using mmWave radar, we cannot obtain sufficient point correspondences for accurate calibration.
+In this paper, we present LoCal, an automatic indoor radar location attribute calibration system that achieves
+extremely high accuracy (1.74 cm and 0.43◦accuracy for location and orientation calibration respectively) and
+at the same time requires zero human effort . Our key observation is that even though the mmWave radar does
+not have enough spatial resolution to separate the reference point from other nearby reflectors, it has sufficient
+velocity resolution to separate signals of any moving object from all static objects [44]. Accordingly, we propose
+to let the reference point move when we perform the calibration.
+The movement of the reference point, however, poses significant challenges for obtaining the point corre-
+spondences. First, even though the mmWave radar can easily locate the moving reference point under the radar
+coordinate system, the system needs a method to derive the position of the reference point under the room
+coordinate system. Second, pairing each instantaneous position of the moving reference under two coordinate
+systems to get the point correspondence requires tight synchronization between the mmWave radar and the
+extra location sensing system that provides the reference’s location under the room coordinate system. which
+introduces significant hardware costs and makes the calibration process labor-intensive.
+To accurately locate the reference point under the room coordinate system with zero human effort, we propose
+to use a small wheeled robot with SLAM (Simultaneous Localization and Mapping) system as our reference point,
+just as shown in Figure 3. When deployed in a new environment, the robot first maps the physical environment
+to obtain the floor map. During the calibration, the robot automatically plans a trajectory to traverse the sensing
+coverage of the mmWave sensing system and locate itself under the room coordinate system.
+To eliminate the requirement of tight synchronization between the robot and the mmWave system, instead of
+using the point correspondence, we propose a novel trajectory correspondence based location attribute calibration
+solution. Specifically, we first derive two moving trajectories of the same robot with the tracking results of the
+mmWave radar and the SLAM system on the robot and then transform the trajectory from the radar coordinate
+to the room coordinate using the location attribute of the mmWave radar. If a correct location attribute is used in
+the transformation, the transformed trajectory and the measured trajectory from the SLAM should match. We
+then search for the best location attribute that minimizes the distance between two trajectories. To accelerate
+the search process, we require the robot to choose a linear trajectory when planning the route, so one motion
+trajectory consists of multiple linear sub-trajectories. Therefore, instead of matching the whole trajectory, we
+match each linear sub-trajectory to build a line correspondence . We establish a theoretical model for location
+attribute calibration using line correspondences, based on which we have proven that theoretically, we are able
+to perform the calibration with only two line correspondences.
+We implement the proposed system: LoCal, using commodity mmWave hardware and robot. The main
+contributions of our work are summarized as follows:
+•To the best of our knowledge, LoCal is the first indoor location attribute calibration system for large-scale
+deployment of mmWave radar, which can automatically and accurately calibrate the radar’s location
+attribute in a multipath-rich indoor environment. With the deployment of the SLAM algorithm, LoCal can
+be zero effort to calibrate the radar’s location attribute, avoiding any manual labor and errors.
+•To avoid tight synchronization between the robot and the radar, we propose a noveltrajectory correspon-
+dence based location attribute calibration solution. We establish a theoretical model for location attribute
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:5
+calibration based on trajectory correspondence. We theoretically proved that only two straight lines need
+to be included in the robot trajectory to complete the calibration.
+•We implement LoCal on the commodity mmWave radar and robot and comprehensively evaluate the system
+performance. LoCal achieves a median error of 1.74𝑐𝑚for the radar’s location and a median error of 0.43
+degrees for deployment orientation, which meets the calibration accuracy requirements for error-sensitive
+applications.
+•We demonstrate the effectiveness of our system via three error-sensitive applications: (i) detecting human
+falls based on accurate tracking of human height; (ii) fusing sparse radar point clouds from multiple radars
+with different views to produce high-quality dense point clouds; and (iii) long-distance human tracking in
+indoor environments.
+2 PRELIMINARY OF MMWAVE RADAR
+In this section, we first introduce the fundamentals of mmWave radar. Then, we describe the mathematical
+representation of the radar’s location attribute (location and orientation).
+2.1 mmWave Radar Primer
+Commercial mmWave radars commonly employ the frequency-modulated continuous-wave (FMCW) technique,
+emitting successive chirps with linearly increasing frequency over time from the transmitting antennas. The
+interaction of these signals with the environment and subsequent reflection to receiving antennas introduces a
+time-of-flight-induced frequency shift between transmitted and received signals. By mixing the received signal
+with the transmitted signal, we can get the Intermediate Frequency (IF) signal of a chirp whose frequency is
+proportional to the range between the radar and the target. Moving objects induce Doppler frequency shifts
+proportional to phase differences across consecutive chirps. Accordingly, by estimating the frequencies of sample
+points in a chirp and across chirps, we can estimate the distance and radial velocity of the targets.
+2.1.1 Range and velocity resolution. A typical mmWave radar performs range and radial velocity measurement
+by sending back-to-back chirps. Different transmitting antennas take turns sending chirps. The radar frame,
+composed of multiple chirps received from different antennas, is the basic unit for estimating range and radial
+velocity. Additionally, there is a predetermined period of idle time between each frame. Given a radar with
+bandwidth 𝐵, the ranging and radial velocity resolutions can be calculated as follows:
+𝑅𝑟𝑒𝑠 = 𝐶
+2𝐵 (1)
+𝑉𝑟𝑒𝑠 = 𝜆
+2𝑇𝑓𝑟𝑎𝑚𝑒
+(2)
+where 𝐶 is the light speed (3 ×108𝑚/𝑠), 𝜆is the wavelength for the starting frequency of the radar, and𝑇𝑓𝑟𝑎𝑚𝑒
+represents the length of a frame.
+2.1.2 Angle resolution. In addition to the range and radial velocity, FMCW mmWave radar also provides target
+angle information, indicating the azimuth and elevation directions of the target in 3D space. The directions of
+targets can be estimated from the phase changes among the multiple receiving antennas. Thus, mmWave radars
+with multiple transmitting and receiving antennas create a two-dimensional virtual antenna array utilizing the
+Multiple Input Multiple Output (MIMO) technology, enabling them to estimate the azimuth and elevation angle
+of the target concurrently. For 𝑀 number of equally spaced receiving antennas with distance 𝑑, the angular
+resolution is given by:
+𝜃𝑟𝑒𝑠 = 𝜆
+𝑀𝑑cos(𝜃) (3)
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:6 • Zhang et al.
+where 𝜃 is the angle of the target relative to the radar.
+2.2 Radar’s Location Attribute
+The radar’s location attribute is concerned with the geometry of the radar’s installation in the physical map. It
+serves as a bridge linking the radar world and the physical world, enabling the transformation of radar sensing
+outcomes into the physical map. Specifically, it refers to the three-dimensional location and orientation of the
+radar antenna array in the physical map.
+Mathematically, we use a translation vector (𝑇) to represent the radar’s position, which describes the relative
+position between the origins of the two coordinate systems, for example, the radar coordinate system and the
+physical map coordinate system. Similarly, we represent the radar’s orientation using a rotation matrix ( 𝑅),
+describing the rotation between the two coordinate systems. Assuming the coordinate of a target in the radar
+coordinate system is 𝑃𝑟𝑎𝑑𝑎𝑟 = (𝑥𝑟𝑎𝑑𝑎𝑟,𝑦𝑟𝑎𝑑𝑎𝑟,𝑧𝑟𝑎𝑑𝑎𝑟)𝑇, its coordinate in the physical map coordinate system can
+be written as:
+𝑃𝑝ℎ𝑦𝑠𝑖𝑐𝑎𝑙 = 𝑅·𝑃𝑟𝑎𝑑𝑎𝑟 +𝑇 (4)
+With this formula, we can transform the radar sensing results from the radar coordinate to the physical map
+coordinate.
+The translation vector 𝑇 and the rotation matrix 𝑅describe the radar’s location and orientation in the physical
+map coordinate system. Within this context, 𝑅and 𝑇 stand for radar’s location attribute. The target coordinates
+in the radar coordinate can be transformed into the physical map coordinate if 𝑅and 𝑇 can be determined. Thus,
+solving for 𝑅and 𝑇 is what is actually happening during the calibration of the radar’s location attribute.
+3 SYSTEM DESIGN
+We present the system design of LoCal in this section. We start with an overview of LoCal, followed by the
+introduction of line correspondence generation based on trajectory correspondence, which is the preparation
+for solving the radar’s location attribute. Then, we present LoCal’s algorithm to determine the deployment
+orientation of the radar that needs to achieve the stringent requirement of error-sensitive applications. Finally,
+we discuss how to locate the mmWave radar in the physical map based on line correspondences.
+3.1 System Overview
+Recall that our main goal is to automatically and accurately determine the radar’s location attribute in the
+physical map, facilitating large-scale deployment. Therefore, as demonstrated in Figure 4, LoCal first leverages a
+SLAM-based autonomous robot [59] to map the physical environment and automatically plan its own trajectory
+to traverse the sensing coverage of the mmWave radar. Concurrently, all the mmWave radars in the environment
+extract the point cloud of the robot as it moves. The robot’s trajectory under the radar coordinate can be
+reconstructed by combing the point clouds of the moving robot over time. We define the mapping between
+the trajectory under the physical map coordinate and the trajectory under the radar coordinate together as the
+trajectory correspondence. Line correspondences are generated from the trajectory correspondence. Ultimately,
+the radar’s location attribute in the physical map is estimated based on these line correspondences.
+3.2 Generating Line Correspondences
+In this subsection, we focus on automatically generating line correspondences based on the trajectory correspon-
+dence. A line correspondence encapsulates line equations in two distinct coordinate systems. In our scenario, these
+two coordinate systems refer to the physical map coordinate and the radar coordinate. Utilizing the SLAM-based
+autonomous robot, we achieve accurate and automatic generation of these line correspondences.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:7
+Data Preparation
+Mapping the environment
+Extracting 
+point cloud 
+by the radar
+Navigating 
+the robot 
+by SLAM 
+The Trajectory Correspondence Based
+Line Correspondences Generation 
+Splitting the trajectory into linear 
+sub- trajectories
+Fitting line equations in both 
+coordinate systems
+Determining the radar’s 
+deployment orientation
+Location Attribute Calibration
+Based on Line Correspondences
+Locating the mmWave Radar
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+Tracking, Fall Detection, 
+Point Cloud Fusion, etc. 
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+𝑥
+𝑦
+𝑧
+Fig. 4. System overview of LoCal.
+3.2.1 Mapping the Environment. First, we need to obtain a physical map of the environment. We use the laser
+SLAM algorithm equipped on the robot to build the 2D planar map of the environment. The specific SLAM
+algorithm we adopt is Cartographer [22], which is a graph-based real-time SLAM algorithm commonly used for
+two-dimensional localization and mapping in indoor environments. As the robot travels through the environment,
+the Cartographer builds a 2D map of the environment using data provided by LiDAR as well as the Inertial
+Measurement Unit (IMU).
+3.2.2 Automatic Robot Navigation. Utilizing the generated floor map, the robot automatically generates a trajec-
+tory and navigates itself to traverse the area covered by the mmWave radar. It is worth noting that we require
+the robot to select trajectories that contain linear sub-trajectories, as shown in Figure 3. Leveraging the SLAM
+algorithm’s ability to provide the robot’s position and orientation, our method orchestrates the robot to navigate
+through sequential map nodes, thereby forming the desired trajectory. Nodes in the planned trajectory are
+selected automatically by our algorithm based on the created map and our algorithm will guarantee no obstacles
+between the nodes. To facilitate the splitting of each sub-trajectory, the robot remains stationary at each node for
+three seconds before proceeding to the next node.
+Although the trajectory is two-dimensional, we can easily obtain its representation in 3D space by establishing
+the 3D coordinate system as shown in Figure 3. This is because the z-axis is perpendicular to the ground and its
+z-coordinate does not change during the robot’s movement. Therefore, we use the height of the small robot as
+the z-coordinate of its trajectory, thus obtaining a representation of that trajectory in the 3-dimensional physical
+map coordinate system. This trajectory is represented by the coordinates of several nodes that the robot passes
+in sequence and the order of these nodes.
+3.2.3 Extracting Point Cloud. We need to obtain the trajectory of the robot in the radar coordinate system, as it
+is one of the inputs to our calibration algorithm. We chose the 4D point cloud (the coordinates in 3D space plus
+the velocity) based tracking algorithm to obtain the coordinates of the robot in the radar coordinate system for
+the following two reasons. Firstly, while there are various tracking methods based on mmWave radar, such as
+those using RSS fingerprint [20], CSI [61], or point cloud [2, 28, 49, 70, 79], the current state-of-the-art tracking
+method is based on point cloud [75]. Secondly, 4D point cloud based tracking methods enables us to filter out
+static multipath interference indoors using the velocity dimension in the 4D point cloud, ideal for tracking small
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:8 • Zhang et al.
+robots in multipath-rich indoor environments. The above two reasons motivate us to choose the 4D point cloud
+based tracking method.
+As the robot moves, we simultaneously extract the point cloud of the robot by the mmWave radar to reconstruct
+the trajectory under the radar coordinate system. In this paper, we work with the CAL60S244-IB sensor from
+Calterah Semiconductor Technology, which is an FMCW-MIMO radar sensor that operates in the60𝐺𝐻𝑧 band.
+This radar employs FMCW for range estimation and MIMO for determining azimuth and elevation angles,
+resulting in 3D coordinates. These coordinates are subsequently converted into a 3D point cloud for each frame.
+Further considering the velocity information of each point, the 4D point cloud can be constructed [28, 70].
+Because we know the radial velocity of each point in the point cloud, we can keep only the point cloud of
+the moving robot, thus filtering out other static objects in the environment that have zero velocity. Since the
+robot will stay at each node of the trajectory for three seconds, no point cloud is retained during these three
+seconds. This temporal gap significantly aids in segmenting the trajectory. It is worth noting that, given the
+robot’s compact size as a reflective point, we exclusively retain the point with the highest power for the point
+cloud of each frame. Consequently, the trajectory under the radar coordinate is obtained by aggregating the point
+cloud of the moving robot captured over time by the mmWave radar. Together with the trajectory of the robot in
+the physical map coordinate system, the trajectory correspondence is obtained.
+Fig. 5. Robot’s 4D point cloud of a linear sub-trajectory.
+Some outliers are generated due to noise, such as multi-
+path.
+Fig. 6. Line fitting. Since directly using the SVD for line
+fitting is very susceptible to outliers, we adopt the idea
+of the RANSAC algorithm.
+3.2.4 Line Correspondences. Utilizing the established trajectory correspondence, we proceed to derive line
+correspondences, a fundamental step in solving for the radar’s location attribute. The robot’s trajectory consists
+of several linear sub-trajectories. For each linear sub-trajectory, its equation in the physical map coordinate
+system can be determined simply by fitting the coordinates of the two endpoints. To enhance the precision of
+equation fitting, we also use the locations provided by the SLAM as the robot moves between the two endpoints
+in fitting the line equation. The fitting method we adopted is the Singular Value Decomposition (SVD). The idea
+behind this is that SVD can find the best-fit subspaces of a set of data points [ 8]. In terms of line fitting, the
+3D locations of the moving robot are data points in 3D space and the line we expect is the one-dimensional
+best-fit subspace. We leverage the parametric equation to represent the fitted line equation in the physical map
+coordinate system:
+𝑋𝑝 = 𝑙𝑝 +𝑡 ·®𝑑𝑝, 𝑡 ∈R (5)
+where the subscript 𝑝 means the physical map coordinate system, 𝑙𝑝 is a point that the line passes, ®𝑑𝑝 is a
+three-by-one direction vector that represents the direction of the line and the𝑡is the parameter. It is worth noting
+that 𝑙𝑝 can be any point on the line and ®𝑑𝑝 can be any vector parallel to the line. Instead of picking a random
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:9
+point on the line trajectory, we choose the average of coordinates of all locations on the trajectory provided by
+SLAM as 𝑙𝑝 to improve the accuracy. We normalize the direction vector ®𝑑𝑝 here to make the radar’s location
+attribute estimation easier. We let it follow the direction of the robot’s movement in terms of direction. In terms
+of vector length, we normalize it to one.
+We also need to fit the equation of this linear sub-trajectory in the radar coordinate system to form a line
+correspondence. Since there is no dynamic point cloud generation for the three seconds that the robot remains
+stationary at each node in the trajectory, we can easily split the corresponding point cloud of a sub-trajectory
+from the point cloud of the whole trajectory. Figure 5 demonstrates the 4D point cloud corresponding to a
+sub-trajectory.
+We also use the SVD-based method for fitting the line equation in the radar coordinate system based on the
+4D point cloud. However, because of the dynamic multipath indoor, utilizing the SVD directly does not produce
+the desired results. Dynamic multipaths are caused by radar signals reflected from dynamic targets in the room
+other than the robot (e.g., people) or by radar signals reflected multiple times by the robot. Compared to the point
+cloud of a moving robot, the point cloud of dynamic multipaths is usually clustered in one place, such as the
+noisy point cloud shown in Figure 5, which is the result of a person in the room.
+When using Singular Value Decomposition (SVD) for line fitting, it is particularly sensitive to outliers because
+SVD is essentially a least square fitting method [8]. The objective of least squares fitting is to find a line that
+minimizes the sum of squared distances from data points to the line. When the dataset contains outliers, these
+points may be far away from other data points (as shown Figure 5), causing their influence to be magnified in
+the squared sum calculation. Since SVD utilizes all data points during the computation, the impact of outliers
+is weighted into the fitting result, leading to deviations from the true trend of the line (as shown Figure 6). We
+adopted the RANSAC algorithm to address the issue of outliers [14]. RANSAC randomly samples subsets of the
+data points and fits a line to these subsets, excluding the influence of outliers. By repeatedly sampling and fitting,
+RANSAC eventually obtains a fitting result that performs well on the majority of data points, thus improving the
+robustness of the fitting. After incorporating the idea of RANSAC into the SVD-based line equation fitting, we
+successfully deal with outliers. As shown in Figure 6, the red solid line is the result of this method. We can see
+that the line of the moving robot is successfully fitted and is not affected by the outlier points.
+The line equation of the sub-trajectory in the radar coordinate system is given as:
+𝑋𝑟 = 𝑙𝑟 +𝑠·®𝑑𝑟, 𝑠 ∈R (6)
+where the subscript 𝑟 means the radar coordinate system, 𝑙𝑟 is the average 3D coordinates of all points in the
+point cloud except the outliers, 𝑠 is the parameter and ®𝑑𝑟 is the normalized direction vector. The direction vector
+also should be normalized. For direction, we let it coincide with the moving direction of the robot according to
+the chronological order of points in the point cloud. In terms of vector length, we normalize it to one.
+Then, combining the two equations (Equations 5 and 6) in two coordinate systems, we get a line correspondence
+which is given as: (
+𝑋𝑝 = 𝑙𝑝 +𝑡 ·®𝑑𝑝, 𝑡 ∈R
+𝑋𝑟 = 𝑙𝑟 +𝑠·®𝑑𝑟, 𝑠 ∈R (7)
+Combining the line correspondence of each linear sub-trajectory, line correspondences are generated.
+3.2.5 Understanding Line Correspondences. A line correspondence contains equations of a line in two coordinate
+systems. In this subsection, we explore the effect of rotation and translation between two coordinate systems on
+the equation of a line.
+According to Equation 4, we know that the coordinates of a point in the radar system can be transformed into
+the physical map coordinate system by rotation and translation. Since 𝑋𝑟 in Equation 6 can represent any points
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:10 • Zhang et al.
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+𝑧𝑟
+𝑥𝑟
+𝑦𝑟
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+𝑧𝑟𝑅
+𝑥𝑟𝑅
+𝑦𝑟𝑅
+Ԧ𝑑 Ԧ𝑑line line
+𝑅 𝑇
+𝑦𝑝
+𝑧𝑝
+𝑥𝑝
+Ԧ𝑑
+line
+𝑧𝑟′
+𝑥𝑟′
+𝑦𝑟′
+Fig. 7. The impact of rotation and translation on the coordinate system. By rotation, the axes of the two coordinate systems
+can be aligned. By translation, the origin of the two coordinate systems can be made to coincide. The representation of the
+direction vector is only affected by rotation between the two coordinate systems and is not affected by translation.
+on the line in the radar coordinate system, we can transform the line equation into the physical map coordinate
+system by proper rotation and translation:
+𝑋′
+𝑟 = 𝑅𝑋𝑟 +𝑇 = 𝑅𝑙𝑟 +𝑇 +𝑠·𝑅®𝑑𝑟, 𝑠 ∈R (8)
+where 𝑅and 𝑇 denote the proper rotation matrix and translation vector respectively, and𝑋′
+𝑟 denotes the equation
+of the line in the physical map coordinate system. That is, Equation 5 and Equation 8 are both equations of the
+line in the physical map coordinate system. For the purpose of description, we write the two equivalent equations
+together: (
+𝑋𝑝 = 𝑙𝑝 +𝑡 ·®𝑑𝑝, 𝑡 ∈R
+𝑋′
+𝑟 = 𝑅𝑙𝑟 +𝑇 +𝑠·𝑅®𝑑𝑟, 𝑠 ∈R (9)
+where 𝑠 and 𝑡 denote two independent parameters.
+In Equation 9, ®𝑑𝑝 and 𝑅®𝑑𝑟 are parallel since they are both direction vectors of the line in the physical map
+coordinate system. As we normalize the magnitude of both direction vectors and rotation does not change the
+length of the vectors, their length is equal. Since we normalize the direction, they have the same direction.
+Therefore, we have the following conclusion:
+®𝑑𝑝 = 𝑅®𝑑𝑟 (10)
+Equation 10 demonstrates that the direction vectors in two coordinate systems are only relevant to rotation. We
+can also understand the formula intuitively through visualization. As shown in Figure 7, we assume that the line
+is parallel to the 𝑦−𝑎𝑥𝑖𝑠 and in the 𝑥−𝑦plane in the physical map coordinate system. Observing this direction
+vector from two coordinate systems before rotation naturally gives two different representations, ®𝑑𝑝 and ®𝑑𝑟,
+respectively. After rotation, the corresponding axes of the two coordinate systems are parallel to each other. At
+this point, for both coordinate systems, the direction vector is a vector along the 𝑦−𝑎𝑥𝑖𝑠 with a magnitude of
+one. That is, ®𝑑𝑝 is equal to 𝑅®𝑑𝑟.
+Equation 10 transforms the line correspondences into the direction vector correspondences, which is the
+foundation for solving the rotation matrix. Although ®𝑑𝑝 is equal to 𝑅®𝑑𝑟, 𝑙𝑝 and 𝑅𝑙𝑟 +𝑇 in Equation 9 are not equal,
+because 𝑡 and 𝑠 are two independent parameters.
+3.3 Determining the Deployment Orientation
+In this subsection, we propose the deployment orientation calibration algorithm. As we discussed in Section 2.2,
+the calibration of the deployment orientation is actually solving for the rotation matrix (𝑅).
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:11
+After acquiring direction vector correspondences from line correspondences, we proceed to solve the rotation
+matrix. Suppose we get a set of direction vector correspondences:
+𝐷𝑝 =
+ ®𝑑𝑝
+1 ; ...; ®𝑑𝑝
+𝑖 ; ...; ®𝑑𝑝
+𝑛
+
+, 𝐷 𝑟 =
+ ®𝑑𝑟
+1; ...; ®𝑑𝑟
+𝑖; ...; ®𝑑𝑟𝑛
+
+(11)
+where ®𝑑𝑝
+𝑖 denotes 𝑖𝑡ℎ direction vector in the physical coordinate system, ®𝑑𝑟
+𝑖 denotes 𝑖𝑡ℎ direction vector in the
+radar coordinate system, and 𝑛denotes the number of direction vector correspondences which is equal to the
+number of sub-trajectories of the robot. Both 𝐷𝑝 and 𝐷𝑟 are 3 ×𝑛matrixes due to the shape of the direction
+vector being 3 ×1.
+We expect to find a 3 ×3 rotation matrix (𝑅) that satisfies
+∀𝑖 ∈1,...,𝑛, ®𝑑𝑝
+𝑖 = 𝑅®𝑑𝑟
+𝑖 (12)
+However, such an 𝑅may not exist due to the noise generated when measuring the direction vectors. Therefore,
+we instead find an 𝑅that minimizes
+1
+2
+𝑛∑︁
+𝑖=1
+||®𝑑𝑝
+𝑖 −𝑅®𝑑𝑟
+𝑖 ||2 (13)
+Expanding Equation 13:
+1
+2
+𝑛∑︁
+𝑖=1
+||®𝑑𝑝
+𝑖 −𝑅®𝑑𝑟
+𝑖 ||2 = 1
+2
+𝑛∑︁
+𝑖=1
+(®𝑑𝑝
+𝑖
+𝑇 ®𝑑𝑝
+𝑖|{z}
+1○
++®𝑑𝑟
+𝑖
+𝑇
+𝑅𝑇𝑅®𝑑𝑟
+𝑖|      {z      }
+2○
+−2 ®𝑑𝑝
+𝑖
+𝑇
+𝑅®𝑑𝑟
+𝑖|    {z    }
+3○
+) (14)
+The first component is not related to 𝑅. Since 𝑅𝑇𝑅 = 𝐼 [60], the second is also not related to 𝑅. Therefore, the
+actual optimization function becomes
+𝑛∑︁
+𝑖=1
+−2 ®𝑑𝑝
+𝑖
+𝑇
+𝑅®𝑑𝑟
+𝑖 =
+𝑛∑︁
+𝑖=1
+−𝑡𝑟(𝑅®𝑑𝑟
+𝑖
+®𝑑𝑝
+𝑖
+𝑇
+)= −𝑡𝑟(𝑅
+𝑛∑︁
+𝑖=1
+®𝑑𝑟
+𝑖
+®𝑑𝑝
+𝑖
+𝑇
+) (15)
+Then, we describe how to use SVD to find the optimal solution of𝑅. The principle behind please refer to [3, 42].
+We first define a matrix:
+𝑊 =
+𝑛∑︁
+𝑖=1
+®𝑑𝑝
+𝑖 ®𝑑𝑟
+𝑖
+𝑇
+= 𝐷𝑝𝐷𝑇𝑟
+𝑟 (16)
+where 𝑊 is a 3 ×3, and the superscript 𝑇𝑟 represents transpose. Then we perform SVD for 𝑊:
+𝑊 = 𝑈Σ𝑉𝑇𝑟 (17)
+If 𝑑𝑒𝑡(𝑉𝑈𝑇𝑟)= +1, then the desired rotation matrix is:
+𝑅 = 𝑉𝑈𝑇𝑟 (18)
+If 𝑑𝑒𝑡(𝑉𝑈𝑇𝑟)= −1, then the desired rotation matrix is:
+𝑅 = 𝑉
+′
+𝑈𝑇𝑟 (19)
+where 𝑉
+′
+is obtained from V by changing the sign of the 3𝑟𝑑 column.
+It is worth noting that the number of singular values of 𝑊 must be at least two to solve the above rotation
+matrix [3]. That is, the rank of 𝑀 is at least two, which requires the rank of 𝐷𝑝 and 𝐷𝑟 is also at least two [4].
+Therefore, we need at least two linearly independent direction vector correspondences. Further, two non-parallel
+line correspondences are required for solving the rotation matrix, which means that the robot travel trajectory
+contains at least two non-parallel linear sub-trajectories.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:12 • Zhang et al.
+3.4 Locating the mmWave Radar
+We use the translation vector to represent the location of the radar in the physical map. After solving the rotation
+matrix, we proceed to find the translation vector. We regard3 ×1 translation vector (𝑇) as three unknowns and
+then use the method of solving equations to solve 𝑇.
+Although 𝑙𝑝 is not equal to 𝑅𝑙𝑟 +𝑇 in Equation 9, 𝑅𝑙𝑟 +𝑇 must satisfy Equation 5 due to 𝑅𝑙𝑟 +𝑇 denoting the
+coordinates of a point on the line in the physical coordinate system. Therefore, we get:
+𝑅𝑙𝑟 +𝑇 = 𝑙𝑝 +𝑡 ·®𝑑𝑝,𝑡 ∈R (20)
+where both 𝑇 = (𝑇𝑥,𝑇𝑦,𝑇𝑧)𝑇 and 𝑡 are unknowns, and ®𝑑𝑝 = (𝑑𝑝
+𝑥,𝑑𝑝
+𝑦,𝑑𝑝
+𝑧)𝑇 denotes the direction vector of the line
+in the physical coordinate system. Since Equation 20 is a vector equation, it provides three linear constraints, that
+is, three equations. With four unknowns and three equations, there are obviously an infinite number of solutions.
+Therefore, we add another line correspondence. Similarly, we can acquire:
+𝑅𝑙𝑟1 +𝑇 = 𝑙𝑝1 +𝑘· ®𝑑𝑝1,𝑘 ∈R (21)
+where 𝑘 is a parameter similar to 𝑡 and 𝑠, and ®𝑑𝑝1 = (𝑑𝑝
+𝑥1,𝑑𝑝
+𝑦1,𝑑𝑝
+𝑧1)𝑇 is the direction vector of the line in the
+physical coordinate system. It is worth noting that Equation 21 only adds one unknown (𝑘) while providing three
+equations.
+Now, combining Equation 20 and Equation 21, we have five unknowns and six equations. Therefore, the least
+square method can be used to find the optimal solution of𝑇. Furthermore, for each additional line correspondence,
+three equations and one unknown are added. When using the least square method, the more line correspondences,
+the more accurately the 𝑇 is solved.
+In order to use the least square method more concisely and tractably, we rewrite the system of equations to be
+solved in the form of 𝐴𝑥 = 𝑏. We take an example where the number of line correspondences is two. Moving all
+unknowns in Equation 20 and Equation 21 to the left of the equal sign, and the constant to the right, we get:
+©­­­­­­­­­­
+«
+1 0 0 −𝑑𝑝
+𝑥 0
+0 1 0 −𝑑𝑝
+𝑦 0
+0 0 1 −𝑑𝑝
+𝑧 0
+1 0 0 0 −𝑑𝑝
+𝑥1
+0 1 0 0 −𝑑𝑝
+𝑦1
+0 0 1 0 −𝑑𝑝
+𝑧1
+ª®®®®®®®®®®
+¬|                          {z                          }
+𝐴
+©­­­­­
+«
+𝑇𝑥
+𝑇𝑦
+𝑇𝑧
+𝑡
+𝑘
+ª®®®®®
+¬|{z}
+𝑥
+=  𝑙𝑟 −𝑅𝑙𝑟;𝑙𝑝1 −𝑅𝑙𝑟1
+
+|                   {z                   }
+𝑏
+(22)
+In the form of 𝐴𝑥 = 𝑏, 𝑥 is solved by:
+𝑥 = (𝐴𝑇𝐴)−1𝐴𝑇𝑏 (23)
+where the superscript (·)−1 denotes matrix inversion, and the first three elements of 𝑥 are the translation vector
+we desire. It is worth noting that when the number of line correspondences exceeds two, the method is similar.
+Two line correspondences are the minimum required to solve the translation vector.
+Combining the rotation matrix and the translation vector solved above, the location attribute calibration of
+mmWave radar is finished. And we can transform the target’s coordinates from the radar coordinate system into
+the physical map coordinate system. As discussed above, to accomplish the calibration, only two non-parallel
+line correspondences are required. That is, the robot’s navigation trajectory in the environment involves at least
+two linear sub-trajectories.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:13
+4 SYSTEM IMPLEMENTATION
+RX3 RX2 RX1 RX0
+TX0
+TX1
+TX2
+TX3
+Azimuth
+Elevation
+1.22cm
+Fig. 8. Radar. On the left is the physical appearance of the CAL60S244-IB.
+On the right is the arrangement of CAL60S244-IB antenna array. [50]
+Laser radar Raspberry Pi 4B
+Fig. 9. Robot. Its length, width, and height
+are 27cm, 22cm, and 20cm respectively.
+Hardware Implementations. Our system uses Calterah’s CAL60S244-IB [50], an antenna-in-package (Aip)
+radar sensor chip with 4 TX and 4 RX antenna array. It integrates a single-chip FMCW radar sensor capable
+of operation in the 60 to 64 𝐺𝐻𝑧 band. The physical appearance of the CAL60S244-IB radar device and the
+arrangement of its antenna array are illustrated in Figure 8. We employ a transmit signal bandwidth of4𝐺𝐻𝑧,
+which corresponds to a range resolution of 3.75𝑐𝑚. A frame contains 512 chirps (128 per TX), where one chirp
+has a duration of 90𝜇𝑠, corresponding to the velocity resolution of 5.43𝑐𝑚/𝑠. And the radar transmits 15 frames
+per second. The data processing happens on a ThinkPad laptop with an Intel i7-8750H processor and 16GB
+memory. We use a commercial wheeled robot [59] to map the environment and also to act as a reference target
+for calibration. As shown in Figure 9, the robot is equipped with a laser radar for mapping and a Raspberry Pi 4B
+for running the SLAM algorithm. The robot can establish a connection with our laptop to transfer data via the
+WIFI module on the Raspberry Pi.
+Software Implementations. We implement the signal processing on Matlab. The radar’s sampling data is
+forwarded to the laptop through a TCP connection when the radar has captured the reflection signals from the
+surrounding area. Similarly, the physical map created and the robot’s trajectory in the map are transmitted to the
+laptop via the WIFI module on the Raspberry Pi. We then extract the point cloud, fit equations of lines in both
+coordinate systems and calibrate the radar’s location attribute.
+5 EVALUATION
+Now that we have seen all the components of LoCal, we comprehensively demonstrate the performance of
+LoCal in real-world applications as well as benchmark experiments to see if it has conformed to the stringent
+requirements of the error-sensitive applications. To verify the effectiveness of the proposed method and study
+the influence of various parameters and conditions, we conduct benchmark experiments under various parameter
+settings in three different environments. We showcase three error-sensitive indoor sensing applications with the
+proposed system: (i) detecting life-threatening falls based on accurate tracking of human height; (ii) fusing sparse
+radar point clouds obtained from two different views in order to generate high-quality point clouds containing
+human posture; and (iii) tracking the human at a long distance in indoor environments.
+5.1 Benchmark Experiment
+5.1.1 Experiment Setup. The radar’s location attribute calibration scenario is demonstrated in Figure 10. We
+mount the mmWave radar on the ceiling as well as use the robot to map the environment and to determine the
+location and orientation of the radar in the physical map. The radar’s location attribute can be calibrated after the
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:14 • Zhang et al.
+Radar
+Robot
+Fig. 10. Calibration scenario.
+Radar
+Corner Reflector
+𝑧𝑝
+𝑦𝑝
+𝑥𝑝
+trackLaser Range 
+Finder Fig. 11. Benchmark evaluation.
+Radar
+Laser Range 
+Finder Fig. 12. Manual measurement.
+robot travels around the room. As shown in Figure 11, we use a corner reflector which is an ideal signal reflector
+as the target in this benchmark experiment. We employ a 1.55𝑚-long sliding track controlled by Raspberry Pi 3
+Model to precisely move the corner reflector.
+5.1.2 Evaluation Metrics. The ground truth for the location ground truth of the mmWave radar is measured
+accurately with a commodity laser range finder. However, the ground truth for the radar’s 3D orientation (pitch,
+yaw, and roll) can not be directly measured due to the typical orientation sensors such as the gradienter can only
+measure the pitch and roll that are related to the direction of gravity.
+Therefore, instead of a direct evaluation, we use the tracking performance of a moving corner reflector by
+calibrated radar in the physical map to evaluate the performance of LoCal indirectly. The more accurately the
+radar’s location attribute is estimated, the better the tracking performance of the corner reflector. Specifically, we
+extract the point cloud of the moving corner reflector and use the radar’s location attribute from the calibration
+to transform the point cloud into the physical map coordinate system. Then, we calculate the distance between
+each point in the transformed point cloud and the trajectory of the moving corner reflector. The ground truth of
+the moving corner reflector is measured by a commodity laser range finder. Finally, we can inversely derive an
+approximate orientation error based on the tracking error and the ground truth of the radar’s location.
+5.1.3 How Many Linear Sub-trajectories in Robot’s Trajectory are Needed? First, we examine how the number of
+linear sub-trajectories affects the calibration’s accuracy. We navigate the robot to conduct experiments with two,
+four, six, and eight linear sub-trajectories, respectively. The length of each of these linear sub-trajectories is 1𝑚.
+We deployed the radar at five different locations in the environment for this experiment.
+0 0.050.1 0.15tracking error(m)00.20.40.60.81CDF
+ 
+two linesfour linessix lineseight lines
+Fig. 13. Tracking errors among differ-
+ent numbers of linear sub-trajectories.
+0 0.050.10.150.20.25Tracking error(m)00.20.40.60.81CDF
+ 
+0.5m0.75m1m1.5m2m
+Fig. 14. Tracking errors among differ-
+ent travel lengths.
+0 0.20.40.60.8Tracking error(m)00.20.40.60.81CDF
+ 
+LoCalManual measurement
+Fig. 15. Comparison between manual
+measurement and LoCal.
+Figure 13 illustrates the results, which indicate that median tracking errors for 2, 4, 6, and 8 linear sub-
+trajectories are 0.0440𝑚,0.0366𝑚, 0.0309𝑚and 0.0294𝑚, respectively. The calibration precision increases with
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:15
+the number of linear sub-trajectories, but the improvement is modest when the number exceeds 4. Furthermore,
+when using 4 linear sub-trajectories, the median tracking error of the moving corner reflector is only 0.0366𝑚,
+which is sufficient for error-sensitive indoor sensing applications. Therefore, we adopt the trajectory that contains
+four linear sub-trajectories in the following experiments.
+5.1.4 How Long Should a Robot Travel? We explore the impact of the length of each linear sub-trajectory on
+the performance of LoCal. As shown in Figure 14, we set 5 sub-trajectory lengths, 0.5𝑚, 0.75𝑚, 1𝑚, 1.5𝑚, 2𝑚,
+respectively. For each length, the robot’s trajectory contains all four sub-trajectories. As shown in Figure 14, we
+can see that the length of trajectory does influence LoCal’s performance. The median calibration errors for travel
+lengths of 0.5𝑚, 0.75𝑚, 1𝑚, 1.5𝑚and 2𝑚correspond to 0.0647𝑚, 0.0471𝑚, 0.0366𝑚, 0.0315𝑚and 0.0297𝑚,
+respectively. The calibration performance increases with the length of the trajectory. It is worth noting that the
+benefit will diminish gradually as the length increases beyond1𝑚. Therefore, we choose 1𝑚as our default length
+of each sub-trajectory.
+This performance improvement with a longer trajectory length is easy to understand. This is because as the
+trajectory length gets longer, the line equations corresponding to each sub-trajectory are fitted more accurately
+in both in both radar and physical map coordinate systems, which is the nature of the least squares method.
+5.1.5 Comparison with Manual Measurement. We conduct experiments to compare the performance of manual
+measurements with our system. The scenario of manual measurement of radar’s location attribute is shown in
+Figure 12. Standing on a ladder, we use a laser rangefinder to measure the location of the radar on the physical
+map. To measure the orientation of the radar, we use a gradienter to measure the pitch and roll angles while
+trying our best to keep its yaw angle at 0 degrees. The measurement process is very complicated, laborious, and
+potentially dangerous due to it requires standing on a chair.
+The tracking accuracy comparison between the manual measurements and LoCal is shown in Figure 15. We
+can see that the errors when tracking using the location attribute calibrated by LoCal are much smaller than using
+the manually measured radar’s location attribute. The median tracking error when adopting LoCal is 0.0366𝑚,
+while the median tracking error is 0.2529𝑚in the manual measurements scenario. The results demonstrate the
+accurate and automatic features of LoCal.
+5.1.6 Performance in Different Indoor Environments. We evaluate the system in three typical environments: 1) a
+bedroom, 2) a living room, and 3) an office. The layouts of the three environmental rooms are shown in Figure 16.
+In all three environments, there is common furniture, such as sofas, tables, and chairs. In each environment, the
+mmWave radar is deployed at five different locations for comprehensive experiments.
+(a) bedroom (3.8m ×4.6m)
+ (b) livingroom (3.48m ×5.67m)
+ (c) office (4m ×6.5m)
+Fig. 16. The layouts of the three experimental rooms.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:16 • Zhang et al.
+At each environment, we navigate the robot on a trajectory that contains four linear sub-trajectories. Then
+we leverage calibrated radar’s location attribute to track the moving corner reflector. The tracking errors are
+demonstrated in Figure 17. We can see that the performance of LoCal is not affected by changing the environment.
+0 0.050.1 0.15Tracking error(m)00.20.40.60.81CDF
+ 
+bedroomlivingroomoffice
+Fig. 17. Tracking errors in different
+rooms.
+0 0.050.1 0.15Tracking error(m)00.20.40.60.81CDF
+ 
+CAL60S244-IBCAL70S244-ABTi AWR2944
+Fig. 18. Tracking errors among differ-
+ent radar devices.
+0 0.050.10.150.2Tracking error(m)00.20.40.60.81CDF
+ 
+CartographerGMappingKartoHector
+Fig. 19. Tracking errors among differ-
+ent SLAM algorithms.
+5.1.7 Effect of Different Radar Devices. To verify the system generalization across different devices, in addition
+to the CAL60S244-IB, we also evaluate the system performance with another two radars, CAL70S244-AB (from
+Calterah) and AWR2944 (from Ti). CAL70S244-AB radar is produced by Calterah and operates at 76𝐺𝐻𝑧 to
+81𝐺𝐻𝑧. AWR2944 is a mmWave radar manufactured by Texas Instruments operating at 76𝐺𝐻𝑧 to 81𝐺𝐻𝑧.
+Figure 18 shows the calibration results of three different radar products. We find that LoCal achieves a similar
+performance across three radars, which indicates that our system is generalizable to a variety of radars.
+5.1.8 Effect of Different SLAM Algorithms. Since LoCal relies on the SLAM system on the robot to obtain the
+robot’s trajectory in the physical map coordinate system, the accuracy of the trajectory acquisition will also
+affect LoCal’s performance. We compare four common laser SLAM algorithms and select the most suitable SLAM
+algorithm for radar location attribute calibration from them. The four SLAM algorithms are Cartographer [22],
+GMapping [19], Hector [32], and Karto [47]. For each SLAM algorithm, we mount the radar at five different
+locations.
+We use each of these four algorithms, in turn, to map the environment and navigate the robot on the same
+trajectory. Then, we evaluate the four SLAM algorithms based on the tracking performance of a moving corner
+reflector. As shown in Figure 19, the Cartographer algorithm achieves the best performance and is significantly
+better than the other three algorithms. The median errors for Cartographer, GMapping, Hector, and Karto are
+0.0366𝑚, 0.0427𝑚, 0.0479𝑚, and 0.0528𝑚, respectively. Therefore, we adopt the Cartographer algorithm when
+calibrating the radar’s location attribute.
+5.1.9 Comparison with the state-of-the-art method. The state-of-the-art method for calibration is based on
+point correspondences (the reference point coordinates in two coordinate systems), but the mmWave radar
+cannot locate the static reference point in an indoor environment due to the rich multipath. Therefore, the point
+correspondence based calibration method cannot be directly applied in indoor environments. For comparison
+purposes, we use the Raspberry Pi to control the sliding track to drive the corner reflector to vibrate periodically
+with an amplitude of 5𝑚𝑚, as shown in Figure 20. Since the amplitude of the vibration is very small compared to
+the size of the corner reflector, we can consider the corner reflector as quasi-stationary. Then the mmWave radar
+can locate the vibrating corner reflector based on the micro-motion positioning algorithm proposed in [70]. The
+coordinate of the vibrating corner reflector in the physical map coordinate system can be measured by the laser
+rangefinder, thus forming the point correspondence.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:17
+Periodic vibration at 5 mm amplitude
+Corner reflector
+Sliding track
+Fig. 20. Using the sliding track to drive the corner
+reflector to vibrate periodically.
+0 0.20.40.60.8Tracking error(m)00.20.40.60.81CDF
+ 
+LoCal3 points6 points9 points12 points
+Fig. 21. Comparison of the experimental results.
+The accuracy of our algorithm is much better than
+point correspondence based methods.
+We implement a point correspondence based radar location attribute calibration method [ 16]. Since the
+accuracy of a point correspondences-based method depends on the number of points and requires at least 3 point
+correspondences, we test the algorithm with 3, 6, 9, and 12 point correspondences, respectively. As we can see in
+Figure 21, the accuracy of the point correspondences-based algorithm slowly improves as the number of points
+increases. However, even when 12 point correspondences are used, the tracking error is much higher than LoCal.
+Specifically, the median tracking errors for 3, 6, 9, and 12 point correspondences are 0.1812𝑚, 0.1438𝑚, 0.1033𝑚,
+and 0.0912𝑚, respectively. In contrast, the median tracking error of LoCal is 0.0366𝑚.
+In terms of effort, twelve points need to be measured twelve times, which is time-consuming, laborious, and
+error-prone. In contrast, LoCal can determine the radar’s location attribute automatically and accurately, which
+does not involve any manual labor or time. It is also easy to understand why this occurs, the line equation is
+fitted from hundreds of points, which results in much higher accuracy for a line than an individual point.
+5.1.10 Ablation Study. When fitting the trajectory of the robot in the radar coordinate system, we employed the
+RANSAC algorithm to mitigate the influence of noisy point clouds on the fitting results. To better comprehend
+its effect, we conducted ablation experiments under noisy conditions. In these experiments, we introduced three
+sources of noise to simulate real-world noisy scenarios: a person engaged in normal activities while sitting, a
+running fan, and a person walking in the room. The scenarios with these three types of noise are illustrated in
+Figure 22. For each type of noise, we conducted three sets of experiments, where the noise and robot’s trajectory
+remained constant while varying the radar’s installation positions and orientations.
+A person sitting and 
+using a mobile phone.
+(a) A person sitting on a chair.
+Running Fan (b) A running fan.
+A walking person (c) A walking person.
+Fig. 22. Three experimental scenarios for ablation experiments.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:18 • Zhang et al.
+Our experimental results are presented in Table 1. We can observe that under both noise conditions of a person
+sitting and a running fan, using RANSAC consistently achieved significantly better results than not using the
+RANSAC algorithm. However, in the presence of a walking person in the room, both with or without RANSAC,
+the tracking accuracy was unsatisfactory. These experimental results demonstrate that the RANSAC algorithm
+effectively handles noise from a person sitting and a running fan. However, when dealing with the greater
+interference caused by a walking person, the RANSAC algorithm also proves ineffective.
+Table 1. Median tracking error under three types of interference in ablation study.
+A person sitting Running fan A walking person
+Without RANSAC 0.7213𝑚 0.3726𝑚 1.3726𝑚
+With RANSAC 0.0366𝑚 0.0368𝑚 0.4129𝑚
+Through experiments, we discovered that the point cloud extraction algorithm is greatly affected by environ-
+mental interference. Even with the use of the RANSAC algorithm, it cannot cope with the interference caused by
+a walking person. This is because when a person walks, the mmWave radar also generates corresponding point
+clouds, and the number of points in these clouds may even exceed that of the robot’s, rendering RANSAC ineffec-
+tive in such situations. In contrast, we observed that the SLAM algorithm is less affected by the interference due
+to its incorporation of both LiDAR and IMU, which enhances its robustness against environmental interference.
+Additionally, the Cartographer algorithm we employed has been specifically designed to address environmental
+interference, such as dynamic objects detection and removal [12], further ensuring the SLAM algorithm’s ability
+to handle common interferences.
+5.1.11 Benchmark Experiment Conclusion. The benchmark experiments are conducted among the different
+number of sub-trajectories, different lengths of the trajectory, different rooms, different radars, and different
+SLAM algorithms. The results demonstrate the excellent performance of LoCal. LoCal enables automatic and
+accurate calibration of radar location attribute, with the accuracy that error-sensitive applications require.
+Overall, LoCal achieves1.74𝑐𝑚of median localization error for the radar’s location. Combined with the average
+robot-to-radar distance (5.1217𝑚) at the time of calibration and Figure 1(b), we roughly estimate that the tracking
+median error of 0.0366𝑚corresponds to a radar orientation median error of 0.43 degree.
+5.2 Case Studies
+We conduct case studies to evaluate the performance of LoCal in real-life applications.
+5.2.1 Fall Detection Based on Accurate Tracking of Human Height. In this application, we demonstrate LoCal can
+be used to fall detection since LoCal enables the accurate tracking of human height. Falls are the leading cause of
+fatal and nonfatal injuries to elders in modern society [70]. We employ the concept of life-threatening fall [70],
+which means that not all falls mean a person is in danger. A critical situation occurs when a person becomes
+incapacitated due to severe injury and cannot get up without assistance after falling and lying on the ground. In
+this section, we implement a life-threatening fall detection system based on accurate tracking of human height.
+We model a life-threatening fall as a two-stage process: sudden height drop followed by prolonged lying down
+on the ground [70]. Accordingly, the system is comprised of two stages: a fall detection stage, in which we detect
+potential falls depending on whether the body shows a drop in height, and a verification stage, in which we
+validate whether the potential falls are indeed life-threatening based on the body’s height after a height drop.
+In the first stage, we leverage the mmWave radar to extract the 4D point cloud of the human body. Using LoCal,
+the 4D point cloud can be transformed from the radar coordinate system into the physical map coordinate system.
+Figure 23 demonstrates an example of the point cloud in the physical map coordinate system when the radar is
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:19
+deployed on the ceiling looking down on the person. Then we can estimate the human height by selecting three
+points inside the 4D point clouds that have the largest z-coordinates and use the median of their z-coordinates as
+the final estimation result.
+Fig. 23. 4D point cloud.
+        
+       
+ 
+   
+ 
+   
+ 
+         
+Walking Falling Static Fig. 24. Height while falling.
+      
+       
+ 
+   
+ 
+   
+ 
+         
+Walking Fig. 25. Height while walking.
+By placing the height estimate of each frame in chronological order, we are able to describe changes in human
+height over time. Figures 24 illustrate the changes in height caused by a person falling while walking, which
+demonstrates that the human 4D point cloud cannot be extracted after a person falls down because their velocity
+is too small to detect. According to Figure 24 and Figure 25, falls can be identified from walking based on the
+height change. However, a lot of fall-like behaviors, such as lying on the bed, can not be distinguished from real
+falls since they share a similar pattern of height drop.
+In the second stage of our fall detection system, we verify whether the detected height drop behaviors are
+indeed life-threatening falls by monitoring the human status after the fall: positive if the person lies on the
+ground for an extended period of time. Since a person may remain stationary after a drop in height, the 4D point
+cloud of the person can not be extracted. We adopt the micro-motion positioning algorithm proposed in [70] to
+detect the stationary person’s height based on the breath and heartbeat. It is worth noting that the results of
+the micro-motion positioning algorithm also should be transformed into the physical map coordinate system.
+Therefore, we are able to identify whether a human is lying on a bed or has fallen to the ground by leveraging
+the height of micro-motions.
+Table 2. Activities types in our dataset
+Types Number of
+behaviors
+Falls trips, slips, loss of consciousness, loss of balance, falling from
+the chair, falling when getting up 550
+Fall-like behaviors sit-down, picking up, lying on the bed, large objects falling 550
+Daily behaviors
+walking, sleeping, eating, drinking, working on the computer,
+washing and rinsing, jogging, watering flowers, playing the
+piano, etc.
+400
+We deploy the fall detection system in 3 different environments, including a bedroom, an office room, and a
+living room. We recruit 20 volunteers of different heights, ages, and weights, 13 of whom are males and 7 of whom
+are females. The height of these volunteers ranged from 161𝑐𝑚to 193𝑐𝑚and their weight ranged from 46𝑘𝑔to
+83𝑘𝑔. Volunteers are free to perform their daily behaviors in three environments. Besides, they are required to
+perform a variety of long-lie falls and fall-like behaviors. Table 2 provides the detail about the data collected.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:20 • Zhang et al.
+Table 3. Comparison of fall detection results using LoCal and manual measurements of location attribute.
+Accuracy Precision Recall F1 score
+LoCal 0.995 1 0.987 0.994
+Manual measurement 0.812 0.717 0.842 0.775
+Table 3 shows the overall system performance, demonstrating that our system achieves excellent performance
+for life-threatening fall detection when using LoCal, with the accuracy, precision, recall, and F1 score of 99.7%,
+100%, 98.8%, 99.4% respectively. In contrast, the accuracy, precision, recall, and F1 scores when using manual
+measurements of location attributes on the same data are only 81.2%, 71.7%, 84.2%, and 77.5%. This is because the
+orientation error from manual measurements makes it impossible for us to accurately monitor the height of the
+human body. Furthermore, the system cannot accurately determine whether the person is falling on the ground
+or doing some fall-like behavior, such as lying on the bed.
+The experimental results demonstrate that life-threatening fall detection can be effectively detected with the
+help of LoCal.
+5.2.2 Point Cloud Fusion of Multiple mmWave Radars. Next, we show the feasibility of using LoCal to fuse the
+point cloud of multiple mmWave radars in different views to improve the point cloud quality. There are a number
+of research and commercial applications that employ mmWave radar point clouds, such as pose estimation
+[15, 48, 56], and human identification [79]. However, the quality of point cloud derived from single mmWave
+radar are very poor due to the limited resolution and noise in the environment [9, 56]. In this section, we propose
+a method to improve the quality of the point cloud by fusing the point cloud from multiple mmWave radars in
+different views.
+To effectively fuse point clouds from multiple radars, we should align the point cloud in both time and space.
+Firstly, temporal alignment of point clouds from multiple radars is necessary since data at different times cannot
+be fused. We align the point cloud of each frame from different radars as much as possible by using the timestamp
+of each frame. Another challenge is aligning the point cloud from different radars in the same coordinate system.
+Thus, we transform the point cloud from multiple radars in different views into the room coordinate system
+based on the location attribute of each radar. Because of the close distance between different parts of the human
+body, the fusion of point clouds from different radars has a high demand for the accuracy of the location attribute.
+Our proposed calibration system exactly provides the accurate location attributes that are needed.
+(a) First radar’s point cloud.
+ (b) Second radar’s point cloud.
+ (c) Fusion with LoCal.
+ (d) Fusion with manual measurements.
+Fig. 26. The fusion results of two radars in different views when a person walks normally.
+Figure 26 illustrates the point cloud fusion results of two radars in different views when a person walks
+normally. The first radar was mounted on the ceiling for vertical downward sensing, and the second radar
+was mounted on the wall for horizontal sensing. We can see that the quality of the point cloud is significantly
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:21
+improved after fusion. Figure 27 shows the point cloud of a person walking with his hands outstretched. The
+sensing setup is similar to Figure 26. As shown in Figure 27(c), the gesture of the person walking with open arms
+is clearly presented in the fused point cloud. As we can see from both Figure 26 and Figure 27, the fusion point
+cloud using manually measured location attributes of radars is prone to misalignment and is far less effective
+than LoCal.
+(a) First radar’s point cloud.
+ (b) Second radar’s point cloud.
+ (c) Fusion with LoCal.
+ (d) Fusion with manual measurements.
+Fig. 27. The fusion results of two radars in different views when a person walks with his arms stretched out.
+Due to the significant improvement in point cloud quality after fusing point clouds from multiple radars, we
+believe that using this technique will improve the performance of point cloud-based tasks such as pose estimation
+and fall detection. Moreover, the success of the point cloud fusion confirms the effectiveness of LoCal.
+5.2.3 Long-distance Human Tracking in Indoor Environments. We employ LoCal to accurately track humans
+in long-distance under indoor environments. According to Figure 1(b), a small error in the radar’s orientation
+will be magnified by the distance of the target from the radar. When the distance reaches 30𝑚, a five-degree
+orientation error will induce a target positioning error of 1.3𝑚. However, long-distance scenarios with detection
+distances of more than 30𝑚often occur in practical applications. For example, accurate tracking of the people
+and robots in the industries plays an important role in safety management [ 10, 51] as well as manufacturing
+automation [18, 25]. The sensing distance of the radar in the industrial plant needs to be farther because the
+area of the plant is much larger than the home. Another example is long-distance human tracking in corridors
+within buildings. As shown in Figure 28, the length of the corridor is up to 52𝑚. Accurate tracking of the people
+is needed if we want to make the corridor smart, such as counting the number of people entering and leaving
+each room, controlling the lighting of each light in the corridor, etc.
+Radar
+Person
+Fig. 28. Tracking the person in long-distance. The
+length of the corridor is 52𝑚
+0 1 2 3 4 5Tracking error(m)00.20.40.60.81CDF
+ 
+LoCalManual measurement
+Fig. 29. Comparison. The accuracy of LoCal is
+much better than manual measurements.
+We conduct long-distance human tracking experiments in a corridor which is shown in Figure 28. It is worth
+noting that in order to track targets at long distances, we need to set the bandwidth relatively small due to the
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:22 • Zhang et al.
+bandwidth is inversely proportional to the longest measurable distance of the radar. The bandwidth we select
+here is 800 𝑀𝐻𝑧, which correspondences to the longest measurable distance of56.47𝑚. There is no need to worry
+that the low distance resolution due to the low bandwidth will not affect the accuracy of our tracking because
+the signal-to-noise ratio is what determines the accuracy [46].
+The experimental results are demonstrated in Figure 29. We can see that the tracking error using LoCal is
+much smaller than when the radar position attributes are measured manually. The median tracking error for
+the person using LoCal is 0.2326𝑚at a sensing distance of more than 30𝑚. In comparison, the median tracking
+error during manual measurements can be up to 1.2047𝑚. The results of this experiment demonstrate that with
+the help of LoCal, we can achieve accurate tracking of the human body from 30𝑚away. Therefore, LoCal can
+be applied in a lot of applications that need to track people long-distance. The automatic feature of LoCal can
+further promote the large-scale deployment of such systems.
+6 RELATED WORK
+RF-based sensing. In recent years, there has been an increasing amount of literature on contactless sensing
+using various RF signals including WiFi [36, 45, 57, 62, 63], RFID [52, 53], UWB [72, 73], LoRa [11, 71] and FMCW
+radar [9, 78] to sense people and objects. Meanwhile, researchers have developed systems ranging from human
+vital sign monitoring [69, 74], sleep monitoring [67], gesture recognition to fall detection [55] and daily activity
+recognition [27]. Among these technologies, FMCW radar has a broad development prospect because of the
+advantages of large bandwidth, small antenna, high resolution, and the ability to sense the distance, speed, and
+angle of the target through a single device.
+mmWave-based sensing. Benefiting from the outstanding sensing capability and reduced cost with the manu-
+facturing process maturity, mmWave radar has been widely used in autonomous driving and industrial production
+in recent years. Due to mmWave radar’s short wavelength and large bandwidth, high-precision applications like
+vibration measurement [26, 64], vital signs monitoring [21, 30, 65], tracking [33, 66], gesture recognition [37, 58]
+are exploited. Meanwhile, the emergence of applications such as pose estimation [15, 56], personal identification
+[17], and object imaging [1, 13], speech recognition [68] broaden the boundaries of mmWave radar.
+Location attribute calibration of sensors. With the need for sensing in information systems, a range of
+sensors are developed, such as cameras, LIDAR, WiFi, mmWave radar, etc. The information sensed directly by
+the sensors is of no use unless the sensors are calibrated. In the case of cameras mounted on robots, what is
+really useful is information about the perceived target relative to the robot, not relative to the camera. Therefore,
+the mounting position and orientation of the camera must be identified, resulting in the extrinsic calibration
+problem [6, 54]. Moreover, location attribute calibration is a common requirement for multisensor fusion. This is
+because multisensor data fusion can only be performed when the data from multiple sensors are transformed
+into the same coordinate system. Therefore, the location attribute calibration of various sensors, such as camera
+[6, 34, 54], WiFi [5], LIDAR [38, 77] and mmWave radar [23, 39], has been extensively studied in the past decades.
+Location attribute calibration of mmWave radar. As mmWave radar is adaptable to various kinds of bad
+weather, it is first widely used in the field of autonomous driving as a complement to vision and LIDAR [80]. As a
+result, most of the current location attribute calibration works for mmWave radar are serving for autonomous
+driving [16, 23, 31, 35, 38–41, 76]. The key task of the calibration is to find the point correspondence: the
+coordinates of one point under two different coordinate systems, for example, the radar coordinate system and
+the vehicle/camera/LIDAR coordinate system. They typically leverage the designed calibration target, such as a
+corner reflector, as the reference point to collect point correspondences in an open environment. However, the
+traditional method of gathering point correspondences no longer works when the scene changes to indoors due
+to the rich multipath. Besides, manually measuring the coordinates of the reference points in the indoor physical
+map coordinate system is impractical when mmWave radars are deployed on a large scale.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:23
+In contrast, LoCal automatically and accurately calibrates the location attribute of mmWave radars in the
+indoor environment. It achieves automation by an autonomous robot equipped with the SLAM algorithm as the
+reference point and realizes high accuracy of calibration by the line correspondences based algorithm.
+7 DISCUSSION
+In this section, we discuss the limitation and potential direction of our future work.
+Deployment effort. Although LoCal requires zero human intervention, it still relies on a robot to move around
+the room and perform SLAM, which still has a relatively large deployment effort for individual consumers.
+Nevertheless, when compared to manually measuring the location attributes of mmWave radar, our proposed
+approach achieves remarkable accuracy while eliminating the need for any human intervention. Moreover,
+enterprise-level customers like hospitals, nursing homes, and real estate developers often deploy radar systems
+on a large scale, encompassing entire buildings. In such scenarios, our approach becomes highly practical for
+calibrating the location attributes of numerous radars. When dealing with individual consumers, it is far easier
+and more accurate to have a radar installer carry a robot than to take manual measurements. Looking ahead,
+integrating this technology into commercially available sweeping robots could empower individual consumers to
+calibrate their radars autonomously on their own.
+Environmental Interference. As demonstrated in Section 5.1.10, LoCal cannot function properly when there
+are people walking in the room. However, minor human activities (such as typing, using a phone, etc.) and the
+rotation of fans, which involve limited movement within the room, do not affect our system. Therefore, when
+calibrating the location attribute of the radar using LoCal, we request that people in the room try to remain
+seated on chairs or sofas and avoid walking. We believe this is an acceptable requirement.
+Extension to diverse sensing tasks. Our proposed system LoCal is a framework for location attribute calibration
+of mmWave radar so that it is able to enhance the sensing performance of diverse sensing tasks. In this paper,
+we use fall detection, point cloud fusion, and long-distance human tracking as representative sensing tasks to
+illustrate the feasibility and performance of our system. We leave the extension to other sensing tasks as our
+future work.
+Further applications of point cloud fusion. In this paper, we demonstrate that the quality of point clouds
+can be enhanced significantly by fusing point clouds from multiple radars. Further, the fused point cloud can
+be employed to improve the performance of sensing tasks that are based on the radar point cloud, such as
+fall detection, pose estimation, people identification, etc. In our future research, we intend to explore further
+applications of point cloud fusion.
+8 CONCLUSION
+In this paper, we present the design and implementation of LoCal, to the best of our knowledge, the very first
+indoor mmWave radar location attribute calibration system that can easily, automatically, and accurately calibrate
+radar’s location attributes in complicated indoor environments, with zero human effort involved. LoCal leverages a
+moving robot with SLAM capability as the reference point for calibration and propose a trajectory correspondence
+based calibration algorithm. Extensive experimental results demonstrate that LoCal significantly improves the
+performance of mmWave-based sensing applications.
+ACKNOWLEDGMENTS
+This research is supported by NSFC A3 Project 62061146001, PKU-NTU Collaboration Project. We extend our
+special thanks to Peking University New Yan Yuan Campus for providing us with a genuine experimental
+environment in the faculty apartments.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:24 • Zhang et al.
+REFERENCES
+[1] Aakriti Adhikari, Hem Regmi, Sanjib Sur, and Srihari Nelakuditi. 2022. MiShape: Accurate Human Silhouettes and Body Joints from
+Commodity Millimeter-Wave Devices. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6, 3 (2022),
+1–31.
+[2] Mohammad Arif Ul Alam, Md Mahmudur Rahman, and Jared Q Widberg. 2021. Palmar: Towards adaptive multi-inhabitant activity
+recognition in point-cloud technology. In IEEE INFOCOM 2021-IEEE Conference on Computer Communications . IEEE, 1–10.
+[3] K Somani Arun, Thomas S Huang, and Steven D Blostein. 1987. Least-squares fitting of two 3-D point sets. IEEE Transactions on pattern
+analysis and machine intelligence 5 (1987), 698–700.
+[4] Sheldon Axler. 1997. Linear algebra done right . Springer Science & Business Media.
+[5] Roshan Sai Ayyalasomayajula, Aditya Arun, Chenfeng Wu, Shrivatsan Rajagopalan, Shreya Ganesaraman, Aravind Seetharaman,
+Ish Kumar Jain, and Dinesh Bharadia. 2020. LocAP: Autonomous Millimeter Accurate Mapping of WiFi Infrastructure. In NSDI.
+1115–1129.
+[6] Filippo Basso, Emanuele Menegatti, and Alberto Pretto. 2018. Robust intrinsic and extrinsic calibration of RGB-D cameras. IEEE
+Transactions on Robotics 34, 5 (2018), 1315–1332.
+[7] Ltd. Beijing Tsingray Technology Co. 2023. Beijing Tsingray Technology Co., Ltd. Official Website. https://www.qingleitech.com/
+Accessed 6 May 2023.
+[8] A Blum, J Hopcroft, and R Kannan. 2020. Best-Fit Subspaces and Singular Value Decomposition (SVD).
+[9] Pingping Cai and Sanjib Sur. 2023. MilliPCD: Beyond Traditional Vision Indoor Point Cloud Generation via Handheld Millimeter-Wave
+Devices. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 6, 4, Article 160 (jan 2023), 24 pages. https://doi.org/10.1145/3569497
+[10] Jacob L Carr, Christopher C Jobes, and Jingcheng Li. 2010. Development of a method to determine operator location using electromagnetic
+proximity detection. In 2010 IEEE International Workshop on Robotic and Sensors Environments . IEEE, 1–6.
+[11] Zhaoxin Chang, Fusang Zhang, Jie Xiong, Junqi Ma, Beihong Jin, and Daqing Zhang. 2022. Sensor-free soil moisture sensing using lora
+signals. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6, 2 (2022), 1–27.
+[12] Xieyuanli Chen, Andres Milioto, Emanuele Palazzolo, Philippe Giguere, Jens Behley, and Cyrill Stachniss. 2019. Suma++: Efficient
+lidar-based semantic slam. In 2019 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) . IEEE, 4530–4537.
+[13] Kaikai Deng, Dong Zhao, Qiaoyue Han, Zihan Zhang, Shuyue Wang, Anfu Zhou, and Huadong Ma. 2023. Midas: Generating MmWave
+Radar Data from Videos for Training Pervasive and Privacy-Preserving Human Sensing Tasks. Proc. ACM Interact. Mob. Wearable
+Ubiquitous Technol. 7, 1, Article 9 (mar 2023), 26 pages. https://doi.org/10.1145/3580872
+[14] Konstantinos G Derpanis. 2010. Overview of the RANSAC Algorithm. Image Rochester NY 4, 1 (2010), 2–3.
+[15] Han Ding, Zhenbin Chen, Cui Zhao, Fei Wang, Ge Wang, Wei Xi, and Jizhong Zhao. 2023. MI-Mesh: 3D Human Mesh Construction
+by Fusing Image and Millimeter Wave. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 7, 1, Article 10 (mar 2023), 24 pages.
+https://doi.org/10.1145/3580861
+[16] Joris Domhof, Julian FP Kooij, and Dariu M Gavrila. 2019. An extrinsic calibration tool for radar, camera and lidar. In 2019 International
+Conference on Robotics and Automation (ICRA) . IEEE, 8107–8113.
+[17] Lijie Fan, Tianhong Li, Rongyao Fang, Rumen Hristov, Yuan Yuan, and Dina Katabi. 2020. Learning longterm representations for person
+re-identification using radio signals. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 10699–10709.
+[18] Robert Ferguson, Matthieu Chevrier, and Alan Rankin. 2018. mmwave radar: Enabling greater intelligent autonomy at the edge. Texas
+Instruments (2018), 1–9.
+[19] Giorgio Grisetti, Cyrill Stachniss, and Wolfram Burgard. 2007. Improved techniques for grid mapping with rao-blackwellized particle
+filters. IEEE transactions on Robotics 23, 1 (2007), 34–46.
+[20] Tianbo Gu, Zheng Fang, Zhicheng Yang, Pengfei Hu, and Prasant Mohapatra. 2019. MmSense: Multi-person detection and identification
+via mmWave sensing. In Proceedings of the 3rd ACM Workshop on Millimeter-wave Networks and Sensing Systems . 45–50.
+[21] Unsoo Ha, Salah Assana, and Fadel Adib. 2020. Contactless seismocardiography via deep learning radars. In Proceedings of the 26th
+annual international conference on mobile computing and networking . 1–14.
+[22] Wolfgang Hess, Damon Kohler, Holger Rapp, and Daniel Andor. 2016. Real-time loop closure in 2D LIDAR SLAM. In 2016 IEEE
+international conference on robotics and automation (ICRA) . IEEE, 1271–1278.
+[23] Muhammad Z. Ikram and Adeel Ahmad. 2019. Automated Radar Mount-Angle Calibration in Automotive Applications. In 2019 IEEE
+Radar Conference (RadarConf) . 1–5. https://doi.org/10.1109/RADAR.2019.8835602
+[24] Texas Instruments. 2023. Texas Instruments Website about mmWave Radar Sensors. https://www.ti.com/sensors/mmwave-radar/
+overview.html Accessed 6 May 2023.
+[25] M. Javaid, A. Haleem, R. P. Singh, S. Rab, and R. Suman. 2021. Significance of Sensors for Industry 4.0: Roles, Capabilities, and Applications.
+Sensors International 2, 1 (2021), 100110.
+[26] Chengkun Jiang, Junchen Guo, Yuan He, Meng Jin, Shuai Li, and Yunhao Liu. 2020. mmVib: micrometer-level vibration measurement
+with mmwave radar. In Proceedings of the 26th Annual International Conference on Mobile Computing and Networking . 1–13.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:25
+[27] Wenjun Jiang, Chenglin Miao, Fenglong Ma, Shuochao Yao, Yaqing Wang, Ye Yuan, Hongfei Xue, Chen Song, Xin Ma, Dimitrios
+Koutsonikolas, et al. 2018. Towards environment independent device free human activity recognition. In Proceedings of the 24th annual
+international conference on mobile computing and networking . 289–304.
+[28] Feng Jin, Arindam Sengupta, and Siyang Cao. 2020. mmfall: Fall detection using 4-d mmwave radar and a hybrid variational rnn
+autoencoder. IEEE Transactions on Automation Science and Engineering (2020).
+[29] Wolfgang Kabsch. 1976. A solution for the best rotation to relate two sets of vectors. Acta Crystallographica Section A: Crystal Physics,
+Diffraction, Theoretical and General Crystallography 32, 5 (1976), 922–923.
+[30] Usman Mahmood Khan, Luca Rigazio, and Muhammad Shahzad. 2022. Contactless Monitoring of PPG Using Radar. Proceedings of the
+ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6, 3 (2022), 1–30.
+[31] Deokkyu Kim and Sungho Kim. 2019. Extrinsic parameter calibration of 2D radar-camera using point matching and generative
+optimization. In 2019 19th International Conference on Control, Automation and Systems (ICCAS) . IEEE, 99–103.
+[32] S. Kohlbrecher, J. Meyer, O. von Stryk, and U. Klingauf. 2011. A Flexible and Scalable SLAM System with Full 3D Motion Estimation. In
+Proc. IEEE International Symposium on Safety, Security and Rescue Robotics (SSRR) . IEEE.
+[33] Hao Kong, Xiangyu Xu, Jiadi Yu, Qilin Chen, Chenguang Ma, Yingying Chen, Yi-Chao Chen, and Linghe Kong. 2022. m3track: mmwave-
+based multi-user 3d posture tracking. In Proceedings of the 20th Annual International Conference on Mobile Systems, Applications and
+Services. 491–503.
+[34] Ram Krishan Kumar, Adrian Ilie, Jan-Michael Frahm, and Marc Pollefeys. 2008. Simple calibration of non-overlapping cameras with a
+mirror. In 2008 IEEE Conference on Computer Vision and Pattern Recognition . 1–7. https://doi.org/10.1109/CVPR.2008.4587676
+[35] Chia-Le Lee, Yu-Han Hsueh, Chieh-Chih Wang, and Wen-Chieh Lin. 2020. Extrinsic and temporal calibration of automotive radar and
+3d lidar. In 2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) . IEEE, 9976–9983.
+[36] Yang Li, Dan Wu, Jie Zhang, Xuhai Xu, Yaxiong Xie, Tao Gu, and Daqing Zhang. 2022. DiverSense: Maximizing Wi-Fi Sensing Range
+Leveraging Signal Diversity. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6, 2 (2022), 1–28.
+[37] Haipeng Liu, Yuheng Wang, Anfu Zhou, Hanyue He, Wei Wang, Kunpeng Wang, Peilin Pan, Yixuan Lu, Liang Liu, and Huadong Ma.
+2020. Real-time arm gesture recognition in smart home scenarios via millimeter wave sensing. Proceedings of the ACM on interactive,
+mobile, wearable and ubiquitous technologies 4, 4 (2020), 1–28.
+[38] Jiyong Oh, Ki-Seok Kim, Miryong Park, and Sungho Kim. 2018. A comparative study on camera-radar calibration methods. In 2018 15th
+International Conference on Control, Automation, Robotics and Vision (ICARCV) . IEEE, 1057–1062.
+[39] Kunle T Olutomilayo, Mojtaba Bahramgiri, Saeid Nooshabadi, and Daniel R Fuhrmann. 2021. Extrinsic calibration of radar mount
+position and orientation with multiple target configurations. IEEE Transactions on Instrumentation and Measurement 70 (2021), 1–13.
+[40] Juraj Peršić, Ivan Marković, and Ivan Petrović. 2017. Extrinsic 6DoF calibration of 3D lidar and radar. In 2017 European Conference on
+Mobile Robots (ECMR) . IEEE, 1–6.
+[41] Juraj Peršić, Ivan Marković, and Ivan Petrović. 2019. Extrinsic 6dof calibration of a radar–lidar–camera system enhanced by radar cross
+section estimates evaluation. Robotics and Autonomous Systems 114 (2019), 217–230.
+[42] François Pomerleau, Francis Colas, Roland Siegwart, et al. 2015. A review of point cloud registration algorithms for mobile robotics.
+Foundations and Trends ® in Robotics 4, 1 (2015), 1–104.
+[43] QUMEA. 2023. QUMEA Official Website. https://qumea.com/index.php/en/ Accessed 6 May 2023.
+[44] Sandeep Rao. 2017. Introduction to mmWave sensing: FMCW radars. Texas Instruments (TI) mmWave Training Series (2017), 1–11.
+[45] Yili Ren, Zi Wang, Sheng Tan, Yingying Chen, and Jie Yang. 2021. Winect: 3D human pose tracking for free-form activity using
+commodity WiFi. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–29.
+[46] Mark A Richards. 2014. Fundamentals of radar signal processing . McGraw-Hill Education.
+[47] ROS.org. 2023. Karto SLAM docimentation in ROS. http://wiki.ros.org/slam_karto [Online; accessed 8-May-2023].
+[48] Arindam Sengupta, Feng Jin, Renyuan Zhang, and Siyang Cao. 2020. mm-Pose: Real-time human skeletal posture estimation using
+mmWave radars and CNNs. IEEE Sensors Journal 20, 17 (2020), 10032–10044.
+[49] Bin Tan, Zhixiong Ma, Xichan Zhu, Sen Li, Lianqing Zheng, Sihan Chen, Libo Huang, and Jie Bai. 2022. 3d object detection for
+multi-frame 4d automotive millimeter-wave radar point cloud. IEEE Sensors Journal (2022).
+[50] Calterh Semiconductor Technology. 2017. Calterh Semiconductor Technology‘s Official Website. (2017). Accessed 12 May 2022.
+https://www.calterah.com/.
+[51] J. Teizer. 2015. Magnetic Field Proximity Detection and Alert Technology for Safe Heavy Construction Equipment Operation. In 32nd
+International Symposium on Automation and Robotics in Construction .
+[52] Chuyu Wang, Jian Liu, Yingying Chen, Lei Xie, Hong Bo Liu, and Sanclu Lu. 2018. RF-Kinect: A Wearable RFID-Based Approach
+Towards 3D Body Movement Tracking. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 2, 1, Article 41 (mar 2018), 28 pages.
+https://doi.org/10.1145/3191773
+[53] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-Wall Eavesdropping
+on Loudspeakers via RFID by Capturing Sub-Mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182
+(dec 2022), 25 pages. https://doi.org/10.1145/3494975
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+199:26 • Zhang et al.
+[54] C-C Wang. 1992. Extrinsic calibration of a vision sensor mounted on a robot. ieee Transactions on Robotics and Automation 8, 2 (1992),
+161–175.
+[55] Hao Wang, Daqing Zhang, Yasha Wang, Junyi Ma, Yuxiang Wang, and Shengjie Li. 2016. RT-Fall: A real-time and contactless fall
+detection system with commodity WiFi devices. IEEE Transactions on Mobile Computing 16, 2 (2016), 511–526.
+[56] Shuai Wang, Dongjiang Cao, Ruofeng Liu, Wenchao Jiang, Tianshun Yao, and Chris Xiaoxuan Lu. 2023. Human Parsing with Joint
+Learning for Dynamic mmWave Radar Point Cloud. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies
+7, 1 (2023), 1–22.
+[57] Xuanzhi Wang, Kai Niu, Jie Xiong, Bochong Qian, Zhiyun Yao, Tairong Lou, and Daqing Zhang. 2022. Placement Matters: Understanding
+the Effects of Device Placement for WiFi Sensing. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6,
+1 (2022), 1–25.
+[58] Haowen Wei, Ziheng Li, Alexander D Galvan, Zhuoran Su, Xiao Zhang, Kaveh Pahlavan, and Erin T Solovey. 2022. IndexPen: Two-Finger
+Text Input with Millimeter-Wave Radar.Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6, 2 (2022),
+1–39.
+[59] wheeltec. 2023. Official website of wheeltec. https://www.wheeltec.net/ Accessed 6 May 2023..
+[60] Wikipedia. 2023. Rotation matrix — Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Rotation_matrix [Online;
+accessed 31-January-2023].
+[61] Chenshu Wu, Feng Zhang, Beibei Wang, and KJ Ray Liu. 2020. mmTrack: Passive multi-person localization using commodity millimeter
+wave radio. In IEEE INFOCOM 2020-IEEE Conference on Computer Communications . IEEE, 2400–2409.
+[62] Yaxiong Xie, Zhenjiang Li, and Mo Li. 2019. Precise Power Delay Profiling with Commodity Wi-Fi. IEEE Transactions on Mobile
+Computing 18, 6 (2019), 1342–1355. https://doi.org/10.1109/TMC.2018.2860991
+[63] Yaxiong Xie, Jie Xiong, Mo Li, and Kyle Jamieson. 2019. mD-Track: Leveraging multi-dimensionality for passive indoor Wi-Fi tracking.
+In The 25th Annual International Conference on Mobile Computing and Networking . 1–16.
+[64] Yanni Yang, Huafeng Xu, Qianyi Chen, Jiannong Cao, and Yanwen Wang. 2023. Multi-Vib: Precise Multi-point Vibration Monitoring
+Using mmWave Radar. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6, 4 (2023), 1–26.
+[65] Zhicheng Yang, Parth H. Pathak, Yunze Zeng, Xixi Liran, and Prasant Mohapatra. 2016. Monitoring Vital Signs Using Millimeter Wave.
+In Proceedings of the 17th ACM International Symposium on Mobile Ad Hoc Networking and Computing (Paderborn, Germany) (MobiHoc
+’16). Association for Computing Machinery, New York, NY, USA, 211–220. https://doi.org/10.1145/2942358.2942381
+[66] Shichao Yue, Hao He, Peng Cao, Kaiwen Zha, Masayuki Koizumi, and Dina Katabi. 2022. CornerRadar: RF-Based Indoor Localization
+Around Corners. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 6, 1 (2022), 1–24.
+[67] Camellia Zakaria, Gizem Yilmaz, Priyanka Mary Mammen, Michael Chee, Prashant Shenoy, and Rajesh Balan. 2023. SleepMore:
+Inferring Sleep Duration at Scale via Multi-Device WiFi Sensing. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies 6, 4 (2023), 1–32.
+[68] Shang Zeng, Haoran Wan, Shuyu Shi, and Wei Wang. 2023. mSilent: Towards General Corpus Silent Speech Recognition Using COTS
+mmWave Radar. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 7, 1 (2023), 1–28.
+[69] Youwei Zeng, Jinyi Liu, Jie Xiong, Zhaopeng Liu, Dan Wu, and Daqing Zhang. 2021. Exploring multiple antennas for long-range WiFi
+sensing. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–30.
+[70] Duo Zhang, Xusheng Zhang, Shengjie Li, Yaxiong Xie, Yang Li, Xuanzhi Wang, and Daqing Zhang. 2023. LT-Fall: The Design and
+Implementation of a Life-threatening Fall Detection and Alarming System. Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies 7, 1 (2023), 1–24.
+[71] Fusang Zhang, Zhaoxin Chang, Kai Niu, Jie Xiong, Beihong Jin, Qin Lv, and Daqing Zhang. 2020. Exploring lora for long-range
+through-wall sensing. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 4, 2 (2020), 1–27.
+[72] Fusang Zhang, Zhaoxin Chang, Jie Xiong, Junqi Ma, Jiazhi Ni, Wenbo Zhang, Beihong Jin, and Daqing Zhang. 2023. Embracing
+Consumer-level UWB-equipped Devices for Fine-grained Wireless Sensing. Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies 6, 4 (2023), 1–27.
+[73] Fusang Zhang, Jie Xiong, Zhaoxin Chang, Junqi Ma, and Daqing Zhang. 2022. Mobi2Sense: empowering wireless sensing with mobility.
+In Proceedings of the 28th Annual International Conference on Mobile Computing And Networking . 268–281.
+[74] Fusang Zhang, Daqing Zhang, Jie Xiong, Hao Wang, Kai Niu, Beihong Jin, and Yuxiang Wang. 2018. From Fresnel Diffraction Model to
+Fine-Grained Human Respiration Sensing with Commodity Wi-Fi Devices. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 2, 1,
+Article 53 (mar 2018), 23 pages. https://doi.org/10.1145/3191785
+[75] Jia Zhang, Rui Xi, Yuan He, Yimiao Sun, Xiuzhen Guo, Weiguo Wang, Xin Na, Yunhao Liu, Zhenguo Shi, and Tao Gu. 2023. A Survey of
+mmWave-Based Human Sensing: Technology, Platforms and Applications. IEEE Communications Surveys & Tutorials (2023).
+[76] Jun Zhang, Shini Zhang, Guohao Peng, Haoyuan Zhang, and Danwei Wang. 2022. 3DRadar2ThermalCalib: Accurate Extrinsic Calibration
+between a 3D mmWave Radar and a Thermal Camera Using a Spherical-Trihedral. In2022 IEEE 25th International Conference on Intelligent
+Transportation Systems (ITSC) . IEEE, 2744–2749.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.
+LoCal: An Automatic Location Attribute Calibration Approach for Large-Scale Deployment of mmWave-based Sensing Systems • 199:27
+[77] Qilong Zhang and Robert Pless. 2004. Extrinsic calibration of a camera and laser range finder (improves camera calibration). In 2004
+IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)(IEEE Cat. No. 04CH37566) , Vol. 3. IEEE, 2301–2306.
+[78] Mingmin Zhao, Tianhong Li, Mohammad Abu Alsheikh, Yonglong Tian, Hang Zhao, Antonio Torralba, and Dina Katabi. 2018. Through-
+wall human pose estimation using radio signals. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition .
+7356–7365.
+[79] Peijun Zhao, Chris Xiaoxuan Lu, Jianan Wang, Changhao Chen, Wei Wang, Niki Trigoni, and Andrew Markham. 2019. mid: Tracking
+and identifying people with millimeter wave radar. In 2019 15th International Conference on Distributed Computing in Sensor Systems
+(DCOSS). IEEE, 33–40.
+[80] Taohua Zhou, Mengmeng Yang, Kun Jiang, Henry Wong, and Diange Yang. 2020. MMW radar-based technologies in autonomous
+driving: A review. Sensors 20, 24 (2020), 7283.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.

@@ -1,0 +1,22 @@
+{
+  "target_reference_marker": "[38]",
+  "target_reference_entry": "[38] Chuyu Wang and et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via\nRFID by Capturing Sub-mm Level Vibration. UbiCOMP (2021).",
+  "paper_level_summary_zh": "该引用论文在引言部分将目标论文列为现有微位移传感技术之一，但未明确使用或评价其亚毫米级能力，仅作为结构健康监测领域的普通参考文献出现。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "We envision Platypus’s sub-millimeter, long-range and multi-point tracking capabilities enable many applications in industrial IoT such as structural health monitoring [10, 23, 26, 31]",
+      "evidence_context": "We envision Platypus’s sub-millimeter, long-range and multi-point tracking capabilities enable many applications in industrial IoT such as structural health monitoring [10, 23, 26, 31] by allowing the monitoring of multiple points spanning the entire structure concurrently (Figure 1), with a radar mounted at a fixed point such as a support.",
+      "reference_entry": "[23] Orfeas Kypris and Andrew Markham. 2016. 3-D displacement measurement for structural health monitoring using low-frequency magnetic fields. IEEE Sensors Journal 17, 4 (2016), 1165–1174.",
+      "why_this_judgment_zh": "该引用出现在应用场景列举中，为分组引用（[10,23,26,31]），未独立描述目标论文，且上下文未锚定目标论文的亚毫米/振动/穿墙能力，故判定为普通引用而非能力佐证。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "目标论文被引论文在提及结构健康监测应用时作为分组引用之一出现，未提供单独描述或能力认可。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[38]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

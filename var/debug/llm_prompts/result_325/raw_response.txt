@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[15]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proc. of ACM IMWUT, 2021.",
+  "paper_level_summary_zh": "该引用论文在引言中将目标论文作为通过RFID进行穿墙语音窃听的典型工作之一进行列举，并在相关工作中进一步将其归类为展示RFID穿墙窃听可行性的实例。引用论文并未直接使用或详细评价目标论文的方法，而是将其作为背景和动机的一部分。",
+  "evidences": [
+    {
+      "recommendation": "include",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "researchers have demonstrated the feasibility of using commodity RFID devices for through-wall eavesdropping [15, 17].",
+      "evidence_context": "In addition, researchers have demonstrated the feasibility of using commodity RFID devices for through-wall eavesdropping [15, 17]. Thus, it is crucial to implement privacy measures to secure RFID sensing systems.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proc. of ACM IMWUT, 2021.",
+      "why_this_judgment_zh": "引用论文在相关工作中明确提到 commodity RFID devices 可以实现 through-wall eavesdropping，并引用目标论文 [15] 作为支持。这一表述直接承认了目标论文的穿墙窃听能力，属于 capability_recognition。没有错误归因问题。",
+      "copy_ready_zh": "引用论文确认了利用商用RFID设备进行穿墙窃听的可行性，并将目标论文作为代表性工作列出。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Numerous studies have shown successful attempts in through-wall human motion [3–5] and speech eavesdropping [15–18] via RFID tags for adversarial uses.",
+      "evidence_context": "Numerous studies have shown successful attempts in through-wall human motion [3–5] and speech eavesdropping [15–18] via RFID tags for adversarial uses.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proc. of ACM IMWUT, 2021.",
+      "why_this_judgment_zh": "引言中目标论文 [15] 被列入一个分组引用列表中，作为多项穿墙窃听研究之一。虽然目标论文确实属于这类研究，但此处仅为列举，没有对目标论文进行单独描述或评价。因此归类为 ordinary_reference，推荐 review 而非 include。",
+      "copy_ready_zh": "引用论文在引言中列举了多项穿墙RFID窃听研究，其中包括目标论文。",
+      "confidence": "medium"
+    }
+  ]
+}

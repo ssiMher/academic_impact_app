@@ -1,0 +1,34 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "EC 4: Since we are interested in the impact of generative models to humans, excluded are the technical papers which adopted generative models for data augmentation [49, 59], synthesizing [37], and complement [97].",
+      "reasoning": "The citing paper lists the target paper [97] among technical papers excluded from the literature review because they used generative models for complement (i.e., data augmentation/synthesizing). The mention is part of exclusion criteria, indicating that the target paper is technical and not further discussed. No detailed citation of the target paper's contribution.",
+      "keywords": [
+        "complement",
+        "[97]"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "EC 4: Since we are interested in the impact of generative models to humans, excluded are the technical papers which adopted generative models for data augmentation [49, 59], synthesizing [37], and complement [97].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[97]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper lists the target paper [97] among technical papers excluded from the literature review because they used generative models for complement (i.e., data augmentation/synthesizing). The mention is part of exclusion criteria, indicating that the target paper is technical and not further discussed. No detailed citation of the target paper's contribution.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

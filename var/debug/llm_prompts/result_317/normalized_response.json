@@ -1,0 +1,22 @@
+{
+  "target_reference_marker": "[50]",
+  "target_reference_entry": "[50] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该论文在技术背景部分引用目标论文[23]来说明FMCW雷达相位对微弱振动的敏感性，但并未深入使用或评价其RFID亚毫米级振动感知能力。目标论文仅作为普通技术参考出现，未得到针对其核心贡献的详细讨论或认可。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Fortunately, the phase is more sensitive to vibration with weak amplitude, and thus, the phase of the IF signal can be used to demodulate the vibration signal [23].",
+      "evidence_context": "Although the frequency of the IF signal contains vibration-related information, the frequency change caused by the weak vibration is not discernible in the spectrum. Fortunately, the phase is more sensitive to vibration with weak amplitude, and thus, the phase of the IF signal can be used to demodulate the vibration signal [23]. First, we perform range-FFT over the received IF signal to locate the target.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用[23]仅用于支持相位解调振动信号这一通用技术点，属于普通技术参考。未提及亚毫米级精度、RFID或通过墙壁窃听等目标论文核心贡献。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "论文[23]作为相位解调振动信号的通用参考文献被引用，未获得亚毫米级振动感知能力的明确认可。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[50]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

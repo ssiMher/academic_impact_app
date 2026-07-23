@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[35]",
+  "target_reference_entry": "[35] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai \nZhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via \nRFID by capturing sub-mm level vibration. Proceedings of the ACM on Interactive, \nMobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–25. doi:10.1145/ \n3494975",
+  "paper_level_summary_zh": "该引用论文在相关工作章节将目标论文列为基于可穿戴设备的眼动检测示例之一，属于普通相关文献列举，未对其亚毫米级振动感知能力或穿墙窃听能力进行任何具体描述或评价。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Liu et al. [23] attached a copper electrode to the glass frame to sense eye blinks by utilizing the capacitance variation between the electrode and eyelid.",
+      "evidence_context": "Wearable-based Detection. With the prevalence of VR devices, smart glasses offer another solution for eye motion detection. Google Glass [14] and Jins MEME pair of eyeglasses [6] demonstrated the potential to detect eye motions several years ago. Building on existing approaches, Liu et al. [23] attached a copper electrode to the glass frame to sense eye blinks by utilizing the capacitance variation between the electrode and eyelid. However, wearable devices like these require users to keep the glasses on their heads, which may be inconvenient for daily use.",
+      "reference_entry": "Mengxi Liu, Sizhen Bian, and Paul Lukowicz. 2022. Non-contact, real-time eye blink detection with capacitive sensing. In Proceedings of the 2022 ACM International Workshop on Wearable Computers (ISWC '22). Association for Computing Machinery, New York, NY, USA, 49–53. doi:10.1145/3544794.3558462",
+      "why_this_judgment_zh": "证据引用标记[23]对应的是Liu等人2022年关于电容式眼动检测的论文，而非目标论文（Wang等人2021年关于RFID穿墙窃听的论文）。这是完全不同的论文，属于误引用，因此排除。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文将非目标论文误标为目标论文参考文献，实际讨论的是电容式眼动检测，无关RFID亚毫米级振动感知或穿墙窃听。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[35]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Mengxi Liu, Sizhen Bian, and Paul Lukowicz. 2022. Non-contact, real-time \neye blink detection with capacitive sensing. In Proceedings of the 2022 ACM \nInternational Symposium on Wearable Computers. Association for Computing \nMachinery, New York, NY, USA, 49–53. doi:10.1145/3544794.3558462",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[35] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai \nZhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via \nRFID by capturing sub-mm level vibration. Proceedings of the ACM on Interactive, \nMobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–25. doi:10.1145/ \n3494975",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

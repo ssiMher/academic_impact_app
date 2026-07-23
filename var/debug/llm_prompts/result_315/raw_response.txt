@@ -1,0 +1,37 @@
+{
+  "target_reference_marker": "[3]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文将目标论文作为RFID振动感知领域的相关工作，在引言和攻击模型中提及RFID信号的穿墙能力，但并未单独描述目标论文的方法或性能；在相关工作部分将目标论文归类为RFID振动传感的示例。整体属于普通引用，未提供具体评价或性能对比。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "On one hand, some researchers use accelerator[5], [7], [27], gyroscope[28], and magnetic sensor [6], to capture smart device vibration for sensing speaker-produced sound [6], [27], [28] or facial dynamics to sense human-speaking sound [5], [7]. On the other hand, some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "evidence_context": "Sensing sound through non-acoustic sensors:... On one hand, ... On the other hand, some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该引用出现在相关工作段落中，属于普通列举，目标论文被归为RFID振动感知的一般示例，无具体描述、评价或性能比较，且多个引用共用方括号，无法确认目标论文具体贡献。",
+      "copy_ready_zh": "目标论文[3]在相关工作部分被列为RFID振动传感的示例之一，但未获得单独描述或评价。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "include",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "RFID tag has high metal sensitivity, making it suitable for sensing the metal coil vibration of headset speakers and microphones for online conversation eavesdropping.",
+      "evidence_context": "RFID tag has high metal sensitivity, making it suitable for sensing the metal coil vibration of headset speakers and microphones for online conversation eavesdropping.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该句位于背景与预备知识部分，虽然未直接引用[3]，但作者使用了[8]来支撑金属敏感性，而[8]是引用论文；但此处引用论文整体依赖RFID金属敏感性的特性，目标论文[3]是RFID振动传感的代表性工作，因此该语境间接认可了RFID振动感知能力。但证据中未出现目标论文标记，属于间接认可，故为capability_recognition。",
+      "copy_ready_zh": "引用论文在背景部分认可了RFID标签的金属敏感性适用于感知头戴设备线圈振动。",
+      "confidence": "medium"
+    },
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Moreover, owing to outstanding wall-penetrating ability of RFID signals[10], [11], RFID reader and antennas can be placed outside walls to enhance camouflage capabilities for more natural online conversation eavesdropping.",
+      "evidence_context": "Moreover, owing to outstanding wall-penetrating ability of RFID signals[10], [11], RFID reader and antennas can be placed outside walls to enhance camouflage capabilities for more natural online conversation eavesdropping.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该句提到RFID信号的穿墙能力，引用[10]和[11]，但[10]是一本教科书，[11]是另一篇论文，目标论文[3]未出现在该处。该引用未指向目标论文，不应作为目标论文的穿墙能力证据。",
+      "copy_ready_zh": "引用论文在攻击模型中提及RFID信号的穿墙能力，但未引用目标论文[3]。",
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "One popular approach is radar-based sound Sensing. Systems like RadioMic [20, 21], Radio2Speech [54], mmspy [3], mmecho [11], RFMic-Phone [32], and others [7–9, 38–40, 43–45, 49] use mmWave radar to detect minute vibrations caused by sound waves. They can offer capabilities like through-wall sensing [ 41] and noise resilience [ 23, 25], sometimes combining radar with traditional microphones [32].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This context is from related work (Section 6.2) and groups target reference [41] alongside other radar-based systems. It mentions 'through-wall sensing' as a capability, which aligns with the target paper's title 'Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration'. However, the target paper uses RFID, not mmWave radar; the citation is part of a grouped citation for radar-based works. The mention is neutral and does not detail the target paper's method. Stance is neutral as it is a generic related-work listing.",
+      "highlight_keywords": ["through-wall sensing", "grouped_citation"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The context includes the target reference [41] and mentions 'through-wall sensing', which is a key capability of the target paper. However, the target paper uses RFID sub-mm vibration, not mmWave radar. The template requires explicit body wording for sub-mm precision, which is absent; the mention is grouped and not an explicit capability claim for the target paper. Thus, template 73 is partially relevant but not fully satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "The context does not explicitly state that the target paper achieves sub-mm or millimeter-level sensing; it only groups it with radar works that detect minute vibrations. The target paper's method (RFID) is not detailed, and the citation is a grouped citation, so the template's strict rules for sub-mm precision and direct attribution are not met."
+    },
+    {
+      "citation_text": "They can offer capabilities like through-wall sensing [ 41] and noise resilience [ 23, 25], sometimes combining radar with traditional microphones [32].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This sentence is a continuation within the same related work paragraph. It explicitly mentions 'through-wall sensing' with reference [41], which is the target paper. The target paper is cited as an example of through-wall sensing capability. However, the context is a generic listing of capabilities among many works. The mention is neutral and does not evaluate the target paper specifically. Stance neutral.",
+      "highlight_keywords": ["through-wall sensing", "grouped_citation"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The citation explicitly mentions 'through-wall sensing', which is a key capability of the target paper. However, the template requires explicit sub-mm or millimeter-level precision wording within the body, which is not present. The mention is a grouped citation, so the template's strict rules for direct attribution and precision claim are not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "The body text does not explicitly state that the target paper achieves sub-mm or millimeter-level vibration sensing. The phrase 'through-wall sensing' alone is insufficient. The citation is grouped, and the context is a related-work listing, not a detailed capability claim."
+    }
+  ]
+}

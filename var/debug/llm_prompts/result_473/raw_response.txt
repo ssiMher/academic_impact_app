@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[21]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "本文在相关工作综述中简要提及目标论文，将其列为RFID-based voice detection的代表性工作之一，但未详细描述或直接引用于系统设计或性能对比。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Existing efforts include mmWave-based voice detection [1]–[6], RFID-based voice detection [7]–[9], and UWB-based voice detection [10].",
+      "evidence_context": "Since voice-based acoustic signals are easily blocked by soundproof materials, direct acoustic eavesdropping from outside a private space is often infeasible. As a result, Radio Frequency (RF)-based communication and sensing technologies have been explored in increasingly sophisticated forms for eavesdropping applications. Existing efforts include mmWave-based voice detection [1]–[6], RFID-based voice detection [7]–[9], and UWB-based voice detection [10].",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "本处为群组引用，目标论文[8]（实际为[21]）被归入RFID-based voice detection类别，但未提供具体描述、性能数据或系统细节，属于普通相关工作列举，不满足亚毫米精度或能力认可模板的严格证据要求。",
+      "copy_ready_zh": "本文在引言中将目标论文列为RFID语音检测的代表性工作之一，但未作深入引用或评价。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "RFID-based methods require physical proximity to the speaker",
+      "evidence_context": "For example, mmWave signals poorly penetrate walls due to high-frequency attenuation [11], [12], RFID-based methods require physical proximity to the speaker, and UWB approaches face challenges with multipath interference and synchronization.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该句表述RFID类方法需要物理接近说话者，是整体类别批评，并未单独点名目标论文，且目标论文实际支持through-wall eavesdropping，该批评与目标论文特性不符，属于误归因或泛化陈述，不能作为目标论文的正面证据。",
+      "copy_ready_zh": "本文指出RFID方法需要物理接近说话者，但目标论文实际支持穿墙，因此该陈述不适用于目标论文。",
+      "confidence": "medium"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Table I lists [8] as an RFID tag-based system with 'Max. Dist.' 3.5 m, 'Thru-Wall' checkmark, and 'GT Req.' checkmark.",
+      "evidence_context": "Table I: Comparison of Eavesdropping Attack Methodologies. Rows include [8] as 'RFSpy' with RFID tag.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "Table I中引用[8]对应的是RFSpy系统而不是我们的目标论文。目标论文的引用标记应为[21]（参考文献中第21条），而非[8]。因此该表引用的是不同论文，属于误归因。",
+      "copy_ready_zh": "Table I中[8]引用的是RFSpy，并非目标论文。目标论文在参考文献中为[21]。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Backscatter-based systems like RFSpy [7] and RF-Parrot [8] utilize passive tags or conductive paths to capture vibrations, yet depend on resonant structures or wired access.",
+      "evidence_context": "Backscatter-based systems like RFSpy [7] and RF-Parrot [8] utilize passive tags or conductive paths to capture vibrations, yet depend on resonant structures or wired access.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该句讨论的[7]是RFSpy，[8]是RF-Parrot，均非目标论文[21]。目标论文未被提及，因此不相关。",
+      "copy_ready_zh": "相关工作中未提及目标论文。",
+      "confidence": "high"
+    }
+  ]
+}

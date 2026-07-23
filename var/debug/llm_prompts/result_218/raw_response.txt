@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated [50, 51, 52, 53].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The context lists the target paper [51] among others as examples of eavesdropping on speech via RF signals. It is a high-level statement in a survey section about speech information, without detailed discussion of the target paper's sub-mm vibration capability. The mention is grouped with multiple references, so attribution is uncertain.",
+      "highlight_keywords": ["Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated", "51"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The context mentions RFID/through-wall eavesdropping but does not explicitly state sub-mm or millimeter-level sensing precision. The reference [51] is grouped with others, so it does not provide explicit sub-mm capability assertion. Template not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit sub-mm or millimeter-level wording; grouped citation without attribution risk explanation."
+    }
+  ]
+}

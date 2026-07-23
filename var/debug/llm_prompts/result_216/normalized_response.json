@@ -1,0 +1,82 @@
+{
+  "findings": [
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed for undetectable attacks outside the room. For example, attach- ing battery-less commercial off-the-shelf RFID tags on every- day objects can achieve through-the-wall sound eavesdropping [37].",
+      "reasoning": "The context groups multiple RFID works, including [37] as an example of through-the-wall sound eavesdropping via RFID tags. The citation is part of a general related-work paragraph that categorizes RF-based eavesdropping, without detailed evaluation or comparison. The mention is grouped and neutral, acknowledging the work as a representative example in the field.",
+      "keywords": [
+        "RFID",
+        "through-the-wall",
+        "sound eavesdropping",
+        "example"
+      ],
+      "keep": true,
+      "matched_template_ids": [
+        73
+      ],
+      "template_match_reason": "capability_recognition: body quote anchors to target and links RFID with eavesdropping",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": true,
+          "template_match_reason": "capability_recognition: body quote anchors to target and links RFID with eavesdropping",
+          "template_failure_reason": "",
+          "matched_terms": [
+            "rfid",
+            "rfid tag",
+            "eavesdropping",
+            "detect",
+            "achieve"
+          ],
+          "match_score": 22.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed ...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[37]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The context groups multiple RFID works, including [37] as an example of through-the-wall sound eavesdropping via RFID tags. The citation is part of a general related-work paragraph that categorizes RF-based eavesdropping, without detailed evaluation or comparison. The mention is grouped and neutral, acknowledging the work as a representative example in the field.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [
+        73
+      ],
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_match_reason": "capability_recognition: body quote anchors to target and links RFID with eavesdropping",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

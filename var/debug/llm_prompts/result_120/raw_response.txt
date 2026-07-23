@@ -1,0 +1,13 @@
+{
+  "findings": [
+    {
+      "citation_text": "More recent work has focused on millimeter-wave (mmWave) radar [87], [88], [89], [90], [91], [92], [93], [94], Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96]. Across these studies, the average source-to-attacker distance is about 3.6 m, with some systems reaching up to 8 m [88], [92]. The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "grouped_citation",
+      "reasoning": "The text cites target reference [95] in a grouped citation listing recent work on RFID-based eavesdropping. It reports that the accuracy of speech recognition can be as high as 0.94 at 1 m, which implicitly acknowledges the high-precision sensing capability of the RFID method, consistent with sub-mm level vibration. However, since it is a grouped citation and the focus is on summarizing performance across methods, the evidence is background but with a positive stance due to the high accuracy value.",
+      "highlight_keywords": ["accuracy of the speech recognition can be as high as 0.94 at 1 m", "RFID"],
+      "keep": true
+    }
+  ]
+}

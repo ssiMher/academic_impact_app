@@ -1,0 +1,1158 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | method_use | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: Detection and Recovery of RFID Harmonic Signal for Wi-Fi Interference
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+Journal of Communications and Information Networks, V ol.9, No.4, Dec. 2024 Research paper
+Detection and Recovery of RFID Harmonic Signal
+for Wi-Fi Interference
+Chao Gong, Ping Li, Panlong Yang, Zhao Lv
+Abstract—In the realm of the Internet of things (IoT),
+radio frequency identification (RFID) technology is
+essential for linking physical objects to digital data.
+The introduction of harmonic technology has expanded
+RFID’s applications by improving sensitivity and enabling
+communication with wireless fidelity (Wi-Fi) networks.
+However, this trend faces challenges, notably interference
+from strong Wi-Fi signals, which impacts RFID-based
+sensing systems. This paper proposes the WiFID (Wi-Fi
+and RFID) algorithm, which enables Wi-Fi devices to
+sense weak RFID harmonic signals. Adaptive subcarrier
+deallocation minimally reduces Wi-Fi throughput while
+effectively limiting interference with RFID harmonic
+sensing. Experimental validation on the universal soft-
+ware radio peripheral (USRP) platform demonstrates
+that WiFID successfully detects 90% of RFID harmonics
+at −30 dBm, with only a minimal 4% decrease in Wi-Fi
+throughput.
+Keywords—RFID harmonic, wireless sensing, Wi-Fi, in-
+terference avoidence
+I. I NTRODUCTION
+R
+adio frequency identification (RFID) sensing, as a novel
+sensing technology, has been widely adopted and has
+Manuscript received Jun. 30, 2024; revised Nov. 09, 2024; accepted
+Dec. 03, 2024. This paper is supported by Anhui Natural Science Foundation
+under Grant 2108085MF207; Anhui Engineering Research Center for Intel-
+ligent Applications and Security of Industrial Internet under Grants IASII21-
+05 and IASII22-05; the National Natural Science Foundation of China un-
+der Grant 62476004; the Distinguished Youth Foundation of Anhui Scientific
+Committee under Grants 2208085J05 and Cloud Ginger XR-1. The associate
+editor coordinating the review of this paper and approving it for publication
+was W. C. Cheng.
+C. Gong, P. Li. School of Computer Science and Technology, Anhui Uni-
+versity, Hefei 230000, China; Anhui Engineering Research Center for In-
+telligent Applications and Security of Industrial Internet, Anhui University
+of Technology, Ma’anshan 243032, China (e-mail: 15252472104@163.com,
+pingli0112@gmail.com).
+P. L. Yang. School of Computer science, School of Cyber Science and En-
+gineering, Nanjing University of Information Science and Technology, Nan-
+jing 210000, China (e-mail: 003829@nuist.edu.cn).
+Z. Lv. School of Computer Science and Technology, Anhui University,
+Hefei 230000, China (e-mail: kjlz@163.com).
+profoundly impacted people’s production and daily life, and
+is one of the key technologies to realize IoE [1], providing
+an effective way of data collection for Internet of every-
+thing (IoE). Its applications range from measuring environ-
+mental parameters like temperature [2] and humidity[3], to de-
+tecting sub-millimeter-level vibrations [4], and human identi-
+fication through precise fingerprint recognition [5] and facial
+identification[6-7].
+Nowadays, the use of RFID harmonic technology has fur-
+ther enhanced the sensing capabilities and broadened the ap-
+plication spectrum of RFID systems. The RFID harmon-
+ics are mainly generated by the nonlinear components (such
+as diodes and transistors) in passive RFID tags [8]. Since
+harmonic frequencies are often higher than the fundamental
+frequency, they have narrower bandwidths and better sens-
+ing sensitivity. For example, TagSound [9] utilizes RFID har-
+monics to achieve millimeter-level vibration detection with a
+measurement accuracy of 1.7 mm, while TagVibra[10] further
+advances this measurement accuracy to sub-millimeter lev-
+els. Additionally, since the harmonic signals are far from the
+RFID’s operating frequency, they are not subject to interfer-
+ence from reader signals at the same frequency, which further
+enhances their sensing performance.
+Tag emulated Wi-Fi (TiFi) [11] is the first work that lever-
+ages RFID harmonics to establish a cross-band, cross-protocol
+communication between RFID systems and Wi-Fi devices.
+This significant expansion of RFID harmonic applications al-
+lows users to access RFID sensing data directly through their
+smartphones, avoiding the necessity for traditional RFID read-
+ers. However, this work also brings forth a new challenge: in-
+terference from Wi-Fi signals with RFID harmonics. In com-
+parison to Wi-Fi, RFID harmonic signals are much weaker
+due to nonlinear attenuation. Therefore, when RFID harmonic
+signals overlap with the Wi-Fi band, the stronger Wi-Fi sig-
+nals typically obscure the weaker RFID harmonics, compro-
+mising RFID measurement accuracy and data integrity. On
+the other hand, since Wi-Fi is the main method for Internet ac-
+cess, simply restrict Wi-Fi communication to protect the capa-
+bilities of RFID harmonic sensing systems might significantly
+degrade the user experience.
+In this paper, we propose WiFID (Wi-Fi and RFID), a novel
+method that can simultaneously ensure the performance of
+RFID harmonic sensing systems and maintain the through-
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+Detection and Recovery of RFID Harmonic Signal for Wi-Fi Interference 331
+ 
+Before                                                                                                                After
+RFID tag
+Wi-Fi spectrum                                                 Before using WiFID
+Wi-Fi throughputRFID tag Wi-Fi throughput
+Wi-Fi spectrum After using WiFID
+WiFID APWi-Fi AP
+Fig. 1 Scenario illustration of WiFID
+put of Wi-Fi communications. Fig. 1 illustrates the applica-
+tion scenario of WiFID, in which the RFID tag operates in
+800 MHz band (refer to TiFi[11]) and utilizes its third harmonic
+(fall into 2.4 GHz Wi-Fi band) as the sensing medium to sense
+environmental changes (such as human movement shown in
+top left of Fig. 1). When the access point (AP) (the WiFID
+AP in the Fig. 1) detects the presence of RFID harmonics,
+it immediately adjusts the energy allocation of Wi-Fi subcar-
+rier based on the sensed RFID harmonic spectrum to clear the
+frequency band occupied by the RFID harmonics. Therefore,
+the performance of the RFID harmonic sensing system is en-
+sured while the impact on the Wi-Fi network’s communication
+throughput is minimized.
+However, translating the WiFID into practical system needs
+to face the following challenges.
+• The first challenge is how to detect RFID harmonic sig-
+nals in a Wi-Fi environment, where overlapping frequencies
+cause stronger Wi-Fi signals to mask weaker RFID harmonics.
+This complicates identifying and collecting RFID harmonic
+data. Therefore, we need to develop an effective method to
+identify the weak RFID harmonic signals in the presence of
+strong interference of Wi-Fi signals.
+• The second challenge is how to determine that RFID
+harmonics present in a Wi-Fi environment contain RFID tag
+signals (i.e., sensing signals). Due to hardware limitations,
+RFID harmonic signals contain both reader and tag harmonic
+signals, but only the tag harmonics contain the environmen-
+tal information we need. Thus, we need to ensure that the
+RFID harmonic signals in the Wi-Fi environment contain the
+RFID tag signals and distinguish between harmonic signals
+from RFID tags and those from RFID readers.
+• The third challenge is how to maintain the effectiveness
+of RFID harmonic sensing without significantly reducing Wi-
+Fi throughput and obtaining valid RFID harmonic signals. If
+Wi-Fi communications were restricted directly, it would be
+impractical and result in substantial bandwidth waste. There-
+fore, a reasonable mechanism must be designed to ensure
+RFID sensing performance while minimizing the impact on
+Wi-Fi network throughput.
+Firstly, WiFID utilizes the stronger reader signals in RFID
+communication to design a delay-correlation-based signal de-
+tection method, successfully identifying the presence of RFID
+harmonics in the received signals. Secondly, WiFID takes ad-
+vantage of the fact that tag signals and reader signals operate
+at the same frequency in RFID communication. By using the
+spectral information of RFID harmonics, WiFID designs fil-
+ters to eliminate out-of-band interference and then employs
+a cross-correlation algorithm to determine whether the har-
+monic signals originate from tags. Finally, WiFID reallocates
+the Wi-Fi subcarrier data based on the harmonic spectrum and
+nulls the subcarriers where the harmonics are located to avoid
+interference with RFID harmonic sensing. Due to the narrow
+bandwidth of RFID harmonics, the impact on Wi-Fi commu-
+nication is minimal.
+In summary, the contributions of this paper are summarized
+as follows.
+• By leveraging RFID communication characteristics, the
+method can identify RFID harmonic and tag signals without
+extraction. Wi-Fi characteristics are also used to minimize
+interference with RFID harmonics while maintaining Wi-Fi
+throughput.
+• Building on this foundation, we propose the WiFID sys-
+tem to address interference between RFID harmonics and Wi-
+Fi signals. WiFID enables reliable RFID harmonic signal use
+without Wi-Fi interference, while preserving Wi-Fi network
+throughput.
+• We implemented the WiFID system on RFID and uni-
+versal software radio peripheral (USRP) platform and con-
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+332 Journal of Communications and Information Networks
+0 51 2 3 4
+Frequency (GHz)
+1st harmonic
+PSD
+3rd harmonic
+5th harmonic
+Fig. 2 Spectrum of RFID backscattered signal
+ducted extensive experiments to validate its performance. Re-
+sults show that WiFID reliably detects RFID harmonic signals
+while preserving Wi-Fi network performance.
+The rest of the paper is organized as follows. In section II,
+we briefly introduce some preliminary knowledge about RFID
+harmonics and Wi-Fi. In section III, we describe the chal-
+lenges and solutions needed for WiFID implementation in de-
+tail. Next, the overall system design is briefly described in
+section IV . Experimental results and performance testing are
+presented in section V . Finally we conclude our work in sec-
+tion VI.
+II. RFID H ARMONIC PRELIMINARY
+Passive RFID tags operate without an internal power
+source, relying instead on energy harvested from the signals
+emitted by the reader to function effectively. A typical pas-
+sive ultrahigh frequency (UHF) RFID tags comprises three
+main components: a dipole antenna, a multipoint control unit
+(MCU), and a power management unit. The power manage-
+ment unit mainly consists of a rectifier circuit that includes
+several nonlinear components, such as diodes and capaci-
+tors. This setup gives the RFID tag a nonlinear behavior dur-
+ing communication[12-13]. As a result, the tag does not only
+backscatter the signal at its fundamental frequency, but also
+generates harmonics, which are integer multiples of the fun-
+damental frequency components[14].
+For instance, consider an input signal represented by Sin =
+cos(2πfct), where fc denotes the carrier frequency. The re-
+sulting backscattered signal Sout can be expressed as
+Sout =α1cos(2πfct)+ α2cos2(2πfct)+ α3cos3(2πfct)+ ··· =
+1
+2α2 +(α1 + 3
+4α3)cos(2πfct)+ 1
+2α2cos(2π(2 fc)t) +
+1
+4α3cos(2π(3 fc)t)+ ··· (1)
+where αi is the gain of the certain frequency component due to
+the tag’s nonlinearity. As depicted in Fig. 2, with a carrier fre-
+quency for RFID of 920 MHz, the spectrum of the backscat-
+1 2 3 4 5
+Time (ms)
+0
+1
+2
+3Magnitude
+Received signal
+RFID harmonic
+0
+5
+10
+15
+20Magnitude
+1 2 3 4 5
+Time (ms)
+(a)
+(b)
+Fig. 3 RFID harmonics overwhelmed by Wi-Fi: (a) Acquisition signal time-
+domain diagram; (b) RFID harmonic signal not detected
+tered signal from the tag exhibits additional peaks at 2.7 GHz
+and 4.6 GHz, corresponding to the third and fifth harmonic
+signals, alongside the fundamental 920 MHz frequency. Sig-
+nal strength diminishes significantly with increasing harmonic
+order, and beyond the fifth harmonic signal, the signal be-
+comes extremely weak, complicating reliable reception and
+processing.
+III. C HALLENGE AND SOLUTIONS
+In this section, we will detail the challenges encountered
+during the implementation of WiFID and how we addressed
+these challenges.
+A. Detect RFID Harmonics Under Wi-Fi Interference
+Via Delay-Correlation and Matched Filtering
+To ensure that Wi-Fi does not have an impact on RFID
+harmonics sensing, we need to detect the presence of RFID
+harmonics in the Wi-Fi communication’s channel firstly. Due
+to the nonlinear attenuation, RFID harmonic signals are usu-
+ally weaker than Wi-Fi signals, and are often overwhelmed
+by Wi-Fi (as shown in Fig. 3(a)). Consequently, the primary
+challenge for the WiFID system is to detect RFID harmonic
+signals that are masked by stronger Wi-Fi signals. A common
+technique employed is matched filtering; however, as depicted
+in Fig. 3(b), it is evident that even with higher intensity RFID
+reader signals, discerning significant peaks post-matched fil-
+tering remains challenging.
+To solve this problem, WiFID designs a delay-
+correlation[15] based harmonic signal detection method
+to amplify RFID harmonic signals obscured by Wi-Fi signals.
+The basic idea of the method is that, in order to reduce
+nonlinear distortion and improve the performance of the
+communication system, Wi-Fi adopts various techniques
+to suppress the peak-to-average ratio (PAPR) of its signal,
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+Detection and Recovery of RFID Harmonic Signal for Wi-Fi Interference 333
+0 0.5 1.0 1.5 2.0 2.5
+Time (ms)
+0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+3.5Magnitude
+Received signal
+RFID harmonic
+(a)
+0 0.5 1.0 1.5 2.0 2.5
+Time (ms)
+100
+150
+200
+250
+300
+350Cross-correlation (b)
+0 0.5 1.0 1.5 2.0 2.5
+Time (ms)
+0
+1 000
+2 000
+3 000
+4 000
+5 000
+6 000
+Cross-correlation (c)
+Fig. 4 Performance of delay-correlation method: (a) RFID harmonic is overwhelmed by Wi-Fi; (b) RFID harmonic is revealed after process; (c) RFID harmonic
+has been detected
+−10 −8 −6 −4 −2 0 2 4 6 8 10
+Frequency (MHz)
+−38
+−36
+−34
+−32
+−30
+−28
+−26
+−24Power (dB)
+Harmonic signal
+(a)
+0 0.5 1.0 1.5 2.0 2.5
+Time (ms)
+0
+0.2
+0.4
+0.6
+0.8
+1.0
+1.2Magnitude
+Filtered signal
+RFID harmonic (b)
+0 0.5 1.0 1.5 2.0 2.5
+Time (ms)
+0
+200
+400
+600
+800
+1 000
+1 200
+1 400
+Cross-correlation (c)
+Fig. 5 Overall caption for all images: (a) The spectrum of received signal; (b) Remove Wi-Fi interference; (c) Tag harmonic detected
+which makes its waveform smooth and can be approximately
+regarded as stationary. In contrast, RFID signals use on-off
+keying (OOK) modulation, leading to more noticeable
+changes in their waveforms. Therefore, when analyzing the
+time-domain correlation of the received signals, it becomes
+evident that the smoother waveform of the Wi-Fi results
+in nearly identical correlation peaks across adjacent time
+slots, while the peaks for RFID signals will show significant
+fluctuations. By employing this method, we can amplify and
+distinguish the RFID signals from the Wi-Fi signals.
+Specifically, WiFID utilizes two sliding windows, Win 1
+and Win2, where Win2 is delayed by N sampling points com-
+pared to Win1. Subsequently, WiFID uses these two windows
+to extract data from the received signals, obtaining two seg-
+ments of samples S1[t] and S2[t] corresponding to adjacent
+time slots.
+(
+S1[t] =Rx[t : t +M −1],
+S2[t] =Rx[t +N : t +N +M −1],
+(2)
+where Rx is the received signal, M is the size of sliding win-
+dows. WiFID then calculates the cross-correlation CS1,S2 [τ]
+between these two segments and records the trend of the cor-
+relation peaks.
+CS1,S2 [τ] =∑
+k
+S1[t +k]·S2[t +k +τ]. (3)
+If an RFID signal is present, the peak variation curve will
+exhibit noticeable fluctuations; otherwise, no significant fluc-
+tuations will be observed.
+As illustrated in Fig. 4, the waveform of the RFID signal
+is distinctly visible following the delay-cross correlation pro-
+cess. Using matched filtering, WiFID can effectively identify
+the presence of RFID harmonics in the received signals.
+B. Ascertain the harmonic signal originate from RFID
+tag via bandpass filtering and matched filtering
+Although the delayed cross-correlation algorithm em-
+ployed in section A successfully detected RFID harmonics
+hidden within the Wi-Fi signals, as illustrated in Fig. 4(b),
+only the more intense harmonic signals emitted by readers
+have been detectable. To that end, the second challenge lies in
+the fact that the tag harmonics, which carry essential sensing
+information, reflect signals with exceedingly low power. Even
+after amplification, these signals remain difficult to detect ac-
+curately.
+WiFID capitalizes on the feature that both reader and tag
+signals in RFID communication operate at the same fre-
+quency. This implies that if WiFID detects harmonic signals
+from the reader, any tag harmonic signals must also be present
+within the same frequency band. Initially, WiFID performs a
+spectral analysis on the received signals to gather the spectrum
+of the RFID harmonics, as depicted in Fig. 5(a). Utilizing
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+334 Journal of Communications and Information Networks
+Standard
+Pilot subcarriers Data subcarriers Nullified subcarriers
+217−7−21
+217−7−21
+217−7−21
+Mode 1 
+Mode 2 
+Fig. 6 Illustration of subcarrier modification mode
+this information, we know that the Wi-Fi frequency domain is
+much broader than RFID’s, we designed a band-pass filter to
+effectively remove Wi-Fi interference outside the RFID chan-
+nel, retaining only the RFID frequency domain signal. As
+shown in Fig. 5(b), with most of the interference filtered out,
+the tag’s harmonic signals become more discernible. Subse-
+quently, WiFID employs a matched filtering technique to con-
+firm the presence of tag RFID harmonic signals in the filtered
+signal. The filtered signal is cross-correlated with a prede-
+fined signal template to obtain the final matched filter result.
+Fig. 5(c) displays the results of the matched filtering, clearly
+revealing the sharp peaks indicative of RFID tag harmonics.
+C. Ensure Both Sensing and Communication Perfor-
+mance Via Mode Selection and Subcarrier Nullifica-
+tion
+After confirming the presence of RFID tag harmonic sig-
+nals in the environment, it can be determined that a RFID har-
+monic sensing system is operational. Clearly, rather than re-
+stricting Wi-Fi communications to ensure the performance of
+the RFID harmonic sensing system, a more rational approach
+involves adaptively nulling Wi-Fi subcarriers to avoid the fre-
+quency bands occupied by RFID harmonics. According to the
+Gen-2 protocol, the channel bandwidth of RFID is generally
+500 kHz[18], while the Wi-Fi channel occupies a bandwidth
+of 20 MHz and is divided into 64 subcarriers. Wi-Fi uses 52
+subcarriers for data transmission, and 4 out of these subcarrier
+are allocated to pilot signal (nunmbered in −21, −7, 7, and
+21) to robustly guard the Wi-Fi networks against frequency
+offsets and phase noises [16-17]. Thus, there are two potential
+frequency domain overlap modes between RFID and Wi-Fi:
+(1) RFID harmonics occupy the frequency bands of pilot sub-
+carriers, or (2) RFID harmonics do not occupy the pilot sub-
+carrier bands.
+WiFID has designed subcarrier allocation schemes for
+these two modes and selects appropriate subcarrier nulling
+schemes based on the spectral information of the RFID har-
+monics. Specifically, when there are no RFID harmonics,
+Wi-Fi will communicate using the normal subcarrier layout
+(as shown in Fig. 6). When the frequency band occupied by
+the RFID harmonics does not overlap with the pilot subcar-
+riers, WiFID will simply nullify the subcarriers that overlap
+Wi-Fi
+modification
+Mode selection
+Subcarrier
+nullification
+Harmonic
+detection
+Delay-correlation
+Matched filtering
+Tag harmonic
+confirmation
+Spectrum analysis
+Bandpass filtering
+Matched filtering
+WiFID architecture
+Fig. 7 The architecture of WiFID
+with the RFID harmonics, without changing the layout of the
+other subcarriers (as shown in Mode 1 in Fig. 6). However,
+when the frequency band occupied by the RFID harmonics
+overlaps with the pilot subcarriers, whether completely or par-
+tially, WiFID will also nullify the symmetric pilot subcarriers
+in addition to the subcarriers occupied by the RFID harmon-
+ics (as shown in Mode 2 in Fig. 6), to ensure that the adjusted
+Wi-Fi signal still has good resistance to frequency offsets and
+phase noise.
+IV. S YSTEM DESIGN
+Fig. 7 shows the architecture of WiFID, which involves
+three main module: harmonic detection module, tag harmonic
+confirmation module, and Wi-Fi modification module. In this
+section, we will briefly introduce how WiFID works.
+Harmonic detection module. Upon receiving a signal, the
+module first applies a delay correlation technique aimed at
+enhancing the quality of signals with significant fluctuations
+between consecutive time slots. This is achieved by means
+of a temporal correlation analysis that identifies and enhances
+signals with strong temporal characteristics. After initial en-
+hancement, the amplified signal is subjected to matched fil-
+tering. It aligns the input signal with a pre-defined template
+to maximize the correlation and thus effectively detect RFID
+harmonic signals. The combination of delayed correlation and
+matched filtering ensures that the system can effectively detect
+weak RFID harmonic signals.
+Tag harmonic confirmation module. After initial detec-
+tion, the module extracts spectral information from signals
+that have been identified as having RFID harmonics. By ac-
+curately analyzing this spectrum information, the bandpass
+filter is adaptively designed to eliminate out-of-band Wi-Fi
+interference, otherwise the Wi-Fi interference will mask the
+RFID harmonic tag signal and affect the subsequent process-
+ing. After filtering, the system will use matched filtering tech-
+niques to rigorously detect the presence of the desired RFID
+harmonic tag signal to ensure that only accurate signals are
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+Detection and Recovery of RFID Harmonic Signal for Wi-Fi Interference 335
+USRP reader
+812 MHz 
+USRP sniffer
+2.436 GHz 
+WiFDI AP
+2.432 GHz
+USRP Wi-Fi
+2.432 GHz
+RFID 
+tag
+Fig. 8 The experiment setup
+processed further by the system.
+Wi-Fi modification module. After verifying the pres-
+ence of RFID harmonics, the module proceeds to analyze
+their spectral characteristics in detail, and designs an effective
+subcarrier cancellation strategy based on the analysis. The
+method analyzes the pattern of RFID harmonic spectrum oc-
+cupying Wi-Fi spectrum and designs a corresponding subcar-
+rier offsetting method. By selectively eliminating the Wi-Fi
+subcarriers that overlap with the RFID harmonic spectrum,
+both RFID sensing and optimal performance of Wi-Fi com-
+munication are maintained.
+V. P ERFORMANCE EVALUATION
+In this section, we conduct comprehensive experiments to
+evaluate the performance of WiFID, and present a case study
+to demonstrate the practical effectiveness of WiFID in RFID
+harmonic sensing scenarios.
+A. Experimental Setup
+We conducted detailed WiFID performance tests on the
+USRP platform in a 11 ×6 meter lab. Four USRP N210 de-
+vices were deployed as shown in Fig. 8: one as an RFID reader
+on the 812 MHz band, another as a sniffer at 2.436 GHz to
+monitor RFID tag harmonics, and two for Wi-Fi communi-
+cation at 2.432 GHz. The antenna of the RFID reader was
+placed 50 cm from the tags, with the sniffer positioned at the
+same distance. The WiFID AP was located 3 m away from the
+tags, and the Wi-Fi receiver was placed 2 m from the WiFID
+AP to monitor Wi-Fi network throughput changes.
+All experimental data were collected and processed in
+MATLAB on a Lenovo laptop with an Intel Core i5-7300 CPU
+and 16 GB RAM. To minimize interference from frequent
+daytime Wi-Fi and bluetooth, experiments were conducted at
+midnight, ensuring data reliability and a stable environment
+for accurately assessing WiFID system performance.
+100%
+90%
+80%
+70%
+60%
+50%
+40% Accuracy
+−10 −20 −30 −40 −50
+SNR (dBm)
+RFID harmonic
+EPC harmonic
+(a)
+−10 −20 −30 −40 −50
+SNR (dBm)
+680
+690
+700
+710
+720
+730Throughput (kbit/s)
+w WiFID
+w/o Wi-Fi
+(b)
+Fig. 9 Overall performance: (a) Harmonic detection rate; (b) Wi-Fi
+throughput
+B. Overall Performance
+In this experiment, we varied the RFID reader’s transmis-
+sion power to achieve different signal-to-noise ratio (SNR),
+keeping all device positions fixed. RFID harmonic power was
+set between −10 dBm and −50 dBm in 10 dBm steps, while
+Wi-Fi power was fixed at 15 dBm. The WiFID AP detected
+RFID and tag harmonics, and results were compared with sig-
+nal copies recorded by the RFID reader. To ensure data reli-
+ability, we conducted 100 repeated experiments for each set-
+ting.
+1) Performance of Harmonic Signal Detection: We first
+evaluated the performance of WiFID in detecting RFID and
+EPC harmonic signals. The result is shown in Fig. 9(a), when
+the power of RFID harmonics was above −30 dBm, WiFID’s
+detection of RFID harmonics and electronic product code
+(EPC) harmonics is maintained at a high level of accuracy,
+above 98% and above 90%, respectively. As RFID harmonic
+power decreased, WiFID’s detection accuracy gradually de-
+clined. At −50 dBm, detection accuracy dropped sharply to
+73% for RFID harmonics and 44% for tag harmonics. This de-
+cline occurs because low RFID harmonic power limits the ef-
+fectiveness of WiFID’s delay-correlation method in amplify-
+ing RFID harmonic signals, thereby affecting the subsequent
+detection of EPC harmonics and Wi-Fi processing.
+2) Performance of Wi-Fi Throughput: We subsequently
+evaluated the impact of WiFID on Wi-Fi performance.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+336 Journal of Communications and Information Networks
+5 10 15 20 25
+SNR (dBm)
+80%
+82%
+84%
+86%
+88%
+90%
+92%
+94%
+96%
+98%
+100%Accuracy
+(a)
+5 10 15 20 25
+SNR (dBm)
+750
+760
+770
+780
+790
+800
+810
+820Throughput (kbit/s)
+(b)
+Fig. 10 Impact of Wi-Fi signal strength on system perfromance: (a) Har-
+monic detection rate; (b) Wi-Fi throughput
+Fig. 9(b) shows the effects of WiFID on Wi-Fi throughput
+at different RFID harmonic power levels. It is observed that
+when the RFID harmonic power is −10 dBm, the Wi-Fi
+throughput with WiFID is 4% lower than the Wi-Fi throughput
+without WiFID. As the RFID harmonic power decreases, the
+Wi-Fi throughput when using WiFID gradually increases, and
+at −50 dBm it basically returns to the level when not using
+WiFID. This phenomenon primarily occurs because WiFID
+nullifies certain Wi-Fi subcarriers upon detecting RFID har-
+monics, thereby reducing Wi-Fi throughput. When the power
+of RFID harmonics decreases to a certain extent, WiFID is no
+longer able to detect the RFID harmonics, and thus does not
+adjust the Wi-Fi subcarriers. On the other hand, since RFID
+signals are inherently narrowband, the number of subcarriers
+eliminated is limited, they have limited interference with Wi-
+Fi communications, which means when using WiFID, Wi-Fi
+throughput is only slightly lower and not affecting Wi-Fi us-
+age.
+C. Impact Factor
+In this subsection, we evaluate the performance of WiFID
+in detecting RFID harmonic signals under the impact of var-
+ious factors and the impact on the performance of Wi-Fi net-
+works.
+1) Impact of Wi-Fi Signal Strength: WiFID performance
+is directly affected by the strength of the Wi-Fi signal. To ex-
+10 50 100 150 200 250 300 350 400 450 500
+SNR (dBm)
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%Accuracy
+(a)
+0 0.000 25 0.000 50 0.000 75 0.001 00
+Time (s)
+0
+10
+20
+30Magnitude
+Window size = 10
+0 0.000 25 0.000 50 0.000 75 0.001 00
+Time (s)
+400
+500
+600
+700
+800Magnitude
+Window size = 500
+(b)
+Fig. 11 Impact of sliding window size of delay-correlation method on sys-
+tem perfromance: (a) Harmonic detection rate; (b) Different window size
+amine Wi-Fi signal strength’s effect on WiFID performance,
+we conducted experiments keeping device positions fixed
+while varying Wi-Fi transmission power from 5 dBm to 25
+dBm in 5 dBm increments. For each power level, we per-
+formed 100 trials, with results shown in Fig. 10.
+It is clearly visible from the figure that as the power of the
+Wi-Fi signal increases, the accuracy of WiFID in detecting
+RFID harmonics gradually decreases. When the Wi-Fi sig-
+nal power reaches 25 dBm, the accuracy of detecting RFID
+harmonics drops to 87 .2% (as shown in Fig. 10(a)). At the
+same time, Wi-Fi throughput gradually increases as the power
+of the Wi-Fi signal increases, Wi-Fi throughput increases to
+810 kbit/s when Wi-Fi power reaches 25 dBm (as shown in
+Fig. 10(b)). This indicates that as Wi-Fi signal power in-
+creases, detecting RFID harmonics becomes more difficult,
+making it harder to trigger adjustments in Wi-Fi subcarriers.
+2) Impact of Sliding Window Size of Delay-Correlation
+Method: In section III.A, we use the delay-correlation algo-
+rithm to enhance RFID harmonic signal characteristics amid
+Wi-Fi interference. This experiment examined how different
+sliding window sizes affect RFID harmonic detection accu-
+racy, with RFID power at −10 dBm and Wi-Fi at 15 dBm.
+The sliding window was varied from 10 to 500 in steps of 50,
+with each configuration tested 100 times.
+The experimental results, as shown in Fig. 11(a), as the slid-
+ing window size increases, the accuracy of WiFID’s detection
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+Detection and Recovery of RFID Harmonic Signal for Wi-Fi Interference 337
+1 2 3 4 5
+Length
+0
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Accuracy
+(a)
+0 1 2
+Time (s) ×10−3
+150
+200
+250
+300
+350Magnitude
+1 2
+Time (s) ×10−3
+0
+100
+200
+300Magnitude
+step = 1
+step = 2
+(b)
+Fig. 12 Impact of step of delay-correlation method on system perfromance:
+(a) Harmonic detection rate; (b) Different step
+of RFID harmonics is gradually increasing, with an accuracy
+of 98% when the window size reaches 200. As the sliding
+window size continues to increase, the accuracy of detection is
+gradually decreasing, and when the window size reaches 400,
+the accuracy is only 10%. The experimental results show that
+too large or too small window sizes can adversely affect the
+system performance. Fig. 11(b) provides further explanation:
+when the window size is too small (upper part of Fig. 11(b)),
+nearly all signals are amplified as dynamic information, which
+does not effectively eliminate the interference from the Wi-Fi
+signal; conversely, when the window size is too large (lower
+part of Fig. 11(b)), the characteristics of the signals are almost
+completely flattened. Based on these findings, we set the win-
+dow size at 200.
+3) Impact of Step of Delay-Correlation Method: In pre-
+vious experiments, we examined how sliding window size in
+the delay-correlation algorithm affects system performance.
+This experiment focuses on the effect of step length of delay-
+correlation algorithm on RFID harmonic detection accuracy.
+With RFID power at −10 dBm and Wi-Fi power at 15 dBm,
+step lengths ranged from 1 to 5. As shown in Fig. 12(a),
+optimal performance occurs at a step length of 1, achieving
+97% detection accuracy, while accuracy falls below 10% for
+step lengths above 1. Fig. 12(b) further shows that, with a
+step length of 1, RFID harmonics are clearly visible and Wi-
+−10 −20 −30 −40 −50
+SNR (dBm)
+690
+700
+710
+720
+730
+740Throughput (kbit/s) Mode1
+Mode2
+(a)
+H47 AZ-9630 E44 E51
+Tag type
+85%
+86%
+87%
+88%
+89%
+90%
+91%
+92%
+93%
+94%
+95%Accuracy
+(b)
+Fig. 13 Impact of spectrum overlap mode and RFID tag diversity: (a) Spec-
+trum overlap mode; (b) Tag type
+Fi interference minimized, leading us to select a step length
+of 1.
+4) Impact of Spectrum Overlap Mode: This study inves-
+tigates the impact of spectral overlap between RFID har-
+monics and Wi-Fi subcarriers on system performance. Two
+WiFID subcarrier adjustment schemes were designed based
+on whether RFID harmonics overlap with pilot subcarriers.
+With other parameters constant, we observed the effects of
+these two overlap conditions on Wi-Fi throughput.
+Fig. 13(a) presents the results of the experiment. Compared
+to scheme 1, scheme 2 shows slightly higher throughput. This
+is because scheme 2 nullifies both data and pilot subcarriers,
+with minimal impact on Wi-Fi throughput since pilot subcarri-
+ers do not carry data. While removing pilot subcarriers could
+reduce Wi-Fi network robustness, no significant performance
+degradation was observed in our experiments.
+5) Impact of RFID Tag Diversity: We next investigated
+the impact of different RFID tag types on system perfor-
+mance. Four tag types were selected: E44 (10 mm ×56 mm),
+E51 (95 mm ×8 mm), AZ-9630 (95 mm ×8 mm), and H47
+(44 mm ×44 mm), with all other parameters kept constant.
+As shown in Fig. 13(b), the H47 tag achieved the highest
+harmonic detection rate in the WiFID system, with 92% ac-
+curacy. This is due to its larger reflective surface, which pro-
+duces a stronger RFID harmonic signal, making it easier for
+the system to detect.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+338 Journal of Communications and Information Networks
+1 2 3 4 5
+Tag number
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%Accuracy
+Fig. 14 Different RFID tag number accuracy
+0.3 0.5 0.7 0.9 1.1 1.3 1.5 1.7 1.9 2.1 2.3
+Reference amplitude (mm)
+40
+45
+50
+55Error (Hz)
+(a)
+0.3 0.5 0.7 0.9 1.1 1.3 1.5 1.7 1.9 2.1 2.3
+Reference amplitude (mm)
+0.5
+1.0
+1.5Error (Hz)
+(b)
+Fig. 15 WiFID helps vibration sensing: (a) Vibration sensing performance
+without WiFID; (b) Vibration sensing performance with WiFID
+6) Impact of Tag Number: We also investigated the impact
+of tag quantity on system performance. Using H47 tags and
+keeping other parameters constant, we tested the system with
+1, 2, 3, 4, and 5 tags sequentially.
+Fig. 14 shows that when fewer than three tags are used, sys-
+tem performance remains stable. However, as the number of
+tags increases, RFID harmonic detection accuracy declines.
+This is mainly due to the ALOHA-like channel access pro-
+tocol in the RFID system, where more tags increase channel
+conflicts, resulting in more interference and making it harder
+for WiFID to accurately detect harmonics through matched
+filtering.
+D. Case Study
+Vibration detection is a crucial application of RFID har-
+monic sensing, playing a significant role in monitoring the
+operational status of machinery and diagnosing faults. In
+this section, we demonstrate the effectiveness of WiFID in
+enhancing sensing robustness through a practical RFID har-
+monic vibration detection system. TagVibra, a study pub-
+lished by Li et al. in 2023 [10], achieves accurate detection
+of sub-millimeter vibrations by leveraging RFID harmonics
+combined with differential phase amplification techniques.
+We implemented TagVibra and set its operating frequency to
+overlap with Wi-Fi, testing it on mechanical vibrations with
+amplitudes ranging from 0.3 mm to 2.3 mm at a frequency of
+100 Hz. We then observed the performance of the TagVibra
+system before and after the application of WiFID.
+Fig. 15 shows that without WiFID, Wi-Fi interference
+caused significant detection errors in TagVibra, reaching up
+to 50 Hz. However, with WiFID, the RFID harmonic fre-
+quency band was cleared, allowing TagVibra to function nor-
+mally with a reduced measurement error of 1.3 Hz. This high-
+lights WiFID’s ability to detect RFID harmonics and adjust
+Wi-Fi subcarriers to maintain RFID sensing effectiveness.
+VI. C ONCLUSION
+This paper introduces WiFID, a novel approach designed to
+facilitate the coexistence of Wi-Fi and RFID harmonics within
+the same spectral environment. WiFID optimizes spectrum
+utilization and minimizes interference by enhancing the de-
+tection and differentiation of RFID harmonic signals in Wi-Fi
+bands. Extensive testing on the USRP platform has demon-
+strated that WiFID can accurately detect RFID harmonic com-
+munications with up to 90% accuracy, significantly enhancing
+the performance of RFID systems without compromising Wi-
+Fi throughput.
+Conflict of interest statement. None declared.
+REFERENCES
+[1] LYU R, CHENG W, SHEN B, et al. OAM-SWIPT for IoE-driven
+6G[J]. IEEE Communications Magazine, 2022, 60(3): 19-25.
+[2] PRADHAN S, QIU L. RTSense: passive RFID based temperature
+sensing[C]//Proceedings of the 18th Conference on Embedded Net-
+worked Sensor Systems. New York: ACM Press, 2020: 42-55.
+[3] W ANG J, CHANG L, AGGARW AL S, et al. Soil moisture sens-
+ing with commodity RFID systems[C]//Proceedings of the 18th Inter-
+national Conference on Mobile Systems, Applications, and Services.
+New York: ACM Press, 2020: 273-285.
+[4] W ANG C, XIE L, LIN Y , et al. Thru-the-wall eavesdropping on loud-
+speakers via RFID by capturing sub-mm level vibration[J]. Proceed-
+ings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies, 2021, 5(4): 1-25.
+[5] ZHAO C, LI Z, LIU T, et al. RF-Mehndi: a fingertip profiled RF iden-
+tifier[C]//Proceedings of IEEE INFOCOM 2019-IEEE Conference on
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.
+Detection and Recovery of RFID Harmonic Signal for Wi-Fi Interference 339
+Computer Communications. Piscataway: IEEE Press, 2019: 1513-
+1521.
+[6] XU W, LIU J, ZHANG S, et al. RFace: anti-spoofing facial authenti-
+cation using COTS RFID[C]//Proceedings of IEEE INFOCOM 2021-
+IEEE Conference on Computer Communications. Piscataway: IEEE
+Press, 2021: 1-10.
+[7] CHANG X, DAI J, ZHANG Z, et al. RF-RVM: continuous respiratory
+volume monitoring with COTS RFID tags[J]. IEEE Internet of Things
+Journal, 2021, 8(16): 12892-12901.
+[8] MONDAL S, GHAZALI M I M, KARUPPUSW AMI S, et al. A
+nonlinear transmission line based harmonic RF tag[C]//Proceedings of
+2017 IEEE 67th Electronic Components and Technology Conference
+(ECTC). Piscataway: IEEE Press, 2017: 2237-2242.
+[9] LI P, AN Z, Y ANG L, et al. Towards physical-layer vibration sensing
+with RFIDs[C]//Proceedings of IEEE INFOCOM 2019-IEEE Confer-
+ence on Computer Communications. Piscataway: IEEE Press, 2019:
+892-900.
+[10] LI J, LI P, ZHU B, et al. TagVibra: push the limit of RFID-based vibra-
+tion sensing[C]//Proceedings of 9th International Conference on Big
+Data Computing and Communications (BigCom). Piscataway: IEEE
+Press, 2023: 40-47.
+[11] AN Z, LIN Q, Y ANG L. Cross-frequency communication: near-field
+identification of UHF RFIDs with Wi-Fi![C]//Proceedings of the 24th
+Annual International Conference on Mobile Computing and Network-
+ing. New York: ACM Press, 2018: 623-638.
+[12] VERA G A, DUROC Y , TEDJINI S. Third harmonic exploitation in
+passive UHF RFID[J]. IEEE Transactions on Microwave Theory and
+Techniques, 2015, 63(9): 2991-3004.
+[13] NIKITIN P V , RAO K V S. Harmonic scattering from passive UHF
+RFID tags[C]//Proceedings of 2009 IEEE Antennas and Propagation
+Society International Symposium. Piscataway: IEEE Press, 2009: 1-4.
+[14] ALLANE D, VERA G A, DUROC Y , et al. Harmonic power har-
+vesting system for passive RFID sensor tags[J]. IEEE Transactions on
+Microwave Theory and Techniques, 2016, 64(7): 2347-2356.
+[15] ADHIKARI A, SUR S. Argosleep: monitoring sleep posture from
+commodity millimeter-wave devices[C]//Proceedings of IEEE INFO-
+COM 2023-IEEE Conference on Computer Communications. Piscat-
+away: IEEE Press, 2023: 1-10.
+[16] IEEE. Wireless LAN medium access control (MAC) and physical layer
+(PHY) specifications[S]. 2007.
+[17] LI P, Y AN Y , Y ANG P, et al. Coexist Wi-Fi for ZigBee networks with
+fine-grained frequency approach[J]. IEEE Access, 2019, 7: 135363-
+135376.
+[18] GS1. EPC Radio-frequency identity generation-2 UHF RFID[S]. 2023.
+[19] USRP reader[EB]. 2019.
+ABOUT THE AUTHORS
+Chao Gong received the B.E. degree in Nanjing In-
+stitute of Technology, Nanjing, China, in 2021. He
+is currently pursuing the master’s degree at School of
+Computer Science and Technology, Anhui University,
+Hefei, China. His research interests include wireless
+sensing.
+Ping Li [corresponding author] Lecturer in the School
+of Computer Science and Technology, Anhui Univer-
+sity, Hefei, China from September 2016 to June 2020,
+he pursued the Ph.D. degree in Computer Science and
+Technology at the School of Communication Engi-
+neering, Army Engineering University, supervised by
+Prof. Chang Tian and Prof. Panlong Yang. During
+his Ph.D. period, he visited and studied in the sub-
+ject weave of Prof. Lei Yang at Zhejiang University
+in Hong Kong, China. In September 2020, he joined the School of Computer
+Science and Technology of Anhui University, and was supported by Anhui
+Provincial Natural Science Foundation for the surface project.
+Panlong Yang Doctoral Supervisor and Subject
+Leader of Nanjing University of Information Engineer-
+ing (NUIE). He was a Special Researcher at School of
+Computer Science, University of Science and Technol-
+ogy of China from 2017 to 2023. He was the recipient
+of Distinguished Youth Fund of Jiangsu Province in
+2015. Focusing on the key issues of system construc-
+tion of intelligent Internet of things and energy Inter-
+net, and aiming at breaking through the core key tech-
+nologies, he conducts scientific research in three aspects, namely, intelligent
+sensing, low-consumption interconnection, and intelligent computing.
+Zhao Lv Professor, Tutor, and Deputy Dean of the
+School of Computer Science and Technology of Anhui
+University, Hefei, China; a recipient of the Outstand-
+ing Youth Fund of Anhui Province; Deputy Director
+of the Special Committee on Artificial Intelligence
+and Big Data of Anhui Provincial Association for the
+Promotion of Science and Technology; a member of
+the Executive Committee of Hefei Branch of China
+Computer Federation (CCF); and a member of the
+National Information Technology Standardization Technical Committee.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:17:22 UTC from IEEE Xplore.  Restrictions apply.

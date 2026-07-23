@@ -1,0 +1,1569 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by
+Sensing Electromagnetic Variation Using RFID
+YUNZHONG CHEN, Shanghai Jiao Tong University, China
+JIADI YU∗, Shanghai Jiao Tong University, China
+HAO KONG, Shanghai University, China
+DAQIANG ZHANG, Shanghai Easun Technology Co., Ltd., China
+YANMIN ZHU, Shanghai Jiao Tong University, China
+HONG-NING DAI, Hong Kong Baptist University, China
+YI-CHAO CHEN, Shanghai Jiao Tong University, China
+LINGHE KONG, Shanghai Jiao Tong University, China
+When sound signals are transmitted via audio cables in form of current signals, detectable electromagnetic leakage is emitted 
+around the cables, which could reveal the sound content being transmitted. This paper presents a sound eavesdropping system, 
+EMTap, which senses electromagnetic variation around audio cables leveraging an RFID tag attached to an audio cable for 
+sound content recovery. In some audiovisual scenarios with audio cables, such as offices and meeting rooms, it is assumed that 
+attackers secretly attach a small, battery-free RFID tag to an audio cable without being noticed. Meanwhile, RFID readers are 
+camouflaged as decorations/public facilities placed in/out of rooms to transmit and receive RF signals. When the sound signals 
+are transmitted via audio cables, EMTap first activates the RFID tag to capture the electromagnetic variation patterns around 
+audio cables upon RF signals. Then, EMTap reconstructs sound spectrograms from RF signal-based electromagnetic variation 
+patterns utilizing a designed cross-modal Generative model, Nonlinear Stable Diffusion Model (NSDM). Finally, EMTap 
+converts the sound spectrograms to sound content through sound recognition API. Extensive experiments demonstrate that 
+EMTap achieves an average Mel-Cepstral Distortion (MCD) of 5.49 and Word Error Rate (WER) of 16.19% for eavesdropping 
+on sound transmitted via audio cables.
+CCS Concepts: • Security and privacy → Hardware attacks and countermeasures.
+Additional Key Words and Phrases: Sound eavesdropping, audio cable, electromagnetic variation, RFID.
+ACM Reference Format:
+Yunzhong Chen, Jiadi Yu, Hao Kong, Daqiang Zhang, Yanmin Zhu, Hong-Ning Dai, Yi-Chao Chen, and Linghe Kong. 2025. 
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID. Proc. ACM 
+Interact. Mob. Wearable Ubiquitous Technol. 9, 3, Article 74 (September 2025), 25 pages. https://doi.org/10.1145/3749459
+∗Corresponding author.
+Authors’ Contact Information: Yunzhong Chen, Shanghai Jiao Tong University, Shanghai, China, chenyzh@sjtu.edu.cn; Jiadi Yu, Shanghai
+Jiao Tong University, Shanghai, China, jiadiyu@sjtu.edu.cn;Hao Kong, Shanghai University, Shanghai, China, haokong@shu.edu.cn;Daqiang
+Zhang, Shanghai Easun Technology Co., Ltd., Shanghai, China, dqzhang@easun-tech.com; Yanmin Zhu, Shanghai Jiao Tong University,
+Shanghai, China, yzhu@cs.sjtu.edu.cn; Hong-Ning Dai, Hong Kong Baptist University, Hong Kong, China, henrydai@hkbu.edu.hk; Yi-Chao
+Chen, Shanghai Jiao Tong University, Shanghai, China, yichao@sjtu.edu.cn; Linghe Kong, Shanghai Jiao Tong University, Shanghai, China,
+linghe.kong@sjtu.edu.cn.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that
+copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.
+Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy
+otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from
+permissions@acm.org.
+© 2025 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM 2474-9567/2025/9-ART74
+https://doi.org/10.1145/3749459
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:2 • Chen et al.
+1 INTRODUCTION
+In recent years, with the rapid development of Internet of Things (IoT) sensing technologies, sound eavesdropping 
+in audiovisual environments has become a major security concern due to the non-encrypted characteristic 
+of sound, which makes it vulnerable for attackers to acquire sensitive information, such as personal privacy, 
+business secrets, etc. Lessons learned from various sound eavesdropping attacks [13, 18, 42, 45] have prompted 
+individuals to converse in anti-eavesdropping environments, such as soundproof rooms or locations with anti-
+recording devices [8]. Hence, side-channel attack methods for sound eavesdropping become increasingly attractive. 
+Existing side-channel sound eavesdropping works mainly focus on sensing sound-induced physical vibration 
+(e.g., speaker/microphone vibration, surrounding surface vibration, etc.) in audiovisual environments through 
+motion sensors [9, 32, 50] or RF signals, such as Wi-Fi [57] and mmWave [5, 31, 55], etc., for sound content 
+recovery. However, these methods may be ineffective in noisy environments, as background noise could induce 
+simultaneous physical vibration, leading to significant distortion in the recovered sound.
+As one of the most common and essential accessories, audio cables are extensively used in different audiovisual 
+applications, such as personal audio listening, conference calls, online commercial meetings, etc., for sound 
+signal transmission. When sound signals are received/produced by a microphone/speaker, they are transmitted 
+within audio cables in the form of current signals. Hence, it introduces the potential risk of eavesdropping on 
+sound transmitted via these cables once capturing these current signals. Recent work [67] has demonstrated 
+the capability to capture voltage changes by embedding a customized retroreflector into  earphone wires for 
+sound eavesdropping. This method, however, requires physically damaging wires and embedding a customized 
+retroreflector into the wires, significantly limiting its practicality in  real-world applications. Hence, it  remains 
+difficult to directly capture current or voltage changes in audio cables using Commercial Off-The-Shelf (COTS) 
+devices for sound eavesdropping.
+From a different perspective, we observe that there exists electromagnetic leakage around audio cables when 
+sound signals are transmitted via the audio cables in form of current signals. The leaked electromagnetic variation 
+are correlated with the current signals being transmitted [10, 17], which potentially reveals the transmitted 
+sound content. Hence, it is promising to capture these distinct signal patterns, i.e., electromagnetic variation, for 
+achieving more natural sound eavesdropping.
+Nowadays, Radio-frequency identification (RFID) technologies have been developed rapidly. Given that RFID 
+tags have the characteristics of electromagnetic sensitivity[17], flexibility, small size, and low cost, they are suited 
+for attachment onto common audio cables to capture electromagnetic variation patterns around audio cables for 
+sound eavesdropping. In various audiovisual scenarios, e.g., meeting rooms, offices, command centers, etc., audio 
+cables are commonly used to connect electronic equipments for sound signal transmission. When eavesdropped 
+users are absent temporarily, attackers are able to secretly attach a small and battery-free RFID tag to an audio 
+cable used for sound transmission, which is difficult to be noticed by the eavesdropped users in the usage process 
+of the audio cable. Furthermore, owing to the outstanding penetration ability of RFID signals, a compact RFID 
+reader and antennas can be camouflaged as decorations or public facilities, such as flower pots, trash bins, etc., 
+placed in or outside rooms to transmit and receive RF signals for achieving secret sound eavesdropping. Hence, 
+we consider attaching a battery-free RFID tag on an audio cable to capture the electromagnetic variation patterns 
+around the audio cable for sound eavesdropping.
+However, to eavesdrop on sound transmitted via audio cables using RF signals, we face several challenges in 
+practice. First, the eavesdropping scheme should be able to capture electromagnetic variation patterns around 
+audio cables accurately by using a battery-free RFID tag attached to the audio cables. Second, the eavesdropping 
+scheme should be able to enhance the amplitude of RF signals and remove environmental noise, enabling effective 
+sound eavesdropping under various signal attenuation scenarios. Third, the eavesdropping scheme should be 
+able to reconstruct sound signals from RF signals reliably for sound content recovery.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:3
+In this paper, we first explore the feasibility of sound eavesdropping by modeling electromagnetic variation
+around audio cables upon RF signals, and find that the electromagnetic variation patterns present unique
+characteristics for different sound content transmitted via audio cables. Motivated by the observations, we
+propose a sound eavesdropping system, EMTap, which senses electromagnetic variation around audio cables
+leveraging an RFID tag secretly attached to an audio cable for sound content recovery. InEMTap, when sound
+signals are transmitted via an audio cable attached an RFID tag, the RFID tag is first activated by RF signals
+sent by a camouflaged signal-transmitting antenna, and then EMTap receives RF signals back-scattered by the
+RFID tag. To sense electromagnetic variation effectively in various signal attenuation scenarios, EMTap removes
+electromagnetic interference from surrounding electronic devices employing an Adaptive Electromagnetic
+Interferences Removal (AEIR) algorithm, and further enhances the amplitude of received RF signals using a
+designed Taylor Decomposition-based signal Adaptive Enhancement (TDAE) algorithm. After that, EMTap
+obtains RF signal spectrograms corresponding to the electromagnetic variation patterns around audio cables,
+and further trains a mapping relationship model between RF signal and sound spectrograms by building a
+cross-modal Generative model, Nonlinear Stable Diffusion Model (NSDM), for reconstructing sound spectrograms
+from RF signal spectrograms. Subsequently, EMTap converts reconstructed sound spectrograms to time-domain
+sound waveforms leveraging Griffin-Lim algorithm and removes reconstruction distortion in time-domain sound
+waveforms using an adaptive waveform filter. Finally, the time-domain sound waveforms are converted to sound
+content through sound recognition API for achieving sound eavesdropping. Experiments in real environments
+show that EMTap eavesdrops on sound transmitted via audio cables effectively.
+We highlight our main contributions as follows:
+•We present a side-channel sound eavesdropping system, which captures electromagnetic variation patterns
+around an audio cable utilizing a small and battery-free RFID tag attached to the audio cable for sound
+content recovery.
+•We design an AEIR and a TDAE algorithm to remove electromagnetic interference from nearby devices and
+enhance RF signal amplitude, respectively, for capturing fine-grained electromagnetic variation patterns
+accurately in various signal attenuation scenarios.
+•We build a cross-modal Generative model, NSDM, to reconstruct sound spectrograms from RF signal
+spectrograms, and further convert sound spectrograms to sound waveforms for sound content recovery.
+•We conduct extensive experiments in real environments, and the results show that EMTap achieves an
+average Mel-Cepstral Distortion (MCD) of 5.49 and Word Error Rate (WER) of 16.19% for eavesdropping on
+sound transmitted via audio cables.
+2 ATTACK MODEL
+Attack Model. In audiovisual environments, audio cables are common tools for sound signal transmission 
+and have been widely used in various scenarios, such as personal audio listening, online commercial meetings, 
+conference calls, etc. When sound signals-related current signals are transmitted via audio cables, detectable elec-
+tromagnetic leakage is emitted around the audio cables, which could reveal the current signals being transmitted 
+for sound content recovery. Since RFID tags are sensitive to variation in nearby electromagnetic fields[17], it is 
+possible for attackers to secretly attach an RFID tag on audio cables for eavesdropping on sound transmitted via 
+the audio cables.
+Eavesdropping Scenario. In audiovisual scenarios with audio cables, e.g., offices, meeting rooms, command 
+centers, etc., attackers can discreetly attach a small, battery-free RFID tag to the audio cables of eavesdropped 
+users during the eavesdropped users’ temporary absence. Usually, RFID tags are quite small, and the smallest 
+tags could be as tiny as 2mm × 3mm[46], making it easy to be attached to common audio cables without being
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:4 • Chen et al.
+(a) TRS Cable (b) RCA Cable (c) XLR Cable
+TV DVD Speaker Amplifier
+Speaker
+PC Smartphone
+ Mic
+ E-guitarAudio Mixer
+ Speaker
+Mic
+ Mic
+Fig. 1. Illustration of commonly used audio cables.
+noticed. Moreover, audio cables are usually placed behind devices like monitors, TVs, etc., which enhances the 
+discreetness of RFID tag.
+Moreover, due to exceptional penetrating capabilities of RFID signals[17, 65], RFID readers and antennas can 
+be discreetly housed in containers or disguised as decorations within rooms, such as flower pots and framed 
+paintings. They can also be camouflaged as public facilities outside of rooms, like trash bins, planters, etc., to 
+transmit and receive RF signals. To enable concealed deployment of RFID readers, several practical power supply 
+methods can be employed. For instance, small battery packs can be used to provide a continuous power supply 
+for RFID readers, lasting several days or weeks. Additionally, RFID readers can be powered through discreet 
+connections to existing power strips or integrated into buildings’ electrical system, commonly available in office 
+or meeting rooms. The RF signals captured by RFID readers can be transmitted to a computing device for further 
+processing through various wireless or wired methods, including Wi-Fi, Bluetooth, or Ethernet connections. The 
+RFID readers focus solely on signal acquisition and transmission, while the heavy computation is offloaded to 
+cloud servers or edge computing devices for ensuring low computational load on the RFID readers. This further 
+enhances the camouflage ability and enables secretive sound eavesdropping.
+The attacker and the attacker’s capability. The attacker is assumed to be a malicious entity with the 
+intention of eavesdropping on private audio conversations transmitted via audio cables. The attacker may be an 
+individual or organization with the technical knowledge and chances to conduct secret sound eavesdropping in 
+environments with private communications, such as meeting rooms, offices, etc.
+We assume the attacker can access physical environment where audio cables are deployed to transmit sound 
+signals, such as meeting rooms, offices, etc. The attacker can secretly attach small, battery-free RFID tags on the 
+audio cables and develop RFID readers around to capture electromagnetic variation induced by sound signals 
+transmitted via the audio cables. Additionally, the attacker has ability to capture RF signals via various wireless 
+or wired methods, such as Wi-Fi, Bluetooth, Ethernet, etc. These captured signals can then be processed to 
+reconstruct sound spectrograms, recovering intelligible audio signals. Once the attacker successfully captures 
+and recovers the sound signals, they can use the recovered sound for malicious purposes, such as eavesdropping 
+on private conversations, extracting sensitive information, or gaining access to confidential discussions.
+3 PRELMINARY
+Audio cables are a kind of ubiquitous component in various audiovisual scenarios for sound content transmission. 
+Usually, there are electromagnetic leakage around audio cables when sound signals are transmitted via cables 
+in form of current signals, which potentially reveals transmitted sound content. In this section, we first model 
+electromagnetic variation upon RF signals, and then explore feasibility of eavesdropping on sound transmitted 
+via audio cables using RF signals.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:5
+Tag
+r
+Audio cable
+Metal box
+USRP N210
+Impinj R420
+TVRCA Mic/Speaker
+PC Mic/SpeakerTRS
+XLR Audio 
+Mixer 
+Δ𝜙 𝑡
+𝐼 𝑡
+𝐵 𝑡
+Electromagnetic 
+variation
+Mic/Speaker
+Fig. 2. Illustration of modeling electromagnetic variation upon RF signals.
+3.1 Background
+Audio cables are widely used in both professional and consumer audio applications for transmitting sound
+signals in audiovisual scenarios. According to the types of cable connectors, existing audio cables can be broadly
+categorized into three types: TRS, RCA, and XLR cables, as shown in Fig. 1.
+In many professional settings, such as meeting rooms and live audio systems, TRS, RCA, and XLR audio
+cables are widely employed for dedicated audio signal transmission due to their superior sound fidelity and
+reliability. These three types of audio cables are commonly found in scenarios involving audio equipment,
+primarily facilitating the connection between various electronic devices. Specifically, TRS audio cables are widely
+utilized to connect personal computers (PCs)/smartphones and loudspeakers/microphones(Mics), which are
+essential for transmitting audio in various online applications; RCA cables are prevalent for transmitting stereo
+sound in audiovisual systems, which are commonly used to connect TVs/DVD and loudspeakers/amplifiers/Mics;
+XLR cables are usually used in live sound and studio environments, and the ability to provide high-quality audio
+transmission makes them ideal for connecting audio mixers and loudspeakers/Mics/E-guitars. In real audiovisual
+scenarios, such as online commercial meetings, conference calls, etc., different types of audio cables are chosen
+according to practical requirements for transmitting sound signals.
+The process of transmitting sound signals (speaker-produced or microphone-received sound) via an audio
+cable consists of the following steps. First, sound content, typically in the form of sound waves, is converted into
+current signals by a transducer (e.g., a microphone). Then, the current signals are transmitted via audio cables
+for delivery to various audio processing devices. Finally, the receiving end (e.g., a loudspeaker or an amplifier)
+receives and processes the current signals to obtain transmitted sound content.
+3.2 Modeling Electromagnetic Variation upon RF Signals
+When sound signals, in form of current signals, are transmitted via an audio cable, electromagnetic leakage
+occurs around the cable. Change of transmitted current signals induces electromagnetic variation. An RFID tag
+attached to the cable could be used for sensing the electromagnetic variation. Hence, we model electromagnetic
+variation around audio cables by analyzing RF signals back-scattered by the tag.
+Although TRS, RCA, and XLR cables have different connectors, it is similar for these three types of cables
+when transmitting sound signals via audio cables in form of current signals. Hence, electromagnetic variation
+model is universal for these three types of cables. As shown in Fig. 2, assuming that an RFID tag is attached to
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:6 • Chen et al.
+thank very muchyou
+much
+（a）TRS cable （b） RCA cable
+Frequency(Hz)300
+600
+900
+1200
+1500
+0
+1800
+thank very muchyou
+（b） XLR cable
+thank very muchyou
+Frequency(Hz)300
+600
+900
+1200
+1500
+0
+1800
+thank veryyou thank veryyou thank veryyou much
+0
+10
+20
+30
+muchmuchmuch
+Test I
+Test II
+0
+10
+20
+30
+Fig. 3. Example of RF signal phase spectrogram induced by electromagnetic variation for different cables.
+an audio cable, and RF signals are sent and received using a transmitting antenna 𝑇𝑥 connected with an Impinj
+reader and a receiving antenna𝑅𝑥 connected with a USRP reader, respectively.𝑇𝑥 first sends RF signals to activate
+the tag on cable, and the activated tag back-scattered RF signals to 𝑅𝑥.
+When sound signals are transmitted via an audio cable, they can be represented as
+𝑃(𝑡)= 𝑃0 sin(2𝜋𝑓𝑡 +𝜙), (1)
+where 𝑃0 is sound amplitude, 𝑓 is sound frequency, and 𝜙 is initial phase of sound. Generally, sound signals are
+transmitted through audio cables at the form of alternating current signals[29], and the current signals correspond
+to 𝑃(𝑡)are represented as 𝐼(𝑡)= 𝐼0 sin(2𝜋𝑓𝑡 +𝜙′), where 𝐼0 is amplitude of current signals, and 𝜙′is initial
+phase of current signals. According to Ampere’s law[3], when alternating current signals 𝐼(𝑡)are transmitted
+via an audio cable, it changes electromagnetic around the cable. The electromagnetic variation 𝐵(𝑡)induced by
+𝐼(𝑡)is 𝐵(𝑡)= 𝜇0𝐼(𝑡)/2𝜋𝑟, where 𝜇0 is magnetic permeability, and 𝑟 is distance from cable center to the tag. By
+substituting 𝐼(𝑡)into 𝐵(𝑡), we have
+𝐵(𝑡)= 𝜇0𝐼0 sin(2𝜋𝑓𝑡 +𝜙′)
+2𝜋𝑟 . (2)
+According to Faraday’s Law [22], the electromotive force (EMF) 𝐸(𝑡)induced on the RFID tag by 𝐵(𝑡)is
+𝐸(𝑡)= −𝑑
+𝑑𝑡(Φ𝐵)= −𝑑
+𝑑𝑡(𝐵(𝑡)·𝐴)= −𝐴𝜇0𝐼0 𝑓 cos (2𝜋𝑓𝑡 +𝜙′)
+𝑟 , (3)
+where Φ𝐵 = 𝐵(𝑡)·𝐴is the value of magnetic flux, and 𝐴is the region area through which magnetic field lines
+pass.
+According to [17], the phase of RF signal variation backscattered by the RFID tag induced by the variable EMF
+𝐸(𝑡)can be represented as Δ𝜙(𝑡)= 𝑘·𝐸(𝑡). By substituting Eq. (3) into Δ𝜙(𝑡), we obtain
+Δ𝜙(𝑡)= −𝐴𝑘𝜇0/𝑟 ·𝐼0 𝑓 cos (2𝜋𝑓𝑡 +𝜙′). (4)
+Based on Eq. (4), the frequency 𝑓 and amplitude 𝐼0 of current signals 𝐼(𝑡)can be inferred from the phase of
+received RF signals, and the corresponding electromagnetic variation 𝐵(𝑡)can be further inferred based on Eq.
+(2).
+Based on inferred frequency 𝑓 and amplitude 𝐼0 of current signals, we construct electromagnetic variation
+model upon RF signals when transmitting sound signals via audio cables.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:7
+Pre-processing 
+signal
+Recovering sound 
+content
+𝑻𝒙 𝑹𝒙
+Reconstructing sound 
+spectrogram from RF 
+signal spectrogram
+Time-domain
+RF signal
+Removing EMI 
+through AEIR 
+algorithm
+Normalizing audio cable 
+specificity in RF signal 
+spectrograms based on 
+CACL network
+Converting time-domain 
+sound waveform to sound 
+content using API
+Enhancing RF signal 
+amplitude through 
+TDAE algorithm
+Tag
+Transmitted
+sound in audio
+cable
+RF signal 
+spectrogram 
+Sound
+spectrogram 
+Training a mapping 
+relationship model  
+through NSDM
+Converting sound spectrogram
+to time-domain waveform 
+using Griffin-Lim algorithm
+Fig. 4. Architecture of EMTap system.
+3.3 Feasibility Study of Eavesdropping on Sound Using RF Signals
+Based on the constructed electromagnetic variation model upon RF signals, we consider using an RFID tag 
+attached to an audio cable to capture the electromagnetic variation patterns around the audio cable for sound 
+eavesdropping.
+To explore the feasibility of sound eavesdropping by capturing electromagnetic variation patterns around 
+audio cables using RF signals, we conduct experiments to analyze spectrograms of RF signals corresponding to 
+some common words transmitted via audio cables. Since the third-order harmonic signals achieve a trade-off 
+between sensing sensitivity and signal intensity [53], we choose the USRP N210 reader to monitor the third-order 
+harmonic RF signals. As shown in Fig. 2, to avoid electromagnetic interference from other electronic devices, such 
+as loudspeakers, keyboards, etc., we conduct experiments in a controlled environment. Specifically, electronic 
+devices that may emit electromagnetic waves, e.g., computers, loudspeakers, etc., are stored in a metal box to 
+avoid electromagnetic leakage [28]. An RFID tag is attached to an audio cable, and RFID antennas are placed 
+around for capturing electromagnetic variation induced by sound transmitted via the audio cable. This method 
+allows us to only sense electromagnetic variation induced by current transmitted via audio cables without being 
+affected by surrounding electromagnetic interference.
+Fig. 3 shows the spectrograms of RF signal phase corresponding to three audio cables, e.g., TRS, RCA, and 
+XLR cable, when they transmit sound "thank you very much" across multiple tests. It can be observed from the 
+figures that there are obvious differences between spectrograms of different words. We further calculate structural 
+similarity [25] of spectrograms corresponding to these common words. The results show that structural similarity 
+of different words’ spectrograms are all less than 0.5 and that of the same word’s spectrograms are all larger than 
+0.8 for different audio cables across multiple tests. Hence, different words can be effectively distinguished based 
+on spectrograms of RF signals induced by electromagnetic variation around audio cables.
+The above encouraging results demonstrate the potential of eavesdropping on sound transmitted via audio 
+cables by capturing electromagnetic variation patterns around audio cables using RF signals.
+4 System Overview
+We propose a sound eavesdropping system, EMTap, which senses electromagnetic variation around an audio cable 
+using an RFID tag secretly attached to the audio cable for sound content recovery. Fig. 4 shows the architecture of 
+EMTap system. In EMTap, the camouflaged signal-transmitting antenna first sends RF signals to activate the RFID 
+tag on audio cable, and RF signals back-scattered by the tag are received by the camouflaged signal-receiving 
+antenna. EMTap system contains following key components:
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:8 • Chen et al.
+Received RF 
+signals 
+EMI-related RF
+signals
+RLS algorithm
+Estimated path 
+RF signal
+interference 
+on cable
+RF signals 
+after removing 
+EMI 
+Interference
+source 1
+Interference
+Source S
+∑
+-
+Output
+Iteration Input
+…
+Fig. 5. The workflow of AEIR for removing EMI.
+Pre-processing signal. After receiving RF signals back-scattered by the RFID tag, EMTap first removes 
+electromagnetic interference from nearby devices, such as laptops, microphones, etc., using designed Adap-
+tive Electromagnetic Interference Removal (AEIR) algorithm for defending environmental disturbances. Then, 
+EMTap enhances the amplitude of RF signals through a designed Taylor Decomposition-based signal Adaptive 
+Enhancement (TDAE) algorithm so that transmission capability of RF signals is improved. Finally, EMTap obtains 
+pre-processed time-domain RF signals.
+Reconstructing sound spectrograms from RF signal spectrograms. After signal pre-processing, EMTap 
+further converts time-domain RF signals into RF signal spectrograms, which captures electromagnetic variation 
+patterns around audio cables upon RF signals. To reconstruct sound spectrograms from RF signal spectrograms, 
+EMTap first normalizes audio cable specificity in RF signal spectrograms for audio cables with different physical 
+characteristics based on Cable Adaptive Contrastive Learning (CACL) network. After that, EMTap trains a 
+mapping relationship model between RF signal spectrograms and sound spectrograms for reconstructing sound 
+spectrograms from RF signal spectrograms through a designed cross-modal Generative model, Nonlinear Stable 
+Diffusion Model (NSDM).
+Recovering sound content. To recover sound content, EMTap first converts sound spectrograms to time-
+domain sound waveforms using Griffin-Lim algorithm, and removes reconstruction distortion in  time-domain 
+sound waveforms using an adaptive waveform filter. Finally, EMTap converts the time-domain sound waveforms 
+into sound content through sound recognition API.
+5 SIGNAL PRE-PROCESSING
+To eavesdrop on sound through an RFID tag attached to an audio cable, EMTap first collects RF signals back-
+scattered by the tag to capture electromagnetic variation patterns around the audio cable. Usually, RF signals are 
+subject to electromagnetic interference from nearby electronic devices and undergo significant attenuation when 
+penetrating objects. To capture electromagnetic variation patterns in various scenarios accurately, EMTap first 
+removes the electromagnetic interference and then enhances RF signal amplitude.
+5.1 Removing Electromagnetic Interference
+In real audiovisual scenarios, there are some electronic devices around audio cables, such as laptops, microphones, 
+etc. These devices emit electromagnetic wave during operation, which introduces ElectroMagnetic Interference 
+(EMI) on RF signals. A straightforward approach to remove EMI involves recording RF signals when there is 
+no audio transmitting via audio cables as reference background signals. When audio is transmitted, RF signals 
+are re-recorded, and the background subtraction method [6] is applied by subtracting the reference background
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:9
+（a）Without AEIR （b） With AEIR （c） Free from EMI
+Amplitude
+0
+- 4
+4
+8
+- 8 0 1 2 3 4 5
+Time (s)
+0 1 2 3 4 5
+Time (s)
+0 1 2 3 4 5
+Time (s)
+Fig. 6. Example of removing EMI based on AEIR.
+signals to remove the EMI. However, due to the time-varying and random nature of EMI, the simple background
+subtraction method proves ineffective. Hence, we design an Adaptive Electromagnetic Interference Removal
+(AEIR) algorithm to remove the EMI.
+When sound signals are transmitted via an audio cable in the form of current signals, the received RF signals
+𝑑(𝑚)include RF signals ˆ𝑦(𝑚)related to EMI from nearby electronic devices and RF signals 𝑣(𝑚)induced by
+current signals within the audio cable, where 𝑚is the number of RF signal sampling points. As shown in Fig. 5,
+when RF signals 𝑥𝑖(𝑚)corresponding to an interference source 𝑖 propagate through space via multiple paths
+ℎ(𝑛), it causes EMI 𝑦(𝑚)on 𝑣(𝑚), i.e., 𝑦(𝑚)= 𝑥𝑖(𝑚)∗ℎ(𝑛), where ∗denotes the signal convolution operation,
+and 𝑦(𝑚)is the EMI from surrounding electronic devices. Hence, the received RF signals 𝑑(𝑚)is
+𝑑(𝑚)=
+𝑆∑︁
+𝑖=1
+𝑥𝑖(𝑚)∗ℎ(𝑛)+𝑣(𝑚), (5)
+where S represents the number of interference sources. EMTap designs an AEIR algorithm to estimate RF signal
+interference ˆ𝑦(𝑚), and remove this interference from 𝑑(𝑚)by iterations, which aims to extract RF signals 𝑣(𝑚)
+only corresponding to the electromagnetic variation induced by current signals within the audio cable.
+Specificially, the optimization of AEIR algorithm is an iterative process, each iteration consists of three steps. In
+the first step, AEIR uses RLS algorithm [21] to estimate propagation paths ˆℎ(𝑛)of RF signals from electromagnetic
+interference sources to audio cables, which is represented as ˆℎ(𝑛)= [ℎ(0),ℎ (1),...,ℎ (N)]𝑇. In the second step,
+AEIR first records interference source-related RF signals𝑥𝑖(𝑚), and then estimates the RF signals ˆ𝑦(𝑚)caused by
+𝑥𝑖(𝑚)on 𝑣(𝑚), which is represented as ˆ𝑦(𝑚)= 𝑥𝑖(𝑚)∗ˆℎ(𝑛)= hTx𝑚. In the third step, AEIR subtracts ˆ𝑦(𝑚)from
+𝑑(𝑚)to obtain RF signals ˆ𝑣(𝑚)that eliminate the EMI after once iteration. While the AEIR algorithm assumes
+the knowledge of interference sources 𝑥𝑖(𝑚), it does not require exact prior knowledge of 𝑥𝑖(𝑚). Instead, the
+algorithm begins by recording an initial value of 𝑥𝑖(𝑚), and then it dynamically estimates 𝑥𝑖(𝑚)based on the
+patterns of received RF signals. This process is repeated iteratively to refine the estimation of ˆℎ(𝑛). This adaptive
+approach is essential due to the highly variable and unpredictable nature of EMI in real-world environments. The
+iterative and adaptive nature of the AEIR algorithm significantly enhances the effectiveness of EMI removal.
+To complete the whole iterative optimization process, we define a joint objective function is constructed as
+𝐿min (hn+1)= ∥hn+1 −hn ∥2 +𝜆
+
+𝑑(𝑚)−h𝑇
+𝑛+1x𝑚
+
+, (6)
+where 𝜆is a constant parameter. When the joint optimization objective function converges, EMTap obtains the
+estimated propagation paths ˆℎ𝑛(𝑛). After that, ˆℎ𝑛(𝑛)is brought into Eq.(5) to obtain RF signals𝑣(𝑚)corresponding
+to the electromagnetic variation induced by sound transmitted via audio cables. Based on AEIR algorithm,EMTap
+removes EMI from surrounding electronic devices.
+To verify the effect of AEIR algorithm, we conduct experiments in environments subject to/free from EMI when
+an audio cable transmits sound "thank you very much". To avoid electromagnetic interference in environments
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:10 • Chen et al.
+(a) RF signals’ amplitude (b) RF signals’ frequency
+Fig. 7. Example of RF signals with/without TDAE algorithm for enhancing RF signal amplitude.
+free from EMI, devices that may emit electromagnetic waves, i.e., computers, loudspeakers, etc., are stored in
+a metal box [ 28]. The results are shown in Fig. 6. We calculate Pearson correlation coefficient [ 15] between
+RF signal with/without AEIR algorithm and that from the environment free from EMI. The results show that
+Pearson correlation coefficient increases from 0.43 to 0.89 after using AEIR algorithm. Hence, EMTap removes
+EMI through AEIR algorithm effectively, and obtains pre-processed time-domain RF signals.
+5.2 Enhancing RF Signal Amplitude
+Usually, audio cables are disorganized behind electronic devices, such as TVs, monitors, etc. Moreover, to achieve
+sound eavesdropping secretly, RFID readers are usually placed sheltered or outside walls. When RF signals
+propagate through Non-Line-of-Sight paths or penetrate objects, they experience significant attenuation before
+being received by RFID readers, which affects effectiveness of using RF signals to capture electromagnetic
+variation patterns. Hence, EMTap needs to enhance RF signal amplitude for capturing electromagnetic variation
+patterns in signal attenuation scenarios.
+According to Eq. (4), the received RF signalsΔ𝜙(𝑡)is proportional to the current signals 𝐼0 transmitted in audio
+cables. If the current signals can be amplified from 𝐼0 to 𝛼𝐼0, where 𝛼 is amplification factor(𝛼 > 1), the received
+RF signals can be enhanced as well. However, it is unrealistic to physically adjust the current signals in audio
+cables, so we aim to find a way for virtually magnifying the current signals.
+To enhance the amplitude of RF signals, EMTap designs a Taylor Decomposition-based signal Adaptive
+Enhancement (TDAE) algorithm for magnifying the current signals virtually. TDAE algorithm enhances the
+amplitude of RF signals by amplifying the Alternating Current (AC) components and suppressing the Direct
+Current (DC) components, which aims to enhance the high-frequency elements related to sound signals while
+reducing low-frequency elements that are relevant to noise. Specifically, according to Eq. (4), we haveΔ𝜙(𝑡)=
+−𝐴𝑘𝜇0 𝑓𝐼0
+𝑟 ·cos (2𝜋𝑓𝑡 +𝜙′). Following Taylor’s theorem [1], Eq. (4) can be expanded as
+Δ𝜙(𝑡)= Δ𝜙(0)+Δ𝜙′(𝑡)
+1! 𝑡+Δ𝜙(2)(𝑡)
+2! 𝑡2 +···
+= Δ𝜙(0)+𝐼0
+2𝜋𝐴𝑘𝜇0 𝑓2
+𝑟 sin (2𝜋𝑓𝑡 +𝜙′)
+−4𝜋2𝐴𝑘𝜇0 𝑓3
+2!𝑟 cos (2𝜋𝑓𝑡 +𝜙′)+···
+
+.
+(7)
+The first item Δ𝜙(0)of Eq. (7) is DC component, and the remaining items are AC components, which is
+represented as 𝑅(𝑡)= 𝐼0
+
+2𝜋𝐴𝑘𝜇0 𝑓2
+𝑟 sin (2𝜋𝑓𝑡 +𝜙′)−4𝜋2𝐴𝑘𝜇0 𝑓3
+2!𝑟 cos (2𝜋𝑓𝑡 +𝜙′)+···
+
+. This equation indicates
+that 𝑅(𝑡)is also proportional to 𝐼0, so amplifying 𝐼0 by 𝛼 is equivalent to amplifying 𝑅(𝑡)by 𝛼.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:11
+𝒙𝟏 𝒙𝒊
+𝒇𝜽Encoder
+…
+𝒈𝜽Projector
+𝒉𝟏 𝒉𝒊
+𝒈𝜽 𝒈𝜽 𝒈𝜽
+𝒇𝜽 𝒇𝜽 𝒇𝜽
+… …
+Shared latent space
+VAE
+Cable 1 Cable i
+“Content 1”
+Normalized
+“Content i”
+Normalized
+Contrast 
+loss
+𝒙𝒏
+𝒇𝜽 𝒇𝜽
+…
+𝒉𝒏
+𝒈𝜽 𝒈𝜽
+“Content n”
+Normalized
+Attract
+𝒛𝟏
+𝟏 𝒛𝟏
+𝒎 …
+Attract
+Repel
+𝒛𝒊
+𝟏 𝒛𝒊
+𝒎
+Repel
+𝒛𝒏𝟏 𝒛𝒏
+𝒎
+Attract
+…
+“Content 1”
+Cable m
+“Content i”
+Cable 1 Cable i Cable m
+“Content n”
+Cable 1 Cable i Cable m
+…
+…
+Repel
+…
+… … … … …
+… … …
+…
+Fig. 8. Architecture of CACL network for normalizing cable specificity in RF signal spectrograms.
+To amplify 𝑅(𝑡)by 𝛼, we first filter out the AC terms 𝑅(𝑡)from the RF signals Δ𝜙(𝑡)using a Butter-worth
+filter[49], and the DC term can be represented as Δ𝜙(0)= Δ𝜙(𝑡)−𝑅(𝑡). Hence, the magnified RF signals Δ ˆ𝜙(𝑡)
+is
+Δ ˆ𝜙(𝑡)= Δ𝜙(0)+𝛼𝑅(𝑡)= Δ𝜙(𝑡)−𝑅(𝑡)+𝛼𝑅(𝑡)
+= Δ𝜙(𝑡)+(𝛼−1)𝑅(𝑡), (8)
+where 𝛼 is the amplification f actor(𝛼 > 1) and 𝑅(𝑡) is the AC terms of RF signals. Based on the above method, 
+𝐸𝑀𝑇𝑎𝑝 is able to enhance the amplitude of RF signals.
+However, the reasonable setting of 𝛼 is crucial for effective signal enhancement. Usually, a higher 𝛼 increases 
+RF signal amplitude but reduces signal-to-noise ratio (SNR). To balance RF signal amplitude and SNR, EMTap 
+adaptively selects 𝛼 in different scenarios. Specifically, EMTap first sets an initial 𝛼 based on RF signal amplitude 
+and SNR. Then, EMTap enhances the amplitude of RF signals and calculates the SNR of enhanced RF signals. 
+Finally, EMTap adjusts 𝛼 according to SNR of RF signals. If the SNR is lower than a preset threshold, 𝛼 is reduced 
+to optimize signal quality, and vice versa. Based on the above TDAE algorithm, EMTap enhances the amplitude of 
+received RF signals adaptively.
+To verify the effect of TDAE algorithm, we compare RF signals with/without amplitude enhancement when an 
+audio cable transmits sound "thank you very much", and the results are shown in Fig. 7(a). It can be observed from 
+the figure that amplitude of received RF signals after enhancement is increased obviously. W e further calculate 
+the FFT of RF signals with/without amplitude enhancement, and the results are shown in Fig. 7(b). From the 
+figure, we can observe that the frequency of RF signals with/without enhancement has a  high similarity, which 
+demonstrates that TDAE algorithm can enhance RF signal amplitude without disrupting frequency.
+6 RECONSTRUCTING SOUND SPECTROGRAMS FROM RF SIGNAL SPECTROGRAMS
+After signal pre-processing, EMTap uses STFT[23] to convert time-domain RF signals into signal spectrograms, 
+which captures electromagnetic variation patterns around audio cables upon RF signals. Based on the captured 
+patterns, EMTap further reconstructs sound spectrograms from RF signal spectrograms.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:12 • Chen et al.
+Integrated circuit 
+components 
+(a) Internal components
+of RFID tags
+(b) An example of Nonlinear
+effect 
+Amplitude
+0.2
+-0.4
+0
+0.4
+0.2 0.4 0.6 0.8 1.00
+Time (ms)
+Non-sensitive
+area
+-0.2
+Fig. 9. Illustration of nonlinear effect.
+6.1 Normalizing Audio Cable Specificity in RF Signal Spectrograms
+Usually, audio cables with various connectors (e.g., TRS, RCA, XLR cables, etc.) are used to connect different
+devices for sound signal transmission. Despite differences in connectors, these cables essentially transmit sound
+signals in form of current signals. However, there are different physical characteristics (e.g., material, turns,
+resistance, etc.) in cables used for current signal transmission. These differences result in varying electromagnetic
+variation around audio cables when transmitting the same sound signals via cables with different physical
+characteristics [16]. To ensure that a sound eavesdropping model is effective across various audio cables, it is
+necessary to normalize cable specificity in RF signal spectrograms before constructing sound eavesdropping
+model.
+To normalize cable specificity in RF signal spectrograms, we design a Cable Adaptive Contrastive Learning
+(CACL) Network to obtain cable-independent RF signal spectrograms. The structure of CACL network is shown
+in Fig. 8, which contains four components, i.e., encoder, projector, contrast loss, and Variational AutoEncoder
+(VAE). RF signal spectrograms are first segmented into 2s pieces, and regularized to a 256 ×256 pixel size for
+obtaining sound content pieces𝑝𝑖. 𝑝𝑖 is the input of CACL network, which is a collection of RF signal spectrograms
+corresponding to the same sound content from cables with different physical characteristics. For input sound pair
+𝑝𝑖 and 𝑝𝑗, an encoder 𝑓𝜃(·)is utilized to obtain their feature embedding ℎ𝑖 and ℎ𝑗, respectively. Then, the feature
+embedding is input to a projector 𝑔𝜃(·)for obtaining feature vector 𝑧. Based on 𝑧, a contrastive loss function is
+formalized as
+𝐿= −𝑙𝑜𝑔
+Í
+(𝑖,𝑗)𝜖𝑚𝑒𝑠(𝑧1
+𝑖 ,𝑧𝑚
+𝑖 )/𝜏
+Í
+(𝑖,𝑗)𝜖𝑛𝑒𝑠(𝑧𝑖,𝑧𝑗 )/𝜏 , (9)
+where 𝑛is sound content categories, 𝑚is cable types, 𝑠(.)is similarity function between sound content, and 𝜏 is
+training parameter. The loss function guides RF signal spectrogram features of the same sound content from
+cables with different physical characteristics to attract each other, while ensuring that RF signal spectrogram
+features of different sound content repel each other in feature space. Hence, the extracted features have the
+characteristics of intra-class compactness and inter-class separability. When the loss function converges, EMTap
+obtains shared latent space, which is cable-independent and only related to sound content.
+The shared latent space is further used to reconstruct normalized RF signal spectrograms when conducting
+sound eavesdropping. Specifically, for a sound content pieces, Encoder𝑓𝜃(·)is utilized to obtain feature embedding
+ℎ𝑖, and projector 𝑔𝜃(·)is employed to obtain feature vector 𝑧𝑖. After that, the shared latent space is used to
+adjust 𝑧𝑖 for obtaining normalized feature vector. Based on the normalized feature vector,EMTap reconstructs
+normalized RF signal spectrograms employing VAE [34]. Based on the normalized RF signal spectrograms,EMTap
+is able to construct sound eavesdropping model in an audio cable-independent manner.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:13
+Reconstructed 
+sound 
+spectrogram
+Encoder
+…
+Diffusion process
+Decoder
+Denoising process  
+…
+UNet
+…
+RF signal 
+spectrogram
+Recorded 
+sound 
+spectrogram
+Input m
+Output
+Stable Diffusion Model
+Reconstruction 
+similarity
+ 𝐫
+𝐬
+Encode error(x ~ xො)
+ x |q r
+ ˆ ˆs | xp
+Ground-truth t
+…
+… …
+UNet
+𝑥௧ିଵ𝑥ଵ𝑥଴ 𝑥௧ 𝑥୲ାଵ 𝑥୘
+𝑥଴ 𝑥௧ିଵ 𝑥୲ 𝑥୘… …
+Dropout
+layer
+Conv
+layer
+BN
+layer
+Nonlinear 
+layer
+Nonlinear  SubNet
+Fig. 10. Architecture of NSDM model.
+6.2 Training a Mapping Relationship Model Through NSDM Model
+Based on normalized RF signal spectrograms, a mapping relationship model between RF signal and sound
+spectrograms is required for reconstructing sound spectrograms from RF signal spectrograms. Benefiting from
+the advanced capabilities of spectrogram encoding and decoding, Generative Model enable powerful cross-modal
+sound spectrogram generation. Based on Generative model[47], we build a Stable Diffusion Model (SDM) to train
+a mapping relationship model between RF signal spectrograms and sound spectrograms.
+A straightforward method involves inputting RF signal spectrograms of certain sound content into SDM model
+for reconstructing sound spectrograms directly. However, it encounters inherent disruption due to the nonlinear
+effects of integrated circuit components in RFID tags when capturing electromagnetic variation patterns by RF
+signals. Nonlinear effects are due to the non-semiconductor properties of RFID tag circuit components, such as
+chips and antennas, etc. (as shown in Fig. 9 (a)), which introduces RF signals in a manner that is not proportional
+to current signals. To explore the nonlinear effects of RFID tags, we transmit sinusoidal sound signals (i.e., current
+signals) via an audio cable, and calculate the response curve of RF signals and current signals. The results are
+presented in Fig. 9 (b). We can observe that there exist obvious non-sensitive area where response of RF signals
+becomes relatively insensitive as the amplitude of current signals increases. Hence, nonlinear effects introduce
+disruptions in the transduction process when capturing electromagnetic variation through RF signals.
+To eliminate the transducing disruption, we add a Nonlinear SubNet network to SDM model for obtaining
+a Nonlinear Stable Diffusion Model (NSDM) model. Fig. 10 illustrates the NSDM architecture, which consists
+of four parts, i.e., nonlinear SubNet network, Encoder, Stable diffusion model, and Decoder. Specifically, the
+SubNet network contains Convolution Layers, Nonlinear layers, Batch Normalization (BN) Layers, and Dropout
+Layers. The Convolution, BN, and Dropout Layers are utilized to extract RF signal spectrogram features, increase
+training stability, and prevent overfitting, respectively. In the Nonlinear layers, we design an adaptive activation
+function to correct nonlinear effects of RFID tags, which is represented as 𝑓(𝑥)= 𝑥/(𝛼+|𝑥|), where 𝛼is adaptive
+parameters. Based on the nonlinear SubNet network, EMTap obtains corrected RF signal spectrogram features 𝑟.
+Subsequently, 𝑟 is input to NSDM model for reconstructing sound spectrograms from RF signal spectrograms.
+Specifically, the encoder first performs nonlinear mapping to compress high-dimensional data as low-dimensional
+latent space representation ¯𝑥. Then, the latent space representation ¯𝑥 is sent to a stable diffusion model [47] for
+estimating a feature distribution ˆ𝑥, which aims to learn the real feature distribution 𝑥. The stable diffusion model
+contains two processes, i.e., the Diffusion process and the Denoising process, and each process contains 𝑇 steps.
+In the Diffusion process, EMTap adds Gaussian distribution noise 𝑞(𝑥𝑡 |𝑥𝑡−1)on feature distribution 𝑥𝑡−1 to
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:14 • Chen et al.
+- 2
+- 1
+1
+2
+Fig. 11. An example of time-domain sound waveforms with/without adaptive waveform filter.
+obtain a new feature distribution 𝑥𝑡 in each step. After 𝑇 steps in the Diffusion process, a feature distribution
+𝑥𝑇 is obtained. In the Denoising process, based on 𝑥𝑇 in the Diffusion process, EMTap estimates a Gaussian
+noise at each step using an U-Net, which is represented as 𝑝(𝑥𝑡−1 |𝑥𝑡). EMTap removes the estimated Gaussian
+noise distribution from feature distribution 𝑥𝑡 to obtain a new feature distribution 𝑥𝑡−1. After 𝑇 steps, EMTap
+obtains a low-dimensional latent space representation 𝑥0, i.e., estimated feature distribution ˆ𝑥 of input RF signal
+spectrogram.
+Based on the estimated feature distribution ˆ𝑥, EMTap outputs the reconstructed sound spectrogram ˆ𝑠 cor-
+responding to the RF signal spectrogram through a decoder, and the output process takes the recorded sound
+spectrogram (i.e., ground truth𝑡) as the goal. The decoder models a probability distribution𝑃𝜀 (ˆ𝑠 |ˆ𝑥)from feature
+distribution ˆ𝑥 to reconstructed sound spectrogram ˆ𝑠in each iterative. After the above reconstruction step, NSDM
+model completes once iterative. Next,EMTap calculates reconstruction similarity between the outputˆ𝑠of previous
+iterative and recorded sound spectrogram, which is used to adjust the latent space representation 𝑥0 of NSDM
+model in next iterative.EMTap repeats the above steps until the mapping relationship model between the RF signal
+spectrogram and corresponding sound spectrogram is established. Based on the established mapping relationship
+model, EMTap outputs final reconstructed sound spectrogram 𝑠 based on the input RF signal spectrogram.
+To train the NSDM model, we define a loss function as
+L= 𝐿(𝑟,𝑚)+E [log 𝑝𝜀(ˆ𝑠 |ˆ𝑥,𝑡)]−𝐷𝐾𝐿 [𝑞𝜃(ˆ𝑥 |𝑟)∥𝑃(𝑥)], (10)
+where 𝐿(𝑟, 𝑚) is loss of SubNet network, E [log 𝑝𝜀 (𝑠ˆ | 𝑥ˆ, 𝑡)] is likelihood probability between reconstructed and 
+recorded sound spectrogram, and 𝐷𝐾𝐿 [𝑞𝜃 (𝑥ˆ | 𝑟)∥𝑝 (𝑥)] is encode error between 𝑥ˆ and 𝑥. The loss function aims 
+to minimize the encode error of probability distribution 𝑞𝜃 (𝑥ˆ | 𝑟) between 𝑥ˆ and 𝑥 while maximize likelihood 
+function of probability distribution 𝑝𝜀 (𝑠ˆ | 𝑥ˆ, 𝑡) between recorded sound 𝑡 and 𝑠ˆ. When the loss function con-
+verges, EMTap trains the mapping relationship model between RF signal spectrograms and corresponding sound 
+spectrograms.
+Based on the established mapping relationship model, EMTap eliminates the transducing disruption caused 
+by nonlinear effects of RFID tags and reconstructs sound spectrograms from RF signal spectrograms for sound 
+eavesdropping.
+7 RECOVERING SOUND CONTENT
+Based on the reconstructed sound spectrograms, EMTap employs Griffin-Lim algorithm [27] to convert the sound 
+spectrograms to corresponding time-domain sound waveforms for sound content recovery. Since there is no 
+phase information in the sound spectrograms, the Griffin-Lim algorithm estimates phase information of  sound 
+spectrograms through iterative processing to obtain time-domain sound waveforms. Specifically, the procedure 
+consists of four main steps. In the first step, EMTap first calculates the amplitude matrix 𝐴 1  of a reconstructed 
+sound spectrogram, and randomly initializes a phase matrix 𝜙1. In the second step, EMTap conducts Inverse
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:15
+USRP N210
+Impinj R420
+Tag
+Audio cable
+Blocking objects
+RCA
+TRS
+XLR
+TV Mic/Speaker
+PC Mic/Speaker
+Audio 
+Mixer 
+ Mic/Speaker
+Fig. 12. Illustration of experimental settings.
+Short-Time Fourier Transform (ISTFT) to obtain a time-domain sound waveform based on amplitude matrix 𝐴1 
+and phase matrix 𝜙1. In the third step, the Short-Time Fourier Transform (STFT) is performed on the time-domain 
+waveform to produce a new spectrogram. During this process, the updated phase matrix 𝜙2 is preserved while 
+the amplitude matrix is replace d withthe original 𝐴1. In the final step, the second and third steps are repeated 
+iteratively until the value of 𝐴𝑖 − 𝐴𝑗  becomes smaller than the threshold 𝜏. Based on the above Griffin-Lim 
+algorithm, EMTap is able to reconstruct time-domain waveforms from corresponding sound spectrograms.
+Usually, it is inevitable to occur conversion distortion during reconstructing sound spectrograms from RF 
+signal spectrograms due to network parameter limitation, which brings noise in converted sound waveforms. 
+This noise affects the performance of recovering sound content. Thus, we design an adaptive waveform filter 
+to remove the noise. Specifically, EMTap first segments a sound waveform into equal episodes. Then, for each 
+episode, EMTap estimates power spectral densities of signal and noise by analyzing energy distribution within 
+each segment. Based on the power spectral densities, Wiener coefficients [58] are calculated to adjust the signal’s 
+frequency for filtering the segment. After that, EMTap recombines all filtered signal segments into a continuous 
+time-domain sound waveform, and calculates SNR of the waveform. If the SNR falls below a predefined threshold, 
+EMTap re-estimates the power spectral densities and adjusts filter coefficients. This process is repeated until the 
+SNR of filtered sound waveform exceeds the threshold.
+To validate the effectiveness of adaptive waveform filter for removing noise in converted time-domain sound 
+waveforms, we conduct experiments to compare the sound waveforms with/without adaptive waveform filter, 
+and the results are shown in Fig. 11. From the figure, we can observe that the time-domain sound waveforms 
+are more smooth and stable after using the adaptive waveform filter, which demonstrates the effectiveness of 
+proposed adaptive waveform filter for removing noise in converted time-domain sound waveforms.
+Based on above waveform filter, EMTap obtains more smooth and stable time-domain sound waveforms, which 
+can be used for sound content recovering. Finally, a Sound-to-Text API [26] is employed to convert time-domain 
+sound waveforms into sound content.
+8 EVALUATION
+In this section, we conduct experiments to evaluate the performance of EMTap in real environments.
+8.1 Setup and Methodology
+Environmental settings. Fig. 12 shows the illustration of experimental settings. An Impinj Speedway R420 
+Commercial off-the-shelf (COTS)  RFID reader is utilized to transmit RF signals and a  USRP N210 with a  SBX
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:16 • Chen et al.
+TRS
+RCA
+XLR
+Recorded
+sound
+Reconstructed Sound 
+(Copper)
+Reconstructed Sound 
+(Tinned Copper)
+Reconstructed Sound 
+(Copper-Nickel Alloy)
+thank you very much
+Thank you very much Thank you very much Thank you very muchThank you very much Thank you very much Thank you very much
+thank you very much thank you very much thank you very much
+Fig. 13. Examples of reconstructed sound spectrogram and recorded sound spectrograms.
+daughter-board is utilized to capture harmonic RF signals. The COTS reader and USRP device utilize an antenna
+with the gain of15𝑑𝐵𝑖 working at 920𝑀𝐻𝑧 and an antenna with the gain of16𝑑𝐵𝑖 working at 2.4𝐺𝐻𝑧, respectively.
+The signal-transmitting antenna (𝑇𝑥) continuously emits RF signals and the signal-receiving antenna (𝑅𝑥) receives
+RF signals back-scattered by RFID tags. We conduct experiments in two different environments, i.e., an office and
+a meeting room.
+We choose several types of commonly used audio cables in our experiments, i.e., TRS cables for connecting PCs
+to speakers/microphones, RCA cables for connecting TVs to speakers/microphones, and XLR cables for connecting
+audio mixers to speakers/microphones. Each type includes several cables with variants in physical characteristics,
+i.e., made from different materials—Copper, Tinned Copper, and Copper-Nickel Alloy. An80𝑚𝑚×4𝑚𝑚in size,
+battery-free RFID tag is attached to each audio cable for capturing electromagnetic variation patterns.
+Data collection and implementation.EMTap chooses hundreds of common sentences in OSR dataset[20] as
+training data, which involves 2252 English words. EMTap utilizes other VCTK dataset [62] involving 3168 words
+to evaluate the performance of EMTap, which contains trained and untrained words. The RF signals are processed
+by a computer with NVIDIA RTX 3090 Ti GPU, and corresponding sound (i.e., ground truth) is recorded by
+sound recorders. RF signals and corresponding sound are configured to start recording at the same time so that
+two signals are aligned. Experimental data are collected in an in-the-wild manner, i.e., audio cables are placed
+freely around electronic devices with different obstructive conditions and cable shapes, and sound signals are
+transmitted via the cables with different sound volumes and natural speech rates.
+Evaluation metrics.To evaluate the performance of EMTap, we define several metrics as follows.
+•Mel-Cepstral Distortion (MCD), which represents the similarity of reconstructed and recorded sound
+spectrograms. A smaller/larger MCD indicates a higher/lower similarity between the reconstructed sound
+and recorded sound. Usually, a sound with MCD below 8 is well-recognized by sound recognition API [63].
+•Word Error Rate (WER), which represents sound recognizability by sound recognition API. 𝑊𝐸𝑅 = 𝑆+𝐷+𝐼
+𝑁 ,
+where 𝑆, 𝐷, and 𝐼 are word numbers substituted, deleted, and inserted, respectively, and𝑁 is word numbers
+in ground truth. A smaller/larger WER implies a higher/lower sound recognition accuracy.
+•Signal-to-Noise Ratio (SNR), which represents the power ratio of sound signals to background noise.
+SNR = 10 log10 (𝑃s/𝑃n), where 𝑃s and 𝑃n is power of sound and noise, respectively. A SNR larger than 5dB
+usually indicates good sound quality [7].
+8.2 Overall Performance
+We first evaluate the performance of EMTap in reconstructing sound spectrograms. Fig. 13 shows examples of
+reconstructed sound spectrograms and recorded sound spectrograms (i.e., ground truth) when the sound "thank
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:17
+(c) Office with brick wall
+(e) Meeting room with
+cardboard
+(f) Meeting room 
+with glass
+(b) Office with wood door
+𝑅௫
+𝐶𝑎𝑏𝑙𝑒
+𝑇௫ 𝑅௫
+𝑇௫ 𝑅௫ 𝑇௫ 𝑅௫
+𝐶𝑎𝑏𝑙𝑒
+𝐶𝑎𝑏𝑙𝑒 𝐶𝑎𝑏𝑙𝑒
+InsideOutside
+InsideOutside InsideOutside
+𝑇௫ 𝑅௫
+𝐶𝑎𝑏𝑙𝑒
+(a) Office without blocking
+𝑇௫
+𝑇௫ 𝑅௫
+𝐶𝑎𝑏𝑙𝑒
+(d)  Meeting room without 
+blocking
+Fig. 14. Environments and blocking objects.
+you very much" is transmitted via different audio cables. It can be observed from the figure that reconstructed
+sound spectrograms for cables made of different materials, i.e., Copper, Tinned Copper, and Copper-Nickel
+Alloy, show a high similarity. For example, MCD for TRS cables with materials of Copper, Tinned Copper, and
+Copper-Nickel Alloy are 5.93, 5.82, and 5.76, respectively. This is because CACL network normalizes audio cable
+specificity in RF signal spectrograms effectively. Additionally, reconstructed and recorded sound spectrograms
+(i.e., ground truth) also exhibit high similarity for three types of cables, i.e., TRS, RCA, and XLR cables. For
+example, MCD between recorded sound and reconstructed spectrograms for TRS, RCA, and XLR cables with
+materials of Copper is5.82, 5.39, and 5.28, respectively. The above results demonstrate thatEMTap can reconstruct
+sound spectrograms from RF signal spectrograms effectively.
+Table 1 shows the performance of EMTap for eavesdropping on sound transmitted via different types of audio
+cables. We can observe that the average MCD of TRS, RCA, and XLR cables are 5.85, 5.46, and 5.17, respectively,
+the WER of TRS, RCA, and XLR cables are 16.82%, 16.58%, and 15.19%, respectively, and the average SNR of TRS,
+RCA, and XLR cables are 7.99𝑑𝐵, 7.58𝑑𝐵, and 7.12𝑑𝐵, respectively. Hence, EMTap performs well for all the cables,
+and the performance differences between different types of cables are not obvious. Moreover, the overall MCD,
+WER, and SNR of EMTap for all audio cables are 5.49, 16.19%, and 7.56𝑑𝐵, respectively. The above results show
+that EMTap is able to eavesdrop on sound transmitted via audio cables effectively.
+8.3 Impact of Environments and Blocking
+We evaluate the performance of EMTap in two environments with various blocking objects, as shown in Fig. 14.
+The first is an office, where three blocking conditions are considered: without blocking, with a wooden door, and
+Table 1. Overall performance of EMTap.
+Cable MCD WER SNR
+TRS cable 5.85 16.82% 7.99 dB
+RCA cable 5.46 16.58% 7.58 dB
+XLR cable 5.17 15.19% 7.12 dB
+Overall 5.49 16.19% 7.56 dB
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:18 • Chen et al.
+with a brick wall. The second is a meeting room, where the blocking conditions include no blocking, blocked
+by cardboard, and blocked by soundproof glass. In Fig. 14 (c, f), the office and meeting room environments are
+designed with brick walls/soundproof glass, and such soundproof construction effectively prevents airborne
+sound leakage. This design ensures that traditional eavesdropping methods (e.g., microphones) cannot recover
+sound content from outside the room due to acoustic isolation. Hence,EMTap’s sound recovery capability depends
+entirely on electromagnetic leakage from the audio cables, rather than ambient sound propagation through walls
+or windows. Fig. 15 shows the experimental results, and it can be observed that EMTap performs well under
+environments with/without blocking objects. For example, average MCD of EMTap in the meeting room for
+TRS cables is 5.36 without blocking objects, and increases only slightly to 5.56 with cardboard and 5.95 with
+soundproof glass. WER of EMTap in the meeting room for TRS cables is 16.35% without blocking objects, and
+increases only slightly to 16.65% with cardboard and 16.98% with soundproof glass. In contrast, EMTap obtains a
+worse performance in the office with a brick wall. This is because RF signals undergo significant attenuation in
+brick walls. However, even in this environment, MCD are all lower than7, and WER are all lower than 20% for
+all cables. Hence, the above results show the ability of EMTap to penetrate common blocking objects and cause
+threats to sound transmitted via audio cables.
+Typically, the office is quiet and experiences less electromagnetic interference (EMI), while the meeting room
+is noisy and suffers from more EMI. We evaluate the performance of EMTap in different environments, and the
+results are shown in Fig. 15. We can observe from the figure that performance differences in office and meeting
+room are not obvious. For example, overall MCD differences between office and meeting room for TRS, RCA, and
+XLR cables are only 0.34, 0.38, and 0.22, respectively, and overall WER differences between office and meeting
+room for TRS, RCA, and XLR cables are only 0.57%, 0.5%, and 0.63%, respectively. This benefit from that EMTap
+employs TDAE and AEIR algorithms to enhance RF signal amplitude and remove electromagnetic interference
+from nearby environments, respectively.
+8.4 Comparison with Existing Works
+We compare EMTap with four state-of-the-art (SOTA) works, i.e., mmEcho[30], Shi et al. [51], RFSpy[12], and
+RFParrot[67]. Table 2 shows the comparison results. From the table, we can observe that existing works[12, 30, 51]
+usually sense sound-induced physical vibration (e.g., speaker/microphone, nearby surface vibration, etc.) for eaves-
+dropping on human-speaking or/and speaker-produced sound. In contrast, EMTap, from a different perspective,
+senses electromagnetic (EM) variation for recovering sound transmitted via audio cables, and achieves superior
+performance compared to these methods. Moreover, although RFParrot[67] enables eavesdropping on sound
+transmitted via audio wires by sensing voltage changes, it requires damaging wires and embedding a customized
+retroreflector. Conversely,EMTap uses a battery-free COTS RFID tag to eavesdrop on sound transmitted via audio
+cables and achieve performance similar to [67]. Therefore, EMTap exhibits distinct advantages compared with
+existing works.
+Table 2. A Comparison of EMTap with Existing Works.
+Methods Eavesdropped Sound Type Sensed Object State WER(%) /SNR(dB)
+mmEcho [30] Human&Speaker Surface vibration 18.10%
+Shi et al. [51] Human&Speaker Speech-induced vibration about 30%
+RFSpy [12] Human&Speaker Speaker&Mic vibration 17.88%
+RFParrot [67] Cable Transmitted Voltage change 7.39 dB
+Microphone Speaker Airborne sound waves 38.3% / 3.2 dB
+EMTap Cable Transmitted EM variation 16.19%/ 7.56dB
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:19
+T R S c a b l eR C A c a b l eX L R c a b l e
+0
+5
+1 0
+1 5
+2 0
+2 5
+3 0
+3 5W E R ( % )
+O f f i c e w i t h o u t b l o c k i n gM e e t i n g r o o m w i t h o u t b l o c k i n g
+ O f f i c e  w i t h  w o o d  d o o r  M e e t i n g  r o o m  w i t h  c a r d b o a r d
+ O f f i c e  w i t h  b r i c k  w a l l  M e e t i n g  r o o m  w i t h  g l a s s
+O f f i c e ( O v e r a l l )M e e t i n g r o o m ( O v e r a l l )
+0
+2
+4
+6
+8
+1 0
+1 2M C D
+ O f f i c e  w i t h o u t  b l o c k i n g  M e e t i n g  r o o m  w i t h o u t  b l o c k i n g
+O f f i c e w i t h w o o d d o o rM e e t i n g r o o m w i t h c a r d b o a r d
+ O f f i c e  w i t h  b r i c k  w a l l  M e e t i n g  r o o m  w i t h  g l a s s
+ O f f i c e  ( O v e r a l l )  M e e t i n g  r o o m  ( O v e r a l l )
+Fig. 15. MCD/WER in different envi-
+ronments and blocking objects.
+T R S c a b l eR C A c a b l eX L R c a b l e
+0
+1 0
+2 0
+3 0
+4 0
+5 0W E R ( % )
+C o p p e r w / C A C LC o p p e r w / o C A C L
+ T i n n e d  C o p p e r w / C A C LT i n n e d C o p p e r w / o C A C L
+C o p p e r - N i c k e l A l l o y w / C A C LC o p p e r - N i c k e l A l l o y w / o C A C L
+O v e r a l l w / C A C LO v e r a l l w / o C A C L
+0
+4
+8
+1 2
+1 6M C D
+C o p p e r w / C A C LC o p p e r w / o C A C L
+T i n n e d C o p p e r w / C A C LT i n n e d C o p p e r w / o C A C L
+C o p p e r - N i c k e l A l l o y w / C A C LC o p p e r - N i c k e l A l l o y w / o C A C L
+O v e r a l l w / C A C LO v e r a l l w / o C A C L
+Fig. 16. MCD/WER of audio cables
+with different materials.
+Fig. 17. MCD/WER under different
+distances.
+Moreover, we further conduct experiments to compare the sound eavesdropping performance of EMTap
+with conventional microphone-based approaches. A microphone is placed near the RFID antenna outside the
+soundproof room to record time-domain sound waveforms for eavesdropping, and a speech-to-text API is used
+to convert the time-domain sound waveforms into speech content. The overall experimental results of different
+environments are shown in Table 2. From the figure, we can observe that the microphone-based method achieves
+significantly poorer performance (WER=38.3%, SNR=3.2dB). This is because in most scenarios, office and meeting
+room environments are deployed with brick walls or soundproof glass, and such soundproof structures effectively
+prevent the leakage of airborne sound waves. In contrast, due to the excellent penetration capability of RFID
+signals, EMTap still achieves good performance in these environments.
+8.5 Impact of Physical Characteristics (Materials) of Audio Cables
+Usually, different audio cables have distinct physical characteristics (e.g., material, number of turns, resistance,
+etc.), which could impact the sound eavesdropping performance of EMTap. Hence, we design a CACL Network
+in EMTap to normalize the audio cable specificity in RF signal spectrograms. To explore the effectiveness of
+CACL network in normalizing cable specificity, we evaluate the performance of EMTap for audio cables with
+different materials, i.e., Copper, Tinned Copper, and Copper-Nickel Alloy with/without CACL Network. Fig.16
+shows the evaluation results. We can observe from the figure thatEMTap performs well for audio cables made
+of different materials with CACL Network, and there is very little difference in performance between different
+materials. However, EMTap’s performance noticeably worsens without the CACL Network, and the performance
+differences between various materials become apparent. For example, MCD for Copper, Tinned Copper, and
+Copper-Nickel Alloy materials of TRS cables with CACL Network is 5.92, 5.88, and 5.75, respectively. In contrast,
+MCD for Copper, Tinned Copper, and Copper-Nickel Alloy materials of TRS cables without CACL Network
+decrease obviously to 7.36, 7.75, and 6.13, respectively, failing to achieve ideal sound eavesdropping effects. Hence,
+the specificity of audio cables is effectively normalized after using the CACL Network.
+8.6 Impact of Distance
+RF signals attenuate as propagating, so we explore the impact of distance between RFID antennas and tags on
+the performance of EMTap. We select data when the distance under a range from 0.3𝑚∼4.5𝑚to evaluate the
+performance of EMTap. Fig. 17 shows the MCD and WER of EMTap over varying distances. We can observe from
+the figure that the MCD and WER of EMTap for all audio cables remain below 8 and 25%, respectively, when the
+distance is within a 4𝑚range. This indicates that EMTap is capable of effective sound eavesdropping within such
+a distance range. As the distance increases, there is a gradual increase in both MCD and WER for all types of
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:20 • Chen et al.
+T R S c a b l eR C A c a b l eX L R c a b l eO v e r a l l
+0
+5
+1 0
+1 5
+2 0
+2 5
+3 0W E R ( % )
+ O b s t r u c t i v e  S t r a i g h t    E x p o s e d  S t r a i g h t
+ O b s t r u c t i v e  C u r v e d  E x p o s e d  C u r v e d
+0
+2
+4
+6
+8
+1 0M C D
+O b s t r u c t i v e S t r a i g h tE x p o s e d S t r a i g h t
+ O b s t r u c t i v e  C u r v e d  E x p o s e d  C u r v e d
+Fig. 18. MCD/WER for different ob-
+structive condition and cable shape.
+30 35 40 45 50 55 60 65 70 75 80
+0
+5
+10
+15
+20
+25
+30
+35
+40
+0
+2
+4
+6
+8
+10WER(%)
+Sound volume (dB)
+ TRS cables
+ RCA cables
+ XLR cables
+ Overall
+MCD  TRS cables
+ RCA cables
+ XLR cables
+ Overall
+Fig. 19. MCD/WER for different
+sound volume.
+0
+2
+4
+6
+8
+1 0M C D
+ S l o w  s p e e d  F a s t  s p e e d
+ M i d d l e  s p e e d  O v e r a l l
+T R S c a b l eR C A c a b l eX L R c a b l eO v e r a l l
+0
+5
+1 0
+1 5
+2 0
+2 5
+3 0W E R ( % )
+ S l o w  s p e e d  F a s t s p e e d
+M i d d l e s p e e dO v e r a l l
+Fig. 20. MCD/WER for different
+speech rate.
+audio cables, and it is difficult for EMTap to achieve accurate sound eavesdropping when the distance is beyond a
+4𝑚range. This is because the signal strength of received RF signals decreases as the distance increases. Typically,
+in common audiovisual environments, such as meeting rooms, offices, etc., it is feasible to deploy RFID readers
+within a 4𝑚range of the tags on audio cables for sound eavesdropping. Hence, EMTap can be used for natural
+sound eavesdropping in scenarios, such as meeting rooms, offices, etc., within a 4𝑚distance.
+8.7 Impact of Obstructive Condition and Cable Shape
+Obstructive Condition.In our experiments, audio cables are placed freely around electronic devices. We explore
+impact of RFID tag’s obstructive conditions, i.e., obstructive (behind devices, such as monitors, loudspeakers,
+etc.) and exposed (in front of electronic devices), on the performance of EMTap. The results in Fig. 18 show that
+performance difference between different obstruction conditions is not obvious. For example, the maximum
+differences of MCD between obstruction and exposure for TRS, RCA, and XLR cables are only 0.67 and 0.64,
+and 0.79, respectively, and the maximum differences of WER between obstruction and exposure for TRS, RCA,
+and XLR cables are only 1.83%, 1.59%, and 1.75%, respectively. The above results show that EMTap is suitable for
+different obstructive conditions of RFID tags.
+Cable Shape.Usually, audio cables are arranged with two shapes, i.e., straight and curved, so we explore the
+impact of cable shapes on the performance of EMTap. Fig. 18 shows the sound eavesdropping performance under
+different cable shapes. It can be seen from the figure that the EMTap achieves better performance when the audio
+cables are curved, this is because audio cables with curved shapes have better radiation performance, thereby
+improving electromagnetic radiation efficiency [43]. However, for all the audio cable shapes, the MCD are all
+lower than 7, and the WER are all lower than 20%, which demonstrates that EMTap performs well for common
+audio cable shapes.
+8.8 Impact of Volume and Speech Rate
+Sound Volume.Typically, different sound volumes result in various electromagnetic variation around audio
+cables, so we evaluate the performance of EMTap under different sound volumes. The volumes transmitted via
+audio cables are recorded using a decibel meter placed around microphones/speakers. Fig.19 shows the MCD and
+WER of EMTap under different sound volumes. It can be seen from the figure that MCD and WER of all cables
+are lower than 8 and 25%, respectively, when sound volume is larger than 40𝑑𝐵, so EMTap can achieve effective
+sound eavesdropping. As sound volume increases, the MCD and WER decrease slightly. This is because a higher
+sound volume brings a higher magnitude of transmitted electric currents and corresponding electromagnetic
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:21
+TRS cable RCA cable XLR cable Overall
+0
+2
+4
+6
+8
+10MCD
+ VCTK Dataset  Movie clip
+ News broadcasts  Video meetings
+TRS cable RCA cable XLR cable Overall
+0
+5
+10
+15
+20
+25
+30WER(%)
+ VCTK Dataset  Movie clip
+ News broadcasts  Video meetings
+Fig. 21. MCD/WER for different real-world audio sources.
+variation. Usually, volume of speaker-produced/microphone-received sound is larger than 40𝑑𝐵, so EMTap is 
+suitable for most scenarios.
+Speech rate. In our experiments, the sound is transmitted via audio cables at natural speech rates. We divide 
+the speech rates of sound into three categories, i.e., slow speed (< words/min), middle speed (100∼150 words/min), 
+and fast speed (> 150 words/min) according to [24], and explore the impact of speech rates on the performance 
+of EMTap. Fig. 20 shows the MCD and WER of EMTap for different speech rates.  It can be observed from the 
+figure that the MCD and WER increases slightly as the speech rates increase for all the audio cables. However, 
+the MCD and WER of EMTap for all the speech rates are lower than 7 and 20%, respectively. Hence, EMTap is 
+robust to various speech rates.
+8.9 Case Study
+To validate the practicality of EMTap in real scenarios, we conduct a case study to evaluate the performance of 
+EMTap on real-world audio sources from YouTube, including news broadcasts, movie clips, and video meetings. 
+These audio signals are transmitted via various types of audio cables. To assess the EMTap’s generalizability, 
+we compare the performance of EMTap on the VCTK dataset [62] and the real-world audio sources, and the 
+results are shown in Fig. 21. The results show that the MCD differences between the VCTK dataset and the 
+real-world audio sources are not obvious. For example, the MCD differences between the VCTK dataset and 
+the audio signals from news broadcasts, movie clips, and video meetings for TRS cables are 0.54, 0.78, and 0.90, 
+respectively. The WER differences between the VCTK dataset and the audio signals from news broadcasts, movie 
+clips, and video meetings are 2.4%, 2.83%, and 3.54%, respectively. These results demonstrate the effectiveness of 
+EMTap in real-world applications.
+9 COUNTERMEASURE, DISCUSSION AND LIMITATIONS
+Countermeasure. One potential defense against EMTap is to use electromagnetic shielding materials like metal 
+foil or wire mesh around audio cables, which suppresses electromagnetic signal propagation. Besides, since sound 
+reconstruction of EMTap relies on analyzing electromagnetic variations of the raw analog signal, encryption 
+strategies in audio transmission effectively prevents sound eavesdropping attacks. Hence, in security-sensitive 
+scenarios, implementing end-to-end encryption strategies (such as frequency band inversion, time-domain 
+permutation, or carrier modulation) could effectively prevent sound eavesdropping attacks of EMTap. Moreover, 
+electromagnetic interference devices, such as RF devices working at the same frequency as EMTap, could cause RF 
+signal distortion. Hence, in places with high-security requirements, such as military missions, trade negotiations, 
+etc., electromagnetic interference devices can be placed around to defend EMTap.
+Discussion. (1) Eavesdropping on untrained words. EMTap is able to eavesdrop on sound containing not only 
+trained words but also untrained words. Existing works [31, 32] have demonstrated the ability to eavesdrop 
+on sounds with untrained words using generative methods [33, 41]. Similarly, EMTap enables the recovery 
+of untrained words by utilizing recent generative models. (2) Potential ubiquitous sensing and computing
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:22 • Chen et al.
+applications. In addition to primary application in sound eavesdropping attacks of audio cables, EMTap also 
+demonstrates significant potential for ubiquitous sensing and computing applications. On one hand, the employed 
+technique of EMTap can be used for non-invasive cable monitoring. For example, the electromagnetic sensing 
+capacity of EMTap enables non-invasive fault detection of data transmission lines. On the other hand, the signal 
+processing pipeline of EMTap could be used for abnormal load current monitoring of power cables in smart grid.
+Limitations. (1) Digital audio cable. EMTap is capable of eavesdropping on sound transmitted via analog 
+audio cables, as these audio cables carry sound signals in the form of continuous electrical currents. However, 
+for digital audio cables, such as optical audio cables [2], EMTap lacks a Digital-to-Analog Converter (DAC), and 
+therefore cannot decode the digital sound signals for sound eavesdropping. Currently, analog audio cables still 
+dominate the main audio cable market, making EMTap effective in real scenarios.
+(2) Physical access requirements. EMTap requires temporary physical access to attach RFID tags on the target 
+audio cable to carry out sound eavesdropping attacks. In addition, the deployment of this technology depends 
+on the attacker gaining temporary access when the victim is absent. Usually, practical deployment of EMTap 
+remains achievable in real-world scenarios. First, the small size of commercial RFID tags (as tiny as 2mm×3mm) 
+makes them difficult to be noticed when attached to  common audio cables. Moreover, in  common audiovisual 
+scenarios like meeting rooms, attackers could exploit temporary absences of victims to deploy RFID tags without 
+being noticed. These practical considerations indicate that, although physical access is technically necessary, 
+EMTap remains a feasible and worrying sound eavesdropping attack method.
+(3) Encryption vulnerability. Since sound reconstruction of EMTap relies on analyzing electromagnetic varia-
+tions of raw analog signal, encryption strategies in audio transmission effectively prevents sound eavesdropping 
+attacks. Hence, in security-sensitive scenarios, implementing end-to-end encryption strategies could effectively 
+prevent sound eavesdropping attacks of EMTap. However, such protection mechanisms are not universally 
+implemented in common audiovisual scenarios. In many commercial and personal audio applications, particularly 
+in conference rooms and personal audiovisual applications, audio signals are usually transmitted unencrypted 
+through standard audio cables. Hence, EMTap remains a significant threat to these widespread audio cables.
+10 RELATED WORKS
+In this section, we review works related to EMTap.
+RFID-based sensing. Recently, due to the advantages of low cost and deployment flexibility, RFID tags 
+are widely used in various wireless sensing applications. Existing works mainly capture traditional patterns, 
+such as signal changes due to multi-path effect or mechanical vibrations, for achieving lo calization[59], user 
+authentication[14], and vibration sensing[36, 60, 64, 66], etc. However, no existing works capture electromagnetic 
+variation patterns to achieve RFID-based sensing.
+Eavesdropping through side-channel leakage from cables. Some recent works [19, 44, 48, 52, 54] utilize 
+various sensors to capture side-channel leakage from non-audio cables for eavesdropping on communicated data, 
+such as MAC address [48], digital keystrokes[44, 52, 54], and electrical usage habits [19]. However, these works 
+can only eavesdrop on wire-transmitted binary digital signals, and cannot capture common analog sound signals. 
+Additionally, work [42] utilizes customed equipment up to 5m wrapped around undersea communication cables 
+to sense signal spillover around the cables for eavesdropping on military intelligence transmitted via the cables. 
+However, the bulkiness and high cost of this equipment significantly limit its practicality in space-constrained 
+audiovisual scenarios. Recently, RFParrot [67] employs a customized retroreflector embedded into earphone wires 
+for eavesdropping on sound transmitted via these wires. However, this method requires damaging wires and 
+embedding a customized retroreflector, which adds both cost and complexity, potentially reducing its feasibility 
+in real application scenarios.
+Sound eavesdropping through dynamic sensing. The rapid development of the IoT and cloud computing 
+brings many applications [35, 39, 61, 68, 69]. Among them, side-channel sound eavesdropping studies are
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation using RFID • 74:23
+attracting growing research interest. Existing side-channel sound eavesdropping methods mainly sense sound-
+induced vibration (e.g., speaker/microphone vibration, nearby surface vibration, etc.) for sound content recovery. 
+Researchers use various sensors, such as accelerator [4, 32], gyroscope [40], Wi-Fi [57], mmWave [5, 30, 31, 55], and 
+RFID [12, 37, 56] to capture speaker/microphone vibration or nearby surface vibration patterns for eavesdropping 
+on speaker-produced or/and human-speaking sound. However, these methods may be ineffective i n noisy 
+environments, as background noise could induce simultaneous physical vibration, leading to significant distortion 
+in recovered sound. Besides, work [38] uses a customized coil to sense magnetic leakage from micro-speakers and 
+work [11] leverages a customized EMR sensor to capture magnetic leakage from mobile devices’ audio amplifiers 
+for recovering speaker-produced sound, but such magnetic leakage does not exist around audio cables. From a 
+different perspective, EMTap senses electromagnetic variation around audio cables for sound eavesdropping.
+Different from existing works, EMTap eavesdrops on sound transmitted via audio cables by sensing electro-
+magnetic variation around audio cables in a low-cost and natural manner.
+11 CONCLUSION
+In this paper, we propose EMTap, which achieves sound eavesdropping by sensing electromagnetic variation 
+around an audio cable leveraging a small and battery-free RFID tag secretly attached to the cable. EMTap first 
+designs an AEIR algorithm and a TDAE algorithm to remove electromagnetic interference from nearby electronic 
+devices and enhance the amplitude of RF signals, respectively, for capturing electromagnetic variation patterns 
+accurately in various signal attenuation scenarios. Then, a cross-modal Generative model, NSDM, is built to train 
+a mapping relationship model between RF signal and sound spectrograms for reconstructing sound spectrograms 
+from RF signal spectrograms. Afterward, EMTap employs Griffin-Lim algorithm to convert sound spectrograms 
+to sound waveforms, which can be recovered by sound recognition API to sound content. Experiments in real 
+scenarios demonstrate the effectiveness of EMTap for eavesdropping on sound transmitted via audio cables.
+Acknowledgments
+This research is supported by NSFC (No. 62172277, 62072304), Shanghai East Talents Program (No. 177), and the 
+Seed Funding for Collaborative Research Grants of HKBU (with Grant No. RC-SFCRG/23-24/R2/SCI/06).
+References
+[1] Robert A Adams and Christopher Essex. 2018. Calculus: a complete course. Pearson.
+[2] Ronald G Ajemian. 2007. A Tutorial: Fiber Optic Cables and Connectors for Pro-Audio. In Audio Engineering Society Convention.
+[3] Andre-Marie Ampere. 1826. Theorie des phenomenes electro-dynamiques, uniquement deduite del experience. Mequignon-Marvis.
+[4] Zhongjie Ba, Tianhang Zheng, Xinyu Zhang, Zhan Qin, Baochun Li, Xue Liu, and Kui Ren. 2020. Learning-based Practical Smartphone
+Eavesdropping with Built-in Accelerometer. In Proceedings of NDSS’20. San Diego, USA.
+[5] Suryoday Basak and Mahanth Gowda. 2022. mmspy: Spying phone calls using mmwave radars. In Proceedings of IEEE S&P’22 . San
+Francisco, USA.
+[6] Steven Boll. 1979. Suppression of acoustic noise in speech using spectral subtraction. IEEE Transactions on acoustics, speech, and signal
+processing 27, 2 (1979), 113–120.
+[7] George Box. 1988. Signal-to-noise ratios, performance criteria, and transformations. 30, 1 (1988), 1–17.
+[8] BUGHUNTER. 2023. Microphone jammer BugHunter DAudio bda-3 Voices with 7 ultrasonic transducers. [Online]. Available:
+https://www.amazon.com/BDA-3-Control-Microphone-Suppressor-Recording/dp/B089WH2B9F.
+[9] Yetong Cao, Fan Li, Huijie Chen, Xiaochen Liu, Chunhui Duan, and Yu Wang. 2023. I Can Hear You Without a Microphone: Live Speech
+Eavesdropping From Earphone Motion Sensors. In Proceedings of IEEE INFOCOM’23. New York, USA.
+[10] Herve Chabanne, Pascal Urien, and Jean-Ferdinand Susini. 2011. RFID and the Internet of Things. Wiley Online Library.
+[11] Huiling Chen, Wenqiang Jin, Yupeng Hu, Zhenyu Ning, Kenli Li, Zheng Qin, Mingxing Duan, Yong Xie, Daibo Liu, and Ming Li. 2024.
+Eavesdropping on Black-box Mobile Devices via Audio Amplifier’s EMR. In Proceedings of NDSS’24. San Diego, USA.
+[12] Yunzhong Chen, Jiadi Yu, Yingying Chen, Linghe Kong, Yanmin Zhu, and Yi-Chao Chen. 2024. RFSpy: Eavesdropping on Online
+Conversations with Out-of-Vocabulary Words by Sensing Metal Coil Vibration of Headsets Leveraging RFID. InProceedings of ACM
+MobiSys’24. Tokyo, Japan.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+74:24 • Chen et al.
+[13] Yunzhong Chen, Jiadi Yu, Linghe Kong, and Yanmin Zhu. 2025. A Comprehensive Survey of Side-Channel Sound Sensing Methods.
+IEEE Internet of Things Journal 12, 2 (2025), 1554–1578.
+[14] Yunzhong Chen, Jiadi Yu, Linghe Kong, Yanmin Zhu, and Feilong Tang. 2022. RFPass: Towards environment-independent gait-based
+user authentication leveraging RFID. In Proceedings of IEEE SECON’22. Virtual Conference.
+[15] Israel Cohen, Yiteng Huang, Jingdong Chen, Jacob Benesty, Jacob Benesty, Jingdong Chen, Yiteng Huang, and Israel Cohen. 2009.
+Pearson correlation coefficient. Noise reduction in speech processing 14, 6 (2009), 1–4.
+[16] Filipe Faria Da Silva and Claus Leth Bak. 2013. Electromagnetic transients in power cables. Springer.
+[17] M Dobhn Daniel et al. 2008. The rf in rfid passive uhf rfid in practice. In Elsevier.
+[18] Mehul Reuben Das. 2024. Smart home devices a privacy nightmare, Amazon Alexa, Google Home worst offenders, finds study. [Online].
+Available: https://www.firstpost.com/tech/smart-home-devices-a-privacy-nightmare-amazon-alexa-google-home-worst-offenders-finds-
+study-13783175.html.
+[19] Pierre Degauque, Pierre Laly, Virginie Degardin, and Martine Lienard. 2010. Power line communication and compromising radiated
+emission. In Proceedings of IEEE SoftCOM’10. Dalmatia, Croatia.
+[20] Philippa Demonte. 2019. HARVARD speech corpus-audio recording. (2019).
+[21] Yaakov Engel, Shie Mannor, and Ron Meir. 2004. The kernel recursive least-squares algorithm. IEEE Transactions on signal processing 52,
+8 (2004), 2275–2285.
+[22] Michael Faraday. 1832. Experimental Researches in Electricity. Philosophical Transactions of the Royal Society of London, 122, (1832),
+125–162.
+[23] Dennis Gabor. 1946. Theory of communication. Journal of the Institution of Electrical Engineers - Part III: Radio and Communication
+Engineering 93, 26 (1946), 429–457.
+[24] Thomas Gay. 1981. Mechanisms in the control of speech rate. Phonetica 38, 1-3 (1981), 148–158.
+[25] Dedre Gentner and Arthur B Markman. 2006. Defining structural similarity. The Journal of Cognitive Science 6, 1 (2006), 1–20.
+[26] google cloud. 2023. Cloud speech-to-text documentation. [Online]. Available: https://cloud.google.com/speech-to-text.
+[27] Daniel Griffin and Jae Lim. 1984. Signal estimation from modified short-time Fourier transform. IEEE Transactions on acoustics, speech,
+and signal processing 32, 2 (1984), 236–243.
+[28] David J. Griffiths. 2017. Introduction to Electrodynamics. Cambridge University Press.
+[29] Paul Horowitz and Winfield Hill. 1989. The Art of Electronics. Cambridge University Press.
+[30] Pengfei Hu, Wenhao Li, Riccardo Spolaor, and Xiuzhen Cheng. 2023. mmecho: A mmwave-based acoustic eavesdropping method. In
+Proceedings of IEEE S&P’22. Delft, Netherlands.
+[31] Pengfei Hu, Yifan Ma, Panneer Selvam Santhalingam, Parth H Pathak, and Xiuzhen Cheng. 2022. Milliear: Millimeter-wave acoustic
+eavesdropping with unconstrained vocabulary. In Proceedings of IEEE INFOCOM’22. Virtual Conference.
+[32] Pengfei Hu, Hui Zhuang, Panneer Selvam Santhalingam, Riccardo Spolaor, Parth Pathak, Guoming Zhang, and Xiuzhen Cheng. 2022.
+Accelerometer acoustic eavesdropping with unconstrained vocabulary. In Proceedings of IEEE S&P. San Francisco, USA.
+[33] Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, and Alexei A Efros. 2017. Image-to-image translation with conditional adversarial networks.
+In Proceedings of IEEE CVPR’17. Honolulu, USA.
+[34] Diederik P Kingma and Max Welling. 2013. Auto-Encoding Variational Bayes. arXiv preprint arXiv:1312.6114 (2013).
+[35] Hao Kong, Xiangyu Xu, Jiadi Yu, Qilin Chen, Chenguang Ma, Yingying Chen, Yi-Chao Chen, and Linghe Kong. 2022. m3track:
+mmwave-based multi-user 3d posture tracking. In Proceedings of ACM MobiSys’22. Portland, Oregon, USA.
+[36] Ping Li, Zhenlin An, Lei Yang, and Panlong Yang. 2019. Towards physical-layer vibration sensing with rfids. In Proceedings of IEEE
+INFOCOM’19. Paris, France.
+[37] Ping Li, Zhenlin An, Lei Yang, Panlong Yang, and QiongZheng Lin. 2019. RFID harmonic for vibration sensing. IEEE Transactions on
+Mobile Computing 20, 4 (2019), 1614–1626.
+[38] Qianru Liao, Yongzhi Huang, Yandao Huang, Yuheng Zhong, Huitong Jin, and Kaishun Wu. 2022. MagEar: eavesdropping via audio
+recovery using magnetic side channel. In Proceedings of ACM MobiSys’22. Portland, Oregon.
+[39] Li Lu, Jiadi Yu, Yingying Chen, and Yan Wang. 2020. Vocallock: Sensing vocal tract for passphrase-independent user authentication
+leveraging acoustic signals on smartphones. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies
+(IMWUT) 4, 2 (2020), 1–24.
+[40] Yan Michalevsky, Dan Boneh, and Gabi Nakibly. 2014. Gyrophone: Recognizing speech from gyroscope signals. In Proceedings of
+USENIX’14. San Diego, USA.
+[41] Mehdi Mirza and Simon Osindero. 2014. Conditional generative adversarial nets. arXiv preprint arXiv:1411.1784 (2014).
+[42] Caitlin Morris. 2012. Operation IVY BELLS: Lessons learned from an ‘intelligence success’. Journal of the Australian Institute of
+Professional Intelligence Officers 20, 3 (2012), 17–29.
+[43] Olusola O Olaode, W Devereux Palmer, and William T Joines. 2012. Effects of meandering on dipole antenna resonant frequency. IEEE
+Antennas and Wireless Propagation Letters 11 (2012), 122–125.
+[44] Michael Ossmann. 2014. The nsa playset: Rf retroreflectors. DEF CON 22, 8 (2014).
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.
+EMTap: Eavesdropping on Sound Transmitted via Audio Cables by Sensing Electromagnetic Variation Using RFID • 74:25
+[45] Paul Reuvers and Marc Simons. 2015. The Great Seal Bug. [Online]. Available: https://cryptomuseum.com/covert/bugs/thing/index.htm.
+[46] rfidhy. 2022. The Smallest RFID Tag as Thin as Sand. [Online]. Available: https://www.rfidhy.com/the-smallest-rfid-tag-as-thin-as-sand/.
+[47] Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer. 2022. High-resolution image synthesis with
+latent diffusion models. In Proceedings of IEEE CVPR’22. New Orleans, USA.
+[48] Matthias Schulz, Patrick Klapper, Matthias Hollick, Erik Tews, and Stefan Katzenbeisser. 2016. Trust the wire, they always told me! on
+practical non-destructive wire-tap attacks against ethernet. In Proceedings of ACM WiSec’16. Darmstadt, Germany.
+[49] Ivan W Selesnick and C Sidney Burrus. 1998. Generalized digital Butterworth filter design. IEEE Transactions on signal processing 46, 6
+(1998), 1688–1694.
+[50] Cong Shi, Xiangyu Xu, Tianfang Zhang, Payton Walker, Yi Wu, Jian Liu, Nitesh Saxena, Yingying Chen, and Jiadi Yu. 2021. Face-Mic:
+inferring live speech and speaker identity via subtle facial dynamics captured by AR/VR motion sensors. InProceedings of ACM MobiCom
+’21. New Orleans, USA.
+[51] Cong Shi, Tianfang Zhang, Zhaoyi Xu, Shuping Li, Donglin Gao, Changming Li, Athina Petropulu, Chung-Tse Michael Wu, and Yingying
+Chen. 2023. Privacy Leakage via Speech-induced Vibrations on Room Objects through Remote Sensing based on Phased-MIMO. In
+Proceedings of ACM CCS’23. Copenhagen, Denmark.
+[52] Dong-ju Sim, Ho Seong Lee, Jong-Gwan Yook, and Kyuhong Sim. 2016. Measurement and analysis of the compromising electromagnetic
+emanations from USB keyboard. In Proceedings of APEMC’16. Shenzhen, China.
+[53] Gianfranco Andia Vera, Yvan Duroc, and Smail Tedjini. 2013. Analysis of harmonics in UHF RFID signals.IEEE Transactions on Microwave
+Theory and Techniques 61, 6 (2013), 2481–2490.
+[54] Satohiro Wakabayashi, Seita Maruyama, Tatsuya Mori, Shigeki Goto, Masahiro Kinugawa, Yu-ichi Hayashi, and Michael Smith. 2018. A
+feasibility study of radio-frequency retroreflector attack. In Proceedings of WOOT’18. Baltimore, USA.
+[55] Chao Wang, Feng Lin, Tiantian Liu, Kaidi Zheng, Zhibo Wang, Zhengxiong Li, Ming-Chun Huang, Wenyao Xu, and Kui Ren. 2022.
+mmEve: eavesdropping on smartphone’s earpiece via COTS mmWave device. InProceedings of ACM MobiCom’22. Sydney, Australia.
+[56] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping
+on loudspeakers via RFID by capturing sub-mm level vibration. InProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies, Vol. 5. 1–25.
+[57] Teng Wei, Shu Wang, Anfu Zhou, and Xinyu Zhang. 2015. Acoustic eavesdropping through wireless vibrometry. In Proceedings of ACM
+MobiCom’15. Paris, France.
+[58] Norbert Wiener. 1949. Extrapolation, interpolation, and smoothing of stationary time series: with engineering applications. The MIT press.
+[59] Fu Xiao, Zhongqin Wang, Ning Ye, Ruchuan Wang, and Xiang-Yang Li. 2017. One more tag enables fine-grained RFID localization and
+tracking. IEEE/ACM Transactions on Networking 26, 1 (2017), 161–174.
+[60] Binbin Xie, Jie Xiong, Xiaojiang Chen, and Dingyi Fang. 2020. Exploring commodity rfid for contactless sub-millimeter vibration sensing.
+In Proceedings of ACM SenSys’20. Yokohama, Japan.
+[61] Xiangyu Xu, Jiadi Yu, Chengguang Ma, Yanzhi Ren, Hongbo Liu, Yanmin Zhu, Yi-Chao Chen, and Feilong Tang. 2022. mmECG:
+Monitoring human cardiac cycle in driving environments leveraging millimeter wave. In IEEE INFOCOM’22. Portland, Oregon, USA.
+[62] Junichi Yamagishi, Christophe Veaux, and Kirsten MacDonald. 2019. CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice
+Cloning Toolkit. [Online]. Available: https://datashare.is.ed.ac.uk/handle/10283/3443..
+[63] Chen Yan, Guoming Zhang, Xiaoyu Ji, Tianchen Zhang, Taimin Zhang, and Wenyuan Xu. 2019. The feasibility of injecting inaudible
+voice commands to voice assistants. IEEE Transactions on Dependable and Secure Computing 18, 3 (2019), 1108–1124.
+[64] Lei Yang, Yao Li, Qiongzheng Lin, Xiang-Yang Li, and Yunhao Liu. 2016. Making sense of mechanical vibration period with sub-millisecond
+accuracy using backscatter signals. In Proceedings of ACM MobiCom’16. New York, USA.
+[65] Lei Yang, Qiongzheng Lin, Xiangyang Li, Tianci Liu, and Yunhao Liu. 2015. See through walls with COTS RFID system. InProceedings of
+ACM Mobicom’15. Paris, France.
+[66] Panlong Yang, Yuanhao Feng, Jie Xiong, Ziyang Chen, and Xiang-Yang Li. 2020. Rf-ear: Contactless multi-device vibration sensing and
+identification using cots rfid. In Proceedings of IEEE INFOCOM’20. Virtual Conference.
+[67] Yanni Yang, Genglin Wang, Zhenlin An, Guoming Zhang, Xiuzhen Cheng, and Pengfei Hu. 2024. RF-Parrot: Wireless Eavesdropping on
+Wired Audio. In Proceedings of IEEE INFOCOM’24. Vancouver, Canada.
+[68] Tianming Zhao, Yan Wang, Jian Liu, Yingying Chen, Jerry Cheng, and Jiadi Yu. 2020. Trueheart: Continuous authentication on wrist-worn
+wearables using ppg-based biometrics. In IEEE INFOCOM’20. Beijing, China.
+[69] Yanmin Zhu, Ruobing Jiang, Jiadi Yu, Zhi Li, and Minglu Li. 2014. Geographic routing based on predictive locations in vehicular ad hoc
+networks. EURASIP Journal on Wireless Communications and Networking 2014, 1 (2014), 137.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 3, Article 74. Publication date: September 2025.

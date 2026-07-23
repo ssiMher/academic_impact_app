@@ -1,0 +1,32 @@
+{
+  "name": "grouped_citation_should_not_be_high_strength_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Grouped Citation Study",
+    "authors": ["Theo Martin"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "Several systems including Cited Scholar Paper are cited together as related work [1, 2, 3]."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "important_author_citation",
+        "stance": "neutral",
+        "mention_type": "grouped_citation",
+        "citation_text": "Several systems including Cited Scholar Paper are cited together as related work [1, 2, 3].",
+        "reasoning": "The citation is grouped and not specific.",
+        "keywords": ["related work"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": [],
+    "keep": false,
+    "evidence_strength": "weak",
+    "highlight_keywords": [],
+    "must_not_miss": false
+  }
+}

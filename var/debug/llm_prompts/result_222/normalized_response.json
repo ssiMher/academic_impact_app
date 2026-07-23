@@ -1,0 +1,71 @@
+{
+  "findings": [
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Additionally,[22], [23] transforms the lidar sensing radar on a robotic vacuum cleaner into a laser microphone, and RFID[30] is also utilized for eavesdropping.",
+      "reasoning": "The context lists RFID[30] as one of several non-acoustic sensor-based eavesdropping methods, treating it as a representative example in related work. The citation is grouped with others and does not specify sub-mm vibration or RFID's unique capability.",
+      "keywords": [
+        "RFID",
+        "eavesdropping",
+        "grouped"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "sub-mm",
+            "rfid",
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Additionally,[22], [23] transforms the lidar sensing radar on a robotic vacuum cleaner into a laser microphone, and RFID[30] is also utilized for eavesdropping.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The context lists RFID[30] as one of several non-acoustic sensor-based eavesdropping methods, treating it as a representative example in related work. The citation is grouped with others and does not specify sub-mm vibration or RFID's unique capability.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

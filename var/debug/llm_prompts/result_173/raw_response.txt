@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim's room. Compared to our approach, these works relying on low resolution traffic data due to lower frequencies and packet rates. Also, they require a multi-antenna setup to localize victims and thus result in larger physical footprint compared to mmWave, making the attack more difficult to be carried out in practice.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "reasoning": "The context discusses RFID [15] among other wireless eavesdropping methods, noting it requires a pre-installed tag and has lower resolution and larger footprint compared to the citing paper's mmWave approach. This is a related work comparison with a negative stance due to limitations.",
+      "highlight_keywords": ["RFID", "eavesdropping", "pre-installed tag", "lower resolution", "larger physical footprint"],
+      "keep": true
+    },
+    {
+      "citation_text": "RFID tag [15]",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "table_entry",
+      "reasoning": "Table 1 lists 'RFID tag [15]' as a radio receiver eavesdropping approach with checkmarks for 'Non-invasive' and 'Through-wall (opaque)' but an 'X' for 'Unconstrained vocabulary'. This is a tabular comparison, not a detailed discussion, so it is background.",
+      "highlight_keywords": ["RFID tag"],
+      "keep": true
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "findings": [
+    {
+      "citation_text": "Passive eavesdropping attacks can simply intercept communication between an RFID reader and a tag to capture confidential data or analyze traffic to infer such data [3], [4].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This context groups [3] with [4] as examples of passive eavesdropping attacks. The target paper is cited as a representative eavesdropping attack, but no specific details about its sub-mm vibration sensing capability are mentioned. The description is generic and does not attribute any unique capability to the target paper.",
+      "highlight_keywords": ["eavesdropping", "passive", "intercept"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID and eavesdropping, but lacks explicit sub-mm or vibration sensing keywords. The required patterns (sub-mm RFID, RFID vibration sensing, millimeter-level sensing) are absent. Therefore, template 73 is not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "Required patterns (sub-mm RFID, RFID vibration sensing, millimeter-level sensing) not found. No mention of sub-mm precision or vibration capability."
+    },
+    {
+      "citation_text": "Existing attacks on RFID systems primarily fall into three categories: eavesdropping [3], [4], [14]–[17], relay/cloning attacks [5], [18]–[25], and jamming attacks [6]–[8], [26].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target paper [3] is listed as an example of eavesdropping attacks in a related work categorization. No specific technical details or evaluation of the target paper are provided. It serves as a general reference for the category.",
+      "highlight_keywords": ["eavesdropping", "RFID"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Same as above: RFID and eavesdropping are mentioned, but no sub-mm or vibration sensing context. Template 73 not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "Required patterns (sub-mm RFID, RFID vibration sensing, millimeter-level sensing) not found. No mention of sub-mm precision or vibration capability."
+    },
+    {
+      "citation_text": "Eavesdropping attacks. Eavesdropping attacks that passively steal information were extensively considered in [3], [4], [37], [38].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The target paper is cited in a related work section as part of a list of eavesdropping attacks. No further characterization is given. It is used as a representative reference for the topic.",
+      "highlight_keywords": ["eavesdropping", "passively steal information"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Quote mentions RFID eavesdropping but lacks any sub-mm or vibration sensing descriptors. Template 73 not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "Required patterns (sub-mm RFID, RFID vibration sensing, millimeter-level sensing) not found. No mention of sub-mm precision or vibration capability."
+    },
+    {
+      "citation_text": "By closely examining existing attack methods, we find that they pay less attention to altering the identification or data of tags on the fly [3]–[9].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target paper is cited in a range [3]–[9] as part of a critique that existing attacks focus on other aspects. No specific discussion of the target paper's content or capabilities. It is used to support the claim that prior work overlooks identification overriding.",
+      "highlight_keywords": ["less attention", "altering identification"],
+      "keep": true,
+      "matched_template_ids": [73, 74],
+      "template_match_reason": "No sub-mm or vibration keywords (template 73). Also no first/pioneering expression (template 74). Neither template is satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73: No sub-mm or vibration sensing terms. Template 74: No first/pioneering/seminal expressions in the quote."
+    }
+  ]
+}

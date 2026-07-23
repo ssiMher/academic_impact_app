@@ -1,0 +1,32 @@
+{
+  "name": "baseline_or_benchmark_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Benchmark Study",
+    "authors": ["Sara Novak"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "We use Cited Scholar Paper as the benchmark baseline for evaluating citation evidence extraction quality."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "baseline_or_benchmark",
+        "stance": "positive",
+        "mention_type": "strong",
+        "citation_text": "We use Cited Scholar Paper as the benchmark baseline for evaluating citation evidence extraction quality.",
+        "reasoning": "The citing paper explicitly uses the target as a benchmark baseline.",
+        "keywords": ["benchmark baseline", "citation evidence"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": ["baseline_or_benchmark"],
+    "keep": true,
+    "evidence_strength": "strong",
+    "highlight_keywords": ["benchmark baseline", "citation evidence"],
+    "must_not_miss": true
+  }
+}

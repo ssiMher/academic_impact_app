@@ -1,0 +1,71 @@
+{
+  "findings": [
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Alternative signals also offer intriguing solutions for audio perception, such as accelerometer signal in smartphone [1, 14, 19], mechanical signals in magnetic hard disks [17], smartphone camera image stream signals [22], COTS RFID tags [37] and so on.",
+      "reasoning": "This context cites [37] (the target paper) as one of several alternative signal approaches in related work. It is a grouped citation listing RFID tags as an example of alternative signals for audio eavesdropping. The citation acknowledges the target paper's approach but does not provide detailed description or evaluation, making it a representative work. Attribution uncertainty exists because it is a grouped citation.",
+      "keywords": [
+        "RFID tags",
+        "alternative signals",
+        "audio eavesdropping"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid",
+            "rfid tag",
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Alternative signals also offer intriguing solutions for audio perception, such as accelerometer signal in smartphone [1, 14, 19], mechanical signals in magnetic hard disks [17], smartphone camera image stream signals [22], COTS RFID tags [3...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[37]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "This context cites [37] (the target paper) as one of several alternative signal approaches in related work. It is a grouped citation listing RFID tags as an example of alternative signals for audio eavesdropping. The citation acknowledges the target paper's approach but does not provide detailed description or evaluation, making it a representative work. Attribution uncertainty exists because it is a grouped citation.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

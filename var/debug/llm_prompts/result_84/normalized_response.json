@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "One limitation of CORE-Lens in terms of CV functions is that it can only support \"macro\" tasks such as OR but not \"micro\" ones such as human activity recognition [36, 38], position/orientation tracking [41], and remote vital signs monitoring [8, 44, 66], as the reconstructed frames may not retain all the necessary details.",
+      "reasoning": "The citing paper lists MoiréPose [41] as an example of a 'micro' CV task that CORE-Lens cannot support due to insufficient detail in reconstructed frames. This is a limitation acknowledged by the authors, and the citation is grouped with others.",
+      "keywords": [
+        "limitation",
+        "position/orientation tracking",
+        "[41]"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "One limitation of CORE-Lens in terms of CV functions is that it can only support \"macro\" tasks such as OR but not \"micro\" ones such as human activity recognition [36, 38], position/orientation tracking [41], and remote vital signs monitorin...",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[41]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper lists MoiréPose [41] as an example of a 'micro' CV task that CORE-Lens cannot support due to insufficient detail in reconstructed frames. This is a limitation acknowledged by the authors, and the citation is grouped with others.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

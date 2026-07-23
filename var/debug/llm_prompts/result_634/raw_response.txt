@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[51]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration, Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 5 (4) (2021) 1–25.",
+  "paper_level_summary_zh": "该引用论文主要关注隐私保护下的人体活动感知，在讨论语音信息窃听和RF传感器隐私侵入时，将目标论文列为RFID窃听的代表性工作之一，但未详细描述其技术细节或精度。目标论文被用作说明RF信号可用于窃听语音的例证，属于普通相关引用。",
+  "evidences": [
+    {
+      "recommendation": "include",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated [50, 51, 52, 53].",
+      "evidence_context": "In addition to identity information, the speech content in the audio signal also involves private information. ... Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated [50, 51, 52, 53]. The unnotified recording poses more damage to public privacy with the prevalence of IoT devices.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration, Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 5 (4) (2021) 1–25.",
+      "why_this_judgment_zh": "正文明确将目标论文[51]列为通过RF信号进行语音窃听的代表性工作，引用标记正确，且目标论文标题本身包含'Thru-the-wall Eavesdropping'和'Sub-mm level Vibration'，可确认其能力。属于能力认可。",
+      "copy_ready_zh": "目标论文被引用作为通过RF信号（特别是RFID）实现语音窃听的代表性工作之一，表明其具有通过墙壁窃听扬声器振动的能力。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "For instance, the thief can simply take action by knowing if someone is in the room, which can be accomplished by sniffing the WiFi usage status. If more advanced techniques are employed, e.g., RF-based through-wall human sensing [23], adversaries can know how many people are in a home or who are at home.",
+      "evidence_context": "Tracking people\u2019s daily activities can be considered a privacy intrusion or even a security threat. ... For instance, the thief can simply take action by knowing if someone is in the room, which can be accomplished by sniffing the WiFi usage status. If more advanced techniques are employed, e.g., RF-based through-wall human sensing [23], adversaries can know how many people are in a home or who are at home.",
+      "reference_entry": "Y. Yang, J. Cao, X. Liu, X. Liu, Wi-count: Passing people counting with cots wifi devices, in: 27th IEEE International Conference on Computer Communication and Networks, 2018, pp. 1\u20139.",
+      "why_this_judgment_zh": "正文中引用的[23]是WiFi计数论文，并非目标论文（目标论文标记为[51]），属于误引用。",
+      "copy_ready_zh": "",
+      "confidence": "high"
+    }
+  ]
+}

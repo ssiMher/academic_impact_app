@@ -1,0 +1,63 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Some recent works explore using various non-acoustic sensors, such as motion sensors and RF signals, to eavesdrop on speaker-produced sound [ 1, 22, 44–46, 59] or human-speaking sound [7, 39, 51].",
+      "reasoning": "This grouped citation in the introduction lists target [46] among other RF-based works for eavesdropping on speaker-produced sound, without specific details about the target's sub-mm vibration capability. It is a general background reference.",
+      "keywords": [
+        "RF signals",
+        "eavesdrop on speaker-produced sound"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "On the other hand, some works use RF signals, such as Wi-Fi [ 48], mmWave [3, 16, 22, 23, 43, 44, 51, 59], and RFID [ 7, 30, 46], to capture surrounding object vibration for sensing speaker-produced sound [3, 22, 23, 30, 44–46, 48] or capture body motions for sensing human-speaking sound [7, 16, 43, 51].",
+      "reasoning": "In the Related Work section, target [46] is grouped with other RFID works that capture surrounding object vibration for sensing speaker-produced sound. This acknowledges the target's role in the broader category but does not highlight its specific sub-mm vibration sensing.",
+      "keywords": [
+        "RFID",
+        "capture surrounding object vibration",
+        "sensing speaker-produced sound"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Some recent works explore using various non-acoustic sensors, such as motion sensors and RF signals, to eavesdrop on speaker-produced sound [ 1, 22, 44–46, 59] or human-speaking sound [7, 39, 51].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[46]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "This grouped citation in the introduction lists target [46] among other RF-based works for eavesdropping on speaker-produced sound, without specific details about the target's sub-mm vibration capability. It is a general background reference.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "On the other hand, some works use RF signals, such as Wi-Fi [ 48], mmWave [3, 16, 22, 23, 43, 44, 51, 59], and RFID [ 7, 30, 46], to capture surrounding object vibration for sensing speaker-produced sound [3, 22, 23, 30, 44–46, 48] or captu...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[46]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "In the Related Work section, target [46] is grouped with other RFID works that capture surrounding object vibration for sensing speaker-produced sound. This acknowledges the target's role in the broader category but does not highlight its specific sub-mm vibration sensing.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "Interference between a camera CFA and a high-frequency grid background enables ultra-precise pose estimation and tracking [19–21]. MoiréPose targets 6-DoF localization [19]",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The sentence groups [19] with other Moiré-based works, describes its application (6-DoF localization) without evaluation, and appears in the related work section 'Sensing Using Moiré Patterns'.",
+      "highlight_keywords": ["MoiréPose", "ultra-precise pose estimation", "6-DoF localization", "19"],
+      "keep": true
+    },
+    {
+      "citation_text": "To our knowledge, MoiréLens is the first to employ Moiré patterns for sensing air refractive-index perturbations.",
+      "evidence_type": "first_or_seminal_claim",
+      "stance": "positive",
+      "mention_type": "other",
+      "reasoning": "Citing paper claims novelty: 'first to employ Moiré patterns for sensing air refractive-index perturbations', implicitly distinguishing from MoiréPose which uses Moiré for pose estimation.",
+      "highlight_keywords": ["first", "Moiré patterns", "sensing air refractive-index perturbations"],
+      "keep": true
+    }
+  ]
+}

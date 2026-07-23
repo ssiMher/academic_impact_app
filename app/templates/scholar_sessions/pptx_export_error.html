@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}PPTX 导出失败{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">导出诊断</div>
+      <h1>PPTX 导出失败</h1>
+      <p>系统没有返回损坏的 PPTX 文件。请根据下方安全错误信息排查导出内容。</p>
+    </div>
+    <nav class="quick-links">
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace">返回报告工作台</a>
+    </nav>
+  </header>
+
+  <section class="notice notice-warning">
+    {{ error_message }}
+  </section>
+{% endblock %}

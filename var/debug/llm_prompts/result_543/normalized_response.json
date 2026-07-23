@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[38]",
+  "target_reference_entry": "[38] Chuyu Wang and et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via\nRFID by Capturing Sub-mm Level Vibration. UbiCOMP (2021).",
+  "paper_level_summary_zh": "该论文在相关工作部分作为结构健康监测中位移测量的一个例子提及了目标文献，仅作为普通参考文献列出，未对目标文献的亚毫米精度、RFID能力或具体方法进行详细描述或直接使用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "We envision Platypus's sub-millimeter, long-range and multi-point tracking capabilities enable many applications in industrial IoT such as structural health monitoring [10, 23, 26, 31] by allowing the monitoring of multiple points spanning the entire structure concurrently (Figure 1), with a radar mounted at a fixed point such as a support.",
+      "evidence_context": "We envision Platypus's sub-millimeter, long-range and multi-point tracking capabilities enable many applications in industrial IoT such as structural health monitoring [10, 23, 26, 31] by allowing the monitoring of multiple points spanning the entire structure concurrently (Figure 1), with a radar mounted at a fixed point such as a support. The micro-displacements captured by the tags scattered at different points of interest can provide a holistic view of the stresses and displacement in the structure.",
+      "reference_entry": "Orfeas Kypris and Andrew Markham. 2016. 3-D displacement measurement for structural health monitoring using low-frequency magnetic fields. IEEE Sensors Journal 17, 4 (2016), 1165–1174.",
+      "why_this_judgment_zh": "引用标记[23]在正文中出现在一个分组引用列表中，作为结构健康监测领域的一个应用例子，并未对目标文献进行任何具体描述或能力认可。属于普通参考文献（ordinary_reference），应被排除。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "本文仅在分组引用中提及目标文献作为结构健康监测的应用示例，未涉及亚毫米精度、RFID等具体能力。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[38]",
+      "evidence_reference_marker": "[10]",
+      "evidence_reference_entry_raw": "[10] B Glišic, Y Yao, S Tung, S Wagner, J Sturm, N Verma, Y Lee, D Blaauw, D Sylvester,\nJ Gonzalez, et al. 2016. Structural Health Monitoring: Technological Advances to\nPractical Implementations. In Proceedings of the IEEE 104 .",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[38] Chuyu Wang and et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via\nRFID by Capturing Sub-mm Level Vibration. UbiCOMP (2021).",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

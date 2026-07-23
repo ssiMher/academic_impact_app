@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+  "paper_level_summary_zh": "本文引用[23]仅作为定义Rydberg原子的普通引用，未涉及亚毫米级振动感知、穿墙窃听等能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom[23].",
+      "evidence_context": "For example, to receive 2.4 GHz WiFi signals, the electrons are triggered from energy level 6 to energy level 66. In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom[23].",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用[23]仅用于定义Rydberg原子，是标准术语引用，不涉及任何亚毫米级感知能力或振动检测。根据严格规则，属于false_positive。",
+      "copy_ready_zh": "本文在定义Rydberg原子时引用[23]，未涉及目标论文的亚毫米级振动感知能力。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "evidence_context": "From the macroscopic perspective, conventional receivers receive RF signals using antennas. From the microscopic perspective, quantum receiver received RF signals using the electron energy transition of atoms. Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用[23]仅提到薛定谔方程，属于物理学基础知识引用，与目标论文的内容完全无关，属于false_positive。",
+      "copy_ready_zh": "本文在解释量子接收机原理时引用[23]提及薛定谔方程，不涉及目标论文的RFID亚毫米级振动感知。",
+      "confidence": "high"
+    }
+  ]
+}

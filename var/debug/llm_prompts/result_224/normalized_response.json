@@ -1,0 +1,85 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "citation_text": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "reasoning": "The citing paper mentions that the target paper uses RFID to measure loudspeaker vibration, but immediately notes that RFID's long wavelength makes it unsuitable for mm-level tracking. This is a background mention with a negative assessment for the specific application of mm-level movement detection.",
+      "keywords": [
+        "RFID tag",
+        "vibration pattern",
+        "loudspeaker",
+        "long wavelength",
+        "mm-level movements"
+      ],
+      "keep": true,
+      "matched_template_ids": [
+        73
+      ],
+      "template_match_reason": "precision_claim: body quote anchors to target and contains mm-level",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": true,
+          "template_match_reason": "precision_claim: body quote anchors to target and contains mm-level",
+          "template_failure_reason": "",
+          "matched_terms": [
+            "mm-level",
+            "rfid",
+            "rfid tag",
+            "loudspeaker vibration",
+            "speaker vibration",
+            "detect",
+            "measure"
+          ],
+          "match_score": 30.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "target_reference_marker": "[44]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper mentions that the target paper uses RFID to measure loudspeaker vibration, but immediately notes that RFID's long wavelength makes it unsuitable for mm-level tracking. This is a background mention with a negative assessment for the specific application of mm-level movement detection.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false,
+      "matched_template_ids": [
+        73
+      ],
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_match_reason": "precision_claim: body quote anchors to target and contains mm-level",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

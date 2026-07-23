@@ -1,0 +1,131 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Existing acoustic eavesdropping techniques typically focus on extracting vibration information from motion sensors [1], [2], [3], optical sensors [4], [5], [6], [7], and RF signals such as millimeter waves [8], [9], [10], RFID [11], [12], [13], WiFi [14], and electromagnetic radiation [15], [16], [17], [18], which are then used to recover loudspeaker sound information.",
+      "reasoning": "This is a grouped citation in the Related Work section listing RFID-based approaches including [13]. No specific capability or evaluation of the cited paper is provided.",
+      "keywords": [
+        "RFID",
+        "[13]"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid",
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RF-based schemes focus on using high-frequency signals to characterize vibrations induced by the loudspeaker. These schemes mainly utilize millimeter waves [8], [9], [10], [45], [46], [47], [48], [49], RFID signals [11], [12], [13], electromagnetic signals [15], [16], [17], [18], and WiFi signals [14], among other RF signals [50].",
+      "reasoning": "This is a grouped citation in the Related Work section describing RF-based schemes. The cited paper [13] is listed as an example of RFID-based schemes. No specific capability or evaluation is provided.",
+      "keywords": [
+        "RFID",
+        "[13]"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Existing acoustic eavesdropping techniques typically focus on extracting vibration information from motion sensors [1], [2], [3], optical sensors [4], [5], [6], [7], and RF signals such as millimeter waves [8], [9], [10], RFID [11], [12], [...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[13]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This is a grouped citation in the Related Work section listing RFID-based approaches including [13]. No specific capability or evaluation of the cited paper is provided.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "RF-based schemes focus on using high-frequency signals to characterize vibrations induced by the loudspeaker. These schemes mainly utilize millimeter waves [8], [9], [10], [45], [46], [47], [48], [49], RFID signals [11], [12], [13], electro...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[13]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This is a grouped citation in the Related Work section describing RF-based schemes. The cited paper [13] is listed as an example of RFID-based schemes. No specific capability or evaluation is provided.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Other work explores estimating pose leveraging moir’e patterns’ high sensitivity to the camera’s pose changes [60], and improving pose tracking using inertial sensors [2, 75, 91].",
+      "reasoning": "The citation appears in a 'Related Work' section listing various approaches; it groups MoiréPose with other work without detailed evaluation. The citation_text contains the target reference marker [60], so it is included as background evidence.",
+      "keywords": [
+        "moir’e patterns",
+        "high sensitivity",
+        "pose changes"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Other work explores estimating pose leveraging moir’e patterns’ high sensitivity to the camera’s pose changes [60], and improving pose tracking using inertial sensors [2, 75, 91].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[60]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citation appears in a 'Related Work' section listing various approaches; it groups MoiréPose with other work without detailed evaluation. The citation_text contains the target reference marker [60], so it is included as background evidence.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "weak",
+      "needs_human_review": true
+    }
+  ]
+}

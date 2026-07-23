@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, 2021, doi: 10.1145/3494975.",
+  "paper_level_summary_zh": "本文是一篇无线感知安全综述，将[23]作为一项在受保护区域内通过信号泄漏实现窃听的被动窃听攻击实例，并引用其通过捕获亚毫米级振动进行穿墙窃听的工作。",
+  "evidences": [
+    {
+      "recommendation": "include",
+      "claim_type": "through_wall_eavesdropping",
+      "evidence_quote": "passive eavesdropping attacks aim to gain information about the protected area by intercepting the leakage signals that unavoidably emanate from the protected area, e.g., eavesdropping on loudspeakers in the room by capturing sub-mm level vibration via RFID [23]",
+      "evidence_context": "In the following, we provide a classification of attack roles... Fig. 3 depicts different types of attacks... Passive eavesdropping attacks aim to gain information about the protected area by intercepting the leakage signals that unavoidably emanate from the protected area, e.g., eavesdropping on loudspeakers in the room by capturing sub-mm level vibration via RFID [23].",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, 2021, doi: 10.1145/3494975.",
+      "why_this_judgment_zh": "引文正文明确将[23]作为穿墙窃听示例，且使用了“capturing sub-mm level vibration via RFID”的描述，与目标论文标题和内容一致，无归属风险。",
+      "copy_ready_zh": "该综述在攻击分类中将[23]列为被动窃听攻击实例，明确指出其通过RFID捕获亚毫米级振动实现穿墙窃听扬声器的能力。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "crucial for healthcare [23]",
+      "evidence_context": "Compared to traditional sensors, it offers advantages: (1) Non-contact and non-invasive: It enables sensing with fewer privacy concerns than CMOS sensors, crucial for healthcare [23] ...",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, 2021, doi: 10.1145/3494975.",
+      "why_this_judgment_zh": "这里[23]被用作非接触感知在医疗保健中重要性的一个例子，但没有具体描述目标论文的方法或能力，属于普通引用，不应作为亚毫米能力佐证。",
+      "copy_ready_zh": "该综述在介绍无线感知优势时，引用[23]作为非接触感知在医疗保健中应用的示例，但未展开具体技术细节。",
+      "confidence": "low"
+    }
+  ]
+}

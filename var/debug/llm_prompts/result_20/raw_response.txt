@@ -1,0 +1,40 @@
+{
+  "findings": [
+    {
+      "citation_text": "Some methods leverage the aliasing effect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera's color filter array. The aliasing pattern is sensitive to the pose of the target, introducing the potential of an ultraprecise out-of-plane rotation measurement. However, the reported accuracy does not demonstrate superiority when compared to traditional solutions, which might be due to the inherently low-quality imaging of aliasing patterns. Furthermore, the working range is limited, as the frequencies of the target pattern and the camera's color filter array must be closely matched.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The cited paper is [15]. The text groups [15], [16], [17] and states that the reported accuracy does not demonstrate superiority and the working range is limited, which is a negative evaluation of the cited paper's method.",
+      "highlight_keywords": ["accuracy does not demonstrate superiority", "working range is limited"],
+      "keep": true
+    },
+    {
+      "citation_text": "Recently, some out-of-plane rotation measurement methods based on 3-D Moiré effect have achieved a favorable balance among cost-effectiveness, easy-to-deployment, and high accuracy. They exploit the sensitivity of 3-D Moiré effect to viewing angle [18] to achieve high-accuracy out-of-plane rotation measurement. An example is illustrated in Fig. 2, showing that a small out-of-plane rotation causes a significant displacement in the 3-D Moiré pattern, while the shift in pattern corners is almost imperceptible (hollow and solid dots indicate a peak before and after rotation). To generate 3-D Moiré patterns, Tanaka [19] mounted a lens array on a periodic stripe pattern, while Qiu et al. [20] employed two periodic masks on opposite sides of a glass wafer, termed u-LentiMark and MoiréTag, respectively. Their reported accuracies, along with those of two earlier versions [21], [22], fall in the range of about 0.1° to 2°.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The cited paper is [18] (MoiréPose is [15], not [18]). Actually [18] is a book, not MoiréPose. MoiréPose is [15]. But here the text references [18] for sensitivity of 3-D Moiré effect, and [15] is not mentioned in this paragraph. Thus this finding is not about the cited paper. Actually the cited paper (MoiréPose) is [15], which is referenced in the aliasing paragraph. So this paragraph does not mention [15].",
+      "highlight_keywords": [],
+      "keep": false
+    },
+    {
+      "citation_text": "In this article, we propose a novel 3-D Moiré marker for out-of-plane rotation measurement. ... The proposed marker is similar to MoiréTag [20] in hardware, as both consist of two periodic masks etched on the opposite sides of a glass wafer.",
+      "evidence_type": "application_extension",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The text compares the proposed marker to MoiréTag [20], not to the cited paper [15]. So this is not about the cited paper.",
+      "highlight_keywords": [],
+      "keep": false
+    },
+    {
+      "citation_text": "The aliasing Moiré-based methods yield errors in the range from 0.2° to 2°. These methods exploit the aliasing effect that arises when a camera captures high-frequency patterns, such as the pixel array of a display, thereby avoiding the use of visually obtrusive artificial markers. However, in terms of accuracy, they offer no advantage over conventional methods.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "This paragraph in Section V-C discusses aliasing Moiré-based methods, which include the cited paper [15]. It states that they offer no advantage over conventional methods, which is a negative evaluation. However, the citation [15] is not explicitly mentioned here; the text says 'The aliasing Moiré-based methods' and earlier in the paper [15] is an aliasing method. This is a grouped reference to aliasing methods, which includes [15].",
+      "highlight_keywords": ["no advantage over conventional methods"],
+      "keep": true
+    }
+  ]
+}

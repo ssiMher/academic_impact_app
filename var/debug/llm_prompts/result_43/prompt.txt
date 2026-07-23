@@ -1,0 +1,1781 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, frequency difference, convolution, sampling vectors, spectral peaks, or spectral model terms, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: HomeOSD: Appliance Operating-Status Detection Using mmWave Radar
+CITED_PAPER_TITLE: mmEavesdropper: Signal Augmentation-based Directional Eavesdropping with mmWave Radar
+CITED_PAPER_YEAR: 2023
+CITED_PAPER_VENUE: INFOCOM
+CITED_PAPER_DOI: 10.1109/INFOCOM53939.2023.10229095
+CITED_PAPER_AUTHORS: Yiwen Feng, Kai Zhang, Chuyu Wang, Lei Xie 0004, Jingyi Ning, Shijia Chen
+TARGET_REFERENCE_MARKER: 
+TARGET_REFERENCE_ENTRY: 
+TARGET_REFERENCE_CONTEXTS:
+(none)
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- Prioritize claims that the target paper is first, seminal, or pioneering.
+- Prioritize detailed comparison evidence, not passing mentions.
+- Prioritize evidence where the target paper is used as a baseline or benchmark.
+- Prioritize theoretical foundation evidence.
+- Prioritize method foundation evidence.
+- Prioritize application extension evidence.
+- Prioritize positive citations from important authors or Fellows.
+- Prioritize long-context citation evidence.
+- Prioritize positive evaluation evidence grounded in citation_text.
+FULL_EXTRACTED_TEXT:
+Citation: Sheng, Y.; Li, J.; Ma, Y.;
+Zhang, J. HomeOSD: Appliance
+Operating-Status Detection Using
+mmWave Radar. Sensors 2024, 24,
+2911. https://doi.org/10.3390/
+s24092911
+Academic Editor: Jong-Ryul Yang
+Received: 2 April 2024
+Revised: 29 April 2024
+Accepted: 29 April 2024
+Published: 2 May 2024
+Copyright: © 2024 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license (https://
+creativecommons.org/licenses/by/
+4.0/).
+sensors
+Article
+HomeOSD: Appliance Operating-Status Detection Using
+mmWave Radar
+Yinhe Sheng, Jiao Li, Yongyu Ma and Jin Zhang *
+Shenzhen Key Laboratory of Safety and Security for Next Generation of Industrial Internet, Research Institute of
+Trustworthy Autonomous Systems, Department of Computer Science and Engineering, Southern University of
+Science and Technology, Shenzhen 518055, China; 11930822@mail.sustech.edu.cn (Y.S.); lij@sustech.edu.cn (J.L.);
+12232427@mail.sustech.edu.cn (Y.M.)
+* Correspondence: zhangj4@sustech.edu.cn
+Abstract: Within the context of a smart home, detecting the operating status of appliances in the
+environment plays a pivotal role, estimating power consumption, issuing overuse reminders, and
+identifying faults. The traditional contact-based approaches require equipment updates such as
+incorporating smart sockets or high-precision electric meters. Non-constant approaches involve
+the use of technologies like laser and Ultra-Wideband (UWB) radar. The former can only monitor
+one appliance at a time, and the latter is unable to detect appliances with extremely tiny vibrations
+and tends to be susceptible to interference from human activities. To address these challenges, we
+introduce HomeOSD, an advanced appliance status-detection system that uses mmWave radar. This
+innovative solution simultaneously tracks multiple appliances without human activity interference
+by measuring their extremely tiny vibrations. To reduce interference from other moving objects,
+like people, we introduce a Vibration-Intensity Metric based on periodic signal characteristics. We
+present the Adaptive Weighted Minimum Distance Classifier (AWMDC) to counteract appliance
+vibration fluctuations. Finally, we develop a system using a common mmWave radar and carry out
+real-world experiments to evaluate HomeOSD’s performance. The detection accuracy is 95.58%, and
+the promising results demonstrate the feasibility and reliability of our proposed system.
+Keywords: Internet of Things; smart home; appliance operating-status detection; mmWave radar;
+vibration
+1. Introduction
+The rapid development of Internet of Things (IoT) technology [1–3] has led to increas-
+ing attention towards smart homes. One of the key functions of smart homes is appliance
+operating-status detection, which involves tasks such as measuring fan wind speeds or
+detecting the washing or drying of a washing machine. This capability offers numerous ben-
+efits, including estimating power consumption, providing alerts for improper usage, and
+identifying appliance anomalies. Several sensing technologies exist for detecting the operat-
+ing status of appliances. A conventional approach involves using smart sockets to monitor
+and record the power consumption of each individual appliance to detect status [4–6].
+However, this approach requires attaching a new sensor for each appliance, which can
+be intrusive, cumbersome, and impractical for larger homes with many appliances. Non-
+Intrusive Load Monitoring (NILM) is indeed a more efficient system for estimating the
+power consumption of individual devices [7–10]. It utilizes a single smart meter to measure
+the total power consumption of a household and then calculates the power consumption of
+each appliance. However, it can be challenging to detect simultaneous status changes in
+multiple appliances using only the total power consumption.
+In addition to monitoring power consumption, researchers explore the use of vi-
+bration as an alternative method for detecting appliance operating status. For example,
+some studies employ laser Doppler vibrometers to capture the vibrations produced by
+Sensors 2024, 24, 2911. https://doi.org/10.3390/s24092911 https://www.mdpi.com/journal/sensors
+Sensors 2024, 24, 2911 2 of 23
+appliances [11,12]. However, a limitation of this approach is its inability to simultane-
+ously capture the vibrations of multiple appliances. Another approach integrating Ultra-
+Wideband (UWB) technology with visual sensing has been proposed [13]. However, it is
+limited by the wavelength of UWB signals, which renders it unable to detect the extremely
+tiny vibrations of appliances such as fridges. Furthermore, it fails to consider the potential
+impact of human activity on the detection accuracy.
+Overall, research on detecting the operating status of electrical appliances can be
+categorized into two approaches: contact-based and non-contact-based. A contact-based
+method requires additional sensors to be integrated into the existing circuitry. Conversely,
+non-contact methods utilize sensors such as laser or UWB radar, which do not require any
+modification to the household wiring. However, non-contact approaches either lack the
+capability to simultaneously monitor multiple appliances or are vulnerable to interference
+from surrounding human activity. Therefore, our objective is to develop a non-contact
+system that is capable of simultaneously detecting the operating status of multiple electrical
+appliances without interference from human activity. We propose utilizing Millimeter
+Wave (mmWave) radar as a non-contact sensing technology. mmWave radar is known
+for its ability to detect multiple targets at different distances without physical contact.
+Previous research studies [14–17] demonstrate the capability of mmWave radar for detecting
+tiny vibrations.
+However, there are several challenges that need to be addressed. Firstly, the vibration
+of appliances is tiny, making the mmWave signal changes caused by these vibrations easily
+distorted. This poses a challenge in accurately detecting and interpreting the subtle changes
+in the mmWave signal. Secondly, when detecting vibrating appliances, interference from
+other moving objects, such as people, can occur. This interference may affect the accuracy
+of the detection and introduce false readings or inconsistencies in the results. Overcoming
+this challenge requires developing robust algorithms and signal-processing techniques
+to distinguish between the vibrations of the appliances and other sources of movement.
+Thirdly, due to the instability of the electrical current and mechanical wear and tear, the
+frequency of appliance vibrations may undergo certain fluctuations, thus affecting the
+recognition results.
+In this study, we propose HomeOSD, a system for detecting appliance operating
+status based on mmWave radar. To tackle the challenge of signal distortion, we propose
+a solution. In particular, we process the original mmWave signal and employ special
+periodic average calculations to remove various types of noise present in the signal. By
+applying these calculations, the signal quality can be enhanced and the system performance
+can be improved. To address the second challenge of interference from other moving
+objects, we propose a novel Vibration Intensity Metric, which is designed to estimate the
+intensity of vibration while disregarding the Doppler effect caused by other movements. By
+focusing specifically on the Vibration Intensity related to appliances, we aim to differentiate
+it from other sources of movement and minimize interference in the detection process.
+To tackle the third challenge, we propose an Adaptive Weighted Minimum Distance
+Classifier (AWMDC) that can mitigate the impact of fluctuations in appliance vibrations on
+classification results. By incorporating adaptive mechanism, the classifier can adapt to the
+fluctuations in appliance vibration frequencies.
+We conduct comprehensive evaluations to assess the performance of HomeOSD in
+various scenarios. The results demonstrate an impressive average detection accuracy of
+95.58% in real-world settings. This highlights HomeOSD’s ability to accurately detect the
+operating status of multiple appliances simultaneously, even when there is interference
+from human activities. Our contributions can be summarized as follows:
+1. We propose a novel appliance operating-status detection system called HomeOSD,
+which utilizes mmWave radar technology. As far as we know, HomeOSD stands out as
+the first non-contact system capable of simultaneously monitoring the operating status
+of multiple appliances without interference from human activity. This advancement
+significantly enhances smart sensing capabilities for home environments;
+Sensors 2024, 24, 2911 3 of 23
+2. We propose a novel metric called Vibration Intensity Metric for detecting vibrating
+objects and design an AWMDC classifier. The Vibration Intensity Metric effectively
+mitigates interference from human activities, while AWMDC can adapt to the fluc-
+tuations in appliance vibration frequencies, enhancing the precision of appliance
+operating-status detection;
+3. We implement our system using a commercial mmWave radar and conduct a thorough
+evaluation of its performance in various environments. The experimental results
+demonstrate the impressive accuracy of 95.58% achieved by HomeOSD for operating-
+status detection in real-world scenarios.
+The remainder of this paper is as follows. In Section 2, a review of related works is
+provided. Section 3.1 presents an overview of the proposed system. The detailed design
+of the system, including mmWave Signal Pre-Processing, Vibrating Object Detection, and
+Operating-Status Identification, is presented in Section 3.2 through Section 3.4. Section 4
+describes the implementation of the system and presents the results of the system evaluation.
+In Section 5, the findings and limitations of the study are discussed, while Section 6 provides
+a conclusion to the paper.
+2. Related Works
+This section reviews existing works on appliance operating-status detection and
+vibration measurement.
+2.1. Appliance Operating-Status Detection
+According to different sensing methods, existing home-appliance operating-status
+detection systems can be divided into two main categories: contact sensing-based and
+contactless sensing-based.
+Contact Sensing-Based: The smart socket is a commonly used device that can
+record the power consumption of an appliance and transmit it to the smart-home network
+for analysis of the appliance’s status [ 4–6]. However, installing a smart socket for each
+appliance can be intrusive and expensive. In addition to the smart socket, NILM is a system
+to detect the appliance operating status by leveraging a single power meter to record the
+household’s consumption and extract the status change of each electrical appliance [7–10].
+However, NILM can only capture the total consumption, making it difficult to detect the
+status of multiple appliances changing simultaneously.
+Contactless Sensing Based: Laser vibrometry is a non-contact sensing technology,
+used to measure tiny displacements. By measuring the tiny vibrations of an appliance, it
+can detect its operating status [11,12]. Vibrosight [11] uses a laser vibrometer to measure the
+vibration of a tag attached to an appliance and identify its operating status. However, since
+a laser vibrometer can only measure the vibration of a single point, it requires scanning an
+entire room to detect all appliances. VibroSense [12] uses a laser vibrometer to measure the
+vibration of the wall instead of directly measuring the vibration of appliances to detect their
+status. However, when many appliances are running simultaneously, it can be difficult to
+extract the vibrations of all electrical appliances through the vibration of a single point on the
+wall. Additionally, laser vibrometers cannot be used for long periods, as they are harmful
+to human eyes, making continuous monitoring challenging. Capricorn incorporates UWB
+technology combined with visual sensing to monitor the status of electrical appliances [13].
+However, UWB’s operation is constrained by its inherent wavelength limitations, ranging
+from 28.3 mm to 96.8 mm, which preclude detection of minuscule vibrations such as those
+generated by appliances like refrigerators. In addition, Capricorn neglects to consider the
+influence of human activities on appliance operating-status detection.
+To the best of our knowledge, in scenarios involving human activity interference,
+there is currently no contactless system that can simultaneously detect the operating
+status of multiple appliances based on tiny vibrations. Therefore, we aim to go a step
+further and extend vibration detection of a single object to vibration detection of multiple
+objects simultaneously.
+Sensors 2024, 24, 2911 4 of 23
+2.2. Vibration Measurement
+Current vibration measurement technology can be divided into three main categories:
+contact sensor-based, optical-based, and Ratio Frequency (RF)-based.
+Contact Sensor-Based: Vibration can be detected by attaching contact sensors to
+the target surface [18–20]. For example, piezoelectric sensors are a type of contact sensor
+that measure vibration by sensing the force changes on the sensors caused by vibration.
+The principle of vibration detection based on piezoelectric sensors is to mount the sensor
+on a target surface. When the surface vibrates, the piezoelectric sensor senses the force
+change caused by the vibration and converts it into an electrical signal output. This
+signal’s amplitude and frequency can be used to analyze the target surface’s vibration state.
+However, the use of contact sensors may increase the cost of deployment and maintenance.
+Optical-Based: Laser vibrometers use the Doppler effect to detect tiny vibrations
+[21–24]. They have high measurement accuracy due to the short wavelength of the laser.
+However, high-precision laser vibrometers are expensive and can only measure the vibra-
+tion of one point at a time. On the other hand, high-speed cameras are widely used for
+vibration monitoring [25–28]. However, cameras are vulnerable to ambient light and cause
+privacy issues, making them unsuitable for detecting appliance operating status.
+RF-Based: In recent years, several solutions for detecting vibrations based on RFID
+have been proposed [ 29–34]. By attaching a tag, the vibration of the target surface can
+be detected. RFID has the advantage of being low-cost and not depending on lighting
+conditions. However, due to the large wavelength of RFID, its accuracy in measuring
+tiny vibrations is limited. Alternatively, the Impulse Radio Ultra-Wideband (IR-UWB) can
+be used to detect vibrations. The frequency of IR-UWB ranges from 3.1 to 10.6 GHz [35],
+which allows it to penetrate walls and measure vital signs [ 36–39] and the vibration of
+speakers [40]. However, its ability to detect tiny vibrating objects such as a running fridge is
+limited [13], similar to RFID. In comparison, mmWave radar has a shorter wavelength and
+can detect tiny displacements. It can capture fine-grained vital signs [41,42]. Since sound
+is usually produced by tiny vibrations, many works utilize mmWave radar to detect the
+vibration caused by sound [15,43–46]. Meanwhile, utilizing the penetrative capability of
+mmWave radar, many works use it to detect minor vibrations for eavesdropping [45,47–51].
+In addition, mmWave radar is employed in detecting minute vibrations for mechanical
+fault detection [16,17,52], emerging communications [14], and material identification [53].
+Furthermore, common mmWave radar, such as Frequency-Modulated Continuous-Wave
+(FMCW) radar, can effortlessly extract the minute displacements of multiple targets simul-
+taneously [54–56].
+Given the advantages of mmWave radar, such as high precision, contactless sensing,
+multi-target detection, and the characteristic that it is unaffected by ambient light, mmWave
+radar is more suitable for detecting vibrations of electrical appliances. Therefore, we utilize
+the mmWave radar to implement our design.
+3. HomeOSD System Design
+3.1. System Overview
+Our system, HomeOSD, consists of three primary modules: mmWave Signal Pre-
+Processing, Vibrating-Object Detection, and Operating-Status Identification. As illustrated
+in Figure 1, the beat frequency signal from the mmWave radar is input to the mmWave
+Signal Pre-Processing module to calculate the IQ components and eliminate the noise. Then,
+the high-quality signal is fed into the Vibrating-Object Detection module to conduct the
+Vibration Intensity calculation and object distance estimation. After the object distance
+estimation, the Operating-Status Identification module extracts features from the Vibration
+Intensity spectrum and identifies the operating status of the detected objects.
+mmWave Signal Pre-Processing: This module is designed to eliminate the noise in
+the original signal. Since the vibration of electrical appliances is weak, noise in the signal
+can significantly impact the accuracy of detection. To address this issue, we utilize several
+Signal Pre-Processing techniques to eliminate noise and produce a high-quality signal.
+Sensors 2024, 24, 2911 5 of 23
+Vibrating-Object Detection: After pre-processing, the signal is input to this module
+to detect the vibrating objects. The challenge lies in that the Doppler effect due to moving
+objects can obscure the Doppler effect of appliance vibration, making it easy to misinterpret
+vibration detection. To address this issue, we propose a novel Vibration Intensity Metric
+based on periodicity. By calculating the Vibration Intensity of objects at various distances,
+we can detect the distance of each vibrating object from the radar without interference from
+other moving objects.
+Operating-Status Identification: When the vibrating objects are detected, this module
+extracts features from the Vibration Intensity spectrum. Due to the fluctuating frequency of
+appliance vibrations resulting from electrical current instability and mechanical wear, we
+develop an AWMDC. This classifier can dynamically adapt to these vibration frequencies
+fluctuating, ensuring accurate classification of appliance operating status.
+Appliance 
+vibration
+mmWave 
+radar
+Vibrating Objection Detection
+Vibration Intensity 
+Calculation
+Object Distance 
+Estimation
+Cooling
+mmWave Signal Pre-processing
+IQ Signal 
+Calculation
+Noise 
+Elimination
+I I
+QQ
+Object Recognition
+Operational State 
+ClassificationFeature Extraction
+ Washing
+?
+√
+×
+Low Speed
+×
+Figure 1. System overview of HomeOSD.
+3.2. Signal Pre-Processing
+This section describes the mmWave Signal Pre-Processing module in our system, which
+aims to improve signal quality by removing noise from the raw mmWave radar signal.
+3.2.1. IQ Signal Calculation
+We use a Frequency-Modulated Continuous-Wave (FMCW) mmWave radar to detect
+the slight vibrations of objects. The radar emits a continuous chirp signal that is linearly
+modulated in frequency:
+sTx(t) =exp[j(2π fct + πKt2)], t ∈ [0, T], (1)
+where sTx is the radar’s Transmitted Signal (Tx), fc is the starting frequency, K is the slope
+of the chirp signal, T is the period of the chirp, and time t ranges from 0 to T. Objects in the
+vicinity reflect the transmitted signals, and the radar receives the sum of these reflected
+signals. The Received Signal (Rx) can be expressed as follows:
+sRx(t) =∑
+i
+αisTx(t − 2di
+c ), (2)
+where αi represents the path loss of the signal reflected by the i-th object, di is the distance
+of the i-th object, and c is the speed of the signal. The Rx signal is mixed with the Tx signal
+and passed through a low-pass filter, and the output is the beat frequency signal s(t):
+s(t) =sTx(t)s∗
+Rx(t)
+≈ ∑
+i
+αi exp[j · 2π(K 2di
+c t + 2di
+λ )], (3)
+where λ is the wavelength of the signal. The frequency response of the time-domain signal
+can be calculated using the Fourier Transform:
+Sensors 2024, 24, 2911 6 of 23
+S( f ) =
+Z T
+0
+s(t) · (−j · 2π f t)dt
+= ∑
+i
+Ai exp (j · 2π 2di
+λ ),
+(4)
+where f is the subcarrier of the frequency response, Ai is the amplitude of the component
+of the i-th object, and Ai = αiT · sinc[( 2di
+c K − f )T] · exp (j · π(2di
+c K − f )T). When di is close
+to c f
+2K , the Ai is close to 1; otherwise, it is close to 0. In practical scenarios, the surrounding
+reflectors include both moving and stationary objects. The radar continuously transmits
+sweeps of the chirp, and the distance di of the moving object is different in each sweep.
+Therefore, we can rewrite Equation (4) as follows:
+S(k, f ) =∑
+p
+Ap exp (j · 2π 2dp(k)
+λ ) +∑
+q
+Aq exp (j · 2π 2dq(k)
+λ )
+= ∑
+p
+Ap exp (j · 2π 2dp(k)
+λ ) +A0 exp (j · 2π 2d0
+λ ),
+(5)
+where k corresponds to the k-th sweep of the chirp, p corresponds to the p-th moving object,
+and q corresponds to the q-th stationary object. A0 and d0 represent the virtual amplitude
+and distance, respectively, of all stationary objects. By using Euler’s formula, we can obtain
+the signal in the IQ domain:
+I(k, f ) =real (S(k, f ))
+= ∑
+p
+Ap cos (2π 2dp(k)
+λ ) +A0 cos (2π 2d0
+λ ), (6)
+Q(k, f ) =imag (S(k, f ))
+= ∑
+p
+Ap sin (2π 2dp(k)
+λ ) +A0 sin (2π 2d0
+λ ). (7)
+Based on Equations (5)–(7), we define the stationary component of the vibrating object,
+the moving component of the vibrating object, and the total signal s( f , k) in the IQ domain
+as the static vector − →SS, the dynamic vector − →SD, and combined vector − →SC, respectively.
+Ideally, when there is only one vibrating object in the vicinity, the length of the dynamic
+vector − →SD remains constant, and the trajectory of − →SC in the IQ domain takes the shape of an
+arc, as depicted in Figure 2a. To validate the model, we employ a vibration generator to
+simulate the vibration and detect it in an environment without human activity. As shown
+in Figure 2b, the signal in the IQ domain conforms to the model. However, in real scenarios
+where appliance operating status detection is required, there may exist various vibrating
+objects and people walking around. As a result, the length of the dynamic vector − →SD may
+not be constant, and the trajectory of − →SC in the IQ domain may not be an arc. As shown in
+Figure 2c, the signal − →SC from a real-world scenario where an air conditioner is running is
+no longer an arc, but a more complex shape.
+Above observation indicates that the effects of surrounding vibrating objects and
+human activities cannot be ignored. However, previous works on vibration detection based
+on mmWave radar have only considered the situation shown in Figure 2a. Therefore, we
+aim to propose a system that can detect multiple vibrating objects in more complicated
+real-world scenarios.
+Sensors 2024, 24, 2911 7 of 23
+Static
+Dynamic
+Combined𝑆𝑆
+𝑆𝐶 𝑆𝐷Q
+I
+(a)
+S𝑆
+S𝐶 S𝐷
+Q
+I (b)
+S𝐶Q
+I
+ (c)
+Figure 2. Illustration of different vibrating objects in the IQ domain. (a) Ideal points and (b) vibration
+generator show arc-shaped trajectories, while (c) the trajectory of the air conditioner is highly chaotic.
+3.2.2. Noise Elimination
+During the process of detecting the operating status of appliances, signal noise primar-
+ily arises from random noise and baseline drift. Random noise refers to a signal that contains
+random fluctuations and does not exhibit any discernible pattern or structure [57,58]. The
+presence of random noise in many applications is often undesirable, as it can interfere with
+the clarity and accuracy of desired signals or data. In radar systems used for detecting
+vibrations, random noise can cause significant interference to the system, particularly as the
+amplitude of the vibration of the object being measured is typically relatively small [16,17].
+In addition, baseline drift can be caused by the radar itself or by the surroundings [ 59].
+Human activities also produce periodic movements. Most of these are large in amplitude,
+such as walking and hand-waving. In addition, there are some small amplitude movements
+such as the chest movements caused by the heartbeat. But these small-amplitude periodic
+motions are also much lower in frequency than the vibrations of electrical appliances, so
+any signal changes caused by human activity are equivalent to drift noise. Therefore, our
+noise elimination design comprises two parts: random-noise elimination and baseline-drift
+elimination.
+Random-noise elimination: Random noise is an inherent part of any system and
+can be effectively eliminated through applying moving average filter to the signal in time
+domain. Specifically, the moving average process replaces the value of each point with the
+average value of its neighboring points:
+S1(k, f ) = 1
+M1
+M1
+2
+∑
+i=− M1
+2
+S(k + i, f ), (8)
+where S1(k, f ) is the signal after the moving average process and M1 is the number of
+points in the moving window. If the moving window is too small, its ability to reduce
+random noise through moving averaging will be insufficient. Conversely, when the moving
+window approaches or exceeds the period of a periodic signal, significant components of
+that signal will be attenuated. Therefore, assuming our target vibration period to be Ta, we
+use a moving window length equal to half the length of period Ta. The value assigned to
+M1 corresponds to the number of sampling points associated with Ta/2.
+Compared to other signals, periodic signals have a distinct characteristic: the points
+on the ideal periodic signal return to the same value after an integer multiple of periods,
+as exemplified by points A1 to A10 in Figure 3a. Therefore, random noise can be further
+eliminated by averaging points whose time interval is the period, as shown in Figure 3b,c.
+However, it is necessary to first assume various vibration periods and calculate the noise-
+eliminated signal under each of these assumed periods. The process is expressed by the
+following equation:
+S2(k, f ) = 1
+M2
+M2
+2
+∑
+i=− M2
+2
+S1(k + i · Ta, f ), (9)
+Sensors 2024, 24, 2911 8 of 23
+where S2(k, f ) represents the signal obtained by averaging M2 points with the assumed
+vibration period Ta. Similar to M1 in Equation (8), an excessively small M2 can also hinder
+the ability to suppress random noise effectively. Conversely, when the length of signalS2
+is fixed, an overly large M2 would result in an output M2 of insufficient length following
+Equation (9). Taking into account the sampling rate, length, and range of Ta for our signals,
+we have chosen M2 to be 5 within our system.
+0.8
+0.85
+0.9
+0.95
+1
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0
+0.2
+0.4
+0.6
+0.8
+1
+t
+Q I
+A10
+A9
+A8
+A7
+A6
+A5
+A4
+A3
+A2
+A1
+(a)
+0.8
+0.85
+0.9
+0.95
+1
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0
+0.2
+0.4
+0.6
+0.8
+1
+t
+Q I
+A10
+′
+A9
+′
+A8
+′
+A7
+′
+A6
+′
+A5
+′
+A4
+′
+A3
+′
+A2
+′
+A1
+′ (b)
+0.8
+0.85
+0.9
+0.95
+1
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0
+0.2
+0.4
+0.6
+0.8
+1
+t
+Q I
+A10
+′′
+A9
+′′
+A8
+′′
+A7
+′′
+A6
+′′
+A5
+′′
+A4
+′′
+A3
+′′
+A2
+′′
+A1
+′′ (c)
+Figure 3. (a) Ideal periodic signal in the IQ domain; (b) Periodic signal with random noise in the IQ
+domain; (c) Signal obtained by specific averaging of the signal in (b). From point A1 to point A10,
+from point A
+′
+1 to point A
+′
+10, and from point A
+′′
+1 to point A
+′′
+10, the time interval is a period.
+Baseline-drift elimination: In a noise-free periodic signal, the average value of each
+period of a periodic signal remains constant, as shown from points B1 to B10 in Figure 4a.
+However, when the periodic signal contains drift, the average value of each period can
+reflect its component of drift, as shown by points B′
+1 to B′
+10 in Figure 4b. Therefore, an
+approximate drift component can be obtained by using the moving average of a window
+with the length of the period. Finally, we subtract this component from the original signal
+to eliminate the drift, as shown in Figure 4c. The equation for this process is written as
+S3(k, f ) =S2(k, f ) − 1
+Ta
+Ta
+2
+∑
+i=− Ta
+2
+S2(k + i, f ), (10)
+where S3(k, f ) is the signal after baseline-drift elimination.
+0.8
+0.85
+0.9
+0.95
+1
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0
+0.2
+0.4
+0.6
+0.8
+1
+B10
+t
+Q I
+B9
+B8
+B7
+B6
+B5
+B4
+B3
+B2
+B1
+(a)
+1.7
+1.8
+1.9
+2
+-0.5
+0
+0.5
+1
+0
+0.2
+0.4
+0.6
+0.8
+1
+t
+Q I
+B10
+′
+B9
+′
+B8
+′
+B7
+′
+B6
+′
+B5
+′
+B4
+′
+B3
+′
+B2
+′
+B1
+′ (b)
+-0.1
+-0.05
+0
+0.05
+0.1
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0
+0.2
+0.4
+0.6
+0.8
+1
+t
+Q I
+B10
+′′
+B9
+′′
+B8
+′′
+B7
+′′
+B6
+′′
+B5
+′′
+B4
+′′
+B3
+′′
+B2
+′′
+B1
+′′ (c)
+Figure 4. (a) Ideal periodic signal and its mean value for each period in the IQ domain; (b) Periodic
+signal with baseline drift and its mean value for each period in the IQ domain; (c) Signal obtained
+after baseline-drift removal from the signal in (b).
+To process the signal of an electrical appliance, it is necessary to assume all possible
+frequencies, as the frequency of vibration is unknown beforehand.
+Figure 5 illustrates the raw signals, signal after random noise elimination, signal after
+random-noise elimination, and baseline-drift elimination for three appliances. We can
+observe that the signals after the random-noise removal exhibit significantly improved
+Sensors 2024, 24, 2911 9 of 23
+signal-to-noise ratios compared to the raw signals, and the signals after both random-
+noise removal and baseline-drift removal are much clearer. The results demonstrate the
+effectiveness of our proposed approach.
+(a)
+-5000 0 5000
+-5000
+0
+5000
+-4 -2 0 2
+104
+-2
+0
+2
+104
+-2000 -1000 0 1000 2000
+-2000
+-1000
+0
+1000
+2000 QQQ
+I
+I
+I
+(d)
+(g)
+QQQ
+I
+I
+I
+(b)
+(e)
+(h)
+-2000 -1000 0 1000 2000
+-2000
+-1000
+0
+1000
+2000
+-1000 -500 0 500 1000
+-1000
+-500
+0
+500
+1000
+-2000 -1000 0 1000 2000
+-2000
+-1000
+0
+1000
+2000 QQQ
+I
+I
+I
+(c)
+(f)
+(i)
+-2000 -1000 0 1000 2000
+-2000
+-1000
+0
+1000
+2000
+-1000 -500 0 500 1000
+-1000
+-500
+0
+500
+1000
+-2000 -1000 0 1000 2000
+-2000
+-1000
+0
+1000
+2000
+Figure 5. (a–c), (d–f), and (g–i) show the IQ domain signals of the air conditioner, fan, and refrigerator,
+respectively. (a,d,g) represent the original signals. (b,e,h) represent the signals after the elimination of
+random noise. Finally, (c,f,i) represent the signals after the elimination of both random noise and
+baseline drift.
+3.3. Vibrating-Object Detection
+3.3.1. Vibration Intensity Calculation
+Previous studies [16,17] have typically utilized the Doppler effect to detect vibrating
+objects. However, in indoor environments, the Doppler effect from human motion is often
+much larger than that from appliance vibration. Therefore, in real-world environments, the
+Doppler effect from appliance vibration may be masked.
+Figure 6a,b demonstrates the Doppler spectrum obtained from vibration detection
+of a refrigerator with radar in the absence of any interference and in a scenario where
+someone is walking around, respectively. It is obvious that the energy caused by the
+walking person masks and drowns out the energy corresponding to the vibration of the
+refrigerator. Consequently, a new metric that allows robust vibration detection against
+interference needs to be proposed.
+For the periodic signal, we observe that the distance between two points in the IQ
+domain is related to the signal’s period. Specifically, the time interval between the farthest
+points is half a period, and the time interval between the closest points is one period. We
+also verify this characteristic of the periodic signal in practice, as shown in Figure 7. The
+time interval between A and B is half a period, and the time interval between C and D is
+one period. For points within a period, we can express the farthest distance Df and the
+average nearest distance Dn using the following equations:
+Df (k0, Ta) = max
+k0<k<Ta+k0
+{|(S3(k + Ta
+2 , f ) − S3(k, f ))|}, (11)
+Dn(k0, Ta) = avg
+k0<k<Ta+k0
+{|(S3(k + Ta, f ) − S3(k, f ))|}, (12)
+Sensors 2024, 24, 2911 10 of 23
+where Ta is the assumed period of the vibration and k0 is the first point in current period
+that is computed.
+20 40 60 80 100
+2
+3
+4
+(a)
+20 40 60 80 100
+2
+3
+4
+(b)
+20 40 60 80 100
+2
+3
+4
+(c)
+20 40 60 80 100
+2
+3
+4
+(d)
+Frequency (Hz)
+Distance (m)Distance (m)
+Distance (m)Distance (m)
+Frequency (Hz)
+Frequency (Hz) Frequency (Hz)
+Figure 6. Range-Doppler spectrum under scenarios where there is (a) no interference and (b) one per-
+son walking around; Vibration Intensity spectrum under scenarios where there is (c) no interference
+and (d) one person walking around.
+-8 -4 0 4 8
+-2
+0
+2
+4 C D
+B
+A
+Q
+I
+Figure 7. One period of a vibration signal in the IQ domain. A and B are two points with a time
+interval of half a period and C and D are two points with a time interval of one period.
+By substituting the assumed vibration frequency fa for Ta in Equations (11) and (12),
+we can obtain Df (k0, fa) and Dn(k0, fa) as
+Df (k0, fa) = max
+k0<k< 1
+fa +k0
+{|(S3(k + 1
+2 fa
+, f ) − S3(k, f ))|}, (13)
+Dn(k0, fa) = avg
+k0<k< 1
+fa +k0
+{|(S3(k + 1
+fa
+, f ) − S3(k, f ))|}. (14)
+Since each S3 signal usually contains multiple vibration periods, to fully utilize the
+information of the entire signal, we can calculate the average values of Df ( fa) and Dn( fa)
+over the entire signal:
+D f ( fa) = avg
+0<k0<kn−1/ fa
+{Df (k0, fa)}, (15)
+Dn( fa) = avg
+0<k0<kn−1/ fa
+{Dn(k0, fa)}, (16)
+Sensors 2024, 24, 2911 11 of 23
+where kn is the chirp number of the entire signal. We observe that, when 1/ fa is closer to
+the real vibration period, the value of D f ( fa) increases while the value of Dn( fa) decreases.
+Therefore, we can leverage the ratio of their values to reflect the intensity of vibration at
+different frequencies:
+VI ( fa) =
+D f ( fa)
+Dn( fa), (17)
+where we define VI ( fa) as the Vibration Intensity Metric.
+Figure 8 shows the Vibration Intensity of a 30 Hz vibrating object, as calculated from
+the reflected radar signal. It exhibits a clear peak at 30 Hz, indicating the effectiveness of
+the proposed metric in evaluating the IQ signal’s intensity at various vibration frequencies.
+20 25 30 35 40 45
+0
+5
+10
+15
+20Vibration intensity 
+Frequency (Hz)
+Figure 8. Vibration Intensity of a 30 Hz vibration object at different frequencies.
+We compare the Range–Doppler spectrum and Vibration Intensity spectrum of a fridge
+in two different scenarios when nobody is around and when someone is walking around,
+as shown in Figure 6. It can be observed that only the Vibration Intensity remains consistent
+in both cases (Figure 6c,d), while the Doppler effect experiences significant changes due to
+the influence of the person walking (Figure 6a,b).
+3.3.2. Object-Distance Estimation
+In this section, we utilize the Vibration Intensity Metric to estimate the distances of
+all vibrating objects. Figure 9a illustrates the Vibration Intensity spectrum in distance
+and frequency for three electrical appliances. Notably, each appliance exhibits distinctive
+peaks at corresponding distances, which we can leverage to estimate the distances of all
+appliances. The overall algorithm is depicted in Figure 9 and Algorithm 1.
+20 40 60 80 100 120
+1
+2
+3
+4
+5
+6
+7
+Frequency (Hz)
+Distance (m)
+(a)
+20 40 60 80 100 120
+1
+2
+3
+4
+5
+6
+7
+Frequency (Hz)
+Distance (m)
+Peaks of the 
+spectrum (b)
+20 40 60 80 100 120
+1
+2
+3
+4
+5
+6
+7
+Appliance 2
+Frequency (Hz)
+Distance (m)
+Appliance 1
+Appliance 3 (c)
+20 40 60 80 100 120
+1
+2
+3
+4
+5
+6
+7
+Frequency (Hz)
+Distance (m)
+Range 1
+Range 2
+Range 3 (d)
+Figure 9. To estimate the range of appliances from (a) the Vibration Intensity spectrum, the process
+involves three steps: (b) first, extract peaks from the spectrum; (c) then, cluster to identify different
+appliances; and (d) finally, extract the range for each appliance.
+Sensors 2024, 24, 2911 12 of 23
+Algorithm 1: Object-distance estimation algorithm
+Input: The matrix VI of Vibration Intensity spectrum, the threshold Thp for
+extracting peaks, the threshold Thc for clustering
+Output: Distance range matrix Rn×2 for n objects
+1 dp ← The points extracted from VI whose peak value are greater than Thp
+2 The elements in dp with distances less than Thc are grouped into one class (a total
+of n classes)
+3 for i ← 1 to n do
+4 R(i, 1) ← the minimum distance of the i-th class
+5 R(i, 2) ← The maximum distance of the i-th class
+6 return Rn×2
+3.4. Operating-Status Identification
+In particular, we firstly identify peaks across the entire Vibration Intensity spectrum,
+retaining only those that exceed a pre-set threshold (Algorithm 1 line 1). Then, we group
+the peaks within a specific distance range into the same appliance cluster (Algorithm 1
+line 2). Finally, we consider the minimum and maximum distances of the peak points in
+each cluster as the distance range for that appliance (Algorithm 1 line 3 to 5). The distance
+range of each cluster will be input to the next module.
+As shown in Figure 6, the Vibration Intensity spectrum is significantly more stable
+than the Doppler spectrum in different environments. Therefore, we extract features that
+are related to the Vibration Intensity. Then, we use these Vibration Intensity features to
+classify the operating status of the appliance.
+3.4.1. Feature Extraction
+In this section, we describe the process of feature extraction for appliance operating-
+status classification. As shown in Figure 6d, even in the presence of human-activity
+interference, the frequencies detected using the Vibration Intensity Metric remain stable.
+Therefore, we extract these frequencies and their Vibration Intensities as features for classifi-
+cation. The feature extraction process consists of three steps, as illustrated in Figure 10. The
+detailed process is also shown in Algorithm 2. Firstly, we extract the Vibration Intensity
+spectrum of the target appliance within its distance range (Algorithm 2, line 1). Then, we
+extract the maximum Vibration Intensity for each frequency within the distance range of
+the respective appliance (Algorithm 2, line 2). Finally, we select the top k frequencies with
+the maximum normalized Vibration Intensity (Algorithm 2, lines 3 to 8). These identified
+top-k frequencies, along with their corresponding Vibration Intensities, are regarded as the
+final extracted features for classification.
+Distance (m)
+Frequency (Hz)
+20 40 60 80 100 120
+2
+4
+6
+Appliance 3
+(a)
+0
+0.2
+0.4
+0.6
+0.8
+1
+Vibration intensity
+Frequency (Hz)
+20 40 60 80 100 120 (b)
+0
+0.2
+0.4
+0.6
+0.8
+1
+Frequency (Hz)
+Vibration intensity
+20 40 60 80 100 120 (c)
+Figure 10. The process of feature extraction: (a) extract the Vibration Intensity spectrum within the
+range of each appliance; (b) extract the strongest Vibration Intensity at each frequency; (c) select the
+top-k optimal vibration frequencies; and, finally, take the optimal top-k frequencies along with their
+corresponding vibration intensities as the features for classification.
+Sensors 2024, 24, 2911 13 of 23
+Algorithm 2: Feature-extraction algorithm
+Input: The matrix VI of Vibration Intensity spectrum, the i-th target distance
+range Ri
+1×2
+Output: The feature matrix Fi
+k×2 of i-th target
+1 VItarget ← the Vibration Intensity spectrum of the target is extracted by VI and
+Ri
+1×2
+2 VImax ← the maximum Vibration Intensity at each frequency in VItarget
+3 fp ← the frequency vector of the peaks of the Vibration Intensity
+4 Sorting fp in descending order based on VImax ( fp)
+5 for j ← 1 to k do
+6 Fi
+k×2(j, 1) ← fp(j)
+7 Fi
+k×2(j, 2) ← VImax ( fp(j))/VImax ( fp(1))
+8 return Fi
+k×2
+3.4.2. Operating-Status Classification
+As the features extracted based on Vibration Intensity are stable, there is no need to
+employ complex machine learning methods for classification. After comparing different
+approaches, we decided to use a Weighted Minimum Distance Classifier (WMDC) [60] to
+identify the status of appliances. The fundamental concept of WMDC involves comparing
+the distances between test samples and training samples of different types and, subse-
+quently, assigning the type of training sample with the smallest distance as the classification
+for the test sample. Due to fluctuations caused by current variations or mechanical wear
+and tear, the vibration frequency may change slightly, even within the same appliance’s
+operating status, which can cause misjudgment. To tackle this, we devise an Adaptive
+Weighted Minimum Distance Classifier (AWMDC) that can reduce the impact of vibration
+frequency fluctuations.
+Like traditional WMDC classifiers, our AWMDC method determines the class of a test
+sample by calculating its proximity to the training sample:
+ˆi = min
+1≤i≤n
+di(ˆj, ˆµ), (18)
+where ˆi represents the determined appliance operating status, di signifies the distance
+between the training sample of the i-th class and the test sample, and n corresponds to
+the total number of appliance operating statuses. In this section, we present two adaptive
+strategies aimed at enhancing the classifier’s robustness:
+• Adaptive Feature Selection: We dynamically choose a frequency combination to
+ensure that the selected feature set effectively represents the distribution of the current
+category for subsequent classification. Here, ˆj represents the chosen j-th frequency
+combination;
+• Relaxation Coefficient: We introduce a relaxation coefficient µ to accommodate varia-
+tions in vibration frequencies. ˆµ denotes the selected relaxation coefficient, adapting
+to the specific conditions.
+The vibration of different surfaces of the same appliance is different. Therefore, it is
+necessary to dynamically select representative frequency features for distance calculation.
+Out of the total number of extracted features containing k frequencies, we choose to retain
+only m frequencies. This yields potential combinations that total Cm
+k . The criterion for
+selecting j is to minimize the value of di(j, ˆµ) to ensure that the set of selected features, i.e.,
+the frequency combinations, are highly representative:
+ˆj = min
+1≤j≤Cm
+k
+di(j, ˆµ). (19)
+Sensors 2024, 24, 2911 14 of 23
+The specific expression for di(j, ˆµ) is
+di(j, ˆµ) ={
+m
+∑
+p=1
+[( f
+′
+j (p) − ˆµ fj(i, p))2 + ω0(VI
+′
+j (p) − VI j(i, p))2]}
+1
+2 , (20)
+where f
+′
+j (p) and VI
+′
+j (p) correspond to the p-th frequency and Vibration Intensity, respec-
+tively, within the j-th frequency combination among the features of the test sample. Like-
+wise, fj(i, p) and VI j(i, p) denote the p-th frequency and Vibration Intensity, respectively,
+within the j-th frequency combination among the average features of the training sample
+of the i-th class. Additionally, ω0 represents a constant weighting coefficient.
+The introduction of the relaxation coefficient µ aims to mitigate the impact of vibration
+frequency fluctuations. Similar to the criterion for selecting j, we calculate µ by minimizing
+di(j, µ) for the j-th frequency combination:
+ˆµ = min
+µ1≤µ≤µ2
+{
+m
+∑
+p=1
+[( f
+′
+j (p) − µ fj(i, p))2 + ω0(VI
+′
+j (p) − VI j(i, p))2]}
+1
+2 , (21)
+where µ1 and µ2 represent the lower and upper bounds of µ, respectively.
+While the aforementioned design enhances classifier robustness, our system encoun-
+ters a challenge when simultaneously testing multiple appliances: those with significant
+vibration amplitudes may overshadow those with smaller amplitudes. Moreover, real-
+world scenarios can involve human movements that obstruct the radar’s propagation path
+to appliances. To tackle these issues, we employ a strategy where we aggregate results
+from N data segments, each of length l seconds, and the sliding window stride for each
+segment is s seconds (with l set to 2.4 s, s set to 1 s, and N fixed at 10 s). Therefore, each
+segment evaluation requires 11.4 s of data, with a 1 s interval between each identification.
+This approach effectively compensates for undetected appliances and their corresponding
+operating statuses.
+4. Evaluation
+4.1. Experimental Setup
+Hardware and Software: As shown in Figure 11a, our testbed is a commercial
+mmWave radar, TI IWR1443 BoosterPack, with a bandwidth of 4 GHz (77∼81 GHz) and a
+total of seven antennas (three Tx antennas and four Rx antennas). We use one Tx antenna to
+send FMCW signals with a bandwidth of 2.5 GHz and all Rx antennas to receive reflected
+signals. The raw signals are sampled at 35 MHz and the chirp signals are sampled at 8 kHz.
+The raw signals of the radar are acquired by a TI DCA1000EVM data acquisition card. All
+algorithms in our system are implemented in Matlab on a computer equipped with an
+AMD Ryzen 7 3700X processor and 16 GB of RAM.
+Data Collection: We test 5 appliances with their corresponding 10 appliance operating
+statuses, as well as the scenario without any appliances, as shown in Table 1. We collect
+data in an open area (Figure 11a) and evaluate our system concerning various aspects: ap-
+pliances with different orientations (Figure 12b), appliances at different AoAs (Figure 12c),
+appliances at different distances (Figure 12d), varying quantities of appliances, and the
+presence of human interference. Furthermore, we gather data in a resting area (Figure 11b)
+to simulate real-world testing conditions. Our training data are collected for each appliance
+in a fixed position (Figure 12a), with 30 training samples per appliance operating status.
+Similarly, we collect 30 test samples for each specific condition during testing.
+Sensors 2024, 24, 2911 15 of 23
+mmWave Radar
+Fan Fridge
+Air-conditioning
+Washer
+Microwave
+(a)
+mmWave Radar
+Fridge
+Fan
+Microwave (b)
+Figure 11. Hardware and experimental scenarios. (a) Office room; (b) Real-world scenario.
+3m
+(a)
+3m
+𝛼 (b)
+3m𝛽 (c)
+𝑑 (d)
+Figure 12. Position relationship between radar and electrical appliance. ( a) Facing each other;
+(b) Different orientations; (c) Different AoAs; (d) Different distances.
+It should be noted that our testing data and training data are collected in different
+environments and on separate days. In both human-interference tests and real-world
+scenarios, there is a significant portion where the positions of moving individuals coincide
+with being at the same distance from electrical appliances.
+Table 1. All appliances’ operating statuses.
+Appliance None Air
+Conditioner Fan Microwave Fridge Washing Machine
+Operating status NA L 1 M 2 H 3 L M H On On Washing Drying
+Label 0 1 2 3 4 5 6 7 8 9 10
+1 Low speed. 2 Medium speed. 3 High speed.
+Metric: We adopt accuracy as the detection metric, defined as the ratio of correctly
+classified samples to the total number of samples. In scenarios involving the detection of
+multiple objects, assuming that there are n data segments, that the i-th segment contains
+mi
+1 objects, and that, out of these, mi
+2 objects are accurately detected, the overall accuracy is
+calculated as follows:
+Acc = ∑n
+i=1 mi
+2
+∑n
+i=1 mi
+1
+. (22)
+4.2. Overall Performance
+In this experiment, the tested electrical appliances remain in the same positions as
+during the training phase. We conduct tests for the 11 conditions listed in Table 1.Figure 13
+illustrates the overall performance results. The overall recognition accuracy reaches 98.48%,
+demonstrating the effective capability of HomeOSD in detecting the operating status
+of appliances.
+Sensors 2024, 24, 2911 16 of 23
+Accuracy: 98.48%
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+1.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.07
+0.03
+0.00
+0.00
+0.00
+0.00
+0.90
+0.00
+0.07
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.93
+0 1 2 3 4 5 6 7 8 9 10
+Target Class
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10 Output Class
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+Figure 13. Overall performance of HomeOSD.
+Within the confusion matrix depicted in Figure 13, it is evident that the majority
+of appliance operating statuses achieve a recognition accuracy of 100 %. However, the
+recognition accuracy for the washing machine’s washing status is notably lower, at 90.00%.
+This is because, during the washing process, the motor of the washing machine operates in
+a variable-speed state.
+4.3. Effectiveness of the Proposed Design
+In this section, we conduct tests to evaluate how the newly designed Vibration Intensity
+Metric and the AWMDC classifier contribute to system performance improvement.
+Benefits of Vibration Intensity Metric for Appliance Distance Estimation. In previ-
+ous works, two common methods were used to estimate the distance of vibrating objects
+with mmWave radar: the Doppler-based method and the symmetry-based method. The
+Doppler-based method estimates distance based on intensity in the Doppler-FFT, while the
+symmetry-based method leverages the back-and-forth motion of vibrations and considers
+Doppler effects symmetrically in both the forward and reverse directions. However, these
+methods often fail in real-world scenarios due to Doppler effects from human activities.
+Therefore, we use the difference in distance estimation for the same vibrating appliance
+with and without human presence as an error metric to evaluate and judge the effectiveness
+of different methods for appliance distance estimation.
+Figure 14 presents the results for different methods, with mean errors of 0.26 m for
+the Doppler-based method, 0.35 m for the symmetry-based method, and −0.02 m for the
+Vibration Intensity-based method. The standard deviations of errors are 0.43 m, 0.47 m,
+and 0.19 m, respectively. The results indicate that the Vibration Intensity-based method
+outperforms the others in terms of both precision and stability, highlighting its resilience to
+the influence of human activity.
+Doppler-based Symmetry-based VI-based
+Metric
+-0.5
+0
+0.5
+1
+Error (m)
+Figure 14. Error for different distance estimation methods.
+Benefits of Vibration Intensity-Based Feature. Short-Time Fourier Transform (STFT)
+and Power Spectral Density (PSD) are common frequency features, and we compare these
+two features with Vibration Intensity (VI). We feed these three types of features separately
+into common classifiers and calculate classification accuracy. The classifiers used include
+Sensors 2024, 24, 2911 17 of 23
+Support Vector Machine (SVM), Random Forest (RF), Multi-Layer Perceptron (MLP), and
+Residual Neural Network (ResNet). The classification results for different features are
+shown in Figure 15, where the recognition accuracies using STFT and PSD as features are
+below 70%, while the recognition accuracies using Vibration Intensity as a feature exceed
+70%. This demonstrates that Vibration Intensity is more effective than other features.
+STFT PSD VI
+Feature
+0
+0.5
+1
+Accuracy
+SVM
+RF
+MLP
+ResNet
+Figure 15. Recognition accuracy using different features.
+Benefits of the AWMDC: We compare the recognition accuracy and training time
+of our designed AWMDC with other classifiers. As shown in Figure 16, the recognition
+accuracies for SVM, RF, MLP , ResNet, and AWMDC are 88.48%, 70.30%, 94.55%, 90.00%,
+and 98.48%, respectively. Training times are provided in Table 2. It is evident that the
+AWMDC classifier not only achieves the highest recognition accuracy, but also boasts a
+very short training time.
+Table 2. Training time for all classifiers.
+Classifier SVM RF MLP ResNet AWMDC
+Training time (s) 0.01 0.09 1386.32 3506.68 3.75
+In practice, it is essential for classifiers to have short training times, as households
+often introduce new appliances. While SVM and RF have shorter training times, their
+classification accuracy is insufficient. MLP and ResNet offer classification accuracy similar
+to AWMDC but come with significantly longer training times. Overall, AWMDC emerges
+as the optimal classifier.
+SVM RF MLP ReNet AWMDC
+Classifier
+0
+0.5
+1
+Accuracy
+Figure 16. Recognition accuracy using different classifiers.
+Benefits of Introducing Coefficients. To assess the influence of introducing coefficients
+on detection performance, we provide a table demonstrating the system’s recognition accu-
+racy under different values of relaxation and constant weighting coefficients, as depicted
+in Table 3.
+Sensors 2024, 24, 2911 18 of 23
+Table 3. Performance of different introducing coefficients. Coefficient-free result is underlined. Best
+results are bold.
+Constant Weighting Coefficient
+Relaxation Coefficient
+|µ| ≤0 |µ| ≤1 |µ| ≤5 |µ| ≤10 |µ| ≤20
+ω0 = 0.1 96.67% 97.27% 97.58% 97.58% 97.88%
+ω0 = 1 96.67% 97.27% 97.58% 97.58% 97.88%
+ω0 = 5 97.27% 97.27% 98.18% 98.18% 98.48%
+ω0 = 10 97.27% 97.58% 98.18% 98.48% 98.18%
+ω0 = 100 95.76% 93.94% 94.55% 98.48% 94.24%
+ω0 = 1000 92.42% 92.12% 93.33% 72.73% 72.12%
+It is crucial to clarify that, when the absolute maximum value of the relaxation co-
+efficient is 0, this essentially indicates the absence of a relaxation coefficient. Similarly,
+setting the constant weighting coefficient to 1 signifies the non-utilization of such a co-
+efficient. Table 3 demonstrates that, without employing either the relaxation or constant
+weighting coefficients, the recognition accuracy is 96.67%. However, upon integrating both
+coefficients, the maximum achievable recognition accuracy increases to 98.48%. This table
+effectively validates the effectiveness of these two coefficients in our system.
+4.4. Different Micro-Benchmarks
+We undertake a detailed exploration of a series of micro-benchmarks to provide a
+comprehensive understanding of HomeOSD’s performance.
+Performance with Different Orientations: We maintain the positions of the appliances
+while altering their front-facing orientations, as illustrated in Figure 12b. The tested
+orientations include 0 degrees, 45 degrees, 90 degrees, 135 degrees, 180 degrees, 225 degrees,
+270 degrees, and 315 degrees. The corresponding recognition accuracies are 97.88%, 88.48%,
+96.76%, 95.76%, 88.79%, 88.48%, 99.09%, and 89.09%, as shown in Figure 17a. These results
+indicate that, even with changes in the reflective surfaces of the appliances, our system
+maintains a consistently high level of recognition accuracy.
+Performance under Different AoAs: We position the appliances at different angles
+of arrival (AoAs), as depicted in Figure 12c. The recognition accuracies for appliances at
+AoAs of 0 degrees, 10 degrees, 20 degrees, 30 degrees, 40 degrees, and 50 degrees, as shown
+in Figure 17b, are 97.88%, 95.76%, 96.36%, 96.97%, 90.61%, and 86.06%, respectively. We
+observe a slight decrease in recognition accuracy as AoA increases, but it remains at a high
+level within the radar’s Field of View (FOV).
+Performance under Different Distances: We increase the distance of the appliances
+from the radar from 2 m to 7 m, as depicted in Figure 12d. The recognition accuracies at
+different distances, shown in Figure 17c, are 98.48%, 98.48%, 92.12%, 92.42%, 93.03%, and
+89.70% for distances from 2 m to 7 m. Most room lengths do not exceed 7 m, so our system
+is generally effective in typical scenarios.
+Performance under Different Numbers of Apliances: We test the system’s perfor-
+mance when multiple appliances are operating simultaneously. To mitigate interference
+from appliances with larger vibration amplitudes on those with smaller amplitudes, we
+implement a sliding window operation with a 10 s duration, as detailed in Section 3.4.2
+of the field. The results, shown in Figure 17d, indicate recognition accuracies of 94.69 %,
+91.43%, and 96.73% for two, three, and four appliances, respectively. These experiments
+demonstrate that HomeOSD can effectively detect the operating status of multiple appli-
+ances simultaneously.
+Performance under the Interference of Walking: To validate HomeOSD’s ability to
+suppress interference caused by human activity, we test the system’s recognition accuracy
+when people are walking around in the vicinity. The result, as shown in Figure 17e, yields
+a recognition accuracy of 84.55% when there is human activity nearby. This indicates that
+our system can effectively mitigate interference from surrounding human activity.
+Sensors 2024, 24, 2911 19 of 23
+(a)
+0 45 90 135 180 225 270 315
+Orientation (degree)
+0
+0.5
+1
+(b)
+AoA (degree)
+0 10 20 30 40 50
+0
+0.5
+1
+(c)
+2 3 4 5 6 7
+Distance (m)
+0
+0.5
+1
+(d)
+2 3 4
+Appliance Number
+0
+0.5
+1
+(e)
+Nobody Walking
+Different Setting
+0
+0.5
+1
+AccuracyAccuracy
+Figure 17. Performance of different micro-benchmarks. (a) Performance with different orientations;
+(b) Performance under different AoAs; (c) Performance under different distances; (d) Performance
+under different numbers of appliances; (e) Performance under the interference of walking.
+4.5. Performance in the Real World
+To further assess the practical application of our system, we conduct experiments in a
+real-world environment, as illustrated in the deployment setup shown in Figure 11b. We
+test the recognition accuracy under three scenarios: no individuals present, individuals
+seated, and individuals walking. It is worth noting that, to mitigate any potential blockage
+of mmWave propagation between appliances and the radar during human movement, we
+employ a 10 s sliding window during the recognition process, as described in Section 3.4.2
+of the field.
+The results, as depicted in Figure 18, indicate recognition accuracies of 98.98%, 98.98%,
+and 88.78% for the three scenarios, with an average accuracy of 95.58 %. These findings
+highlight the robust performance of HomeOSD in real-world settings.
+Nobody Sitting Walking
+Human Activity
+0
+0.5
+1
+Accuracy
+Figure 18. Performance in real-world scenarios.
+5. Discussion
+Add New Appliances: As shown in Table 2, our classifier merely requires less than a
+minute of data collection for a new appliance and just a few seconds for training. Moreover,
+the number of appliance operating statues to be detected within a single room typically does
+not exceed 10. Thus, our system is well-equipped to handle the addition of new appliances.
+Transportability: Currently, mmWave radar technology finds diverse applications in
+human-activity detection, including gesture recognition, trajectory tracking, gait detection,
+skeleton detection, and so on. HomeOSD effectively categorizes appliance operating status
+independently of human activities, utilizing only data processing while maintaining the
+mmWave radar hardware. Consequently, the HomeOSD can seamlessly integrate with
+existing indoor mmWave radar systems without modification.
+Localization of Appliances in 2-D:HomeOSD possesses the capability to concurrently
+detect the operating statuses of appliances situated at varying distances. Nevertheless,
+under certain exceptional circumstances, multiple appliances may be equidistant from the
+Sensors 2024, 24, 2911 20 of 23
+radar, resulting in HomeOSD’s inability to differentiate them simultaneously. In research
+based on FMCW radar, established methods exist for target-angle detection and acquiring
+the 2-D position of targets. These algorithms can extract IQ domain signals at each 2-D
+position, rendering HomeOSD’s solution directly applicable for 2-D localization.
+Non-Line-of-Sight Detection: HomeOSD relies on capturing mmWave signals that
+are directly reflected by appliances. When an appliance is obstructed by other objects,
+HomeOSD cannot detect its status through Line of Sight (LOS). To address this limitation,
+mmWave radar can be employed to detect appliance vibrations even in Non-Line-of-Sight
+(NLOS) scenarios. Numerous prior studies explore the use of walls as reflective surfaces for
+NLOS detection, including vibration sensing. Consequently, our forthcoming research will
+investigate methods to enhance NLOS detection capabilities within the HomeOSD system.
+Limitations: While we demonstrate that HomeOSD can effectively detect the oper-
+ating status of multiple appliances in real-world scenarios, it still has limitations in the
+following cases:
+1. When appliances and the radar are situated in different rooms, mmWave signals may
+struggle to penetrate all walls, hindering the measurement of appliance vibrations.
+Therefore, a challenge remains in ensuring that a single radar can simultaneously
+detect all appliances throughout an entire house;
+2. In the home, there are many devices without constant vibration frequency, such as a
+faucet. Utilizing HomeOSD to detect devices with irregular vibration periods poses a
+significant challenge.
+To address these limitations, our future work will explore methods to detect the
+status of devices in other rooms by leveraging wall vibrations. For devices lacking specific
+vibration frequencies, such as faucets, we may employ transfer learning techniques to
+detect device status in diverse environmental conditions.
+6. Conclusions
+In this paper, we introduce HomeOSD, a contactless system built on mmWave radar
+technology. HomeOSD excels at simultaneously detecting the operating status of multiple
+appliances without interference from human activity. We propose an innovative metric
+called Vibration Intensity that leverages the periodic characteristics of vibrations, demon-
+strating resilience to interference from surrounding human activities. Additionally, we
+design an AWMDC to identify appliance operating status, and it remains robust against
+fluctuations in appliance vibrations. Remarkably, our system achieves an impressive de-
+tection accuracy of 95.58% in real-world scenarios, even with a limited amount of training
+data. We believe that HomeOSD can leverage mmWave radar technology to efficiently
+detect the operating status of multiple appliances in smart-home environments. Impor-
+tantly, it can seamlessly integrate with existing mmWave radar systems without requiring
+hardware modifications.
+Author Contributions: Conceptualization, Y.S. and J.Z.; methodology, Y.S.; software, Y.S.; validation,
+Y.S., J.L. and J.Z.; formal analysis, Y.S.; investigation, Y.S. and Y.M.; resources, J.Z.; data curation,
+Y.S. and Y.M.; writing—original draft preparation, Y.S.; writing—review and editing, J.L. and J.Z.;
+visualization, J.L. and Y.M.; supervision, J.Z.; project administration, J.Z.; funding acquisition, J.Z. All
+authors have read and agreed to the published version of the manuscript.
+Funding: The research was supported in part by Shenzhen Science and Technology Program (Grant
+No. ZDSYS20210623092007023).
+Institutional Review Board Statement: Not applicable.
+Informed Consent Statement: Not applicable.
+Data Availability Statement: The data presented in this study are available on request from the
+corresponding author.
+Conflicts of Interest: The authors declare no conflicts of interest.
+Sensors 2024, 24, 2911 21 of 23
+References
+1. Jie, Y.; Pei, J.Y.; Jun, L.; Yun, G.; Wei, X. Smart home system based on iot technologies. In Proceedings of the IEEE ICCSISAT,
+Shiyang, China, 21–23 June 2013; pp. 1789–1791.
+2. Alaa, M.; Zaidan, A.A.; Zaidan, B.B.; Talal, M.; Kiah, M.L.M. A review of smart home applications based on Internet of Things. J.
+Netw. Comput. Appl. 2017, 97, 48–65. [CrossRef]
+3. Cviti´ c, I.; Perakovi´ c, D.; Periša, M.; Gupta, B. Ensemble machine learning approach for classification of IoT devices in smart home.
+Int. J. Mach. Learn. Cybern. 2021, 12, 3179–3202. [CrossRef]
+4. Musleh, A.S.; Debouza, M.; Farook, M. Design and implementation of smart plug: An Internet of Things (IoT) approach. In
+Proceedings of the International Conference on Electrical and Computing Technologies and Applications (ICECTA), Ras Al
+Khaimah, United Arab Emirates, 21–23 November 2017; pp. 1–4.
+5. Lee, Y.; Jiang, J.; Underwood, G.; Sanders, A.; Osborne, M. Smart power-strip: Home automation by bringing outlets into the IoT.
+In Proceedings of the 8th Annual Ubiquitous Computing, Electronics and Mobile Communication Conference (UEMCON), New
+York, NY, USA, 19–21 October 2017; pp. 127–130.
+6. Zhai, S.; Wang, Z.; Yan, X.; He, G. Appliance flexibility analysis considering user behavior in home energy management system
+using smart plugs. IEEE Trans. Ind. Electron. 2018, 66, 1391–1401. [CrossRef]
+7. Schirmer, P .A.; Mporas, I. Non-intrusive load monitoring: A review. IEEE Trans. Smart Grid 2022, 14, 769–784. [CrossRef]
+8. Todic, T.; Stankovic, V .; Stankovic, L. An active learning framework for the low-frequency Non-Intrusive Load Monitoring
+problem. Appl. Energy 2023, 341, 121078. [CrossRef]
+9. Huber, P .; Calatroni, A.; Rumsch, A.; Paice, A. Review on deep neural networks applied to low-frequency nilm.Energies 2021,
+14, 2390. [CrossRef]
+10. Ciancetta, F.; Bucci, G.; Fiorucci, E.; Mari, S.; Fioravanti, A. A new convolutional neural network-based system for NILM
+applications. IEEE Trans. Instrum. Meas. 2020, 70, 1–12. [CrossRef]
+11. Zhang, Y.; Laput, G.; Harrison, C. Vibrosight: Long-range vibrometry for smart environment sensing. In Proceedings of the 31st
+Annual ACM Symposium on User Interface Software and Technology, Berlin, Germany, 14–17 October 2018; pp. 225–236.
+12. Sun, W.; Chen, T.; Zheng, J.; Lei, Z.; Wang, L.; Steeper, B.; He, P .; Dressa, M.; Tian, F.; Zhang, C. VibroSense: Recognizing
+Home Activities by Deep Learning Subtle Vibrations on an Interior Surface of a House from a Single Point Using Laser Doppler
+Vibrometry. Proc. Acm Interact. Mob. Wearable Ubiquitous Technol. 2020, 4, 1–28. [CrossRef]
+13. Wang, Z.; Sarker, A.; Wu, J.; Hua, D.; Dong, G.; Singh, A.D.; Srivastava, M. Capricorn: Towards Real-Time Rich Scene Analysis
+Using RF-Vision Sensor Fusion. In Proceedings of the 20th ACM Conference on Embedded Networked Sensor Systems, Boston,
+MA, USA, 6–9 November 2022; pp. 334–348.
+14. Tonolini, F.; Adib, F. Networking across boundaries: Enabling wireless communication through the water-air interface. In
+Proceedings of the 2018 Conference of the ACM Special Interest Group on Data Communication, Budapest, Hungary, 20–25
+August 2018; pp. 117–131.
+15. Xu, C.; Li, Z.; Zhang, H.; Rathore, A.S.; Li, H.; Song, C.; Wang, K.; Xu, W. Waveear: Exploring a mmwave-based noise-resistant
+speech sensing for voice-user interface. In Proceedings of the 17th ACM International Conference on Mobile Systems, Applications,
+and Services, Seoul, Republic of Korea, 17–21 June 2019; pp. 14–26.
+16. Jiang, C.; Guo, J.; He, Y.; Jin, M.; Li, S.; Liu, Y. mmVib: Micrometer-level vibration measurement with mmwave radar. In
+Proceedings of the 18th ACM International Conference on Mobile Systems, Applications, and Services, Toronto, ON, Canada, 19
+June 2020; pp. 1–13.
+17. Guo, J.; Jin, M.; He, Y.; Wang, W.; Liu, Y. Dancing Waltz with Ghosts: Measuring Sub-mm-Level 2D Rotor Orbit with a Single
+mmWave Radar. In Proceedings of the International Conference on Information Processing in Sensor Networks, Nashville, TN,
+USA, 18–21 May 2021; pp. 77–92.
+18. Chen, W.; Guan, M.; Huang, Y.; Wang, L.; Ruby, R.; Hu, W.; Wu, K. Vitype: A cost efficient on-body typing system through
+vibration. In Proceedings of the 2018 15th Annual IEEE International Conference on Sensing, Communication, and Networking
+(SECON), Hong Kong, China, 11–13 June 2018; pp. 1–9.
+19. Wang, Y.Q. Electro-mechanical vibration analysis of functionally graded piezoelectric porous plates in the translation state.Acta
+Astronaut. 2018, 143, 263–271. [CrossRef]
+20. Liu, J.; Wang, C.; Chen, Y.; Saxena, N. Vibwrite: Towards finger-input authentication on ubiquitous surfaces via physical vibration.
+In Proceedings of the ACM Conference on Computer and Communications Security (CCS), Dallas, TX, USA, 30 October–3
+November 2017; pp. 73–87.
+21. Peng, S.; Lv, T.; Han, X.; Wu, S.; Yan, C.; Zhang, H. Remote speaker recognition based on the enhanced LDV-captured speech.
+Appl. Acoust. 2019, 143, 165–170. [CrossRef]
+22. Sami, S.; Dai, Y.; Tan, S.R.X.; Roy, N.; Han, J. Spying with your robot vacuum cleaner: Eavesdropping via lidar sensors. In
+Proceedings of the 18th ACM Conference on Embedded Networked Sensor Systems, Yokohama, Japan, 16–19 November 2020;
+pp. 354–367.
+23. Castellini, P .; Martarelli, M.; Tomasini, E.P . Laser Doppler Vibrometry: Development of advanced solutions answering to
+technology’s needs. Mech. Syst. Signal Process. 2006, 20, 1265–1285. [CrossRef]
+24. Scalise, L.; Yu, Y.; Giuliani, G.; Plantier, G.; Bosch, T. Self-mixing laser diode velocimetry: Application to vibration and velocity
+measurement. IEEE Trans. Instrum. Meas. 2004, 53, 223–232. [CrossRef]
+Sensors 2024, 24, 2911 22 of 23
+25. Gorjup, D.; Slaviˇ c, J.; Boltežar, M. Frequency domain triangulation for full-field 3D operating-deflection-shape identification.
+Mech. Syst. Signal Process. 2019, 133, 106287. [CrossRef]
+26. SoleimaniBabakamali, M.; Moghadam, A.; Sarlo, R.; Hebdon, M.; Harvey, P . Mast arm monitoring via traffic camera footage: A
+pixel-based modal analysis approach. Exp. Tech. 2021, 45, 329–343. [CrossRef]
+27. Lee, J.; Lee, K.C.; Jeong, S.; Lee, Y.J.; Sim, S.H. Long-term displacement measurement of full-scale bridges using camera ego-motion
+compensation. Mech. Syst. Signal Process. 2020, 140, 106651. [CrossRef]
+28. Khadka, A.; Fick, B.; Afshar, A.; Tavakoli, M.; Baqersad, J. Non-contact vibration monitoring of rotating wind turbines using a
+semi-autonomous UAV .Mech. Syst. Signal Process. 2020, 138, 106446. [CrossRef]
+29. Yang, L.; Li, Y.; Lin, Q.; Jia, H.; Li, X.Y.; Liu, Y. Tagbeat: Sensing mechanical vibration period with cots rfid systems.IEEE/ACM
+Trans. Netw. 2017, 25, 3823–3835. [CrossRef]
+30. Duan, C.; Yang, L.; Lin, Q.; Liu, Y.; Xie, L. Robust spinning sensing with dual-rfid-tags in noisy settings. IEEE Trans. Mob. Comput.
+2018, 18, 2647–2659. [CrossRef]
+31. Li, P .; An, Z.; Yang, L.; Yang, P . Towards physical-layer vibration sensing with rfids. In Proceedings of the IEEE INFOCOM
+2019—IEEE Conference on Computer Communications, Paris, France, 29 April–2 May 2019; pp. 892–900.
+32. Yang, P .; Feng, Y.; Xiong, J.; Chen, Z.; Li, X.Y. RF-Ear: Contactless Multi-device Vibration Sensing and Identification Using COTS
+RFID. In Proceedings of the IEEE Conference on Computer Communications, Toronto, ON, Canada, 6–9 July 2020; pp. 297–306.
+33. Xie, B.; Xiong, J.; Chen, X.; Fang, D. Exploring commodity RFID for contactless sub-millimeter vibration sensing. In Proceedings
+of the 18th ACM Conference on Embedded Networked Sensor Systems, Yokohama, Japan, 16–19 November 2020; pp. 15–27.
+34. Caldero, P .; Zoeke, D. Multi-channel real-time condition monitoring system based on wideband vibration analysis of motor shafts
+using SAW RFID tags coupled with sensors. Sensors 2019, 19, 5398. [CrossRef]
+35. Fernandes, J.R.; Wentzloff, D. Recent advances in IR-UWB transceivers: An overview. In Proceedings of the 2010 IEEE International
+Symposium on Circuits and Systems, Paris, France, 30 May–2 June 2010; pp. 3284–3287.
+36. Lazaro, A.; Girbau, D.; Villarino, R. Analysis of vital signs monitoring using an IR-UWB radar. Prog. Electromagn. Res. 2010, 100,
+265–284. [CrossRef]
+37. Yang, D.; Zhu, Z.; Zhang, J.; Liang, B. The overview of human localization and vital sign signal measurement using handheld
+IR-UWB through-wall radar. Sensors 2021, 21, 402. [CrossRef] [PubMed]
+38. Choi, S.H.; Yoon, H. Convolutional neural networks for the real-time monitoring of vital signs based on impulse radio ultrawide-
+band radar during sleep. Sensors 2023, 23, 3116. [CrossRef] [PubMed]
+39. Zhang, J.; Qi, Q.; Cheng, H.; Sun, L.; Liu, S.; Wang, Y.; Jia, X. A multi-target localization and vital sign detection method using
+ultra-wide band radar. Sensors 2023, 23, 5779. [CrossRef] [PubMed]
+40. Wang, Z.; Chen, Z.; Singh, A.D.; Garcia, L.; Luo, J.; Srivastava, M.B. Uwhear: Through-wall extraction and separation of audio
+vibrations using wireless signals. In Proceedings of the 18th ACM Conference on Embedded Networked Sensor Systems,
+Yokohama, Japan, 16–19 November 2020; pp. 1–14.
+41. Yuan, S.; Fan, S.; Deng, Z.; Pan, P . Heart Rate Variability Monitoring Based on Doppler Radar Using Deep Learning.Sensors 2024,
+24, 2026. [CrossRef] [PubMed]
+42. Fan, S.; Deng, Z. Chest Wall Motion Model of Cardiac Activity for Radar-Based Vital-Sign-Detection System.Sensors 2024, 24, 2058.
+[CrossRef] [PubMed]
+43. Li, H.; Xu, C.; Rathore, A.S.; Li, Z.; Zhang, H.; Song, C.; Wang, K.; Su, L.; Lin, F.; Ren, K.; et al. VocalPrint: Exploring a resilient
+and secure voice authentication via mmWave biometric interrogation. In Proceedings of the 18th ACM Conference on Embedded
+Networked Sensor Systems, Yokohama, Japan, 16–19 November 2020; pp. 312–325.
+44. Liu, T.; Gao, M.; Lin, F.; Wang, C.; Ba, Z.; Han, J.; Xu, W.; Ren, K. Wavoice: A noise-resistant multi-modal speech recognition
+system fusing mmwave and audio signals. In Proceedings of the 19th ACM Conference on Embedded Networked Sensor Systems,
+Coimbra, Portugal, 15–17 November 2021; pp. 97–110.
+45. Wang, C.; Lin, F.; Ba, Z.; Zhang, F.; Xu, W.; Ren, K. Wavesdropper: Through-wall Word Detection of Human Speech via
+Commercial mmWave Devices. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 2022, 6, 77. [CrossRef]
+46. Zhang, J.; Zhou, Y.; Xi, R.; Li, S.; Guo, J.; He, Y. Ambiear: Mmwave based voice recognition in nlos scenarios.Proc. Acm Interact.
+Mob. Wearable Ubiquitous Technol. 2022, 6, 151. [CrossRef]
+47. Basak, S.; Gowda, M. mmspy: Spying phone calls using mmwave radars. In Proceedings of the 2022 IEEE Symposium on Security
+and Privacy (SP), San Francisco, CA, USA, 22–26 May 2022; pp. 1211–1228.
+48. Hu, P .; Li, W.; Ma, Y.; Santhalingam, P .S.; Pathak, P .; Li, H.; Zhang, H.; Zhang, G.; Cheng, X.; Mohapatra, P . Towards Unconstrained
+Vocabulary Eavesdropping With Mmwave Radar Using GAN.IEEE Trans. Mob. Comput. 2022, 23, 941–954 [CrossRef]
+49. Hu, P .; Ma, Y.; Santhalingam, P .S.; Pathak, P .H.; Cheng, X. Milliear: Millimeter-wave acoustic eavesdropping with unconstrained
+vocabulary. In Proceedings of the IEEE INFOCOM 2022—IEEE Conference on Computer Communications, London, UK, 2–5
+May 2022; pp. 11–20.
+50. Feng, Y.; Zhang, K.; Wang, C.; Xie, L.; Ning, J.; Chen, S. mmeavesdropper: Signal augmentation-based directional eavesdropping
+with mmwave radar. In Proceedings of the IEEE INFOCOM 2023—IEEE Conference on Computer Communications, New York,
+NY, USA, 17–20 May 2023; pp. 1–10.
+51. Hu, P .; Li, W.; Spolaor, R.; Cheng, X. mmecho: A mmwave-based acoustic eavesdropping method. In Proceedings of the 2023
+IEEE Symposium on Security and Privacy (SP), San Francisco, CA, USA, 21–25 May 2023; pp. 138–140.
+Sensors 2024, 24, 2911 23 of 23
+52. Ding, L.; Ali, M.; Patole, S.; Dabak, A. Vibration parameter estimation using FMCW radar. In Proceedings of the 2016 IEEE Inter-
+national Conference on Acoustics, Speech and Signal Processing (ICASSP), Shanghai, China, 20–25 March 2016; pp. 2224–2228.
+53. Shanbhag, H.; Madani, S.; Isanaka, A.; Nair, D.; Gupta, S.; Hassanieh, H. Contactless Material Identification with Millimeter Wave
+Vibrometry. In Proceedings of the 21st Annual International Conference on Mobile Systems, Applications and Services, Helsinki,
+Finland, 18–22 June 2023; pp. 475–488.
+54. Li, S.; Xiong, Y.; Zhou, P .; Ren, Z.; Peng, Z. mmPhone: Sound Recovery Using Millimeter-Wave Radios With Adaptive Fusion
+Enhanced Vibration Sensing. IEEE Trans. Microw. Theory Tech. 2022, 70, 4045–4055. [CrossRef]
+55. Li, S.; Xiong, Y.; Shen, X.; Peng, Z. Multi-scale and full-field vibration measurement via millimetre-wave sensing. Mech. Syst.
+Signal Process. 2022, 177, 109178. [CrossRef]
+56. Yang, Y.; Xu, H.; Chen, Q.; Cao, J.; Wang, Y. Multi-Vib: Precise Multi-point Vibration Monitoring Using mmWave Radar.Proc.
+Acm Interact. Mob. Wearable Ubiquitous Technol. 2023, 6, 192. [CrossRef]
+57. Rice, S.O. Mathematical analysis of random noise. Bell Syst. Tech. J. 1944, 23, 282–332. [CrossRef]
+58. Garmatyuk, D.S.; Narayanan, R.M. ECCM capabilities of an ultrawideband bandlimited random noise imaging radar. IEEE Trans.
+Aerosp. Electron. Syst. 2002, 38, 1243–1255. [CrossRef]
+59. Lee, I.S.; Park, J.H.; Yang, J.R. Detrending technique for denoising in CW radar. Sensors 2021, 21, 6376. [CrossRef] [PubMed]
+60. Lin, H.; Venetsanopoulos, A. A weighted minimum distance classifier for pattern recognition. In Proceedings of the Canadian
+Conference on Electrical and Computer Engineering, Vancouver, BC, Canada, 14–17 September 1993; pp. 904–907.
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.

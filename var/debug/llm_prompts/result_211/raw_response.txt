@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "Wireless signals have also been exploited by researchers for sound recovery [8]–[13]. Hu et al. [11] introduced mmEcho, which uses mmWave to measure vibrations for eavesdropping, while Hu et al. [10] developed MILLIEAR, which reconstructs audio from vibrations using generative models. Wei et al. [9] demonstrated acoustic eavesdropping using WiFi signals, and Wang et al. [12] expanded eavesdropping through Impulse Radio Ultra-Wideband (IR-UWB) technology with their UWHear system. RFID-based methods have also been explored, with Wang et al. [13] showing how audio can be intercepted via RFID.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The target paper [13] is cited in a related work survey of wireless signal-based eavesdropping. The citing paper describes the target as an RFID-based method for audio interception but does not attribute any specific capability like sub-mm level vibration. The mention is part of a general overview of existing methods, making it background evidence.",
+      "highlight_keywords": ["RFID-based", "audio intercepted via RFID", "Wang et al. [13]"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Template 73 requires explicit sub-mm or millimeter-level precision wording. This context does not mention sub-mm, submillimeter, or fine-grained vibration. It is a plain RFID eavesdropping mention in a related work survey, which does not satisfy the precision requirement.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit sub-mm or millimeter-level precision wording in the body text. The mention is ordinary RFID related work, not a claim of sub-mm capability."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "target_reference_marker": "[15]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proc. of ACM IMWUT, 2021.",
+  "paper_level_summary_zh": "引用论文将目标论文[15]作为RFID穿墙窃听能力的代表性相关工作，在介绍RFID隐私威胁时引用，并未对目标论文进行具体描述或使用其方法。",
+  "evidences": [
+    {
+      "recommendation": "include",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "researchers have demonstrated the feasibility of using commodity RFID devices for through-wall eavesdropping [15, 17].",
+      "evidence_context": "In addition, researchers have demonstrated the feasibility of using commodity RFID devices for through-wall eavesdropping [15, 17]. Thus, it is crucial to implement privacy measures to secure RFID sensing systems.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proc. of ACM IMWUT, 2021.",
+      "why_this_judgment_zh": "正文明确使用[15]来证明RFID穿墙窃听的可行性，且目标论文标题包含'Thru-the-wall Eavesdropping'，但未提及亚毫米级精度。属于能力认可，但未明确涉及sub-mm精度。",
+      "copy_ready_zh": "引用论文指出RFID穿墙窃听已被研究者证明可行，并将[15]列为代表性工作。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "when the adversary snoops on the RFID tags outside or inside the target room, the original walking and respiration motion signals are obfuscated.",
+      "evidence_context": "Thus, with signal variations caused by the metasurface stronger than those from the human body, we can hide the human motion pattern from leakage. As depicted in Fig. 1, by applying RF NOID, no matter whether the adversary snoops on the RFID tags outside or inside the target room, the original walking and respiration motion signals are obfuscated.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proc. of ACM IMWUT, 2021.",
+      "why_this_judgment_zh": "该引文未引用任何文献标记，仅描述RF NOID自身功能，不涉及目标论文。",
+      "copy_ready_zh": "该段未引用目标论文。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Current defenses to communication eavesdropping, such as channel randomization [20], require customized RFID readers, making them incompatible with existing systems.",
+      "evidence_context": "However, existing literature lacks an efficient way to safeguard RFID motion sensing. Current defenses to communication eavesdropping, such as channel randomization [20], require customized RFID readers, making them incompatible with existing systems.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proc. of ACM IMWUT, 2021.",
+      "why_this_judgment_zh": "引用标记[20]对应的是Hassanieh等人的论文，非目标论文[15]，属于误匹配。",
+      "copy_ready_zh": "该引文引用的是其他文献，非目标论文。",
+      "confidence": "high"
+    }
+  ]
+}

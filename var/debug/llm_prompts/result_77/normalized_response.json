@@ -1,0 +1,37 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Moreover, MoiréVision [40] introduces a generalized 6-DoF motion sensing mechanism based on moiré patterns, addressing the limitations of traditional moiré-based methods under perspective distortion and dimensional interference. Compared with our acoustic-based approach, MoiréVision is camera-dependent and may be sensitive to lighting and occlusion, while our system ensures privacy and robustness in visually constrained environments. These complementary characteristics highlight different design trade-offs in high-precision 6-DoF tracking.",
+      "reasoning": "The context is from the Related Works section, where MoiréVision is cited as a representative CV-based method. It describes the mechanism and limitations (camera-dependent, sensitive to lighting/occlusion) in contrast to the citing paper's acoustic approach, serving as background and positioning.",
+      "keywords": [
+        "MoiréVision",
+        "camera-dependent",
+        "sensitive to lighting and occlusion",
+        "privacy",
+        "robustness"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Moreover, MoiréVision [40] introduces a generalized 6-DoF motion sensing mechanism based on moiré patterns, addressing the limitations of traditional moiré-based methods under perspective distortion and dimensional interference. Compared wi...",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "The context is from the Related Works section, where MoiréVision is cited as a representative CV-based method. It describes the mechanism and limitations (camera-dependent, sensitive to lighting/occlusion) in contrast to the citing paper's acoustic approach, serving as background and positioning.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

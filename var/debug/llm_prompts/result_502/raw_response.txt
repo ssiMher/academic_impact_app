@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+  "paper_level_summary_zh": "该引用论文在正文中两次标记[23]：一次是定义里德伯原子时作为普适参考，另一次是在推导量子传感原理时引用薛定谔方程。两次引用均为对里德伯原子知识的通用引用，未提及目标论文的RFID亚毫米振动感知能力、穿墙窃听等具体贡献。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "evidence_context": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23]. We observe several unique advantages of applying a quantum receiver [41] for sensing, compared to a conventional RF receiver.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "该引用仅为对里德伯原子的通用定义引用，与目标论文的RFID亚毫米振动感知、穿墙窃听等核心贡献无关。属于假阳性。",
+      "copy_ready_zh": "引用论文在定义里德伯原子时引用[23]，但该引用仅为里德伯原子知识的一般性参考，未涉及目标论文的具体工作。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "evidence_context": "From the macroscopic perspective, conventional receivers receive RF signals using antennas. From the microscopic perspective, quantum receiver received RF signals using the electron energy transition of atoms. Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "该引用仅作为薛定谔方程的通用物理参考，未涉及目标论文的任何具体贡献。属于假阳性。",
+      "copy_ready_zh": "引用论文在讲述量子传感原理时引用薛定谔方程[23]，但该引用仅为通用物理原理引用，与目标论文的核心工作无关。",
+      "confidence": "high"
+    }
+  ]
+}

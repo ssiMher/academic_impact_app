@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim's room. Compared to our approach, these works relying on low resolution traffic data due to lower frequencies and packet rates. Also, they require a multi-antenna setup to localize victims and thus result in larger physical footprint compared to mmWave, making the attack more difficult to be carried out in practice.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper groups RFID [15] with Doppler radar [19] as related eavesdropping works, noting limitations such as low resolution, multi-antenna requirement, and difficulty in practice. This is a related work listing with comparative critique, not a detailed method foundation. The mention of 'sub-mm level vibration' is not explicit in this context, so template 73 is not satisfied.",
+      "highlight_keywords": ["RFID", "eavesdropping", "low resolution", "multi-antenna"],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "No template satisfied because the context does not explicitly confirm sub-mm vibration capability, nor does it use first/pioneering language.",
+      "template_satisfied": false,
+      "template_failure_reason": "For template 73: The text mentions RFID but does not state 'sub-mm' or 'millimeter-level' vibration. It is a grouped citation with negative stance, so not a precision_claim or capability_recognition. For template 74: No explicit first/pioneering language."
+    }
+  ]
+}

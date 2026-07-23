@@ -1,0 +1,13 @@
+{% macro status_badge(value) -%}
+  {% set text = value or "unknown" %}
+  {% set normalized = text|string|lower %}
+  {% set cls = "badge-muted" %}
+  {% if normalized in ["succeeded", "ok", "ready", "manual_pdf", "local_library_pdf", "reused_pdf", "analyzed", "accepted", "important", "third_party", "not_self_citation", "strong", "exists", "enabled"] %}
+    {% set cls = "badge-success" %}
+  {% elif normalized in ["pending", "running", "created", "selected", "need_pdf", "unreviewed", "ambiguous", "moderate", "grouped_citation"] %}
+    {% set cls = "badge-warning" %}
+  {% elif normalized in ["failed", "cancelled", "interrupted", "rejected", "false_positive", "self_citation", "not_third_party", "weak", "missing", "disabled"] %}
+    {% set cls = "badge-danger" %}
+  {% endif %}
+  <span class="badge {{ cls }}">{{ text }}</span>
+{%- endmacro %}

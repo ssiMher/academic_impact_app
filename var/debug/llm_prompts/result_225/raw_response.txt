@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "excluded are the technical papers which adopted generative models for data augmentation [49, 59], synthesizing [37], and complement [97].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citation is in a grouped citation with other references, listing papers that use generative models for technical purposes (data augmentation, synthesizing, complement). The target marker [97] appears in a list of excluded papers. The context does not provide any specific description of the target paper's content; it only mentions that it was excluded. No detailed discussion of the target paper's method or claims is present. The mention is neutral and the evidence type is background. Attribution uncertainty exists because it's unclear which specific technical purpose [97] corresponds to.",
+      "highlight_keywords": ["excluded", "technical papers", "complement", "[97]"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The citation includes [97] but does not mention sub-mm, RFID, vibration, or any specific capability of the target paper. It only groups it with other technical papers. Thus, template 73 (rfid_submm_capability) is not satisfied because no keywords or patterns related to sub-mm RFID or vibration sensing appear in the body text.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit mention of sub-mm, RFID, vibration, loudspeaker, eavesdropping, or any specific sensing capability. The citation is merely a grouped listing of excluded papers without context describing the target paper's capabilities."
+    },
+    {
+      "citation_text": "excluded are the technical papers which adopted generative models for data augmentation [49, 59], synthesizing [37], and complement [97].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citation is in a grouped citation with other references, listing papers that use generative models for technical purposes (data augmentation, synthesizing, complement). The target marker [97] appears in a list of excluded papers. The context does not provide any specific description of the target paper's content; it only mentions that it was excluded. No detailed discussion of the target paper's method or claims is present. The mention is neutral and the evidence type is background. Attribution uncertainty exists because it's unclear which specific technical purpose [97] corresponds to.",
+      "highlight_keywords": ["excluded", "technical papers", "complement", "[97]"],
+      "keep": true,
+      "matched_template_ids": [74],
+      "template_match_reason": "The citation does not contain any first/pioneering claim. It just lists [97] among excluded papers. Template 74 is not satisfied because there is no wording like 'first' or 'pioneering'.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit first/pioneering claim in the body text."
+    }
+  ]
+}

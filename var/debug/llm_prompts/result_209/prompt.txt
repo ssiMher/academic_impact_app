@@ -1,0 +1,2381 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Evaluate ACTIVE_EVIDENCE_TEMPLATES for every finding. Include matched_template_ids, template_match_reason, template_satisfied, and template_failure_reason. If a template is relevant but not satisfied, explain why.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true,
+      "matched_template_ids": [1],
+      "template_match_reason": "why this quote satisfies an active template",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: {EchoLLM}:{LLM-Augmented} Acoustic Eavesdropping Attack on Bone Conduction Headphones with {mmWave} Radar
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [43]
+TARGET_REFERENCE_ENTRY: [43] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingy-
+ing Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-
+the-wall eavesdropping on loudspeakers via RFID by
+Capturing Sub-mm Level Vibration. Proceedings of the
+ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies, 5(4):1–25, Dec. 2021.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=Tag-Bug; context_type=formula_nearby; contains_formula=True
+ies. Representative
+acoustic eavesdropping studies are summarized in Table 1.
+1https://reports.valuates.com/market-reports/
+QYRE-Auto-30C2794/global-boneconduction-headphones
+USENIX Association 34th USENIX Security Symposium    6619
+Table 1: Comparison of acoustic eavesdropping attacks.
+Sensors
+Acoustic
+Eavesdropping
+Attack
+CapabilityNon-Invasive
+Through-wall (Opaq.)
+Unconstrained V ocab.
+Context-aware
+Multi-modal Fusion
+Motion Sen.
+AccelWord [53]
+PitchIn [12]
+AccelEve [4]
+Speechless [2]
+Gyrophone [32]
+Optical Rec.
+Visual Micro. [9]
+LidarPhone [38]
+Lamphone [34]
+Radio Rec.
+WiHear [44]
+Tag-Bug [43]
+WaveEar [49]
+MILLIEAR [18]
+mmSpy [6]
+mmEcho [17]
+mmWave-Whisper [7]
+Radio Rec.
++ Mic. EchoLLM (our work)
+In this work, we propose a new acoustic eavesdropping
+attack, EchoLLM, leveraging a mmWave radar and large lan-
+guage model (LLM). In particular, the adversary aims to re-
+cover the audio contents from a bone conduction headphone
+the victim wears. We outline the research goals of the pro-
+posed attack in the following.
+(1) Context-aware eavesdropping.In real-world scenar-
+ios, such as phone calls or video conferences, users not only
+listen to others’ voice through devices like bone conduct
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+This paper is included in the Proceedings of the 
+34th USENIX Security Symposium.
+August 13–15, 2025 • Seattle, WA, USA
+978-1-939133-52-6
+Open access to the Proceedings of the 
+34th USENIX Security Symposium is sponsored by USENIX.
+EchoLLM: LLM-Augmented Acoustic Eavesdropping 
+Attack on Bone Conduction Headphones 
+with mmWave Radar
+Xin Yao and Kecheng Huang, Central South University; Yimin Chen, 
+University of Massachusetts Lowell; Jiawei Guo, Jie Tang, 
+and Ming Zhao, Central South University
+https://www.usenix.org/conference/usenixsecurity25/presentation/yao-xin
+EchoLLM: LLM-Augmented Acoustic Eavesdropping Attack on Bone Conduction
+Headphones with mmWave Radar
+Xin Yao1, Kecheng Huang1,∗, Yimin Chen2,∗, Jiawei Guo1, Jie Tang1, and Ming Zhao1
+1 School of Computer Science and Engineering, Central South University, China
+2 Miner School of Computer & Information Sciences, University of Massachusetts Lowell, USA
+∗ Corresponding authors
+{xinyao, kechenghuang, jiaweiguo, jietangcc, meanzhao}@csu.edu.cn, Ian_Chen@uml.edu
+Abstract
+Bone conduction headphones have gained popularity due to
+their comfort and versatility, as they transmit sound via vibra-
+tions through the user’s skull bones rather than the eardrums.
+However, the transmitted audio may contain sensitive infor-
+mation, posing serious privacy risks if intercepted by unau-
+thorized parties. While prior research has explored acoustic
+eavesdropping attacksvia side channels such as millimeter
+wave (mmWave) radar, existing methods remain constrained
+by limited generalizability and degraded reconstruction qual-
+ity. In this paper, we propose EchoLLM, the ﬁrst mmWave-
+based eavesdropping attack speciﬁcally targeting the semantic
+content of audio transmitted through a victim’s bone conduc-
+tion headphones. EchoLLM exploits the fact that audio signals
+in bone conduction headphones are transmitted as mechani-
+cal vibrations, which can be captured as a side channel. The
+attack is designed to be context-aware, target-aware, low-cost,
+and robust. To improve automatic speech recognition (ASR)
+under weak mmWave signals, EchoLLM introduces a novel
+multi-modal speech recognition model that leverages the vic-
+tim’s own speech as contextual input for better ASR accuracy.
+To provide higher-quality input to the multi-modal model,
+EchoLLM incorporates signal enhancement techniques such
+as target identiﬁcation and background reﬂection reduction.
+Our experiments show that EchoLLM achieves a word error
+rate (WER) as low as 5.23%, and conﬁrm that it can effectively
+reconstruct the content from the audio transmitted through a
+targeted bone conduction headphone under realistic scenarios.
+1 Introduction
+Bone conduction headphones transmit audio through the
+user’s skull bones rather than the eardrums, offering a more
+comfortable and ﬂexible listening experience. Unlike tradi-
+tional headsets, bone conduction headphones are worn on the
+cheekbones instead of inserted into ear canals. As a result,
+they have rapidly gained popularity and captured a signiﬁcant
+share of the global headphone market. According to Valuates
+Reports1, the global market for bone conduction headphones
+is projected to grow from $1.07 billion in 2024 to over $3.67
+billion by 2030, with a compound annual growth rate (CAGR)
+of 22.8%, which substantially exceeds the 3.7% CAGR of
+the overall global headphone market. However, the increasing
+use of bone conduction headphones in crowded public envi-
+ronments (e.g., subways, ofﬁces) has raised privacy concerns,
+as audio output from these devices may inadvertently expose
+sensitive information. For example, a caller wearing bone
+conduction headphones may receive a phone call in which
+the callee replies, “Y our appointment is conﬁrmed for 3PM at
+the cardiology clinic.” If such response content is intercepted
+via acoustic eavesdropping attacks, it could lead to severe
+breaches of appointment and location privacy.
+Various acoustic eavesdropping attacks have been pro-
+posed in recent literature to extract sensitive information
+from victims’ audio devices. These attacks typically ex-
+ploit the physical phenomenon that sound emitted by ac-
+tive sources (e.g., speakers, human vocal tracts) induces sub-
+tle vibrations either directly on the emitting surface or in-
+directly on nearby objects (e.g., tables, light bulbs). Such
+vibrations can be sensed and analyzed using photoelectric sen-
+sors [9,30,33,34,38,51], ultrasonic sensors [20,22,24,40,54],
+and other sensor modalities [2, 4, 12, 32, 44, 46, 53]. Recently,
+compact and low-cost millimeter-wave (mmWave) radars
+have emerged as promising tools for acoustic eavesdropping
+attacks [6,10,13,17,18,26,28,35,41,49], owing to their high
+sensitivity and capability to detect subtle vibrations. However,
+existing attacks exhibit two notable limitations. First, they
+often assume that the target audio comprises predeﬁned cat-
+egorical content (e.g., letters or digits), and that the attacker
+possesses prior knowledge of these categories. Second, they
+suffer from limited generalizability due to their dependence on
+stable reﬂective surfaces (e.g., smartphone back panels), their
+inability to handle context-dependent speech, and their lack
+of multimodal data integration capabilities. Representative
+acoustic eavesdropping studies are summarized in Table 1.
+1https://reports.valuates.com/market-reports/
+QYRE-Auto-30C2794/global-boneconduction-headphones
+USENIX Association 34th USENIX Security Symposium    6619
+Table 1: Comparison of acoustic eavesdropping attacks.
+Sensors
+Acoustic
+Eavesdropping
+Attack
+CapabilityNon-Invasive
+Through-wall (Opaq.)
+Unconstrained V ocab.
+Context-aware
+Multi-modal Fusion
+Motion Sen.
+AccelWord [53]
+PitchIn [12]
+AccelEve [4]
+Speechless [2]
+Gyrophone [32]
+Optical Rec.
+Visual Micro. [9]
+LidarPhone [38]
+Lamphone [34]
+Radio Rec.
+WiHear [44]
+Tag-Bug [43]
+WaveEar [49]
+MILLIEAR [18]
+mmSpy [6]
+mmEcho [17]
+mmWave-Whisper [7]
+Radio Rec.
++ Mic. EchoLLM (our work)
+In this work, we propose a new acoustic eavesdropping
+attack, EchoLLM, leveraging a mmWave radar and large lan-
+guage model (LLM). In particular, the adversary aims to re-
+cover the audio contents from a bone conduction headphone
+the victim wears. We outline the research goals of the pro-
+posed attack in the following.
+(1) Context-aware eavesdropping.In real-world scenar-
+ios, such as phone calls or video conferences, users not only
+listen to others’ voice through devices like bone conduction
+headphones but also respond by speaking. When reconstruct-
+ing audio from a victim’s device (e.g., a bone conduction
+headphone) during an attack, we expect that the victim’s re-
+sponse can provide the crucial semantic context that signiﬁ-
+cantly enhances the attack. In the proposed attack, we intend
+to exploit such a semantic context effectively.
+(2) Robust attack with multi-modal fusion.A robust
+eavesdropping attack in our targeted scenarios needs to coun-
+teract the adverse effects of various factors such as complex
+attack environments. We thus design our attack with a multi-
+modal fusion feature that combines two data sources together:
+one from the mmWave radar aiming at the victim’s head-
+phone and the other from the microphone aiming at the victim
+themselves. Such a feature is critical in practical where one
+modality (e.g., radar signal) could be compromised severely.
+(3) Stealthy and low-cost attack.The proposed attack is
+designed to be discreet, undetectable, and cost-effective. In-
+stead of using expensive lab setup or chunky sensors (e.g.,
+photoelectric or ultrasonic), we choose to use a low-cost com-
+mercial mmWave radar for EchoLLM. Aside from the offered
+feasibility, the small size of such mmWave radars also helps
+render our attack stealthy.
+(4) Target-aware and motion-resilient attack.We aim
+to design our attack to be target-aware and motion-resilient
+so that it is highly applicable in practical. First, in many at-
+tack scenarios, there exist different reﬂection sources (e.g.,
+furniture in the environment) that cause interference to the
+desired mmWave signal from the victim’s headphone. Second,
+in practical, the victim could move their head spontaneously
+in different directions (e.g. left-right) during an attack, which
+can disrupt the attacker’s effort to extract the subtle vibrations
+(in μm level) of the victim’s headphone. Our attack needs to
+counteract the above adverse conditions.
+To perform a non-invasive acoustic eavesdropping attack
+achieving the above research goals, we need to properly ad-
+dress three major challenges:
+(1) How do we accurately distinguish the reﬂected mmW ave
+signals from the target object among many others in the envi-
+ronment? We tackle this challenge in two steps, based on our
+observations and intuition. First, we differentiate the victim
+from objects like tables or nearby pedestrians by recognizing
+that they exhibit very distinct velocity characteristics. Next,
+we further distinguish the reﬂected signal from the victim’s
+headphones from those of the victim’s body parts (such as
+head and arms) by leveraging the observation that the former
+contains audio information while the latter does not.
+(2) How do we mitigate the interference induced by the vic-
+tim’s spontaneous movements during an attack?Minimizing
+the impact of inevitable interference is crucial, as the ‘useful’
+vibration we aim to extract is inherently small and easily over-
+shadowed. In particular, the victim’s spontaneous movements
+introduce large ‘spikes’ into the reﬂected mmWave signal,
+which obscure the subtle vibrations from the headphones.
+To address this challenge, we propose our SpikeFree algo-
+rithm in EchoLLM, which uses a Long Short-Term Memory
+(LSTM) model to interpolate signal values between consec-
+utive radar frames and then smooths the received mmWave
+signal through averaging and offset calibration.
+(3) How do we effectively leverage multi-modal fusion and
+unique context for recognizing the audio contents?To tackle
+this challenge, we explore the relationship between the two
+modalities used in our attack and conjecture that the audios
+from the victim’ headphone and those of the victim them-
+selves are highly dependent on each other as they respond
+to each other. We thus concatenate the two data sources and
+use the fused signal as input (see Figure 9). Next, we design
+an LLM-augmented speech recognition model to predict the
+most likely text for a given fused signal input and output the
+text corresponding to the audio from the victim’s headphone.
+We further summarize our contributions as follows:
+6620    34th USENIX Security Symposium USENIX Association
+• We propose EchoLLM, the ﬁrst mmWave-based eaves-
+dropping attack tailored for coin-sized bone conduction
+headphones. It integrates vibration extraction and signal
+enhancement techniques to enable target-aware, motion-
+resilient speech recovery under practical conditions.
+• We develop LeASR, a novel context-aware multi-modal
+ASR framework that incorporates the victim’s own audio
+as contextual input to enhance ASR accuracy under high-
+noisy and low-reﬂection conditions.
+• Experimental results show that EchoLLM consistently
+outperforms prior acoustic eavesdropping attacks de-
+signed for ASR tasks, achieving lowerWER across diverse
+headphone models, environments, and noise levels.
+2 Preliminaries
+2.1 FMCW Radar
+In EchoLLM, the attacker uses a Frequency-Modulated Contin-
+uous Wave (FMCW) radar for distance measurement. FMCW
+technology is for the radar to transmit periodic mmWave sig-
+nals of which the frequency is linearly modulated. That is, the
+frequency of the transmitted signal increases linearly within
+one period, denoted by
+f (t)= f0 + ρt,0 ≤t ≤T0 , (1)
+where f0, ρ, and T0 are the initial frequency, the slope, and
+the period, respectively.ρ is equivalent to T0 divided by B, i.e.
+ρ = B/T0, where B is the frequency bandwidth. Traditionally,
+such a frequency segment (of T0 length) is also referred to as
+a chirp. Assume that the distance between the radar and the
+targeted object is d and the received signal reﬂected from the
+object has f (t) as its frequency. Instead of directly obtaining
+d, the key idea of FMCW for distance measurement is to
+ﬁrst measure f (t), then compute the propagation time t from
+Eq. (1) (i.e., t = f (t)−f0
+ρ ), and ﬁnally compute d = c ·t, where
+c is the propagation speed of mmWave signals.
+Next, we explain the basics of frequency measurement in
+FMCW by introducing its signal transmission and reception.
+Usually the transmitter signal is modeled as:
+s(t)= ATX ·exp
+[
+j
+(
+2π f0t +
+∫ t
+0
+2πρx dx
+)]
+,0 ≤t ≤T0 ,
+where ATX is the amplitude of s(t). We further assume that
+d for the targeted object is time variant and d(t)= d0 + σ(t),
+where d0 is the initial distance and σ(t) is the small vibration
+on top of d0. As a result, the received signal at the radar can
+be derived as:
+r(t)= ARX ·s
+(
+t − 2d(t)
+c
+)
+, 2d(t)
+c ≤t ≤ 2d(t)
+c + T0 ,
+Caller: How 
+have you been 
+lately?
+Callee: I've 
+been doing 
+well, thank 
+you for asking!
+Victim
+(e.g., Caller)
+EchoLLMEchoLLMEEchoLLMchoLLMEE MMEchoLLM
+Attacker
+Callee
+I've been doing well, 
+thank you for asking!
+Callee
+I've been doing well, 
+thank you for asking!
+Wireless microphone
+mmWave Radar
+Figure 1: Illustrative attack scenario of EchoLLM.
+where ARX is the amplitude of r(t) and d(t)/c the one-way
+propagation delay. Mixing s(t) and r(t) followed by low-pass
+ﬁltering yields the demodulated base-band signal as
+v(t)=
+Av ·exp
+[
+j
+(
+2πρ2d(t)
+c t + 4πd(t)
+λ −πρ
+( 2d(t)
+c
+)2)]
+, (2)
+where λ denotes the wavelength of the mmWave signal, i.e.,
+the carrier. Given that c is very large hence πρ(2d(t)
+c )2 ≪
+2πρ2d(t)
+c t, we can further simplify Eq. (2) as:
+v(t) ≈Av ·exp[ j (2π f (t)t + φ(t))] ,
+where f (t)= 2ρd(t)/c and φ(t)= 4πd(t)/λ. By obtaining
+f (t) or φ(t) from v(t), FMCW thus can measure distance.
+2.2 Practical Adaptation
+In real-world scenarios, signals are reﬂected from various
+distances, with the one from our targeted object being just
+one among them. To extract this frequency component, we
+ﬁrst adopt Range-FFT [29]o n v(t), select the frequency bin
+of interest, obtain the phase change across two consecutive
+periods, and eventually compute the distance change as Δd =
+λ
+4π Δφ, where Δφ is the phase change. Recall that d(t)= d0 +
+σ(t), where σ(t) is the vibrations to extract in the simplest
+case. Thus, Δσ(t)= λ
+4π Δφ, i.e., the target vibration is simply
+proportional to phase change over time at the desired distance.
+As an example, a 20 μm shift corresponds to a 1.6◦ change in
+phase if the mmWave radar is at 77 GHz.
+3 Threat Model
+We consider a typical scenario (see Figure 1) in which the
+victim (e.g., a caller) is participating in a phone call or online
+meeting using bone conduction headphones in a crowded pub-
+lic environment such as a subway station, shopping mall, or
+ofﬁce space. The attacker is positioned approximately 1 meter
+USENIX Association 34th USENIX Security Symposium    6621
+Caller
+mmWave Radar
+How are you?
+Text of Caller
+Text of Callee
+Background Reflection 
+Reduction Motion Calibration
+Audio EnhancementADC raw data
+Sensing
+Wirelessmicrophone RecordedAudio
+Vibration
+V
+Vibration Extraction
+BOS
+LeASR
+ASR output
+I am 
+fine!
+Callee
+Figure 2: Pipeline of our proposed EchoLLM.
+away, consistent with public spacing guidelines2,3, ensuring
+both social unobtrusiveness and practical feasibility. We as-
+sume that the attacker cannot directly hear audio from the
+bone conduction headphones. As shown in Appendix 12.5,
+even at maximum volume, the leakage sound at a distance of 1
+meter is nearly indistinguishable from ambient noise, making
+direct acoustic capture infeasible. The attacker must therefore
+rely on indirect sensing, speciﬁcally, mechanical vibrations
+captured via mmWave radar, to infer the callee’s audio content.
+In such scenarios, the callee’s speech is often semantically
+correlated with the caller’s response, which motivates us to
+leverage it as contextual input. We also assume that the caller
+exhibits natural head movements, such as nodding, shaking,
+or leaning, as commonly observed in real conversations.
+Then, the attacker uses a portable commercial mmWave
+radar to record the reﬂective signals while the caller (the vic-
+tim) converses with the callee. Additionally, we assume the
+attacker uses portable recording devices, such as a wireless
+microphone, to capture the caller’s audio. Given that mmWave
+radars and audio recording devices are now compact and eas-
+ily concealable (e.g., inside a handbag), this setup is plausible.
+Finally, we emphasize that the attack’s goal is to extract the
+exact content of human audio, typically text-based, which is
+more challenging than prior acoustic eavesdropping attacks
+that only targeted speciﬁc categories of data (e.g., numbers
+and letters) where the attacker already knew the categories.
+Throughout our paper, we would use either ‘caller’ or ‘vic-
+tim’ to refer to the person under our attack, and ‘callee’ for the
+person the caller is talking to through a bone conduction head-
+phone. We would also use either ‘speech’ or ‘audio’ to refer
+to the voice signal of the caller or the callee, and ‘mmWave
+signal’ to refer to the extracted vibration corresponding to the
+callee’s audio, i.e., the audio from the caller’s headphone.
+4 Methodology
+4.1 Overview
+As discussed earlier, the basic idea behind EchoLLM is that
+bone conduction headphones transmit audio signals through
+2https://www.who.int/emergencies/diseases/
+novel-coronavirus-2019/advice-for-public
+3https://www.wbdg.org/space-types/office
+vibrations induced by the audio, which propagate from the
+headphone to the user’s skull. An mmWave radar can detect
+these tiny vibrations when its FMCW signal is reﬂected by
+the targeted headphones (see Section 2). However, obtaining
+high-quality vibrations (and thus corresponding audios) is a
+signiﬁcant challenge due to several factors: (1) the vibration
+amplitude is extremely small (on the order of μm), (2) there
+are strong interferences, such as the victim’s head movements
+and reﬂected mmWave signals from various distances, and (3)
+vibration signals extracted by mmWave radars often lack the
+high-frequency components (≥ 1.0 kHz) required by existing
+speech enhancement techniques. Furthermore, EchoLLM is
+designed to infer the exact content of human audios, rather
+than just categorical data like numbers and letters.
+Figure 2 illustrates the pipeline of the proposed EchoLLM
+attack, consisting of three key steps: vibration extraction, sig-
+nal enhancement, and context-aware ASR. In the vibration
+extraction, we ﬁrst compute the baseband signal v(t) from the
+received signal s(t), isolate components related to the victim
+and their headphone, and then extract phase information pro-
+portional to vibration. In the signal enhancement, we remove
+the distortions from background reﬂections and the victim’s
+head motions, which typically result in large low-frequency
+reﬂections that interfere with the signal. Finally, in context-
+aware ASR, we introduce LeASR, an LLM-augmented speech
+recognition model that combines the extracted mmWave sig-
+nal from the headphone and the victim’s recorded audio to
+compensate for missing high-frequency components in the
+extracted vibrations. Each step is explained in detail below.
+4.2 Vibration Extraction
+In this step,EchoLLM is to extract the audio-induced vibrations
+from the demodulated base-band signal v(t). In Figure 3(a),
+we illustrate the Range-FFT results of v(t) from our experi-
+ment. The ﬁgure indicates that there are four prominent crests
+in the plot, each of which corresponds to reﬂections by objects
+at different distances. The ground truth is that these crests cor-
+respond to a table, the targeted victim, a chair, and a curtain.
+The ﬁgure also shows that the distances from these objects
+to the radar increase one by one from the table to the curtain.
+Our vibration extraction step is to design algorithms to ﬁrst
+identify the crest of the targeted victim and then the vibration
+6622    34th USENIX Security Symposium USENIX Association
+012345
+0
+0.2
+0.4
+0.6
+0.8
+1
+Target
+Table Chair
+Curtains
+(a) Example of v(t) after Range-FFT.
+02468 1 0
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Stationary Obj.
+Head with LRM
+Head with BFM
+Head with UDM
+Moving Obj.
+u
+l
+(b) Object category velocities.
+Figure 3: Components of v(t) from object reﬂections.
+0 0.5 1 1.5 2
+0
+0.5
+1
+1.5
+2
+-30
+-20
+-10
+0
+10
+(a) With audios.
+0 0.5 1 1.5 2
+0
+0.5
+1
+1.5
+2
+-30
+-20
+-10
+0
+10
+(b) Without audios.
+Figure 4: Spectrogram differences with/without ﬁrm audio.
+of the victim’s headphone from within.
+4.2.1 Victim v.s. Other Objects
+To identify the speciﬁc crest corresponding to the victim, we
+divide objects in typical indoor environments, i.e., people,
+furniture, and appliances, into three categories based on their
+motion characteristics: moving objects, ﬁxtures, and quasi-
+stationary objects that are nearly static with small movements.
+Particularly in our interested scenarios, examples of moving
+objects can be running pets, autonomous vacuum cleaners,
+and walking people, those of ﬁxtures are desks and sofas,
+and those of quasi-stationary objects are stationary people
+(seated or standing) with small body movements like shaking
+head or stretching. Intuitively,the three categories would have
+very different velocity characteristics: the velocity of moving
+objects tends to higher, that of ﬁxtures is close to zero, while
+that of stationary people is close to zero most of the time and
+increases only occasionally. In other words, stationary people
+tend to have small average velocity. Figure3(b) illustrates the
+velocity of different objects conﬁrming the above intuition.
+Therefore, we decide to use two predeﬁned thresholds denoted
+by νu and νl , respectively, to ﬁlter out moving objects and
+ﬁxtures from the computed crests. That is, we classify an
+object with average velocity higher thanνu as a moving object,
+while one with average velocity lower thanνl as a ﬁxture.
+After that, the remaining crests only correspond to stationary
+people with small movements, one of which is our victim.
+To further select the speciﬁc crest corresponding to the vic-
+tim, we identify key differences from other stationary people,
+012345
+0
+0.5
+1
+1.5
+2
+2.5
+-40
+-30
+-20
+-10
+0
+10
+(a) Frequency components in φ(t).
+0246
+0
+0.5
+1
+1.5
+2
+-30
+-20
+-10
+0
+10
+...
+Sliding Window
+Sliding Window
+Sliding Window
+(b) Starting/ending of audio.
+Figure 5: Illustration of audio start and end detection.
+if any. Eventually we ﬁnd that the crest corresponding to the
+victim carries audio signals from her/his headphone while the
+other crests do not. We plot the spectrogram between 0 and
+2.0 kHz (the frequency range of audible sound) for different
+crests in Figure 4. Given a signal, we obtain its spectrogram
+by dividing it into small segments of equal length, applying
+FFT to the time-domain samples of each segment, and ﬁnally
+concatenating all computed frequency spectrum together. The
+results in Figure 4(a) and Figure 4(b) conﬁrm that the crest
+corresponding to the victim includes strong frequency com-
+ponents between 0 and 1.0 kHz (see Figure 4(a)) while the
+situation is quite different if the crest corresponds to a sta-
+tionary person without a headphone (see Figure 4(b)). This
+thus motivates us to design a Convolutional Neural-Network
+(CNN) to determine whether or not a given crest carries audio
+signals and hence corresponds to the victim.
+In short, the CNN model works as follows while more
+details can be found in Appendix 12.1. We divide the spec-
+trogram into multiple segments of length τ ms. Each segment
+serves as a sample either for training or testing the model.
+Once the model is trained, we can feed a provided sample,
+which is a spectrogram of τ length, to the model and obtain
+the output. If the output is 1, this means that the corresponding
+spectrogram consists of audio signals hence the correspond-
+ing person is the victim we aim to select. Vice versa. Note
+that by design (the shape and material), vibration frequency of
+bone conduction headphones normally is below 1.0 kHz4 as
+can be seen later in Figure 5(a), we thus only use spectrogram
+below 1.0 kHz in our implementation.
+4.2.2 Victim v.s. Headphone
+By now we successfully select the crest corresponding to the
+victim wearing her/his bone conduction headphone among
+many others. While it may be straightforward to propose
+to further separate the victim and the headphone by more
+ﬁnegrained analysis, the fact is that the distance between the
+victim and her/his headphone is so close that it is even shorter
+than the range resolution ( ≤ 3.75 cm) of our radar. To ac-
+complish such a goal, we propose the following workaround.
+4This is due to that the physical materials, such as the casing of bone
+conduction headphones, will reduce high-frequency vibrations.
+USENIX Association 34th USENIX Security Symposium    6623
+2468 1 0
+0
+0.5
+1.0
+1.5
+2.0
+SNR=10.3129
+(a) Position@51
+2468 1 0
+0
+0.5
+1.0
+1.5
+2.0
+SNR=10.6904
+(b) Position@52
+2468 1 0
+0
+0.5
+1.0
+1.5
+2.0
+SNR=10.7424
+(c) Position@53
+2468 1 0
+0
+0.5
+1.0
+1.5
+2.0
+SNR=10.4748
+(d) Position@54
+2468 1 0
+0
+0.5
+1.0
+1.5
+2.0
+SNR=9.8332
+(e) Position@55
+2468 1 0
+0
+0.5
+1.0
+1.5
+2.0
+SNR=8.809
+(f) Position@56
+Figure 6: Spectrogram of vibrations extracted at different position@p, p =[ 51,··· ,56].
+Since the frequency of human voice falls between 0.1 and
+1.0 kHz, we decide to compute the SNR for each candidate
+location within the selected crest and choose the one with
+the highest SNR as the location of the headphone. Recall
+that each sample within a chirp corresponds to one t and one
+f (t), hence one location. The smaller t, the smaller f (t), the
+closer location. This applies to each crest in Figure 4(a); each
+sample in the crest corresponds to one f (t) as well.
+For each location in the selected crest for the victim, its
+corresponding SNR can be obtained by aggregating the com-
+ponents between 0.1 and 1.0 kHz as the signal part and those
+outside the range as noise. Figure 6 depicts an example of
+choosing the location for the victim’s headphone when the
+candidates are denoted by position@p, p =[ 51,··· ,56]. Al-
+though the peak of the crest is at position@55, we select
+position@53 for the headphone as it incurs the highest SNR.
+4.2.3 Headphone Phase Estimation
+Recall from Δσ(t)= λ
+4π Δφ that we can compute the exact
+vibrations of the headphone by obtaining the phase change
+of its reﬂected mmWave signal. Hence, after we select the
+optimal location from above, we proceed to use approximate
+maximum likelihood (ML) method in [37, 48] to obtain the
+corresponding phase. Mathematically, the phase of the i-th
+frequency component in v(t) can be obtained from below:
+ˆφi = arg
+[
+1
+N
+N
+∑
+n=1
+v(i ·Tc +( n −1) ·Ts)e−j2π ft (n−1)Ts
+]
+, (3)
+where arg[·] is the phase-taking operation for complex num-
+bers, N is the number of samples of v(t) within one period,
+Ts = T 0
+N , and Tc is the interval between two FMCW chirps.
+Ideally, by now we can obtain φ(t) and therefore σ(t), i.e.,
+the vibration of the victim’s bone conduction headphone
+which is induced by audio played through the headphone
+using Δσ(t)= λ
+4π Δφ.
+Starting and ending of audios.Note that EchoLLM needs
+to determine the starting and ending point in time for audios
+playing through the headphone for efﬁciency purposes. To
+achieve this, we propose a CNN-based voice activity detector,
+referred to as EchoV AD, which operates on the spectrogram
+of the selected crest for the victim. By monitoring the classiﬁ-
+cation results of EchoV AD, we can determine whether a given
+spectrogram contains effective audio content. Intuitively, if we
+observe that the model output goes from 0 to 1, this suggests
+that the current spectrogram consists of ﬁrm audios while
+the previous one does not. Therefore, we mark the current
+time window as the starting point. Vice versa. Figure 5(b)
+shows the example of choosing the starting and ending point
+by following the above rule. To mitigate oscillations in CNN
+predictions, we shift the window only by η ms each time5.
+4.3 Signal Enhancement
+In this step, we enhance the quality of the extracted vibration
+signal by addressing two key factors. First, even with the cor-
+rect location for the victim’s headphone, the reﬂected signals
+often include contributions from other sources, such as the
+victim’s face, ears, hair, etc, which reduce the SNR. Second,
+as introduced earlier, the extracted vibration from the radar is
+inevitably affected by the victim’s head movements, which
+deteriorates the extraction performance as well. In what fol-
+lows, we would use background reﬂection reduction and head
+motion calibration to reduce the above impact.
+4.3.1 Background Reﬂection Reduction
+We apply the circle-ﬁtting method from [21] to mitigate the
+impact of coupled background reﬂection. The underlying prin-
+ciple of circle-ﬁtting is that, for small-amplitude vibrations of
+an object, the periodic nature of the vibrations produces an arc-
+shaped trace, with the focus of this arc ideally located at the
+origin of the IQ coordinate system. In our case, the vibration
+of the headphone generates such a trace, but background re-
+ﬂections can distort its formation. Circle-ﬁtting aims to solve
+the following optimization problem to accurately reconstruct
+the arc-shaped trace:
+argmin
+I0,Q0,R0
+∑N
+n=1
+[
+(In −I0)2 +( Qn −Q0)2 −R2
+0
+]2
+(2R0)2 ,
+where (In,Qn) is the real and imaginary parts of φ(t) (equiv-
+alent to σ(t)) at the n-th chirp. By Levenberg-Marquardt
+method, we can solve the optimization and obtain the en-
+hanced vibration of the headphone.
+When applying circle-ﬁtting, we need to ensure that the
+assumption of small-amplitude vibration of the headphone
+5Note that η is smaller than τ.
+6624    34th USENIX Security Symposium USENIX Association
+0 0.1 0.2 0.3 0.4 0.5
+-1
+0
+1Amplitude
+Spike
+Target waveform
+(a) Before spike removal
+0 0.1 0.2 0.3 0.4 0.5
+-1
+0
+1Amplitude
+(b) After spike removal with SpikeFree
+Figure 7: Spike removal for φ(t).
+holds. In practice, spontaneous head motions may result in
+large motions of the headphone, rendering the assumption
+invalid. Hence we divide φ(t) into segments of 200 ms length
+to avoid large head motions and apply circle-ﬁtting to each
+segment for reﬂection reduction.
+4.3.2 Motion Calibration
+Next, we address two motion-related issues encountered with
+the acquired φ(t). The ﬁrst one is the presence of remarkable
+spikes in φ(t) (see Figure 7(a)), which cause large distortions
+when directly used for ASR. The second one arises from
+the victim’s head motions, which introduce additional low-
+frequency components into φ(t) (see Figure 8(a)), negatively
+impacting the subsequent ASR. To address both of these chal-
+lenges, we propose the following motion calibration process.
+Spike removal. We summarize three factors leading to
+those large spikes in φ(t). First of all, recall that by design
+there is a gap between two frames of a mmWave radar, which
+eventually results in missing values of φ(t) between two con-
+secutive frames. Therefore, the last element in φ(t) of current
+frame is very likely to incur a large difference from the ﬁrst
+element in φ(t) of next frame. The fact that the victim’s head
+may move in between such gaps further aggravates the sit-
+uation. Second, the above background reﬂection reduction
+can cause spikes as well because circle-ﬁtting is applied to
+small segments of
+φ(t) independently. Lastly, when the vic-
+tim’s head moves across radar frames, it is very likely that
+we select different locations for the victim’s headphone in
+Section 4.2, thus causing spikes in φ(t) across frames.
+We propose a method called SpikeFree to remove spikes
+from φ(t). It ﬁrst uses an LSTM model to interpolate the
+missing values between radar frames, then ﬂattens φ(t) by
+averaging and offset calibrating. Due to space constraints, the
+detailed algorithm can be found in Appendix 12.2.
+Moving averaging.Approximately, d(t)= d0 + σ(t) rep-
+resents the small vibrations of the headphone on top of the
+victim’s slow head movements. Given that the low-frequency
+movements are primarily due to the victim’s head motions,
+0 1 02 03 04 05 0
+1.1
+1.2
+1.3Amplitude
+Original Waveform
+Estimated Movements
+(a) Without moving averaging
+0 1 02 03 04 05 0
+-0.02
+0
+0.02Amplitude
+(b) With moving averaging
+Figure 8: Extracted vibration w/ and w/o moving avg.
+we ﬁrst apply a moving average ﬁlter [ 11]t o d(t) and sub-
+tract the ﬁltered result to isolate the small vibrations from the
+headphone. The results, shown in Figure 8, demonstrate a sig-
+niﬁcant reduction in the impact of the victim’s head motions.
+4.4 Context-Aware Multi-Modal ASR
+As shown in Figure 1, the attacker’s goal is to infer the exact
+content of the audio signal (i.e., the callee’s speech) playing
+through the victim’s headphone. To that end, the attacker is
+assumed to use a mmWave radar to extract the vibrations
+corresponding to the callee’s speech and a wireless micro-
+phone to record the victim’s own speech. In what follows, we
+introduce the design of our LLM-augmented contExt-aware
+multi-modal ASR (LeASR) model, which exploits the two data
+sources (i.e., one from the mmWave radar and the other from
+the microphone) to predict the callee’s speech.
+Speciﬁcally, LeASR incorporates two modules that signif-
+icantly enhance the performance of predicting the contents
+(i.e., text) of the callee’s speech. The ﬁrst one is a feature
+alignment module that concatenate the embeddings of the
+victim’s speech and those of the mmWave signal (correspond-
+ing to the callee’s speech) together. In doing so, we exploit
+the victim’s speech as one modality and useful context for
+inferring the contents of the callee’s speech. The second mod-
+ule adopts an encoder-decoder architecture that we train and
+leverage for speech recognition. Notably, both the encoder
+and decoder are based on large language models (LLMs),
+enhancing the robustness of speech recognition even when
+the input mmWave signal is of low quality.
+4.4.1 Workﬂow of LeASR
+Figure 9 shows the workﬂow of LeASR, which infers audio
+content (i.e., text) from the victim’s bone conduction head-
+phone. The details of each module are explained below. Em-
+bedding extraction is to compute the corresponding em-
+beddings for a pair of the caller’s (i.e., victim’s) audio sig-
+nal and the mmWave signal (i.e., the callee’s audio signal.)
+USENIX Association 34th USENIX Security Symposium    6625
+Text
+Of
+Caller
+“BOS”
+Encoder-Decoder
+Text
+Of
+Callee
+Recorded Audio
+mmWave Wav
+Audio Feature
+Wav Feature
+Multimodal input Embedding Extraction Embedding 
+Alignment LLM Model Output
+“BOS”
+Figure 9: Workﬂow of our proposed LeASR.
+Speciﬁcally, we use popular methods such as VGGish [15]
+and HuBERT [16] for extracting embeddings of the caller’s
+audio signal while Wav2vec 2.0 [ 5] for that of the callee’s
+mmWave signal. Embedding alignment is to concatenate
+the extracted embeddings of the caller’s audio signal and the
+callee’s mmWave signal properly. We also insert a Begin-
+ning of Speech (i.e., BOS) as a speech identiﬁer between
+the two embeddings so as to facilitate separating the text
+corresponding to the caller’s speech and that corresponding
+to the callee’s speech. LLM module includes an encoder
+and a decoder. The encoder learns the semantic relationship
+between the caller’s audio signal and the callee’s mmWave
+signal while the decoder generates the most likely text for the
+two signals. In other words, if we consider the concatenated
+embeddings as those of speech in a conversation, the encoder
+and decoder work together as an automatic speech recognition
+(ASR) model. As detailed in Sect. 5.4, we explored four com-
+binations of encoder and decoder to evaluate the impact of
+different LLMs used. Model outputis for the attacker to ex-
+tract the predicted text corresponding to the callee’s mmWave
+signal using the inserted BOS as the delimiter.
+4.4.2 Model Training
+We use the widely adopted auto-regressive cross-entropy loss
+to train LeASR, which measures the difference between the
+predicted probability distribution of the next token and the ac-
+tual tokens in the training data. The loss function aims to ﬁnd
+the most likely text sequence corresponding to the input. It is
+deﬁned as Loss = −∑T
+t=1 logP(yt |y1,y2,..., yt−1,X), where
+X is the feature vector of the input speech, yt is the target
+output (i.e. the ground-truth text) at time t, and T is the total
+length of the text sequence.
+Working with limited training data.In our case, a train-
+ing sample consists of a pair of recorded audio from the caller
+and the vibration of a bone conduction headphone correspond-
+ing to the callee’s speech. The challenge lies in the scarcity of
+open-source conversational speech data and the impracticality
+of collecting large amounts of mmWave samples for training.
+To tackle such a challenge, we ﬁrst use existing speech syn-
+thesis tools to synthesize conversational audios. See Sect. 5.3
+for details. Next, we use a two-stage ﬁne-tuning process [50]
+to reduce the need for a large number of mmWave samples
+for training. Speciﬁcally, in the ﬁrst stage, we use both the
+noise obtained from real environments using a mmWave radar
+and the synthesized conversational audios to build a large syn-
+thetic dataset. Later on, we pre-train LeASR on this dataset so
+that the model can differentiate the three components within
+one input sample: the caller’s audio, BOS (i.e., the speech
+recognizer), and the callee’s audio. In the second stage, we
+further ﬁne-tune
+LeASR using a small dataset consisting of
+pairs of self-collected data (both the caller’s audio signal and
+the callee’s mmWave signal) to optimize its performance. As
+demonstrated in Sect. 5, LeASR only uses 3,000 samples for
+ﬁne-turning while achieving as low as 5.23% WER.
+5 Performance Evaluation
+5.1 How does EchoLLM Work in Practical?
+To launch an eavesdropping attack using EchoLLM, the at-
+tacker ﬁrst sets up the radar and voice recording device to
+capture both the victim’s headphone vibration and speech.
+Then, the attacker conﬁgures system parameters and runs the
+EchoLLM code to extract the audio content (text output from
+ASR). Recommended system setup: 1) Set the microphone’s
+sampling rate to 8 kHz. 2) Conﬁgure the mmWave radar to
+emit chirp signals every 125 μs, resulting in a 8 kHz sampling
+rate. 3) Set vu to 0.6m /s and vl to 0.05 m/s to distinguish be-
+tween moving objects, ﬁxtures, and quasi-stationary humans,
+with a minimum velocity resolution of 0.03 m/s. 4) Resam-
+ple the model input (victim’s speech, BOS, and headphone
+vibration) to 16 kHz, and pass it to LeASR for text extraction.
+5.2 System Setup
+The data collection system used in our experiments includes
+an FMCW radar board (IWR1443BOOST, $300), a data cap-
+ture board (DCA1000EVM, $600), and a wireless micro-
+phone (BOYA mini, $30). The IWR1443BOOST features
+three transmit and four receive antennas, and operates in the
+76-81 GHz frequency range. Its analog-to-digital converter
+(ADC) supports a sampling rate of up to 37.5 million samples
+per second. Detailed conﬁguration parameters are provided in
+Appendix 12.3. Data are processed on a server, with speciﬁca-
+tions listed in Appendix 12.4. Additional costs (e.g., API calls
+and training) total approximately $60, bringing the overall
+system cost to $990.
+6626    34th USENIX Security Symposium USENIX Association
+Table 2: Noise and distances across environmental categories.
+Venue Noise Level Seating Distance
+Subway-I 67.2dB 0.375m
+Subway-II 64.0dB 0.402m
+Café 54.7dB 0.912m
+Tea house 55.5dB 0.750m
+Ofﬁce 44.0dB 0.625m
+Meeting room 41.6dB 0.902m
+Library 32.6dB 0.953m
+Study Room 35.3dB 0.971m
+5.3 Dataset and Settings
+Text and speech dataset. Most public dialogue datasets
+are text-only. To construct a suitable training set, we se-
+lected the open-source DailyDialog [ 27], a multi-turn En-
+glish corpus with approximately 13,000 conversations cov-
+ering topics such as emotions, work, and travel. We used
+the Baidu Text-to-Speech API v2.0 to synthesize natural-
+sounding 16 kHz speech, varying synthesis parameters within
+human-like ranges: speaker ID 0-4, speech rate 7-9, pitch 5-7,
+and volume 8-10. The resulting speech achieved a Mean Opin-
+ion Score (MOS) of 4.2, indicating perceived naturalness.
+Scenario setup .Variations in ambient noise and seating
+distance across public environments may affect the perfor-
+mance of EchoLLM. Based on noise standards6 and prior stud-
+ies [39], we deﬁne four environment categories: silent areas
+(SA, e.g., study rooms, libraries), ofﬁce zones (OZ, e.g., meet-
+ing rooms, ofﬁces), communication spaces (CS, e.g., cafés, tea
+houses), and urban environments (UE, e.g., roads, subway sta-
+tions). To accommodate regional differences, we empirically
+measured ambient noise levels (in dB) and typical seating
+distances in representative venues. Results in Table 2 conﬁrm
+that the four categories differ signiﬁcantly in both average
+ambient noise levels and typical seating distances.
+User experiment.The experiments involved two-party con-
+versations, with participants randomly assigned as initiator or
+responder, each speaking for approximately half of the turns.
+The caller’s speech was simultaneously recorded using micro-
+phones. This setup ensured synchronized microphone-radar
+recordings under realistic bone-conduction conditions. Six
+volunteers were recruited: two (one male, one female) for
+real data collection used to ﬁne-tune LeASR, and four (two
+males, two females) for testing, which included controlled
+and ablation studies. In addition, 30 volunteers (15 males, 15
+females) participated in the user diversity study. During ﬁne-
+tuning and testing (excluding the user diversity study), each
+volunteer wore three types of bone conduction headphones,
+as shown in Figure 10(a). For each headphone type, we varied
+four factors: volume (40-100, step 10; volume-to-dB map-
+ping in Appendix 12.5), distance (40–120 cm, step 20 cm),
+angle between the headphone and the radar (0◦-75◦, step 15◦),
+and head movement (“stationary”,“left-right”, “up-down”,
+6https://www.who.int/publications/i/item/a68672
+FMCW Radar
+Wireless
+microphone
+Laptop
+Bone-conduction
+Headphones
+(a) Experimental setup of EchoLLM
+6+2.=2SHQ5XQ3UR 6+2.=2SHQ0RYH 1$1.5XQQHU3URV
+(b) Different bone conduction headphones
+Microphone
+mmWave 
+Radar
+Victim
+ Laptop
+Bone-conduction
+Headphones 
+(c) Silent areas
+mmWave 
+Radar
+Laptop
+Bone-conduction
+Headphones 
+Victim
+Microphone
+(d) Ofﬁce zones
+mmWave 
+Radar
+Microphone
+Bone-conduction
+Headphones 
+Victim
+M
+Laptop
+(e) Communication spaces
+Bone-conduction
+Headphones 
+Victim
+mmWave 
+Radar
+Laptop
+Microphone
+(f) Urban environments
+Figure 10: Experimental setup and different scenario.
+“forward-backward”). Each factor was altered independently,
+with others ﬁxed at baseline. Detailed conﬁgurations are pro-
+vided in Appendix 12.6. This protocol yielded 2,940 sam-
+ples (0.23 TB) from two participants, forming the perception
+dataset. To evaluate the effect of environmental noise, we
+also collected data in four realistic acoustic settings, namely
+SA, OZ, CS, and UE, shown in Figures 10(c), 10(d), 10(e),
+and 10(f), resulting in four additional perception datasets.
+As mentioned in Sect.4.4, we adopt a two-stage ﬁne-tuning
+for LeASR. In the ﬁrst stage, a volunteer wears a bone con-
+duction headphone with no audio playback while the radar
+captures ambient noise. These recordings are mixed with
+5,000 DailyDialog samples at three SNR levels (-5, 5, and
+15 dB), yielding 15,000 samples per volunteer and a total of
+30,000 samples (1.27 TB). In the second stage, we use the
+2,940 samples collected under realistic settings, grouped by
+acoustic environment, to ﬁne-tune four environment-speciﬁc
+models, i.e., SA-model, OZ-model, CS-model, and UE-model.
+USENIX Association 34th USENIX Security Symposium    6627
+5.4 LLM Setting
+We experiment with four LLMs:HuBART uses HuBERT [16]
+as encoder and BART [25] as decoder; HuBART-L uses Hu-
+BERT [16] as encoder and BART-Large [ 25] as decoder;
+Whisper [36] uses Transformer as encoder and a simple de-
+coder for text generation; SpeechT5 [3] uses Transformer for
+both encoder and decoder. Note that the ﬁrst two models are
+more focused on text generation, while the last two models
+are more focused on processing speech data. More details can
+be found in Appendix 12.7.
+5.5 Performance Metrics
+We adopt word error rate(WER) as our main evaluation met-
+ric for EchoLLM. WER measures the discrepancy between the
+model’s output and ground-truth by comparing the output
+words to the ground-truth. It is calcuated as WER = I+D+S
+N ×
+100%, where I is the number of insertions, D is deletions,
+and S is substitutions. N is the total number of words in the
+ground-truth sentence. Obviously, a low WER indicates better
+performance of ASR model used.
+Note that in our case, the input to LeASR includes both the
+callee’s and caller’s speech. Since the attacker is assumed to
+have already recorded the caller’s speech, we compute WER
+only for the callee’s speech, i.e., the vibrations extracted from
+the headphones, excluding the caller’s speech and BOS.
+5.6 Experimental Results
+5.6.1 Controlled Experiments
+We conduct controlled experiments on playback volume, dis-
+tance, angle, and head movement using the OZ-model.
+Playback volume: To evaluate the impact of playback
+volume on EchoLLM, we ﬁx the radar-headphone distance at
+40 cm and the angle at 0◦, varying the playback volume from
+50 to 100 in 10-step increments. Results in Fig. 12 show
+that 1) as the volume increases, WER decreases. For example,
+with the HuBART-L model, WER drops from 31.11% to 2.26%.
+This suggests that higher volume causes more vibration in
+the bone conduction headphones, increasing the SNR of the
+extracted vibration. Similar trends are observed with Whisper
+and SpeechT5. 2) When the volume is between 80 and 100,
+WER stabilizes at a low level, withHuBART-L showing a slight
+decrease from 3.23% to 2.26%. 3) Below a volume of 70,WER
+increases sharply, indicating signiﬁcant performance degrada-
+tion, likely due to weak headphone vibrations. Additionally,
+Whisper and SpeechT5 show lower WER than HuBART and
+HuBART-L, suggesting that LLM-based speech recognition is
+more effective when the voice vibration is less pronounced.
+Distance: To evaluate the impact of distance between the
+radar and headphones on attack performance, we ﬁx the play-
+back volume at 80 and the angle at 0◦. The distance is var-
+ied from 40 cm to 120 cm in 20 cm increments, as shown in
+......
+d=40cm 120cm
+© = 0°
+© = 75°
+FMCW 
+Radar
+(a) Different distances and angles
+UDM BFM LRM
+(b) Different movements of the victim
+Figure 11: Distance, angle, and movement settings.
+Figure 11(a). Results in Figure 13 show that 1) WER rises
+signiﬁcantly with distance. For instance, when HuBART-L
+model is used, WER increases from 3.38% to 28.32%. Similar
+observations can be obtained from Whisper and SpeechT5
+as well. 2) Compared to changing playback volume, changes
+in distance result in a wider range of WER. This suggests that
+distance alterations lead to more signiﬁcant ﬂuctuations in
+uncontrollable factors within the experimental environment.
+Angle: Unintentional head movements can signiﬁcantly
+alter the angle between the bone conduction headphone and
+the radar. To assess the impact of angle on attack performance,
+we ﬁx the distance at 40 cm and playback volume at 80, then
+vary the angle from 0◦ to 75◦ in 15◦ increments, as shown
+in Figure 11(a). Results in Figure 14(a) indicate that angle
+variation has minimal impact on WER. This is likely due to
+the hemispherical casing and multiple reﬂective surfaces of
+bone conduction headphones, which reduce the effect of angle
+changes on the received signal and, consequently, ASR per-
+formance. For example, when the angle shifts from 0◦ to 75◦,
+WER for HuBART-L increases only from 7.13% to 13.03%.
+Head movements: To assess the impact of head move-
+ments on attack performance, we use a ﬁxed prosthetic head
+to eliminate human factors, with the radar-headphone distance
+set to 40 cm. Four head movements are simulated: “up-down”
+(UDM), “backward-forward” (BFM), “left-right” (LRM), and
+“stationary” (STAT), as shown in Figure11(b). Results in Fig-
+ure 14(b) show: 1) WER is signiﬁcantly lower when the head
+is stationary, with HuBART-L achieving 7.13%, compared to
+over 50% during movement. 2) BFM has the greatest impact,
+altering the radar-headphone distance. For instance, HuBART
+WER is 27.17% under BFM, 35.27% and 42.54% higher than
+under LRM and UDM.
+6628    34th USENIX Security Symposium USENIX Association
+50 60 70 80 90 100
+0
+10
+20
+30
+40WER(%)
+(a) HuBART
+50 60 70 80 90 100
+0
+10
+20
+30
+40WER(%)
+(b) HuBART-L
+50 60 70 80 90 100
+0
+10
+20
+30
+40WER(%)
+(c) Whisper
+50 60 70 80 90 100
+0
+10
+20
+30
+40WER(%)
+(d) SpeechT5
+Figure 12: Impact of volume
+40 60 80 100 120
+0
+10
+20
+30
+40WER(%)
+(a) HuBART
+40 60 80 100 120
+0
+10
+20
+30
+40WER(%)
+(b) HuBART-L
+40 60 80 100 120
+0
+10
+20
+30
+40WER(%)
+(c) Whisper
+40 60 80 100 120
+0
+10
+20
+30
+40WER(%)
+(d) SpeechT5
+Figure 13: Impact of distance
+0 1 53 04 56 07 5
+Angle(°)
+0
+5
+10
+15
+20
+25WER(%)
+HuBART
+HuBART-L
+Whisper
+SpeechT5
+(a) Impact of angle
+STAT UDM BFM LRM
+Movement
+0
+5
+10
+15
+20
+25
+30
+35WER(%)
+HuBART
+HuBART-L
+Whisper
+SpeechT5
+(b) Impact of head movement
+Figure 14: Results of controlled experiments.
+5.6.2 Ablation Study
+We conducted ablation experiments to evaluate the roles of
+context, audio enhancement, and mmWave radar sensing.
+Impact of context: To evaluate the impact of context
+(i.e., caller’s speech) on attack performance, we compare
+three setups on synthetic and real datasets: 1) caller–callee
+(caller speaks ﬁrst), 2) callee–caller (reversed order), and 3)
+no context (callee speech only). Results in Table 3, based
+on HuBART-L, indicate that: 1) Incorporating context greatly
+enhances attack performance, reducing WER on real data from
+28.39% (no context) to 5.23% (caller–callee). 2) Synthetic
+data yields even lower WER (1.38%). 3) WER for callee–caller
+is consistently slightly higher than for caller–callee, increas-
+ing from 1.38% to 1.66% on synthetic datasets. This trend
+aligns with LLMs’ self-attention tendency to prioritize earlier
+and cleaner input [47]. Additional experimental results and
+examples are provided in Appendices 12.8 and 12.9.
+Table 3: Impact of victim context with HuBART-L.
+Synthetic dataset Perception dataset
+Caller - Callee 1.38% 5.23%
+Callee - Caller 1.66% 6.58%
+Without Caller 13.13% 28.39%
+Table 4: Ablation study for audio enhancement step.
+Normal w/o-BRE w/o-MC w/o-AE
+WER 5.39% 27.40% 40.94% 41.85%
+Impact of audio enhancement: To assess the impact of
+background reﬂection reduction and motion calibration on
+attack performance, six volunteers wear three types of bone
+conduction headphones and perform four head movements.
+The four setups are: normal, w/o background reﬂection elim-
+ination (w/o-BRE), w/o motion calibration (w/o-MC), and
+w/o audio enhancement (w/o-AE). Results in Table 4 show
+that: 1) The absence of reﬂection reduction and motion cali-
+bration worsens attack performance, with WER of 27.40% and
+40.94%, respectively; 2) Motion calibration is more effective,
+achieving a lower WER than background reﬂection reduction.
+Impact of mmWave radar detection: To evaluate the
+impact of signals extracted by the mmWave radar onEchoLLM,
+we cut the white noise extracted by the radar (without audio
+playback) to the same length as the experimental speech and
+used it as input for speech recognition, resulting in a WER
+of 72.51%. This demonstrates that the audio detected by the
+radar plays a crucial role in LLM reasoning and recognition.
+USENIX Association 34th USENIX Security Symposium    6629
+30 40 50 60 70
+Ambient noise(d%)
+0
+5
+10
+15
+20WER(%)
++X%$57
++X%$57/
+Whisper
+SpeechT5
+(a) WER in different noise levels
+30 40 50 60 70
+Noise level(dB)
+0
+5
+10
+15
+20SNR(dB)
+(b) SNR in different noise levels
+Figure 15: Impact of noise levels.
+UE CS OZ SA
+Environments
+0
+5
+10
+15WER (%)
+UE-model
+CS-model
+OZ-model
+SA-model
+(a) Different environments
+SZ-ORP SZ-OM NK-RP4
+%one-conduction headphone type
+0
+5
+10
+15
+20
+25WER(%)
+HuBART
+HuBART-L
+Whisper
+SpeechT5
+(b) Different product models
+Figure 16: Impact of different environments and headphones.
+5.6.3 Attack Robustness
+To comprehensively evaluateEchoLLM’s robustness, we exam-
+ine the impact of varying noise levels, diverse environments,
+and different bone conduction headphones.
+Different noise levels: To assess environmental noise im-
+pact on bone conduction headphones vibrations, we used
+the SA-model, playing TUT noise samples [14]a t3 0 –70 dB
+(10 dB steps) while capturing vibrations with mmWave radar.
+As shown in Figure 15(a), environmental noise had minimal
+effect: WER of HuBART increased by only 2% as noise rose
+from 30 dB to 70 dB. To validate this, we transmitted 0–3 kHz
+linear frequency modulation signals through the bone con-
+duction headphones and measured the signal-to-noise ratio
+(SNR) under the same noise levels. Figure 15(b) shows stable
+SNRs (e.g., 16.19 at 30 dB and 15.06 at 70 dB). This suggests
+that bone conduction headphones materials attenuate external
+noise and captured vibrations mainly reﬂect internal audio.
+Different environments: To evaluate EchoLLM’s robust-
+ness across environments, we performed cross-evaluation us-
+ing environment-speciﬁc HuBART-L models on text inputs
+from different acoustic settings. As shown in Figure 16(a),
+the performance of the ﬁne-tuned models varied only slightly,
+indicating that ﬁrst-stage training with noise-augmented syn-
+thetic data already imparts strong robustness, reducing the
+need for environment-speciﬁc ﬁne-tuning. A marginal WER
+increase with higher noise levels further suggests that en-
+vironmental noise has limited but noticeable impact. More
+experimental results are provided in Appendix 12.10.
+Different types of bone conduction headphones:T oa s -
+sess EchoLLM’s robustness across different bone conduction
+Table 5: User diversity experiment result ofHuBART-L.
+Slow Moderate Fast
+Age FM MFMF
+Young 7 .72% 8 .21% 9 .31% 8 .20% 9 .45% 10.01%
+Middle 7 .96% 8 .72% 7 .98% 8 .68% 10.32% 9 .71%
+Elder 9 .05% 8 .46% 8 .96% 8 .43% 8 .97% 9 .21%
+Table 6: Cross-Language evaluation results.
+Languages Female-I Female-II Male-I Male-II
+French 13.41% 13.68% 11.85% 12.21%
+Chinese 12.75% 13.31% 11.48% 15.69%
+Japanese 10.65% 9.38% 8.83% 8.43%
+headphones, we test three types (as shown in Fig. 10(b)).
+Results in Fig. 16(b)) show that: 1) EchoLLM performs well
+across different headphones, and 2) Headset size and materials
+affect the mmWave signal, with smaller or softer headphones
+yielding higher WER. For example, the SZ-OPR and NK-RP4
+headsets show higher WER than the SZ-OM. Overall, bone
+conduction headphones are vulnerable to eavesdropping.
+5.6.4 User Diversity Study
+To evaluate the impact of user diversity on attack performance,
+we recruited 18 participants across 9 groups based on a 3 ×3
+combination of age (young, middle-aged, elderly) and speak-
+ing speed (slow: 100-120 WPM, moderate: 120-150 WPM,
+fast: 150-170 WPM), with balanced gender. All participants
+wore bone conduction headphones and remained seated nat-
+urally. As shown in Table 5 for HuBART-L, age and gender
+exhibited negligible impact, with mean WER around 8.8%.
+In contrast, faster speech led to higher WER: 8.35% (slow),
+8.59% (moderate), and 9.61% (fast). These results suggest
+that speech rate, closely associated with individual articula-
+tory patterns, is a factor inﬂuencing model performance. More
+experimental results are provided in Appendix 12.11.
+5.6.5 Multilingual Robustness
+To evaluateEchoLLM’s cross-lingual robustness, we recruited
+12 participants (4 each for French, Chinese, and Japanese, with
+gender balanced within each group), all young adults speaking
+at moderate speed. We used Whisper for its multilingual sup-
+port and publicly available checkpoints. Language-speciﬁc
+texts were sourced from CFDD (French) [19], LCCC (Chi-
+nese) [45], and CALLHOME Japanese Speech [1]. Data col-
+lection followed the two-person dialogue setup in Section 5.3.
+As shown in Table6, Whisper enables effective eavesdropping
+across all three languages with minimal ﬁne-tuning. However,
+WER varied: Japanese yielded the lowest (9.32%), followed
+by French (12.79%) and Chinese (13.31%), likely due to
+differences in dataset quality, pronunciation variability, and
+alignment with the model’s pretraining distribution.
+6630    34th USENIX Security Symposium USENIX Association
+Table 7: A quick comparison between existing speech enhancement methods and EchoLLM (8 kHz).
+Method Settings STOI PSNR
+Word Error Rate (WER)
+ByteDance Google Google Baidu
+V olcengine Speech2Text Speech recognition SPEECH
+CMGAN [8] W/O Context 0.79 21.50 52.52% 67.91% 73.29% 79.18%
+W/ Context 0.81 22.47 51.52% 66.67% 67.27% 73.23%
+MP-SENet [31] W/O Context 0.80 22.10 48.86% 63.35% 70.58% 77.24%
+W/ Context 0.83 22.91 49.67% 65.33% 71.24% 79.36%
+EchoLLM (Our method) - - - 5.23%
+5.6.6 EchoLLM vs. Other Eavesdropping Attacks
+To compare EchoLLM with existing mmWave eavesdropping
+attacks using speech enhancement, we use two SOTA models,
+CMGAN [8] and MP-SENet [31], as baselines. All mod-
+els are trained and tested on the same sets. CMGAN (or
+MP-SENet) enhances audio before sending it to four commer-
+cial speech recognition APIs (e.g., Baidu SPEECH, Google
+Speech Recognition and Speech-to-Text, and Bytedance V ol-
+cengine) for WER calculation. In contrast, EchoLLM sends the
+audio directly to LeASR for WER. Results in Table 7 show that
+despite high enhancement quality (e.g., STOI> 0.7), WER re-
+mains above 70%, indicating that speech enhancement-based
+eavesdropping attacks on bone conduction headphones may
+be less effective in practical ASR applications.
+To fairly compare with existing eavesdropping attacks that
+focus on active acoustic sources and ASR, we selected rep-
+resentative methods including mmEve [ 42] and mmWave-
+Whisper [7]. We conducted experiments with EchoLLM un-
+der comparable settings, using smartphones (iPhone 16 Pro,
+Samsung Galaxy S25, and Xiaomi 15) as targets placed at dis-
+tances of [0.5, 1.0, 2.0] meters in a SA environment.EchoLLM
+adopted the Whisper ASR backbone consistent with base-
+line approaches. As illustrated in Table 8, EchoLLM achieves
+consistently lower average WER, outperforming both prior
+methods and its own performance under bone conduction
+headphones-based conditions. These results highlight that: 1)
+physical properties such as target size and material signiﬁ-
+cantly impact radar signal quality; and 2) contextual enrich-
+ment notably reduces recognition errors.
+Table 8: EchoLLM vs. other attacks on smartphones.
+Distance 0.5m 1.0m 2.0m
+mmEve [42] 15.91% 18.67% 21.36%
+mmWave-Whisper [7] 29.01% 42.47% 49.24%
+EchoLLM (Our method) 1.98% 2.56% 5.23%
+5.6.7 Bone Conduction vs. Other Headphones
+To evaluate EchoLLM’s performance across different head-
+phone types, we tested three in-ear models (Apple AirPods
+Pro3, Beats Fit Pro, and Bose QuietComfort II) and three over-
+ear models (SONY WH-1000XM5, HIFIMAN Edition XS,
+and ATH-M50x) under similar settings: a
+40 cm distance, a
+Table 9: Different types of headphones.
+Headset Types BCH In-ear Over-ear
+WER 5.28% 54.67% 34.79%
+0◦ angle, and a volume of 80. The average WER for each head-
+phone type was calculated. Results in Table 9 show EchoLLM
+performs best with bone conduction headphones, followed
+by over-ear, and least effectively with in-ear models. This is
+because bone conduction headphones transmit sound through
+physical vibration detectable by mmWave radar, while in-ear
+headphones produce minimal vibration, and over-ear head-
+phones offer larger reﬂective surfaces.
+5.6.8 Inferring Numerical Data
+To assess the attack capability of EchoLLM on sensitive nu-
+merical data like what was done in [ 41], we decide to a
+speech synthesis API to generate 100 voice samples in which
+numbers ranging from 1 to 10 are announced with varying
+timbre, speed, and intonation. We also supplement proper
+context for these 100 samples using speech such as “What is
+this number?”, “What is your bank account number?”, and
+“What is your ID card number?”. We adopt similar settings as
+above. Results in Table10 indicate that EchoLLM exhibits very
+high accuracy in recognizing numbers. For example, when
+HuBART-L is used, EchoLLM can achieve 96.77% accuracy.
+Table 10: Accuracy of inferring numerical data.
+LLMs Accuracy LLMs Accuracy
+HuBART 87.10% HuBART-L 96.77%
+Whisper 95.26% SpeechT5 93.55%
+5.6.9 Inferring Sensitive Information
+To assess EchoLLM’s attack performance on sensitive infor-
+mation beyond numbers, we construct a corpus with location,
+occupation, and gender data, using questions like “Where do
+you live?” and “What is your job?”. The experiment follows
+the same setup: a 40 cm distance, 80 playback volume, and a
+0◦ angle. The results in Table 11 indicate that EchoLLM main-
+tains high accuracy in inferring sensitive information, such
+as location and gender. For example, HuBART-L achieves
+92.22% accuracy in inferring occupation.
+USENIX Association 34th USENIX Security Symposium    6631
+Table 11: Acc. of inferring non-numerical sensitive data.
+Location Occupation Gender
+HuBART 78.89% 87.22% 88.89%
+HuBART-L 86.67% 92.22% 94.44%
+Whisper 85.56% 90.56% 93.89%
+SpeechT5 82.22% 89.44% 91.11%
+6 Related Work
+6.1 Acoustic Eavesdropping Attacks
+Acoustic signals can be transmitted through air, headphones,
+loudspeakers, etc. In recent years, many eavesdropping at-
+tacks have been explored to utilize different sensors (e.g.,
+photoelectric sensors [9, 30, 33, 34, 38, 51], inertial measure-
+ment unit (IMU) sensors [2, 4, 12, 32, 53], ultrasonic Doppler
+sensors [20, 22, 24, 40, 54], WI-FI devices [44]) to obtain vi-
+brations induced by sounds for reconstructing the original
+audio. These attacks have been known to suffer from critical
+drawbacks. For example, the authors in [30, 51] utilized the
+laser radar to acquire sound and successfully attacked devices
+such as robot vacuum cleaners [38]. However, laser radars are
+vulnerable to external environments such as rain and snow
+and require the targeted objects to be within line-of-sight.
+6.2 Attacks Based on mmWave Radar
+Recent studies have demonstrated the feasibility of using
+mmWave radar for side-channel attacks by capturing acous-
+tic or mechanical vibrations to reconstruct private informa-
+tion [6, 10, 13, 17, 18, 26, 28, 35, 41, 49]. These attacks can
+be categorized based on acoustic source types: active acous-
+tic sources(e.g., loudspeakers, human throats) and passive
+acoustic sources (e.g., tables, light bulbs). Active-source
+attacks directly detect vibrations from the speaker or de-
+vice. For example, Li et al. [28] captured screen vibrations
+to infer on-screen content, while WaveEar [49] recovered
+speech by sensing throat vibrations in noisy environments.
+Subsequent studies enhanced speaker recognition and speech
+detection using mmWave signals [13, 26]. Other studies, such
+as MILLIEAR [18], mmSpy [6], and mmWave-Whisper [7],
+focused on eavesdropping phone conversations by capturing
+speech radiated from smartphones. Passive-source attacks,
+by contrast, extract secondary vibrations from nearby objects.
+Radiomic [35] proposed reconstructing speech via micro-
+vibrations on non-contact surfaces. mmPhone [41] augmented
+sensing with piezoelectric ﬁlms to address weak vibration sce-
+narios. mmEcho [17] departed from learning-based methods,
+instead using signal processing to recover intelligible speech
+from radar reﬂections off everyday indoor objects.
+Differences inEchoLLM. Compared to existing mmWave
+radar-based eavesdropping attacks, EchoLLM introduces four
+key distinctions: 1) As an active acoustic source attack, it
+eliminates the need for dedicated sound-absorbing materials
+required in passive and non-contact scenarios. 2) It uniquely
+leverages the victim’s own audio as contextual input to im-
+prove headphone-transmitted speech recognition. 3) Bone
+conduction headphones produce signiﬁcantly weaker high-
+frequency reﬂections (≥1.0 kHz) compared to rigid devices
+or reﬂective human surfaces, due to their coin-size reﬂective
+area and low reﬂectivity of silicone or rubber materials. 4)
+EchoLLM supports recognition of unconstrained speech con-
+tent rather than being limited to ﬁxed-vocabulary scenarios.
+7 Discussions
+Limitations. As discussed in Section 5.6.1, we found that
+when the volume drops below 50dB or the distance exceeds
+120 cm, the WER of EchoLLM can reach up to 30%. This
+limitation is mainly due to the mmWave radar’s transmis-
+sion power and the bone conduction headset’s reﬂection area.
+According to the IWR1443 object-distance relationship data
+provided by TI7, even a metal-surfaced coin with a large radar
+cross-section achieves a maximum detection range of about
+100 cm. To extend the attack range, we could use a higher-
+power radar, such as the IWR1642, which offers 12.5 dBm
+(about 17.8mW) of transmission power, offering a notable
+advantage over the IWR1443’s 12 dBm (about 15.8mW).
+Countermeasures. Based on performance evaluation, two
+countermeasures against EchoLLM emerge: 1) Victims can
+prevent audio recording by employing scanning techniques to
+detect hidden recorders or by raising privacy awareness, and
+2) Victims can introduce more head movements, especially
+during sensitive conversations, to disrupt signal capture.
+8 Conclusion
+To conclude, we propose EchoLLM in this paper, a novel
+mmWave-based eavesdropping attack on bone conduction
+headphones, which has not been explored yet. EchoLLM fea-
+tures two key designs that contribute to strong attack perfor-
+mance: incorporating the victim’s own speech as the context
+for generating the exact text for the audio from the victim’s
+headphone, and LLM for text generation counteracting the
+challenge due to lack of critical frequency components. Ex-
+tensive evaluations over synthetic and self-collected data and
+on a range of factors conﬁrm both the low WER and the high
+robustness of EchoLLM. Our research thus calls for further
+protection for this new type of headsets.
+9 Acknowledgment
+This work is supported by National Natural Science Founda-
+tion of China (No. 62372477), the Science and Technology
+Innovation Program of Hunan Province (No. 2024RC3035,
+2024AQ2030), the Natural Science Foundation of Hunan
+Province (No. 2024JJ4071), the Outstanding Innovative Youth
+Training Program of Changsha City (No. kq2306006).
+7https://www.ti.com/lit/an/swra593a/swra593a.pdf?ts=
+1731466562658
+6632    34th USENIX Security Symposium USENIX Association
+10 Ethics Considerations
+The DailyDialog dataset used in EchoLLM is open-source and
+has been de-anonymized by retaining only clear conversations
+and removing identiﬁable information. The user studies in
+EchoLLM were approved with an IRB waiver. No personal
+information, other than recorded mmWave and audio signals,
+was collected. The experiments, randomly arranged by the
+authors, did not involve any private or unethical content. The
+securely stored data will be used exclusively forEchoLLM and
+not disclosed to third parties. All experiments were conducted
+with informed consent from volunteers.
+11 Open Science
+In line with the open science policy, we have made avail-
+able the research artifacts related to this work, including
+source code, scripts, and a representative subset of the datasets.
+Given the large size of the full dataset, only a curated subset
+is released to facilitate public access. All shared materials
+can be accessed at:
+https://doi.org/10.5281/zenodo.
+15625161.
+References
+[1] George Zipperlen Alexandra Canavan. Callhome
+japanese speech, 1997.
+[2] S Anand and Nitesh Saxena. Speechless: Analyzing
+the threat to speech privacy from smartphone motion
+sensors. In S&P’18, San Francisco, CA, May 2018.
+[3] Junyi Ao, Rui Wang, Long Zhou, Chengyi Wang,
+Shuo Ren, Yu Wu, Shujie Liu, Tom Ko, Qing Li,
+Yu Zhang, Zhihua Wei, Yao Qian, Jinyu Li, and Furu
+Wei. SpeechT5: Uniﬁed-Modal Encoder-Decoder Pre-
+Training for Spoken Language Processing. In ACL’22,
+Dublin, Ireland, may 2022.
+[4] Zhongjie Ba, Tianhang Zheng, Xinyu Zhang, Zhan Qin,
+Baochun Li, Xue Liu, and Kui Ren. Learning-based
+practical smartphone eavesdropping with built-in ac-
+celerometer. In NDSS’20, San Diego, CA, Feb. 2020.
+[5] Alexei Baevski, Yuhao Zhou, Abdelrahman Mohamed,
+and Michael Auli. wav2vec 2.0: A Framework for Self-
+Supervised Learning of Speech Representations. In
+NeurIPS’20, Paris, France, Sept. 2020.
+[6] Suryoday Basak and Mahanth Gowda. mmSpy: Spying
+Phone Calls using mmWave Radars. In S&P’22, San
+Francisco, CA, May 2022.
+[7] Suryoday Basak, Abhijeeth Padarthi, and Mahanth
+Gowda. mmWave-Whisper: Phone Call Eavesdropping
+and Transcription Using Millimeter-Wave Radar. In
+ICASSP’25, Hyderabad, India, Apr. 2025.
+[8] Ruizhe Cao, Sherif Abdulatif, and Bin Yang. CMGAN:
+Conformer-based Metric GAN for Speech Enhancement.
+In INTERSPEECH’22, Incheon, Korea, Sept. 2022.
+[9] Abe Davis, Michael Rubinstein, Neal Wadhwa, Gau-
+tham Mysore, Fredo Durand, and William Freeman.
+The visual microphone: Passive recovery of sound from
+video. ACM Transactions on Graphics, 33(4):79:1–
+79:10, July 2014.
+[10] Yiwen Feng, Kai Zhang, Chuyu Wang, Lei Xie, Jingyi
+Ning, and Shijia Chen. mmeavesdropper: Signal
+Augmentation-based Directional Eavesdropping with
+mmwave Radar. In INFOCOM’23, New York, NY , May
+2023.
+[11] José Guiñón, Emma Ortega, José García-Antón, and
+Valentín Pérez-Herranz. Moving Average and Savitzki-
+Golay Smoothing Filters using Mathcad. Papers ICEE,
+2007:1–4, 2007.
+[12] Jun Han, Albert Chung, and Patrick Tague. Pitchln:
+eavesdropping via intelligible speech reconstruction us-
+ing non-acoustic sensor fusion. In IPSN’17, Pittsburgh,
+PA, Apr. 2017.
+[13] Kawon Han and Songcheol Hong. V ocal signal detection
+and Speaking-Human localization with MIMO FMCW
+radar. IEEE Transactions on Microwave Theory and
+Techniques, 69(11):4791–4802, 2021.
+[14] Toni Heittola, Annamaria Mesaros, and Tuomas Virta-
+nen. TUT Urban Acoustic Scenes 2018, Development
+Dataset, apr 2018.
+[15] Shawn Hershey, Sourish Chaudhuri, Daniel P. W. Ellis,
+Jort F. Gemmeke, Aren Jansen, R. Channing Moore,
+Manoj Plakal, Devin Platt, Rif A. Saurous, Bryan Sey-
+bold, Malcolm Slaney, Ron J. Weiss, and Kevin Wilson.
+CNN architectures for large-scale audio classiﬁcation.
+In ICASSP’17, New Orleans, LA, March 2017.
+[16] Weining Hsu, Benjamin Bolte, Yaohunghubert Tsai,
+Kushal Lakhotia, Ruslan Salakhutdinov, and Abdelrah-
+man Mohamed. HuBERT: Self-Supervised Speech Rep-
+resentation Learning by Masked Prediction of Hidden
+Units. IEEE/ACM Transactions on Audio, Speech, and
+Language Processing, 29:3451–3460, 2021.
+[17] Pengfei Hu, Wenhao Li, Riccardo Spolaor, and Xiuzhen
+Cheng. mmEcho: A mmWave-based Acoustic Eaves-
+dropping Method. In S&P’23, San Francisco, CA, May
+2023.
+USENIX Association 34th USENIX Security Symposium    6633
+[18] Pengfei Hu, Yifan Ma, Panneer Santhalingam, Parth
+Pathak, and Xiuzhen Cheng. Milliear: Millimeter-wave
+acoustic eavesdropping with unconstrained vocabulary.
+In INFOCOM’22, London, United Kingdom, May 2022.
+[19] Julie Hunter, Jérôme Louradour, Virgile Rennard, Is-
+maïl Harrando, Guokan Shang, and Jean-Pierre Lorré.
+The claire french dialogue dataset. arXiv preprint
+arXiv:2311.16840, 2023.
+[20] D Jennings and D Ruck. Enhancing automatic speech
+recognition with an ultrasonic lip motion detector. In
+ICASSP’95, Detroit, MI, May 1995.
+[21] Chengkun Jiang, Junchen Guo, Yuan He, Meng Jin,
+Shuai Li, and Yunhao Liu. mmVib: micrometer-level
+vibration measurement with mmwave radar. In Mobi-
+Com’20, New York, NY , Apr. 2020.
+[22] Kaustubh Kalgaonkar and Bhiksha Raj. Ultrasonic
+doppler sensor for speaker recognition. In ICASSP’08,
+Las Vegas, NV , Apr. 2008.
+[23] HJ Landau. Sampling, data transmission, and the nyquist
+rate. Proceedings of the IEEE, 55(10):1701–1706, 1967.
+[24] Ki Lee. Speech enhancement using ultrasonic doppler
+sonar. Speech Communication, 110:21–32, Jul. 2019.
+[25] Mike Lewis, Yinhan Liu, Naman Goyal, Marjan
+Ghazvininejad, Abdelrahman Mohamed, Omer Levy,
+Ves Stoyanov, and Luke Zettlemoyer. BART: Denois-
+ing Sequence-to-Sequence Pre-training for Natural Lan-
+guage Generation, Translation, and Comprehension. In
+ACL’20, online, July 2020.
+[26] Huining Li, Chenhan Xu, Aditya Rathore, Zhengxiong
+Li, Hanbin Zhang, Chen Song, Kun Wang, Lu Su, Feng
+Lin, Kui Ren, and Wenyao Xu. V ocalPrint: Exploring
+a resilient and secure voice authentication via mmwave
+biometric interrogation. In SenSys’20, Yokohama, Japan,
+Nov. 2020.
+[27] Yanran Li, Hui Su, Xiaoyu Shen, Wenjie Li, Ziqiang
+Cao, and Shuzi Niu. DailyDialog: A Manually Labelled
+Multi-turn Dialogue Dataset. In IJCNLP’17, Tapei, Tai-
+wan, Nov. 2017.
+[28] Zhengxiong Li, Fenglong Ma, Aditya Rathore, Zhuolin
+Yang, Baicheng Chen, Lu Su, and Wenyao Xu. Wavespy:
+Remote and through-wall screen attack via mmWave
+sensing. In S&P’20, San Francisco, CA, May 2020.
+[29] Jaime Lien, Nicholas Gillian, M Karagozler, Patrick
+Amihood, Carsten Schwesig, Erik Olson, Hakim Raja,
+and Ivan Poupyrev. Soli: Ubiquitous gesture sensing
+with millimeter wave radar. ACM Transactions on
+Graphics, 35(4):1–19, July 2016.
+[30] Tao Lu, Jin Guo, Heyong Zhang, Chunhui Yan, and Can-
+jin Wang. Acquirement and enhancement of remote
+speech signals. Optoelectronics Letters, 13(4):275–278,
+July 2017.
+[31] Yexin Lu, Yang Ai, and Zhenhua Ling. MP-SENet: A
+Speech Enhancement Model with Parallel Denoising of
+Magnitude and Phase Spectra. In INTERSPEECH’23,
+Dublin, Ireland, Aug. 2023.
+[32] Yan Michalevsky, Dan Boneh, and Gabi Nakibly. Gyro-
+phone: Recognizing speech from gyroscope signals. In
+USENIX Security’14, San Diego, CA, Aug. 2014.
+[33] Ralph Muscatell. Laser microphone. The Journal of the
+Acoustical Society of America, 76(4):1284–1284, 1984.
+[34] Ben Nassi, Yaron Pirutin, Adi Shamir, Yuval Elovici,
+and Boris Zadov. Lamphone: Real-time passive sound
+recovery from light bulb vibrations. Cryptology ePrint
+Archive, 2020:708, 2020.
+[35] Muhammed Ozturk, Chenshu Wu, Beibei Wang, and
+KJ Liu. RadioMic: Sound sensing via mmwave signals.
+arXiv preprint arXiv:2108.03164, 2021.
+[36] Alec Radford, Jongwook Kim, Tao Xu, Greg Brockman,
+Christine McLeavey, and Ilya Sutskever. Robust Speech
+Recognition via Large-Scale Weak Supervision. In
+ICML’23, Honolulu, Hawaii, July 2023.
+[37] DCBP Rife and Robert Boorstyn. Single tone param-
+eter estimation from discrete-time observations. IEEE
+Transactions on Information Theory, 20(5):591–598,
+Sept. 1974.
+[38] Sriram Sami, Yimin Dai, Sean Rui Xiang Tan, Nirupam
+Roy, and Jun Han. Spying with your robot vacuum
+cleaner: eavesdropping via Lidar sensors. In SenSys’20,
+Yokohama, Japan, Nov. 2020.
+[39] Narendra Singh and Subhash C Davar. Noise pollution-
+sources, effects and control. Journal of Human ecology,
+16(3):181–187, 2004.
+[40] Arthur Toth, Kaustubh Kalgaonkar, Bhiksha Raj, and
+Tony Ezzat. Synthesizing speech from Doppler signals.
+In ICASSP’10, Dallas, TX, Mar. 2010.
+[41] Chao Wang, Feng Lin, Tiantian Liu, Ziwei Liu, Yijie
+Shen, Zhongjie Ba, Li Lu, Wenyao Xu, and Kui Ren.
+mmPhone: Acoustic eavesdropping on loudspeakers via
+mmWave-characterized piezoelectric effect. In INFO-
+COM’22, London, United Kingdom, May 2022.
+[42] Chao Wang, Feng Lin, Tiantian Liu, Kaidi Zheng, Zhibo
+Wang, Zhengxiong Li, Ming-Chun Huang, Wenyao Xu,
+and Kui Ren. mmEve: Eavesdropping on Smartphone’s
+6634    34th USENIX Security Symposium USENIX Association
+Earpiece via COTS mmWave Device. In MobiCom’22,
+Sydney, Australia, Oct. 2022.
+[43] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingy-
+ing Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-
+the-wall eavesdropping on loudspeakers via RFID by
+Capturing Sub-mm Level Vibration. Proceedings of the
+ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies, 5(4):1–25, Dec. 2021.
+[44] Guanhua Wang, Yongpan Zou, Zimu Zhou, Kaishun
+Wu, and Lionel Ni. We can hear you with Wi-Fi! In
+MobiCom’14, Maui, Hawail, Sept. 2014.
+[45] Yida Wang, Pei Ke, Yinhe Zheng, Kaili Huang, Yong
+Jiang, Xiaoyan Zhu, and Minlie Huang. A Large-
+Scale Chinese Short-Text Conversation Dataset. arXiv
+preprint arXiv:2008.03946, 2020.
+[46] Ziqi Wang, Zhe Chen, Akash Singh, Luis Garcia, Jun
+Luo, and Mani Srivastava. UWHear: through-wall ex-
+traction and separation of audio vibrations using wire-
+less signals. In SenSys’20, Yokohama, Japan, Nov. 2020.
+[47] Xinyi Wu, Yifei Wang, Stefanie Jegelka, and Ali Jad-
+babaie. On the emergence of position bias in transform-
+ers. arXiv preprint arXiv:2502.01951, 2025.
+[48] Yuyong Xiong, Zhike Peng, Guanpei Xing, Wenming
+Zhang, and Guang Meng. Accurate and robust displace-
+ment measurement for FMCW radar vibration moni-
+toring. IEEE Sensors Journal, 18(3):1131–1139, Feb.
+2017.
+[49] Chenhan Xu, Zhengxiong Li, Hanbin Zhang,
+Aditya Singh Rathore, Huining Li, Chen Song,
+Kun Wang, and Wenyao Xu. WaveEar: Exploring
+a mmwave-based noise-resistant speech sensing for
+voice-user interface. In MobiSys’19, New York, NY ,
+June 2019.
+[50] Jin Xu, Xu Tan, Yi Ren, Tao Qin, Jian Li, Sheng Zhao,
+and Tieyan Liu. LRSpeech: Extremely Low-Resource
+Speech Synthesis and Recognition. In SIGKDD’20,
+New York, NY , Aug. 2020.
+[51] Zhong Xu, Jiyang Li, Shulian Zhang, Yidong Tan, Xil-
+iang Zhang, Xuling Lin, Xinjun Wan, and Songlin
+Zhuang. Remote eavesdropping at 200 meters dis-
+tance based on laser feedback interferometry with single-
+photon sensitivity. Optics and Lasers in Engineering,
+141:106562, June 2021.
+[52] Yong Yu, Xiaosheng Si, Changhua Hu, and Jianxun
+Zhang. A Review of Recurrent Neural Networks: LSTM
+Cells and Network Architectures. Neural Computation,
+31(7):1235–1270, 07 2019.
+[53] Li Zhang, Parth Pathak, Muchen Wu, Yixin Zhao, and
+Prasant Mohapatra. Accelword: Energy efﬁcient hot-
+word detection through accelerometer. In MobiSys’15,
+New York, NY , May 2015.
+[54] Qian Zhang, Dong Wang, Run Zhao, and Yinggang Yu.
+SoundLip: Enabling Word and Sentence-level Lip Inter-
+action for Smart Devices. Proceedings of the ACM on
+Interactive, Mobile, W earable and Ubiquitous T echnolo-
+gies, 5(1):1–28, Dec. 2021.
+12 Appendices
+12.1 CNN-based Voice Activity Detector
+The CNN-based voice activity detector performs binary classi-
+ﬁcation to determine whether the input spectrogram contains
+speech. It comprises three convolutional layers, each followed
+by a max-pooling layer, and two fully connected layers. The
+number of channels increases progressively to 32, 64, and 128.
+After convolution and pooling, the feature maps are ﬂattened
+into a one-dimensional vector of length 8,192, which is then
+processed by the fully connected layers. To mitigate overﬁt-
+ting, a Dropout layer is introduced, and a Sigmoid activation
+function outputs the probability of speech presence. During
+training, binary cross-entropy loss (i.e., BCELoss) is used,
+and the Adam optimizer updates the model parameters. Exper-
+imental results indicate that the model achieves an accuracy
+of 98.8% in detecting speech in the spectrogram.
+Input:3×64×64
+Conv 1
+3×3 
+Conv,32
+Padding 1
+Stride 2
+Pool 2×2
+Conv 2
+3×3 
+Conv,64
+Padding 1
+Stride 2
+Pool 2×2
+Conv 3
+3×3 
+Conv,128
+Padding 1
+Stride 2
+Pool 2×2
+Flatten
+8192
+LinearDropout 
+(p=0.5) Sigmoid
+Output
+32×32×32 64×16×16
+128×8×8128:81921:128
+Figure 17: CNN-based V oice Activity Detector (EchoV AD).
+12.2 Algorithm of SpikeFree
+SpikeFree ﬁrst uses an LSTM model to interpolate the miss-
+ing values in between two radar frames and then ﬂattens
+φ(t) by averaging and offset calibrating. Assume that the
+number of missing points between two neighbor frames is
+κ. φβ
+j ( j ∈{1,··· ,α}) denotes the estimated phase from the
+j-th chirp in the β-th frame, i.e., frameβ. Considering two
+adjacent frames frameβ and frameβ+1, SpikeFree adopts the
+trained LSTM model in [52] to predict κ+ γ missing values
+USENIX Association 34th USENIX Security Symposium    6635
+Algorithm 1:SpikeFree
+Input: φβ, φβ+1, κ, β
+Output: ˆφβ+1
+1 /*LSTM-based Interpolation*/;
+2 for j ∈[1,κ+ γ+ 1] do
+3 ˆφβ
+j ←LSTM_Interpolation({φβ
+j }α
+j=1);
+4 ˆavgβ ← 1
+γ ∑γ
+j=1 ˆφβ
+α+κ+ j ;
+5 avgβ+1 ← 1
+γ ∑γ
+j=1 φβ+1
+j ;
+6 dvβ ← ˆavgβ −avgβ+1;
+7 /*Bias Calibration*/;
+8 for j ∈[1,α] do
+9 ˆφβ+1
+j ←φβ+1
+j + dvβ;
+10 return ˆφβ+1;
+of φ(t)8, i.e., {ˆφβ
+α+1,··· ,ˆφβ
+α+κ,··· ,ˆφβ
+α+κ+γ}. Subsequently,
+SpikeFree calculates the average of {ˆφβ
+α+κ+1,··· ,ˆφβ
+α+κ+γ}
+and {φβ+1
+1 ,··· ,φβ+1
+γ }, denoted by ˆavgβ and avgβ+1, re-
+spectively. To this end, SpikeFree obtains a offset be-
+tween avgβ+1 and ˆavgβ, i.e., dvβ = ˆavgβ −avgβ+1. Lastly,
+SpikeFree applies the offset ofdvβ to each φ(t) of frameβ+1,
+i.e., {φβ+1
+1 ,··· ,φβ+1
+α }.
+12.3 Detailed mmWave Radar Conﬁguration
+This section describes the mmWave radar conﬁguration em-
+ployed for phase-based audio signal extraction. For each radar
+chirp, we identify the FFT peak corresponding to the bone
+conduction headphones vibration signal and extract its phase.
+Since the extracted phase is subsequently converted into au-
+dio, the chirp’s transmission frequency directly determines
+the resulting phase sampling rate. Key chirp parameters in-
+ﬂuencing the sampling rate are summarized in Table 12.I n
+our conﬁguration, the resulting audio sampling rate is 8 kHz,
+implying that, according to the Nyquist theorem [ 23], fre-
+quency components up to 4 kHz can be captured. This range
+is sufﬁcient for most speech recognition applications.
+Table 12: Parameter settings of mmWave radar.
+Parameters Values Parameters Values
+Start Freq. 77 GHZ Idle Time 83 μs
+Freq. Slope 89.8 MHz/μs TX Start Time 0 μs
+ADC Start Time 6 μs ADC Samples 300
+Sample Rate 20 msps Ramp End Time 42 μs
+8Additional γ predicted values will be used for the bias calibration. Intu-
+itively, the larger the value ofγ, the better the effect of the bias calibration.
+12.4 Specs of Lab Server
+All collected data are processed on a high-performance server
+equipped with AMD Ryzen ThreadRipper Pro 3995WX
+CPU@2.70GHz, 256GB RAM memory, and 4 NVIDIA RTX
+4090 GPUs, interconnected via a 1.0G b/s Ethernet link. We
+also consider three types of bone-conduction headphones:
+SHOKZ OpenRun Pro, SHOKZ OpenMove, and NANK Run-
+ner Pro4s. We implement EchoLLM in Matlab R2022a, Py-
+torch 1.80, and Python 3.8.
+12.5 Volume–Decibel Mapping and Sound
+Leakage of Bone-Conduction Head-
+phones
+Here, we present a decibel reference table corresponding to
+headphone volume percentages, measured at a distance of
+1 m. Speciﬁcally, the headphone volume was set to ten levels
+ranging from 100 to 10 in decrements of 10. Playback was
+conducted in four different environments, i.e., SA, OZ, CS,
+and UE, and decibel levels were measured at a distance of
+1 m using a calibrated decibel meter (i.e., Deli DL333201).
+Results in Table 13 show that even at maximum volume, the
+leakage sound from bone conduction headphones remains
+close to ambient noise levels at 1 m, making it virtually un-
+detectable to both recording devices and the human ear, and
+effectively preventing content recognition.
+12.6 Details of User Experiments
+This section provides a detailed conﬁguration for collecting
+real-world user data. The data collection is conducted under
+the following controlled experimental settings:
+• Fixing volume at 80, angle at 0◦, and movement as “sta-
+tionary”, we vary distance across [40,60,80,100,120]
+cm.
+• Fixing distance at 40 cm, angle at 0◦, and move-
+ment as “stationary”, we vary volume across
+[50,60,70,80,90,100].
+• Fixing volume at 80, distance at 40 cm, and
+movement as “stationary”, we vary angle across
+[0◦,15◦,30◦,45◦,60◦,75◦].
+• Fixing volume at 80, angle at 0◦, and distance at 40
+cm, we vary movement across {“stationary”, “left-right”,
+“up-down”, “forward-backward”}.
+• Fixing volume at 80, angle at 0◦, distance at 40 cm, and
+movement as “stationary”, we vary headphone model
+across three types.
+Assuming two volunteers participate in all settings, and each
+conﬁguration yields 60 samples, the total number of samples
+is 2 ×(60 ×5 + 60 ×6 + 60 ×6 + 60 ×4 + 60 ×3)= 2,940.
+6636    34th USENIX Security Symposium USENIX Association
+Table 13: Sound leakage measurements of bone-conduction headphones at different volume levels.
+Volume(%) Ambient 100 90 80 70 60 50 40 30 20 10
+Source V olume / 93.0 89.0 85.0 81.0 77.0 73.0 69.0 65.0 61.0 57.0
+Leakage V olume
+35.4 37.1 36.6 36.3 36.1 35.8 35.4 35.4 35.4 35.4 35.4
+45.3 45.8 45.6 45.5 45.5 45.4 45.3 45.3 45.3 45.3 45.3
+54.7 54.8 54.7 54.7 54.7 54.7 54.7 54.7 54.7 54.7 54.7
+65.1 65.1 65.1 65.1 65.1 65.1 65.1 65.1 65.1 65.1 65.1
+Table 14: Illustration of performance improvement when using the victim’s own speech as context.
+Caller Callee WER
+GroundTruth01 I like gardening. That is interesting. Do you have a garden? –
+Without Context – It is easy. Do you have a girlfriend? 37.50%
+Caller-Callee I like gardening. That is interesting. Do you have a garden?0.00%
+GroundTruth02 Are you doing anything this weekend? I have to work on Saturday all day. –
+Without Context – I have had to work some trouble all day.37.50%
+Caller-Callee Are you doing anything this weekend? I have to work on Saturday or day. 12.50%
+Callee Caller WER
+GroundTruth03 But why? Did I do anything wrong? No , we are just too different. –
+Without Context That is right could I take anything wrong? – 71.43%
+Callee-Caller But Why? Could I do anything wrong? No , we are just too different. 14.28%
+GroundTruth04 What is the weather like in winter? It’s pretty cold and it often snows. –
+Without Context What is the way to light in wedding? – 57.14%
+Callee-Caller What is the weather like in there? It’s pretty cold and it often snows. 14.28%
+12.7 Architectures of LeASR
+Here, we brieﬂy introduce the various LeASR architectures
+employed in the experiments.
+HuBERT-BARTis an encoder-decoder architecture. The
+encoder employs the self-supervised speech model HuBERT
+(Hidden-Unit BERT), built on the Transformer architecture,
+speciﬁcally designed to learn effective feature representa-
+tions from unlabeled speech data. Its architecture includes
+a front end with seven 1D convolutional layers, responsible
+for processing raw audio signals and extracting local tempo-
+ral features. The core component is a 12-layer Transformer
+encoder, with each layer comprising 768 hidden units and
+12 attention heads, leveraging self-attention mechanisms to
+capture global contextual information from the audio. The
+HuBERT model contains approximately 94 million parame-
+ters, with 9.4 million in the convolutional front end and 84.6
+million in the Transformer encoder. This model efﬁciently
+learns audio features, making it well-suited for downstream
+tasks like automatic speech recognition (ASR), while reduc-
+ing the need for large amounts of labeled data. The decoder
+directly uses the decoder part of BART (Bidirectional and
+Auto-Regressive Transformers), which is widely applied in
+tasks such as text generation, summarization, and translation.
+The decoder comprises 12 layers, each with a hidden size of
+768, a feed-forward network dimension of 3,072, and 12 at-
+tention heads, totaling approximately 139M parameters. The
+decoder generates output using autoregressive decoding.
+HuBERT-BART-Largeis an encoder-decoder architec-
+ture. The encoder utilizes HuBERT, while the decoder lever-
+ages BART-Large, an extended version of BART with a larger
+model size and enhanced modeling capabilities. BART-Large
+retains 12 encoder and 12 decoder layers, but with an in-
+creased hidden size of 1,024, a feed-forward network dimen-
+sion of 4,096, and 16 attention heads, totaling approximately
+407M parameters. The larger model size enables it to capture
+more complex semantics and long-range dependencies, im-
+proving coherence and accuracy in text generation, making
+it particularly suitable for tasks requiring high-quality output
+and sophisticated language understanding.
+Whisper is an efﬁcient speech recognition and processing
+model based on a Transformer encoder-decoder architecture,
+with 74M parameters. The model consists of 6 encoder and 6
+decoder layers, each containing 512 hidden units and 8 self-
+attention heads. The feed-forward network has 2,048 hidden
+units. Whisper processes mel-spectrograms extracted from
+speech signals and supports multiple languages, making it
+suitable for cross-lingual speech recognition tasks. Pretrained
+on a large-scale multilingual dataset, the model excels in
+handling diverse accents and language styles, providing robust
+solutions for speech recognition and translation.
+SpeechT5 is a pre-trained model for multi-task speech
+processing, containing 310 M parameters. It features 12 en-
+coder layers and 12 decoder layers, each with 768 hidden
+units and 12 self-attention heads. The feed-forward network
+includes 3,072 hidden units. The model supports a vocabulary
+size ranging from 30,000 to 50,000 and can process input
+sequences up to 512 tokens. Leveraging the Transformer ar-
+chitecture, SpeechT5 captures long-range dependencies via
+self-attention, facilitating knowledge sharing across various
+speech tasks and enhancing generalization and efﬁciency.
+USENIX Association 34th USENIX Security Symposium    6637
+Table 15: Impact of victim context with HuBART.
+Synthetic dataset Perception dataset
+Caller - Callee 2.56% 7.92%
+Callee - Caller 2.82% 9.08%
+Without Caller 16.19% 32.94%
+Table 16: Impact of victim context with Whisper.
+Synthetic dataset Perception dataset
+Caller - Callee 1.67% 5.92%
+Callee - Caller 1.82% 7.07%
+Without Caller 13.98% 29.45%
+12.8 Examples of W/ or W/O Context
+Table 14 shows four examples of performance improvement
+when using the victim’s own speech as context. This demon-
+strates that by combining the context information, more accu-
+rate results can be generated for stolen words with ambiguous
+pronunciations. Speciﬁcally, when these clues are sufﬁciently
+clear, private information can be more accurately extracted.
+12.9 Suppl. Evaluation of Impact of Context
+We provide a supplementary evaluation of three additional
+LLM-based ASR models in LeASR under W/ or W/O context.
+Results in Tables15, 16 and 17 show thatWER for callee–caller
+is consistently slightly higher than for caller–callee. This
+can be attributed to the tendency of LLMs’ self-attention
+mechanisms to prioritize earlier and cleaner inputs [47].
+12.10 Suppl. Evaluation of Environments
+Here, we provide a supplementary evaluation of three LLM-
+based ASR models in LeASR under different acoustic envi-
+ronments. Results in Table 18 indicate that all ﬁne-tuned
+models exhibit only slight performance variations across en-
+vironments, without signiﬁcant degradation in any speciﬁc
+setting. Environmental changes lead to consistent trends in
+model performance across all evaluated systems. Notably,
+both HuBART-L and Whisper maintain relatively stable WERs
+across varying conditions, suggesting higher robustness com-
+pared to the other models.
+12.11 Suppl. Evaluation on User Diversity
+Here, we provide supplementary results for HuBART, Whis-
+per, and SpeechT5 in the context of user diversity evaluation.
+Results in Tables 19, 20, 21 reveal that: 1) Consistent with
+the trend observed in HuBART-L, no signiﬁcant performance
+differences are found across age or gender groups, whereas
+noticeable variations emerge across different speaking rates.
+2) HuBART-L and Whisper achieve lower average WERso f
+8.85% and 8.93%, respectively, in the user diversity setting,
+whereas HuBART and SpeechT5 yield higher WERs of 10.17%
+and 10.62% under the same conditions.
+Table 17: Impact of victim context with SpeechT5.
+Synthetic dataset Perception dataset
+Caller - Callee 2.31% 7.20%
+Callee - Caller 2.57% 8.94%
+Without Caller 15.03% 31.35%
+Table 18: WER across Different Environments in LeASR.
+HuBART UE CS OZ SA
+UE-model 9.78% 9.81% 9.46% 9.43%
+CS-model 9.81% 9.74% 9.39% 9.31%
+OZ-model 9.76% 9.69% 9.19% 9.35%
+SA-model 10.44% 9.82% 9.52% 9.30%
+Whisper UE CS OZ SA
+UE-model 9.33% 8.99% 8.35% 8.26%
+CS-model 9.37% 8.70% 8.11% 8.04%
+OZ-model 9.66% 8.76% 7.86% 8.02%
+SA-model 9.88% 8.71% 8.33% 7.97%
+SpeechT5 UE CS OZ SA
+UE-model 9.74% 9.14% 8.75% 8.71%
+CS-model 9.71% 8.98% 8.53% 8.48%
+OZ-model 9.82% 8.82% 8.31% 8.41%
+SA-model 10.05% 8.99% 8.79% 8.36%
+Table 19: User diversity evaluation results forHuBART.
+Slow Moderate Fast
+Age FM MFMF
+Young 9 .55% 10.01% 10.23% 9 .67% 10.91% 10.77%
+Middle10.41% 9 .81% 9 .90% 10.66% 11.72% 12.07%
+Elder 10.48% 10.54% 10.95% 10.92% 11.38% 11.06%
+Table 20: User diversity evaluation results forWhisper.
+Slow Moderate Fast
+Age FM MFMF
+Young 7 .94% 8 .22% 8 .76% 8 .45% 9 .27% 9 .11%
+Middle 8 .01% 8 .76% 8 .15% 9 .11% 10.13% 10.49%
+Elder 9 .03% 8 .59% 8 .93% 8 .29% 10.03% 9 .42%
+Table 21: User diversity evaluation results forSpeechT5.
+Slow Moderate Fast
+Age FM MFMF
+Young 9 .01% 9 .45% 9 .77% 10.18% 10.81% 10.45%
+Middle 9 .46% 9 .63% 10.45% 9 .43% 10.62% 11.42%
+Elder 10.38% 9 .81% 9 .59% 9 .96% 11.63% 11.01%
+6638    34th USENIX Security Symposium USENIX Association

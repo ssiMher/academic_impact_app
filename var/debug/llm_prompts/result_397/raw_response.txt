@@ -1,0 +1,37 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "T. Wei, S. Wang, A. Zhou, and X. Zhang, \"Acoustic eavesdropping through wireless vibrometry,\" in ACM MobiCom, 2015.",
+  "paper_level_summary_zh": "该论文在背景介绍中将目标论文列为RF/声学侧信道窃听的代表性工作之一，但未明确认可其亚毫米级精度或首次开创性地位。引用主要出现在普通相关工作描述中，且未提供对目标论文方法或性能的直接评价。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "RF signals, including WiFi [23], UHF RFID [24, 41, 25, 26], UWB [27], mmWave signals [29, 31, 32, 28, 42, 7], can be considered as a wireless vibrometry to measure the RF signal changes caused by the sound source vibration.",
+      "evidence_context": "There are two different setup for RF-based SSEAs including reflective and emissive attacks. For reflective attack, adversaries employ a pair of transmitter and receiver to capture the vibration of the sound source. However, for emissive attack, adversaries assume that the transmitter is co-located with vibration sound source and keep transmitting RF signals while adversaries only control the receiver to capture the vibration of the sound source [ 23]. The key difference of these RF signals is the wavelength of the RF signal carrier frequency, the frequency bandwidth of the RF signal, and the antenna array, which determines the sensing resolution and anti-interference ability (distance, velocity and angular resolution).",
+      "reference_entry": "T. Wei, S. Wang, A. Zhou, and X. Zhang, \"Acoustic eavesdropping through wireless vibrometry,\" in ACM MobiCom, 2015.",
+      "why_this_judgment_zh": "引用出现在列举RF侧信道的普通相关工作中，未提及目标论文的具体能力或性能，属于普通引用。证据中虽然出现了WiFi [23]，但并未将亚毫米级、through-wall或eavesdropping等关键词锚定到该引用。",
+      "copy_ready_zh": "该论文将目标论文作为RF无线振动测量技术的代表性工作之一进行引用。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "ART [23] ... WC 6 10 W",
+      "evidence_context": "Table 2.1. Eavesdropping scenarios and privacy threat evaluation for existing works: various side-channel attacks evaluated in terms of tasks and performance.",
+      "reference_entry": "T. Wei, S. Wang, A. Zhou, and X. Zhang, \"Acoustic eavesdropping through wireless vibrometry,\" in ACM MobiCom, 2015.",
+      "why_this_judgment_zh": "目标论文出现在表2.1中的列表里，仅作为众多相关工作之一，且归类于Word Classification任务，未体现亚毫米级或through-wall能力。",
+      "copy_ready_zh": "目标论文被列为无线振动窃听的已有工作之一。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Wi-Fi [23] Int/Ext mm∼cm <1 kHz Distance Sensor Noise& Human Motion& Environmental Vibration",
+      "evidence_context": "Table 1.1. Key factors of different side channels may affect SSEA.",
+      "reference_entry": "T. Wei, S. Wang, A. Zhou, and X. Zhang, \"Acoustic eavesdropping through wireless vibrometry,\" in ACM MobiCom, 2015.",
+      "why_this_judgment_zh": "在表中仅列出Wi-Fi作为侧信道，分辨率为mm~cm，未提及亚毫米级或through-wall能力。",
+      "copy_ready_zh": "目标论文作为Wi-Fi侧信道的例子列出，未涉及具体精度或能力。",
+      "confidence": "high"
+    }
+  ]
+}

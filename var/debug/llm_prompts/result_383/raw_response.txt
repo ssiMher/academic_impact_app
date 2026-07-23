@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[30]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该论文在相关工作部分简要提及RFID可用于窃听，并将目标论文作为RFID窃听技术的一个例子列出，但没有进一步详细描述或评价其能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Additionally, [22], [23] transforms the lidar sensing radar on a robotic vacuum cleaner into a laser microphone, and RFID[30] is also utilized for eavesdropping.",
+      "evidence_context": "It is worth noting that the aforementioned eavesdropping attacks are considered invasive attacks, requiring the eavesdropper to either physically tamper with the victim's device or install malware on it. ... Non-intrusive eavesdropping attacks are continually being developed. For instance,[8],[9] employ WiFi Received Signal Strength (RSS) and Channel State Information (CSI) analysis, respectively, to identify specific words. ... Moreover, mmWave-based eavesdropping attacks have been explored. ... Optical eavesdropping is the most relevant eavesdropping technique to this article. ... Additionally,[22],[23] transforms the lidar sensing radar on a robotic vacuum cleaner into a laser microphone, and RFID[30] is also utilized for eavesdropping.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "证据中仅提到RFID[30]被用于窃听，但[30]在正文中与其他引用[22][23]并列在一个列表句中，没有描述目标论文的具体能力（如亚毫米级、穿墙等），属于普通相关文献列举。该引用未提供任何细节支撑亚毫米级或穿墙窃听能力，因此应排除。",
+      "copy_ready_zh": "引用论文仅在相关工作列表中提及RFID可用于窃听，未对目标论文的亚毫米级、穿墙或扬声器振动能力进行具体描述或确认。",
+      "confidence": "high"
+    }
+  ]
+}

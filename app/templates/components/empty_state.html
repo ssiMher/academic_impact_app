@@ -1,0 +1,9 @@
+{% macro empty_state(title, body, action_label="", action_url="") -%}
+  <section class="empty-state">
+    <h2>{{ title }}</h2>
+    <p>{{ body }}</p>
+    {% if action_label and action_url %}
+      <a class="button button-primary" href="{{ action_url }}">{{ action_label }}</a>
+    {% endif %}
+  </section>
+{%- endmacro %}

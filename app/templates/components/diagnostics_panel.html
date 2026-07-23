@@ -1,0 +1,81 @@
+{% macro diagnostics_panel(diagnostics) -%}
+  <section class="diagnostics-panel">
+    <div class="section-heading">
+      <h2>分析诊断</h2>
+      <p>用于区分缺少 PDF、模型没有发现、schema 错误以及发现被过滤等情况。</p>
+      <span class="sr-only">Analysis diagnostics</span>
+    </div>
+    {% if diagnostics %}
+      {% for diagnostic in diagnostics %}
+        <article class="diagnostic-card">
+          <p>最近全文分析结果 ID：{{ diagnostic.id }}</p>
+          <span class="sr-only">latest fulltext result id: {{ diagnostic.id }}</span>
+          <p>分析范围：{{ diagnostic.analysis_scope }}</p>
+          <span class="sr-only">analysis_scope: {{ diagnostic.analysis_scope }}</span>
+          <p>全文字符数：{{ diagnostic.fulltext_chars or "n/a" }}</p>
+          <span class="sr-only">fulltext_chars: {{ diagnostic.fulltext_chars or "n/a" }}</span>
+          <p>状态：{{ diagnostic.status }}</p>
+          <span class="sr-only">status: {{ diagnostic.status }}</span>
+          <p>错误信息：{{ diagnostic.error_message or "" }}</p>
+          <span class="sr-only">error_message: {{ diagnostic.error_message or "" }}</span>
+          <p>LLM 发现数量：{{ diagnostic.llm_findings_count }}</p>
+          <span class="sr-only">llm_findings_count: {{ diagnostic.llm_findings_count }}</span>
+          <p>Prompt 字符数：{{ diagnostic.prompt_chars or "n/a" }}</p>
+          <p>Raw response 字符数：{{ diagnostic.raw_response_chars or "n/a" }}</p>
+          <dl class="meta-grid">
+            <div><dt>全文结果 ID</dt><dd>{{ diagnostic.id }}</dd></div>
+            <div><dt>分析范围</dt><dd>{{ diagnostic.analysis_scope }}</dd></div>
+            <div><dt>全文字符数</dt><dd>{{ diagnostic.fulltext_chars or "n/a" }}</dd></div>
+            <div><dt>Prompt 字符数</dt><dd>{{ diagnostic.prompt_chars or "n/a" }}</dd></div>
+            <div><dt>状态</dt><dd>{{ diagnostic.status }}</dd></div>
+            <div><dt>LLM 发现数量</dt><dd>{{ diagnostic.llm_findings_count }}</dd></div>
+            <div><dt>生成强证据数量</dt><dd>{{ diagnostic.generated_strong_evidence_count }}</dd></div>
+            <div><dt>被过滤发现数量</dt><dd>{{ diagnostic.filtered_findings_count }}</dd></div>
+            <div><dt>过滤原因分布</dt><dd>{{ diagnostic.filter_reason_distribution }}</dd></div>
+          </dl>
+          <span class="sr-only">
+            generated_strong_evidence_count filtered_findings_count filter reason distribution
+          </span>
+          {% if diagnostic.error_message %}<p class="task-error">{{ diagnostic.error_message }}</p>{% endif %}
+          {% if diagnostic.raw_output_preview %}
+            <details>
+              <summary>raw_output_preview</summary>
+              <pre>{{ diagnostic.raw_output_preview }}</pre>
+            </details>
+          {% endif %}
+          {% if diagnostic.schema_error %}
+            <details>
+              <summary>schema_error</summary>
+              <pre>{{ diagnostic.schema_error }}</pre>
+            </details>
+          {% endif %}
+          {% if diagnostic.finding_diagnostics %}
+            <details open>
+              <summary>逐条 finding 过滤诊断</summary>
+              {% for finding in diagnostic.finding_diagnostics %}
+                <article class="diagnostic-finding">
+                  <p>finding #{{ finding.finding_index }}: {{ finding.citation_text_preview or "无引用原文" }}</p>
+                  <p>evidence_type={{ finding.evidence_type }} / stance={{ finding.stance }} / mention_type={{ finding.mention_type }}</p>
+                  <p>target_reference_marker={{ finding.target_reference_marker or "none" }} / citation_text_contains_target_marker={{ finding.citation_text_contains_target_marker }}</p>
+                  <p>filter_reason={{ finding.filter_reason }} / generated_strong_evidence={{ finding.generated_strong_evidence }}</p>
+                  <p>reasoning={{ finding.reasoning }}</p>
+                </article>
+              {% endfor %}
+            </details>
+          {% endif %}
+          {% if diagnostic.llm_findings_count > 0 and diagnostic.generated_strong_evidence_count == 0 %}
+            <p class="notice notice-warning">LLM 找到了可能相关的引用发现，但没有任何一条通过强证据过滤。请查看过滤原因。</p>
+            <p class="sr-only">The LLM found possible citation-related findings, but none passed the strong evidence filters. Check filter reasons below.</p>
+          {% elif diagnostic.is_fulltext_direct_empty %}
+            <p class="notice">全文已分析，但没有发现强证据。</p>
+            <p class="sr-only">The full text was analyzed, but no strong evidence was found.</p>
+            <p>全文已交给 LLM 分析，但模型没有发现可保存的正文强证据。</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    {% else %}
+      <p class="notice">还没有运行全文分析。</p>
+      <p class="sr-only">No fulltext analysis has been run.</p>
+    {% endif %}
+  </section>
+{%- endmacro %}

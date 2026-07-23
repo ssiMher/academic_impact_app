@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[57]",
+  "target_reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, Sanglu Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5(4) (2021) 1–25.",
+  "paper_level_summary_zh": "该引文在RFID声学窃听小节中概述了Tag-Bug系统，将其作为基于RFID的穿墙窃听示例，但未明确强调亚毫米精度，归类为一般性相关工作。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "[57] demonstrates the possibility of using low-cost and easily overlooked RFID tags to effectively perform through-the-wall eavesdropping. A battery-free method called Tag-Bug is proposed.",
+      "evidence_context": "RFID[98] is a wireless communication technology that uses electromagnetic waves to identify and track tags attached to objects, people, or animals. These tags are called RFID tags[99]. It stores digitized data related to the marked object and can be read by RFID readers. [57] demonstrates the possibility of using low-cost and easily overlooked RFID tags to effectively perform through-the-wall eavesdropping. A battery-free method called Tag-Bug is proposed. Tag-Bug extracts sound features in two ways: (i) vibration effect, in which the sound directly causes the label to vibrate; (ii) Reflection effect, in which the label does not vibrate, but perceives the reflected signal of nearby vibrating objects.",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, Sanglu Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5(4) (2021) 1–25.",
+      "why_this_judgment_zh": "引文在RFID窃听小节中提及该论文，将其作为通过RFID进行穿墙窃听的示例，使用了'through-the-wall eavesdropping'，但未明确提及'sub-mm'或'millimeter-level'精度。原文仅描述其为一种低成本、电池无源的方法，属于普通相关工作介绍，而非突出亚毫米级能力。 引用编号对应的参考文献条目与目标论文标题或 DOI 不匹配。",
+      "copy_ready_zh": "该引文将Tag-Bug作为RFID穿墙窃听的示例，但未强调其亚毫米级振动感知能力。",
+      "confidence": "high",
+      "postprocess_reason": "reference_entry_target_mismatch",
+      "target_reference_marker": "[57]",
+      "evidence_reference_marker": "[57]",
+      "evidence_reference_entry_raw": "[57] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling\nBu,KaiZhang,SangluLu,Thru-the-walleavesdroppingonloudspeakers\nviaRFIDbycapturingsub-mmlevelvibration,Proc.ACMInteract.Mob.\nWearableUbiquitousTechnol.5(4)(2021)1–25.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "reference_entry_target_mismatch",
+      "normalized_target_reference": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, Sanglu Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5(4) (2021) 1–25.",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": false,
+      "target_reference_entry_matches_target": false
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Tag-Bug can effectively identify the number of human voices in free-space eavesdropping, thru-the-brick-wall eavesdropping, and thru-the-insulating-glass eavesdropping, as well as accurately identify letters in free-space eavesdropping.",
+      "evidence_context": "The side-channel attacks described in the article can be launched in three different ways: medium-based eavesdropping, aerial-based eavesdropping, and reflection-based eavesdropping. Experiments have shown that Tag-Bug can successfully capture monotonous sounds when the loudness is greater than 60 dB. Tag-Bug can effectively identify the number of human voices in free-space eavesdropping, thru-the-brick-wall eavesdropping, and thru-the-insulating-glass eavesdropping, as well as accurately identify letters in free-space eavesdropping.",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, Sanglu Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5(4) (2021) 1–25.",
+      "why_this_judgment_zh": "该引文引用标记为[57]的论文作为Tag-Bug的示例，但此段描述的是实验中Tag-Bug的性能，并未明确声称亚毫米级精度或具体能力。由于是实验结果描述，且缺乏明确的能力锚定，判定为false_positive以避免过度解读。 引用编号对应的参考文献条目与目标论文标题或 DOI 不匹配。",
+      "copy_ready_zh": "引文描述了Tag-Bug的实验效果，但未直接赋予其亚毫米级能力声明。",
+      "confidence": "high",
+      "postprocess_reason": "reference_entry_target_mismatch",
+      "target_reference_marker": "[57]",
+      "evidence_reference_marker": "[57]",
+      "evidence_reference_entry_raw": "[57] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling\nBu,KaiZhang,SangluLu,Thru-the-walleavesdroppingonloudspeakers\nviaRFIDbycapturingsub-mmlevelvibration,Proc.ACMInteract.Mob.\nWearableUbiquitousTechnol.5(4)(2021)1–25.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "reference_entry_target_mismatch",
+      "normalized_target_reference": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, Sanglu Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5(4) (2021) 1–25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": false,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

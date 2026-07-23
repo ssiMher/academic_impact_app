@@ -1,0 +1,1737 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: SpaceSched: A Constellation-Wide Scheduling System for Resolving Ground Track Congestion in Remote Sensing
+CITED_PAPER_TITLE: MoiréVision: A Generalized Moiré-based Mechanism for 6-DoF Motion Sensing
+CITED_PAPER_YEAR: 2024
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3636534.3649374
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Zhihao Yan, Yanling Bu, Jun Luo 0001
+TARGET_REFERENCE_MARKER: [56]
+TARGET_REFERENCE_ENTRY: [56] Jingyi Ning, Lei Xie, Zhihao Yan, Yanling Bu, and Jun Luo. 2024.
+Moirévision: A generalized moiré-based mechanism for 6-dof motion
+sensing. InProceedings of the 30th Annual International Conference on
+Mobile Computing and Networking. 467–481.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=9 RELATED WORK; context_type=grouped_marker; contains_formula=False
+olerant operation through confidence-based restart
+capability, regardless of which side encounters an issue.
+Such responsive, efficient, and resilient design shows signif-
+icant potential in real-world deployment.
+9 RELATED WORK
+Satellite networking. Recent advancements in satellite
+networking include but not limited to in-orbit edge com-
+puting [10, 15, 18, 49], ground station design [19, 25, 67, 72],
+networking protocols [8, 40, 43, 48, 61, 81], and security
+& privacy concerns [24, 50]. In-orbit edge computing has
+emerged to move the computation paradigm from various
+ground embedded devices [13, 23, 46, 55, 56, 60, 64, 75] to
+satellites. Specifically, Orbital Edge Computing (OEC) [16]
+is first proposed to organize satellite constellations into
+computational pipelines. Serval [69] relies on a bifurcated
+query execution that uses glacial filters to obtain relatively
+still boundaries from ground stations, and dynamic filters
+toquery rapidly changing objects fromsatellites. Regarding
+ground station infrastructure design, PMSat [58] utilizes
+a phased array-coupled passive meta-surface to enhance
+satellite communication. Spectrumize [66] leverages the
+Doppler shift from satellites’ motions as a signature to
+boost sig
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+
+FULL_EXTRACTED_TEXT:
+SpaceSche
+d: A Constellation-Wide Scheduling
+System for Resolving Ground Track Congestion
+in Remote Sensing
+Zehua Sun†, Tao Ni†, Pengfei Hu‡, Tao Gu𝜘, Weitao Xu†∗
+†City University of Hong Kong, Hong Kong, China
+‡Shandong University, Qingdao, China𝜘Macquarie University, Sydney, Australia
+Email: zehua.sun@my.cityu.edu.hk, phu@sdu.edu.cn, tao.gu@mq.edu.au, {taoni2, weitaoxu}@cityu.edu.hk
+ABSTRACT
+The recent proliferation of spacecraft in Earth’s orbits has
+ushered in the rise of large-scale satellite constellations.
+However, this unprecedented growth of constellations has
+introduced a previously unforeseen challenge: ground track
+congestion. Specifically, the increasing density of orbital
+slots forces satellites to share similar orbit planes, causing
+their nadir-point projections on Earth’s surface (i.e., ground
+tracks) to overlap or remain in close proximity within short
+timeintervals.Suchorbit-endowedgroundtrackcongestion
+can degrade constellation performance in remote sensing
+operations, specified by limited constellation coverage, re-
+dundant satellite count, and delayed data delivery.
+To address this issue, we proposeSpaceSched, a hierar-
+chical scheduling framework designed to resolve ground
+track congestion in satellite constellations.SpaceSched con-
+sists of two key components: an on-ground constellation
+scheduling pipeline, comprising a coverage distributor and
+a satellite selector, and an in-space downlink scheduling
+pipeline, featuring a queue regulator. The coverage distribu-
+tor assigns attitude profiles over time to satellites, ensuring
+non-overlapping imagery capture regions. The satellite se-
+lector optimizes the constellation by strategically selecting
+a subset of satellites while maintaining coverage efficiency.
+During in-space downlink scheduling, the queue regulator
+manages the downlink traffic queue to minimize the delay
+of high-value data transmission. We evaluate SpaceSched
+∗W
+eitao Xu is the corresponding author.
+Permission
+to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that copies
+bear this notice and the full citation on the first page. Copyrights for com-
+ponents of this work owned by others than the author(s) must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to
+post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+© 2025 Copyright held by the owner/author(s). Publication rights licensed
+to ACM.
+ACM ISBN 979-8-4007-1129-9/25/11…$15.00
+https://doi.org/10.1145/3680207.3765249
+on two operational modes (i.e., stripmap and spotlight)
+across three well-established satellite constellation systems:
+SKYSAT, LEMUR, and FLOCK, with 17, 50, and 126 eval-
+uated satellites, respectively. Experimental results demon-
+strate that SpaceSched improves coverage by up to 1.84×,
+reduces satellite counts by up to 2.38×, and decreases down-
+link queue load by up to 36.46×, compared to the plain satel-
+liteconstellationsystems.Furthermore,ourcasestudyhigh-
+lights SpaceSched’s potential to meet diverse task demands.
+CCS CONCEPTS
+• Networks; •Computing methodologies;
+KEYWORDS
+Satellite Constellation, Remote Sensing, Scheduling
+ACM Reference Format:
+Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu. 2025.
+SpaceSched: A Constellation-Wide Scheduling System for Resolv-
+ing Ground Track Congestion in Remote Sensing. In The 31st
+Annual International Conference on Mobile Computing and Net-
+working (ACM MOBICOM ’25), November 4–8, 2025, Hong Kong,
+China. ACM, New York, NY, USA, 16 pages. https://doi.org/10.
+1145/3680207.3765249
+1 INTRODUCTION
+Over the past few decades, the rapid expansion of space-
+craft deployments has driven the rise of large-scale satel-
+lite constellations across various applications, including re-
+mote sensing (e.g., Landsat [76], Sentinel [59]), communi-
+cation (e.g., Starlink [51], OneWeb [29]), and navigation
+(e.g., GPS [47], GLONASS [54]). However, this rapid prolif-
+eration has intensified a growing challenge: orbital conges-
+tion[3,5,11,57],particularlyinLowEarthOrbits(LEOs).As
+highlighted by Slingshot Aerospace, “Congestion in Earth’s
+orbit is getting even worse” [1]. By the end of 2023, more
+than 12,597 satellites were in Earth orbit, with over 91% op-
+erating in LEOs. Alarmingly, more than 3,300 satellites re-
+main idle,occupyingvaluable orbital slots and exacerbating
+congestion. Addressing this issue directly is challenging, as
+832
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+Figur
+e 1: Illustration ofSpaceSched. During on-ground constellation
+scheduling, the coverage distributor improves the constellation cov-
+erage (1.84×), and the satellite selector further reduces the satellite
+count (2.38×). During in-space downlink scheduling, the queue reg-
+ulator decreases the data delivery load of downlink traffic (36.46×).
+it requires either physically removing space debris or relo-
+cating satellites to higher-altitude orbits [35, 73].
+Ground track congestion.Such orbital congestion chal-
+lenges compel deployed satellites to share more compara-
+ble or adjacent orbital planes (i.e., similar orbit elements)
+for orbit slot saving [4, 79]. A striking example of this is-
+sue occurred in 2009 when an Iridium 33 and a Russian mil-
+itary Cosmos satellite collided—an accident largely attrib-
+uted to orbital overcrowding in near-polar orbits at789 km
+altitude and 86° inclination, which are heavily utilized by
+commercial constellations [21]. The scarcity of premium or-
+bital slots exacerbates this problem, particularly in 98°sun-
+synchronous orbits (e.g., America Landsat, France SPOT,
+andCanadaRADARSAT),duetotheirabilitytoprovidecon-
+sistentilluminationandpreciserevisitcycles.Consequently,
+the nadir-point projections of these satellites on Earth’s sur-
+face (i.e., ground tracks) overlap or remain in close prox-
+imity within short time intervals (see Figure 5). We intro-
+duce and define this phenomenon asground track con-
+gestion. Unlike orbital congestion [5, 57], where satellites
+overcrowd within orbital slots, ground track congestion is
+more prominent due to the altitude-agnostic nature of satel-
+lite projections and the high dynamics of orbital movement.
+Thiscongestionsignificantlydegradessatelliteconstellation
+performanceinremotesensingoperations[83],manifesting
+in three key aspects:1) Limited constellation coverage–
+Overlapping imagery regions reduce the overall efficiency
+of data collection.2) Redundant satellite count- A lack
+of priority differentiation leads to unnecessary satellites op-
+erating in the same coverage area.3) Delayed data deliv-
+ery -Narrowdownlinkbandwidthforceshigh-valuedatato
+competefortransmission,leadingtodeliverydelays[15,80].
+Ultimately,groundtrackcongestionwastesspaceresources,
+increasesoperational costs, and hampers the constellation’s
+servicetodelivertimelyanddiversedata,makingitacritical
+implication for satellite operators.
+Prior research and comparison. As illustrated in Ta-
+ble 1, the existing solutions for mitigating congestion can
+be categorized into organization methods and scheduling
+methods. Orbit-level organization methods [37, 52] focus
+on optimizing sophisticated orbit slot planning and orbit
+element designs to reduce spatial conflicts targeting satel-
+lites yet to be launched. While these methods could directly
+address ground track congestion, they are costly and con-
+strained by limited space resources and regulatory com-
+plexities. Other methods typically prioritize specific perfor-
+mance metrics rather than directly tackling ground track
+congestion. For example, ground station distribution orga-
+nization methods [20, 71] primarily enhance the downlink
+traffic. Meanwhile, scheduling methods rely on specialized
+hardware components (e.g., Reconfigurable Intelligent Sur-
+face (RIS) [26], antenna array [85]) or satellite software-
+level configurations to optimize metrics in terms of cov-
+erage [39, 68], transmission [38, 70], and Quality of Ser-
+vice(QoS)[30,44].Moreover,thesesolutionsoftenoverlook
+critical constraints such as constellation resources, diverse
+taskdemands,andpowerlimitations.Consequently,ground
+track congestion remains an inadequately addressed chal-
+lenge, which underscores a significant research gap.
+As the first trial, we proposeSpaceSched, a hierarchical
+scheduling framework designed to resolve ground track
+congestion in satellite constellations from three key per-
+spectives. As illustrated in Figure 1,SpaceSched comprises
+two main scheduling pipelines: an on-ground constellation
+scheduling pipeline, which includes a coverage distributor
+and a satellite selector, and an in-space downlink schedul-
+ing pipeline, featuring a queue regulator. On the ground,
+the coverage distributor dynamically assigns attitude
+profiles to each satellite, reorienting them to distribute
+imagery capture tracks on non-overlapping regions. The
+satellite selector further refines the constellation by elabo-
+rately selecting a subset of satellites without compromising
+the attained coverage performance. In space, the queue
+regulator manages the downlink traffic queues of the
+selected satellites, prioritizing high-value data to minimize
+transmission load and delay. Notably,SpaceSched operates
+entirely at the software level, leveraging well-established
+attitude control and in-orbit edge computing capabilities
+for seamless deployment (see § 2.1).
+To design and implementSpaceSched, we have addressed
+the following three key challenges:
+Challenge 1: Constellation-wide coordination. Mul-
+tiple satellites within the constellation exhibit variations
+in motion dynamics (i.e., spatial-temporal coordinates)
+and task status (i.e., attitude-induced spatial coverage).
+These variations present the space-time-attitude triad
+coordination challenges. 1) Specifically, satellites within
+833
+SpaceSche d: Constellation-Wide Scheduling for Resolving Ground Track Congestion ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+Table 1: Comparison with the existing works. CR: constellation re-
+source, SR: satellite resource, ED: environmental dynamics.
+Metho
+d CR SR Load Link T
+ask Po
+wer ED
+Maqr
+ot et al. [52] m l m m m m mOrbit-le
+vel
+Lagona
+et al. [37] w l m m m m l
+Efr
+em et al. [20] m l w m m m m
+Organization
+GS-le
+vel
+DGS
+[71] m l l l m m l
+SpaceRIS
+[26] l l m l m l lHar
+dware-level
+Zhu
+et al. [85] m l m l m w m
+Umbra
+[70] m l l l w m l
+Li
+et al. [44] l l w l m m l
+STECN
+[30] m l l l l l m
+Lei
+et al. [38] m w m l m l m
+Sche
+duling
+Softwar
+e-level
+SpaceSche
+d (Ours) l l l l l l l
+(l–satisfactor
+y, w–moderate, m–weak)
+the constellation have their respective orbital states is-
+sued at different timestamps, leading to spatial-temporal
+discrepancies across the constellation. To address this,
+SpaceSched applies the nearest-time principle to establish
+a unified temporal reference for time synchronization. It
+then compensates for time offsets using the “epoch day”
+format [34], ensuring consistent spatial alignment within
+the constellation. 2) Furthermore, satellites in orbit do not
+maintain a fixed attitude configuration, causing fluctua-
+tions in spatial coverage. SpaceSched defines the spatial
+scope via boundary offsets and center shifts, then performs
+attitude-aware calibration to determine the final coverage.
+Challenge 2: Hierarchical scheduling discrepancy.
+During on-ground constellation scheduling, satellites
+within a constellation typically have different priorities
+based on their contributions to constellation coverage and
+satellite count. 1) Constellation coverage: Satellites are
+strategically assigned to cover non-overlapping regions to
+maximize efficiency. However, beyond their fixed ground
+tracks, further challenges arise, particularly meteorological
+dynamics and attitude variation intensity. Meteorological
+dynamics [45, 82] can significantly degrade data quality,
+necessitating prioritization of contamination-free regions.
+Moreover, frequent and abrupt changes [32] consume
+substantial energy and accelerate mechanical wear, making
+it crucial to maintain stable attitude variations. To address
+these challenges, the coverage distributor formulates a
+multi-objective optimization model to incorporate these
+factors as constraints and penalties. Furthermore, since
+not all satellites in the constellation are fully engaged at
+all times, optimizing coverage with partial satellite avail-
+ability becomes an additional challenge. To overcome this,
+SpaceSched applies the increment-accumulation principle,
+independently assessing and aggregating each satellite’s
+coveragecontributions.2)Satellitecount:Identifyingtheop-
+timal subset of active satellites that maximally contribute to
+coverageisanotherchallenge.Determiningindividualsatel-
+liteprioritiesandassessingtheimpactofcoveragesacrifices
+is complex. To tackle this, the satellite selector formulates
+Figur
+e 2: Satellite constellations.
+ Figur
+e 3: Orbit elements.
+a coverage-preserving model, incorporating coverage loss
+penalties as hard constraints, and employs a combinatorial
+search approach to determine the optimal satellite subset.
+Challenge 3: Downlink traffic imbalance.Satellites gen-
+erate vast amounts of data, but their downlink traffic is of-
+ten imbalanced at both the intra-satellite (i.e., high-value
+data ratio over time) and inter-satellite levels (i.e., distri-
+bution across satellites). Furthermore, satellites face signifi-
+cant constraints in downlink bandwidth bottleneck, further
+exacerbated by the high orbital dynamic nature and the
+sparse distribution of ground stations, rendering only 2%
+of the data received [15, 16]. To address this challenge, the
+queue regulator prioritizes the transmission of high-value
+data at the intra-satellite level, which leverages the global
+coverage map generated by the satellite selector as prior
+knowledge. Furthermore, to ensure load fairness across
+satellites,afairness-awarecombinatorialoptimizationstrat-
+egy is applied at the inter-satellite level.
+We implementSpaceSched using real-world Two-Line El-
+ement (TLE) orbit descriptors, and evaluate its performance
+on two modes (i.e., stripmap and spotlight) across three
+well-established satellite constellation systems: SKYSAT,
+LEMUR, and FLOCK, consisting of 17, 50, and 126 evaluated
+satellites, respectively. Experimental results demonstrate
+that SpaceSched improves coverage by up to 1.84×, reduces
+satellite counts by up to 2.38×, and decreases downlink
+queue load by up to 36.46×, compared to conventional satel-
+liteconstellationsystems.Furthermore,ourcasestudyhigh-
+lights SpaceSched’s potential to meet diverse task demands.
+Overall, SpaceSched makes the following contributions:
+•We define the phenomenon of ground track congestion,
+whichresultsinsuboptimalconstellationperformance,in-
+cluding limited constellation coverage, redundant satel-
+lite count, and delayed data delivery.
+•We proposeSpaceSched, a hierarchical scheduling frame-
+work to resolve ground track congestion.SpaceSched con-
+sists of two key components: an on-ground constellation
+scheduling pipeline, comprising a coverage distributor
+and a satellite selector, and an in-space downlink sched-
+uling pipeline, featuring a queue regulator.
+•The extensive experimental results demonstrate that
+SpaceSched improves coverage by up to 1.84×, reduces
+satellite counts by up to 2.38×, and decreases downlink
+queue load by up to 36.46×.
+834
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+(
+a) The plain satellite constellation.
+ (
+b) SpaceSched.
+(
+c) The plain satellite constellation.
+ (
+d) SpaceSched.
+Figure 4: Illustration of ground track congestion (top: 2D plane, bot-
+tom: 3D plane). The plain constellation exhibits limited and uneven
+coverage, whileSpaceSched mitigates ground track congestion.
+2 PRELIMINARY & MOTIVATION
+2.1 Satellite Constellation Primer
+Satellite constellation. As shown in Figure 2, a remote
+sensing satellite constellation is a strategically coordinated
+groupofsatellitesdeployedinspecificorbitalpatternstocol-
+lectively perform tasks. Satellites collect data in orbit and
+transmit it to ground stations via downlink, while ground
+stations use uplink to send control commands.
+Satellite system. Each satellite typically consists of two
+primary components: the platform and the payload. The
+platform provides the core systems necessary for opera-
+tion, such as power supply, attitude control, and comput-
+ing hardware. Among these, the Attitude and Orbit Control
+System (AOCS) allows precise three-axis stabilized attitude
+control [36, 68]. Furthermore, the computing hardware pro-
+vides satellites with edge computing capabilities in orbit for
+in-space downlink scheduling. Meanwhile, the payload car-
+riesspecializedequipmentdesignedtofulfillvarioustaskde-
+mands, such as optical cameras, multispectral sensors, and
+Synthetic Aperture Radars (SAR).
+Mode. The primary imagery modes include stripmap and
+spotlight. Stripmap mode, the standard operational mode,
+captures a continuous swath along the satellite’s ground
+track.Incontrast,spotlightmodesteersthesensortoremain
+on a specific target area for a relatively long period.
+Orbital element.AsshowninFigure3,theorbits(e.g.,size,
+shape, orientation, and position) are determined by the six
+orbital element parameters [63]:
+•The semi-major axis𝑎 determines the orbit’s size.
+•The eccentricity𝑒 indicates the orbit’s flatness.
+(
+a) SKYSAT (#17).
+ (
+b) LEMUR (#50).
+ (
+c) FLOCK (#126).
+Figure 5: Illustration of orbital congestion.
+•The inclination𝑖 describes the orbit’s tilt relative.
+•Theargumentofperigee 𝜔 istheanglefromtheascending
+node to the periapsis in the orbital plane.
+•The right ascension of the ascending nodeΩ is the angle
+from the vernal equinox to the ascending node in the ref-
+erence plane.
+•Themeananomaly 𝑀 indicatestheorbitalperiodfraction
+since the last periapsis passage.
+2.2 Ground Track Congestion
+To investigate ground track congestion, we conduct a quan-
+titative comparison of constellation coverage between a
+plain satellite constellation and SpaceSched in Figure 4.
+Specifically, Figure 4a & Figure 4c reveal that the cover-
+ageisprimarilyconcentratedalongthegroundtracks.How-
+ever, the ground tracks of these satellites are unevenly
+distributed: some regions experience excessive imagery,
+whileotherssufferunder-observedorentirelyunmonitored.
+Moreover, real-world imagery acquired by Planet Labs fur-
+ther confirms this effect [22], serving as cross-validation of
+thegroundtrackcongestion.Incomparison, SpaceSched mit-
+igates ground track congestion, improving coverage from
+55.17% to 84.24%, as evidenced in Figure 4b & Figure 4d.
+This phenomenon primarily stems from the satellite over-
+saturation distribution in orbit slots, as shown in Figure 5,
+which presents significant challenges in limited constella-
+tion coverage, redundant satellite count, and delayed deliv-
+ery of high-value data.
+3 SYSTEM OVERVIEW
+Figure 6 presents an overview ofSpaceSched, which oper-
+ates across both ground stations and satellite constellations.
+Ground stations.Upon issuing orbital descriptors of satel-
+lite constellations, SpaceSched initiates constellation-wide
+coordination (§ 4), i.e., space-time-attitude triad coordina-
+tion. Specifically, SpaceSched leverages a unified temporal
+reference for time synchronization, and derives the time off-
+set for space compensation.SpaceSched then calibrates the
+satellite spatial coverage based on attitude-induced bound-
+ary offset and center shift. After constellation-wide coor-
+dination, SpaceSched relies on an on-ground constellation
+schedulingpipeline(§5)consistingofacoveragedistributor
+835
+SpaceSche d: Constellation-Wide Scheduling for Resolving Ground Track Congestion ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+Figur
+e 6: Overview ofSpaceSched (§ 3).
+(§ 5.1) and a satellite selector (§ 5.2). The coverage distribu-
+tor optimizes the constellation coverage profit by factoring
+in satellite ground track, meteorological conditions, and at-
+titudevariationintensity.Throughincrement-accumulation
+scheduling,thecoveragedistributorassignsattitudeprofiles
+(i.e., yaw, pitch, and roll angles) over time to each satellite
+within the constellation. Furthermore, the satellite selector
+further refines the constellation count through combinato-
+rialsearchwithoutcompromisingtheattainedcoverageper-
+formance.Thisprocessisexecutedperiodicallytoguarantee
+that the constellation remains in a continuously optimized
+operational state.
+Satellite constellations. SpaceSched incorporates an in-
+space downlink scheduling pipeline (§ 6) featuring a queue
+regulator (§ 6.1). The active satellites, upon selection, are
+configured with assigned attitude profiles and a global cov-
+erage map as prior knowledge. The queue regulator pri-
+oritizes the transmission of high-value data at the intra-
+satellite level with this map as the global perspective, and
+further ensures equitable load (§ 6.2) at the inter-satellite
+level through fairness-aware combinatorial optimization.
+4 CONSTELLATION-WIDE COORD.
+A constellation comprises multiple satellites, each exhibit-
+ing variations in motion dynamics (i.e., spatial-temporal co-
+ordinates) and task status (i.e., attitude-induced spatial cov-
+erage). Thus, ground stations require constellation-wide co-
+ordination to eliminate such inconsistencies before execut-
+ing ground-space scheduling, i.e., space-time compensation
+(§ 4.1) and space-attitude calibration (§ 4.2).
+4.1 Space-Time Compensation
+SpaceSched requires the latest orbital state of each satel-
+lite within the constellation for precise scheduling. How-
+ever, satellites typically have their respective orbital states
+issued at different timestamps by ground stations, which
+leads to severe time desynchronization [42, 74] and spa-
+tial offsets across the constellation. To address this problem,
+SpaceSched performs space-time compensation, manifested
+by time synchronization and space compensation.
+Time synchronization. Each satellite’s orbital state
+is represented by the TLE descriptor [34] published by
+ground-based tracking catalogs, which records the orbital
+elements specifying the satellite’s position and motion
+characteristics. These orbital states are timestamped under
+the “epoch day” format, representing the day of the year
+and the fractional part of the day as a decimal value.
+Formally, we represent a satellite constellation with 𝑛
+satellites as 𝑆𝐴𝑇 = {𝑆1, 𝑆2, . . . , 𝑆 𝑛 }, with their recording
+timestamp “epoch day” as𝑇 𝐿𝐸 = {𝑇 𝐿𝐸1,𝑇 𝐿𝐸 2, . . . ,𝑇 𝐿𝐸 𝑛 }.
+To establish a unified temporal reference, we adopt the
+nearest-time synchronization principle, where the clos-
+est “epoch day” to the present time is selected as the
+constellation’s reference time𝑇 𝐿𝐸𝑟 . This synchronization
+process yields a time offset vector Δ𝑇 = 𝑇 𝐿𝐸𝑟 −
+{𝑇 𝐿𝐸1,𝑇 𝐿𝐸 2, . . . ,𝑇 𝐿𝐸 𝑛 }for the constellation.
+Space compensation. We define time𝑡 ∈𝑇 as the time
+point during the entire scheduling process. To compute the
+spatial location of a satellite at time𝑡 with time offsetΔ𝑡,
+we figure mean anomaly𝑀, eccentric anomaly𝐸, and true
+anomaly𝑉 out in turn [31]. Specifically, the mean anomaly
+𝑀 is represented as:
+𝑀 (𝑡)= 𝑀0 +𝑛(𝑡 +Δ𝑡 −𝑡0), (1)
+where𝑀0 isthemeananomalyatthereferenceepoch 𝑡0,and
+𝑛 represents mean angular motion, calculated as𝑛 =
+√
+𝜇/𝑎3.
+With 𝑀,
+we solve Kepler’s Equation to relate the mean
+anomaly 𝑀 to the eccentric anomaly𝐸:
+𝑀 (𝑡)= 𝐸(𝑡)−𝑒 sin 𝐸(𝑡). (2)
+Thetrueanomaly 𝑉 ,whichgivestheactualangularposition
+in its orbit, is then expressed as:
+tan (𝑉 (𝑡)/2)=
+√
+(1 +𝑒)
+/(1 −𝑒)tan (𝐸(𝑡)/2). (3)
+With the true anomaly𝑉 , we can determine the satellite’s
+position in the orbital plane:
+{
+𝑥′= 𝑟 cos(𝑉 ), 𝑦 ′= 𝑟 sin(𝑉 ), 𝑧 ′= 𝑟 ·0, (4)
+where the radius 𝑟 represents the distance between the
+focus of attraction and the satellite, expressed as 𝑟 =
+𝑎 (1 −𝑒2) /(1 +𝑒 cos(𝑉 )). The compensated coordinates are
+then transformed into the Earth’s longitude, latitude, and
+altitude coordinates (𝜆(𝑡), 𝜙 (𝑡), ℎ(𝑡)) through coordinate
+transformation [62].
+4.2 Space-Attitude Calibration
+Satellites in orbit do not maintain a fixed attitude configura-
+tion, which is actively controlled by AOCS to accommodate
+diverse task objectives and operational requirements. How-
+ever, when the satellite attitude varies, i.e., yaw, pitch, and
+roll angles, it can significantly alter the Field of View (FoV),
+resulting in substantial spatial coverage fluctuations. To ad-
+dresssuchattitude-inducedcoveragedeviations, SpaceSched
+calibrates the coverage by scoping FoV boundary offset and
+center shift.
+836
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+Attitude. Attitude is typically described in three-
+dimensional Euler angles, i.e., yaw ( 𝜓), pitch ( 𝜃), and
+roll (𝜉). These angles denote rotations about the vertical (Z),
+lateral (Y), and longitudinal (X) body axes, respectively. The
+attitude matrix,A, describes the rotation from the satellite’s
+body frame to the Earth-Centered Inertial (ECI) frame. This
+matrix is computed as the product of three fundamental
+rotation matrices, represented as:
+A = R𝑧 (𝜓)R𝑦 (𝜃)R𝑥 (𝜉), (5)
+R𝑧 (𝜓 )=
+[cos𝜓 −sin𝜓 0
+sin𝜓 cos𝜓 0
+0 0 1
+]
+, R𝑦 (𝜃 )=
+[ cos 𝜃 0 sin 𝜃
+0 1 0
+−sin 𝜃 0 cos 𝜃
+]
+, R𝑥 (𝜉 )=
+[1 0 0
+0 cos 𝜉 −sin 𝜉
+0 sin 𝜉 cos 𝜉
+]
+.
+FoV.The FoV refers to the angular extent of the region that
+the onboard instrument can capture at a given moment. It
+is dictated by the sensor’s optics configuration asFoV = 2 ·
+arctan(𝑑/2𝑓 )[33],where 𝑑 isthesensor’sdimension(width
+or height) and𝑓 is the focal length. Thus, the coverage on
+the Earth’s surface is expressed as:
+𝑅ℎ = ℎ ·tan(𝐹𝑜𝑉ℎ
+2 ),
+𝑅𝑣 = ℎ ·tan(𝐹𝑜𝑉𝑣
+2 ), (6)
+wher
+eℎ isthealtitude,and 𝐹𝑜𝑉ℎ and𝐹𝑜𝑉𝑣 arethehorizontal
+and vertical FoVs, respectively.
+Boundary offset. In this paper, we define attitude as the
+payload boresight w.r.t. local nadir, where𝜓, 𝜃 denote cross-
+/along-tracklookanglesinthelocalENUframe.Specifically,
+the yaw angle𝜓 (𝑡)governs the satellite’s left-right rotation,
+directly influencing the horizontal projection of FoVs. The
+pitch angle𝜃 (𝑡)controls the satellite’s upward-downward
+rotation, impacting the vertical projection of FoVs. Conse-
+quently, the adjustments to longitude and latitude projec-
+tions, factoring in the yaw/pitch angles, can be approxi-
+mated as:
+𝑅′
+ℎ = 𝑅ℎ
+cos(𝜓 (𝑡)
+), 𝑅 ′
+𝑣 = 𝑅𝑣
+cos(𝜃 (𝑡)
+), (7)
+where𝑅′
+ℎ and𝑅′
+𝑣 representtheadjustedhorizontalandverti-
+cal coverage region ranges, respectively. The roll angle𝜉 (𝑡)
+describes the satellite’s rotation around its longitudinal axis.
+Since this rotation does not alter the coverage of a single
+shot, its influence is not considered in this paper.
+Center shift. Apart from the boundary offset, the FoV
+center shifts accordingly. Given the original FoV center
+at the satellite’s nadir point, (𝜆(𝑡), 𝜙 (𝑡), ℎ(𝑡)), the shifted
+center can be calculated as follows:
+𝜆(𝑡)′= 𝜆(𝑡)+ℎ(𝑡)· tan(𝜓 (𝑡))
+𝑅𝑒 ·cos(𝜙 (𝑡)
+), 𝜙 (𝑡)′= 𝜙 (𝑡)+ℎ(𝑡)· tan(𝜃 (𝑡))
+𝑅𝑒
+, (8)
+wher
+e (𝜆′, 𝜙′)represents the shifted FoV center, and𝑅𝑒 is
+the radius of the Earth.
+Coverage calibration. Incorporating the boundary offset
+and center shift, the longitudeΔ𝜆 and latitude half-extents
+Δ𝜙 scoping the final coverage are given by
+Δ𝜆 =
+𝑅′
+ℎ
+𝑅𝑒 ·cos(𝜙′(𝑡)
+), Δ𝜙 = 𝑅′𝑣
+𝑅𝑒
+. (9)
+A
+ccordingly, the final coverage (i.e., imagery region) is
+([𝜆′−Δ𝜆, 𝜆 ′+Δ𝜆], [𝜙′−Δ𝜙, 𝜙 ′+Δ𝜙]).
+5 ON-GROUND CONSTELLATION SCHED.
+5.1 Coverage Distributor
+The first issue arising from ground track congestion is
+the sub-optimal coverage of satellite constellations. How-
+ever, distributing the imagery capture tracks across non-
+overlapping regions presents significant challenges, partic-
+ularly meteorological dynamics and attitude variation in-
+tensity. Although ta[redacted-api-key] coverage expansion works
+have been extensively investigated [26, 39, 68, 85], they ne-
+glect partial satellite availability, i.e., not all satellites within
+the constellation are operationally engaged. To overcome
+these limitations, SpaceSched designs a coverage distribu-
+tor, which well handles trade-offs of optimizing coverage
+whileminimizingcontaminationregionobservationsandat-
+titude variation intensity (§ 5.1.1), through scheduling in an
+increment-accumulation manner (§ 5.1.2).
+5.1.1 MOOP Formulation. In the coverage distributor, the
+decisions are based on the following factors:
+•Satellite ground track.Each satellite within the constel-
+lation follows a distinct ground track and possesses its
+respective coverage regions. Thus, the primary goal is to
+maximize constellation coverage by minimizing overlap-
+ping ground tracks across satellites.
+•Meteorological dynamics. The data quality of satel-
+lite imagery can be severely degraded by meteorological
+dynamics, such as cloud cover/shadow and other atmo-
+spheric conditions. Thus,SpaceSched is required to priori-
+tize capturing contamination-free regions.
+•Attitude variation intensity. Frequent or abrupt
+changesinsatelliteattitudeconsumesubstantialamounts
+ofenergyandacceleratewearonmechanicalcomponents,
+particularly for space IoT devices with limited power re-
+sources and high maintenance costs. Therefore, a well-
+designed attitude control strategy balances the satellite
+coverage and energy efficiency.
+Satellite ground track. Each satellite follows a ground
+track defined by its position(𝜆(𝑡), 𝜙 (𝑡), ℎ(𝑡))at time𝑡 ∈𝑇 .
+Satellites capture imagery at fixed time intervals (e.g., every
+second). At each time step, the satellite’s coverage is charac-
+terized by its FoV center (in Equation 8) and the correspond-
+ing boundaries (in Equation 9).
+We define a grid Γ as the constellation-level coverage,
+with a resolution of 0.05° in both longitude and latitude.
+While Γ(𝑆, 𝑡 )denotes the satellite-level coverage of satel-
+lite 𝑆 at time𝑡. Each element𝛾 in Γ denotes the number of
+times that a specific grid point is observed by the satellite or
+the constellation. Thus, the primary objective is to optimize
+837
+SpaceSche d: Constellation-Wide Scheduling for Resolving Ground Track Congestion ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+(
+a) Constellation level.
+ (
+b) Satellite level.
+Figure 7: Attitude profile distribution ofSpaceSched.
+theconstellationcoverage,whileavoidingover-observation
+andunder-observationinsomeregions.Itisspecifiedbythe
+grid coverage ratio𝐶𝑅, which quantifies the proportion of
+the grid that has been observed at least once, defined as:
+𝐶𝑅 [Γ]=
+∑
+𝑆
+∑
+𝑖
+∑
+𝑗 1(𝛾 (𝑖, 𝑗 )≠ 0)
+∑
+𝑖
+∑
+𝑗 1 , (10)
+wher
+e 𝛾 (𝑖, 𝑗 )represents the number of observed times at
+grid point(𝑖, 𝑗 ). Specifically, the indicator𝛾 (𝑖, 𝑗 )is updated
+based on whether the grid point falls within the satellite’s
+coverage, as follows:
+𝛾 (𝑖, 𝑗 )=
+{
+𝛾 (𝑖, 𝑗 )+1, if𝛾 (𝑖, 𝑗 )∈ Γ(𝑆, 𝑡 ),
+𝛾 (𝑖, 𝑗 ), otherwise. (11)
+Meteorological dynamics.To address issues of meteoro-
+logical dynamics, we retrieve meteorological data to iden-
+tify heavily contaminated areas, following the methodol-
+ogy established in prior work [69]. Notably, we deliberately
+exclude illumination conditions in our consideration, since
+those satellites equipped with SAR can capture imagery re-
+gardless of illumination conditions, and nighttime observa-
+tion may also be important data content. Rather than in-
+troducingweathercontaminationasanadditionaloptimiza-
+tion objective, which may increase computational complex-
+ity,weinsteaddeviseacontaminationmatrix Υ tosystemati-
+callytrackcontaminatedareasacrossthegrid Γ.Specifically,
+any grid element within contamination areas is flagged in
+𝜐 ∈ Υ, which allows effectively de-prioritizing weather-
+contamination areas. Specifically, the indicator𝛾 (𝑖, 𝑗 )is up-
+dated as follows:
+𝛾 (𝑖, 𝑗 )=
+{
+0, if 𝜐(𝑖, 𝑗 )= 1,
+𝛾 (𝑖, 𝑗 ), otherwise. (12)
+Attitude variation intensity.Giventhehighorbitalveloc-
+ity of satellites, short-term attitude changes are inefficient
+and impractical. To balance the constellation coverage and
+energy efficiency, we design a step size𝜖 = 𝑇 /𝑡𝑠 , where𝑡𝑠
+represents the interval during which the satellite’s attitude
+is held constant. The goal is to minimize the attitude varia-
+tion intensity of the satellite, formulated as follows:
+𝐴𝑉 𝐼 = 1
+𝜖𝑛
+𝜖𝑛∑
+𝜖=1
+|Δ𝜓 (𝜖)
+|+| Δ𝜃 (𝜖)|+| Δ𝜉 (𝜖)|, (13)
+Algorithm
+1: Algorithm of the coverage distributor.
+Input: Satellite
+constellations 𝑆𝐴𝑇 , Time period𝑇 , Time offsetΔ𝑇
+Output: Optimized yaw profilesˆ𝜓 and pitch profilesˆ𝜃
+// Updating previously iterated satellites
+1 for each satellite𝑆𝑖 ∈𝑆𝐴𝑇 do
+// Setting
+bounds
+2 𝑙𝑏 ←[min(𝜓 ), min(𝜃 )]; // lower bounds
+3 𝑢𝑏 ←[max(𝜓 ), max(𝜃 )]; // upper bounds
+// Update the coverage grid Γ
+4 [𝜆, 𝜙, ℎ ]= obtainGroundTrace(𝑆𝑖,𝑇 , Δ𝑇 );
+5 for each time𝑡 in 𝑇 do
+6 𝑡𝑠
+𝑡𝑒𝑝 =
+⌊𝑇 (𝑡 )
+𝑇 /𝜖
+⌋
++1; // curr
+ent time steps
+7 𝜓 ← ˆ𝜓 {𝑖 −1}(𝑡𝑠𝑡𝑒𝑝 );𝜃 ←ˆ𝜃 {𝑖 −1}(𝑡𝑠𝑡𝑒𝑝 ); 𝜉 ←0;
+8 Γ ←obtainCoverage(𝜆(𝑡 ), 𝜙 (𝑡 ), ℎ (𝑡 ),𝜓, 𝜃, 𝜉 );
+9 end
+10 end
+// Coverage distributor optimization
+11 objectiveFcn = @(𝑥 )optimizationCovDis(𝑥, . . . );
+12 [optAngles, fval] = ga(objectiveFcn, 2·𝜖, [], [], [], [], lb, ub, [], opts);
+13 ˆ𝜓 {i} = optAngles(1:𝜖); ˆ𝜃{i} = optAngles(𝜖+1:end);
+// Fitness function
+14 Function fitness=optimizationCovDis(x, …)
+15 𝜓 = angles(1 :𝜖 );𝜃 = angles(𝜖 +1 :𝑒𝑛𝑑 );
+16 for each time𝑡 in 𝑇 do
+17 𝑡𝑠
+𝑡𝑒𝑝 =
+⌊𝑇 (𝑡 )
+𝑇 /𝜖
+⌋
++1; // curr
+ent time steps
+18 𝜓 ←𝜓 (𝑡𝑠𝑡𝑒𝑝 );𝜃 ←𝜃 (𝑡𝑠𝑡𝑒𝑝 ); 𝜉 ←0;
+19 Γ ←obtainCoverage(𝜆(𝑡 ), 𝜙 (𝑡 ), ℎ (𝑡 ),𝜓, 𝜃, 𝜉 );
+20 fitness=−𝛼 ·𝐶𝑅 +𝛽 ·𝐴𝑉 𝐼 // objective function
+21 end
+wher
+e𝜖𝑛 isthetotalnumberofstepsize, Δ representsthean-
+gle variation over a given time interval𝑡𝑠 . As shown in Fig-
+ure7,theattitudeprofileseitherattheconstellationorsatel-
+lite level render a value near zero. It is noted that, as dis-
+cussed in § 4.2, the roll angle is fixed at zero due to its neg-
+ligible impact on the coverage region.
+MOOP formulation. Given the considerations outlined
+above, we formulate a Multi-Objective Optimization Prob-
+lem(MOOP).Specifically,toachievetrade-offsinthesecom-
+peting objectives, we apply a weighted sum method [53] to
+form a unified optimization function, expressed as:
+min
+[
+−𝛼 ·
+∑
+𝑆
+∑
+𝑖
+∑
+𝑗 1(𝛾 (𝑖, 𝑗 )≠ 0 and𝜐(𝑖, 𝑗 )= 0)
+∑
+𝑖
+∑
+𝑗 1
++𝛽 · 1
+𝜖𝑛
+𝜖∑
+𝑘=1
+(|Δ𝜓 (𝑘)
+|+| Δ𝜃 (𝑘)|+| Δ𝜉 (𝑘)|)
+]
+,
+(14)
+where 𝛼 and 𝛽 weight the trade-off between maximizing
+constellation coverage while minimizing contamination re-
+gion observations and attitude variation intensity.
+5.1.2 Increment-Accumulation Scheduling. The existing op-
+timization algorithms can be broadly categorized into ex-
+act algorithms (e.g., linear programming [14] and dynamic
+838
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+programming [2]), heuristic algorithms (e.g., greedy algo-
+rithms [84]), and metaheuristic algorithms (e.g., evolution-
+ary algorithms [9, 27]). Exact algorithms guarantee optimal
+solutions but fall short of being computationally infeasible;
+heuristic algorithms provide fast but often suboptimal so-
+lutions; while metaheuristic algorithms can balance explo-
+ration and exploitation to find near-optimal solutions effi-
+ciently in large search spaces. To this end, we adopt the Ge-
+neticAlgorithm(GA)[27],atypeofevolutionaryalgorithm,
+to solve the optimization problem. However, since satellites
+within the constellation are not fully engaged, optimizing
+constellation coverage with partial satellite availability be-
+comes a challenge. Thus,SpaceSched leverages the principle
+of increment-accumulation, to independently assess and ag-
+gregate each satellite’s coverage contributions.
+As shown in Algorithm 1, the initial population of can-
+didate solutions is the attitude profiles fixed at zero for
+each satellite within the constellation, constrained within
+their predefined bounds. Each individual in the population
+is represented as a vector𝑋1 of size 2𝜖, denoted as𝑋1 =
+[𝜓1,𝜓 2, . . . ,𝜓 𝜖, 𝜃1, 𝜃2, . . . , 𝜃 𝜖 ]. The fitness function evaluates
+the constellation coverage throughout the time period𝑇 .
+SpaceSched optimizes the constellation coverage by itera-
+tively adjusting the attitude profiles of each satellite, i.e.,
+the principle of increment-accumulation. For each satellite,
+the previously iterated satellites with the assigned attitude
+profiles are evaluated in the context of the overall constella-
+tion, ensuring global constellation optimization. It is noted
+thattheorderinwhichsatellitesareconsideredhaslittleim-
+pactonconstellationcoverage,because 𝐶𝑅 isproportionally
+small relative to the larger𝐴𝑉 𝐼 penalties.
+5.2 Satellite Selector
+While the coverage distributor enhances constellation cov-
+erage by minimizing overlapping observations, it does not
+fully resolve ground track congestion due to inherent satel-
+lite count redundancy. The existing works typically choose
+the specific satellite group to enhance communication be-
+haviors (e.g., RIS-assisted sub-THz access/relaying [26],
+satellite-ground contact [70], and inter-satellite link [44]),
+while SpaceSched refines the minimum set of satellites with-
+out compromising the attained service performance. How-
+ever, ascertaining each individual satellite’s priority and its
+coverage sacrifices to the constellation is challenging. To
+this end, we propose a satellite selector to reduce the count
+of active satellites through combinatorial search.
+5.2.1 Hard-Soft Formulation. Likewise, the satellite selec-
+torfactorsinseveralfactors,includingconstellationground
+tracks and coverage loss tolerance.
+Constellation ground tracks.In contrast to the satellite-
+level ground track in the coverage distributor, the satellite
+(
+a) Across constellations.
+ (
+b) Across time spans.
+Figure 8: Illustration of the load fairness ofSpaceSched.
+selector operates at the constellation level by leveraging
+aggregated ground tracks. Given the constellation ground
+track tuple(Λ(𝑇 ), Φ(𝑇 ), 𝐻 (𝑇 ))during 𝑇 , a binary decision
+vector x ∈ {0, 1}𝑛 is employed, where each element𝑥𝑖 in-
+dicates whether satellite 𝑆𝑖 is selected (𝑥𝑆𝑖 = 1) or not
+(𝑥𝑆𝑖 = 0). Consequently, the total satellite count is repre-
+sented as∑𝑛
+𝑖=1 𝑥𝑆𝑖 .
+Coverage loss tolerance.To ensure tolerant coverage loss
+whilereducingsatellitecount,wesetacoveragelosspenalty
+function to maintain a soft coverage within a hard prede-
+fined threshold𝜏 constraint. Thus, the objective function of
+the satellite selector is formulated as:
+min
+{∑𝑛
+𝑖=1 𝑥𝑆𝑖 +𝜂 ×|𝐶𝑅′−𝐶𝑅 |, if |𝐶𝑅′−𝐶𝑅 |> 𝜏∑𝑛
+𝑖=1 𝑥𝑆𝑖 , otherwise, (15)
+where 𝐶𝑅 and 𝐶𝑅′represent the coverage in the coverage
+distributor and the satellite selector, respectively; and𝜂 rep-
+resents the penalty parameter in case of exceeding the pre-
+defined threshold𝜏.
+5.2.2 Combinatorial Optimization. Eachcandidatesolution
+in the satellite selector is represented by a binary decision
+vector 𝑋2 of size𝑛 in 𝑆𝐴𝑇 , denoted as𝑋2 = 𝑥𝑆1 , 𝑥𝑆2 , . . . , 𝑥 𝑆𝑛 ,
+where 𝑥𝑆𝑖 ∈ 0, 1 indicates whether satellite𝑆𝑖 is selected
+or not. The fitness function evaluates the selected satel-
+lite subsets with a soft tolerance to the constellation cov-
+erage from the coverage selector, as formulated in Equa-
+tion 15. Crucially, each satellite is designed to possess an
+equitable priority in coverage contribution, as uneven uti-
+lization could lead to premature degradation of overused
+satellites while underutilizing others. As such,SpaceSched
+leverages the combinatorial search principle to identify the
+optimal satellite subset and enforces fairness across satel-
+lites (see § 6.2). Additionally, as for these unselected satel-
+lites, SpaceSched allows for the assignment of auxiliary or
+other lower-priority tasks to them, thereby improving the
+overall constellation utilization.
+6 IN-SPACE DOWNLINK SCHEDULING
+Following on-ground constellation scheduling, satellites
+may still encounter delayed delivery of high-value data
+due to the massive data load. While the existing downlink
+scheduling works [12, 65] mainly target resource allocation
+839
+SpaceSche d: Constellation-Wide Scheduling for Resolving Ground Track Congestion ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+(
+a) SKYSAT constellation (17 satellites).
+ (
+b) LEMUR constellation (50 satellites).
+ (
+c) FLOCK constellation (126 satellites).
+Figure 9: Illustration of the ground tracks of three satellite constellations during 6 hours on the Earth map under Mercator projection.
+or collision mitigation, and in-orbit edge computing solu-
+tions [15, 16] perform ta[redacted-api-key] data filtering for band-
+width optimization,SpaceSched aims to alleviate data imbal-
+ance at both intra-satellite and inter-satellite levels. How-
+ever, locating high-value data from the satellite’s local per-
+spective, and enforcing intra- and inter-satellite load fair-
+nessareextremelychallenging.Toaddressthesechallenges,
+we propose a queue regulator to prioritize high-value data
+traffic (§ 6.1) under a fair load manner (§ 6.2).
+6.1 Queue Regulator
+Eachsatellitetypicallyoperateswithalimitedlocalperspec-
+tive, so high-value data cannot be identified without the
+constellation-level global context. To this end, the selected
+activesatellitesareprovidedwithaglobalcoveragemap,to-
+gether with optimized attitude profiles and necessary satel-
+lite operation commands, from ground stations. The global
+coveragemap Γ recordstheoptimizedcoverageoftheentire
+satellite constellation𝑆𝐴𝑇 , which is compact in size given
+the constraints on payload capacity.
+Specifically, the queue regulator designs a dual downlink
+traffic queue architecture: a high-priority queue (𝐻𝑃 ) and
+a low-priority queue (𝐿𝑃). The high-priority queue priori-
+tizes data that significantly impacts coverage performance
+orfulfillscriticaltaskdemands(§7.5),whilethelow-priority
+queue handles those with relatively lower significance. To
+objectively assess data priority, the queue regulator uti-
+lizes 𝑝25, denoting the 25th percentile value of coverage
+ratio 𝐶𝑅 within Γ(𝑆, 𝑡 ), i.e., the coverage profile of satel-
+lite 𝑆 at time𝑡. This statistical threshold effectively distin-
+guishes between adequately covered and under-covered re-
+gions, thereby guiding the data propriety to form an appro-
+priate queue. Specifically, the data𝐷 (𝑆, 𝑡 )priority is classi-
+fied as follows:
+𝐷 (𝑆, 𝑡 )=
+{
+HP, if𝐶𝑅 [Γ(𝑆, 𝑡 )]< 𝑝25
+LP, if𝐶𝑅 [Γ(𝑆, 𝑡 )]≥ 𝑝25. (16)
+Each satellite within the constellation possesses its unique
+priority queue and transmits the data asynchronously.
+6.2 Load Fairness
+Whilethequeueregulator,supportedbytheglobalcoverage
+map, enables data prioritization at the intra-satellite level, it
+may potentially lead to uneven queue load distribution at
+the inter-satellite level. To be specific, some satellites might
+be overloaded with excessive𝐻𝑃 queues while others re-
+main underutilized.
+To investigate this potential imbalance, we quantify the
+𝐻𝑃 proportion in Figure 8 across constellations and time
+spans. The distribution of the 𝐻𝑃 proportion exhibits a
+high degree of balance, as evidenced by the steep incline
+of the CDF curve. Furthermore, the𝐻𝑃 proportion is re-
+ally small and remains consistently below about 7%. These
+two results suggest that the load is fairly distributed with-
+out overburdening any single active satellite. This balanced
+distribution is primarily attributed to the satellite selector’s
+fairness-aware combinatorial optimization strategy, which
+elaborately selects the satellite in an equitable manner.
+7 EVALUATION
+7.1 Methodology
+Implementation. We develop SpaceSched by modeling
+orbital mechanics, traffic dynamics, and attitude control
+behaviors of satellite constellations. Specifically, the or-
+bital mechanics are derived from real-world TLE orbit
+descriptors obtained from CelesTrak under Keplerian
+Laws [63]. The on-ground scheduling is executed on a
+workstation (with Intel Core i7-107002.90 GHzCPU, 64 GB
+RAM, and NVIDIA GeForce RTX 3080 GPU), while the
+in-space downlink scheduling is operated on Jetson TX2
+on-board computing hardware (with 256-core NVIDIA
+PascalTM-family GPU and8 GBRAM).
+Satellite constellations.We evaluateSpaceSched on three
+large-scale, well-established satellite constellation systems:
+SKYSAT, LEMUR, and FLOCK, comprising 17, 50, and 126
+evaluated satellites (derived from available and validated
+TLE files), as shown in Figure 9. Notably, the FLOCK con-
+stellation represents the world’s largest operational remote
+840
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+(
+a) Coverage.
+ (
+b) Count.
+ (
+c) Load.
+ (
+d) Attitude variation intensity.
+Figure 10: End-to-end performance ofSpaceSched over three constellations.
+(
+a) Coverage.
+ (
+b) Count.
+ (
+c) Load.
+ (
+d) Attitude variation intensity.
+Figure 11: End-to-end performance ofSpaceSched over three time spans.
+Figur
+e 12: Impact of generations.
+Figur
+e 13: Impact of iterations.
+sensing satellite constellation in scale to date [6]. The three
+constellations are detailed as follows:
+•SKYSAT constellation consists of three satellite genera-
+tions of A/B/C, operated by Planet Labs. SKYSAT deliv-
+ers sub-meter resolution observation, multi-spectral, and
+video applications.
+•LEMUR constellation,operatedbySpireGlobal,provides
+a multi-use payload, such as remote sensing and GPS ra-
+dio occultation.
+•FLOCK is a fleet of nanosatellites (CubeSats), each with
+the size of a shoebox and weighing approximately5 kg.
+FLOCKprovidesmedium-resolution(3-5meters)imagery
+with strong daily global coverage.
+Details. The FoV is set to𝐹𝑜𝑉ℎ = 7° and 𝐹𝑜𝑉𝑣 = 5°. The ob-
+servationrangeforevaluationsisageographicallybounded
+rangespanningalatitudeof25–50 ° andalongitudeof−125–
+−75°, encompassing a significant portion of North America.
+Regarding operation parameters, the step size is𝜖 = 36, and
+thethresholdis 𝜏 = 0.5.Theformulationparametersinclude
+𝛼 = 100, 𝛽 = 0.05, and𝜂 = 1000 as penalties and constraints.
+The optimization parameters are set to a generation of 20
+and a population size of 100.
+Benchmarks. We evaluateSpaceSched against Baseline, a
+plain satellite constellation configuration. Specifically,Base-
+line operates with the default Off Nadir Angle (ONA) (i.e.,
+0°), entire satellite set, and sequential downlink queue.
+Metrics. Weassessthefollowingfourperformancemetrics:
+(1) Coverage.The grid coverage ratio (Equation 9) quanti-
+fies the coverage performance of the coverage distributor.
+(2) Count.Theactivesatellitecount(Equation15)measures
+the effectiveness of the satellite selector.
+(3) Load. The data ratio that achieves the expected cover-
+age performance (i.e., 95%) serves as the data delivery load,
+to assess the queue regulator.
+(4) Attitude variation intensity.Mean sum of variations
+in satellite attitude profiles (Equation 13) characterizes the
+operational stability of satellites.
+7.2 End-to-End Performance
+We evaluate the end-to-end performance of SpaceSched
+on three satellite constellations of SKYSAT, LEMUR, and
+FLOCK, respectively. As illustrated in Figure 10,SpaceSched
+demonstrates a significant performance enhancement in
+coverage increment, count decrement, and load cut than
+Baseline. Specifically, SpaceSched achieves coverage of
+52.38%,84.24%,and98.93%,outperforming Baseline’s29.24%,
+55.17%, and 65.63%, respectively. This is because a larger
+constellation typically provides greater flexibility in im-
+agery capture. Furthermore,SpaceSched decreases the satel-
+lite count to 11, 31, and 53, compared to 17, 50, and 126 of
+Baseline. Conversely, satellites within a larger constellation
+typically share closer coverage regions, which suggests a
+more severe ground track congestion. At last,SpaceSched
+decreases the date delivery load to 5.09%, 4.17%, and 3.70%
+841
+SpaceSche d: Constellation-Wide Scheduling for Resolving Ground Track Congestion ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+(
+a) Coverage.
+ (
+b) Fitness over total generations.
+ (
+c) Attitude variation intensity.
+ (
+d) Attitude distribution.
+Figure 14: Impact of attitude ranges.
+(
+a) Coverage.
+ (
+b) Fitness over total generations.
+ (
+c) Attitude variation intensity.
+ (
+d) Attitude distribution.
+Figure 15: Impact of step sizes𝜖.
+from Baseline ’s 80.56%, 97.69%, and 85.65%. This suggests
+that SpaceSched can render an extremely small data load to
+ensureminimaldelaylatency.Overall, SpaceSched improves
+coverage by 1.51–1.79×, reduces satellite counts by 1.55–
+2.38×, and decreases data delivery load by 15.83–23.43×,
+compared toBaseline.
+Figure 11 presents the end-to-end performance of
+SpaceSched on the SKYSAT satellite constellation over three
+time spans of 6, 12, and 24 hours, respectively. Overall,
+SpaceSched improves coverage by 1.50–1.84 ×, decreases
+satellite counts by 1.21–1.55×, and decreases data delivery
+load by 15.83–36.46×, compared to Baseline. Notably, as
+the time span increases,SpaceSched consistently improves
+larger coverage, necessitating more active satellites. How-
+ever, the data load ratio declines due to incurring a greater
+overall transmission load over longer time spans, which in-
+directly suggests a more severe ground track congestion.
+Furthermore,Figure10d&Figure11dillustratetheCumu-
+lative Distribution Function (CDF) of the attitude variation
+intensity forSpaceSched. Overall,SpaceSched exhibits rela-
+tively low attitude variation intensity In particular, for the
+SKYSAT constellation over the 6-hour span, the probability
+that the intensity is less than 20 is 86.67%, which is consid-
+ered satisfactory for satellite operation.
+7.3 Micro-benchmarking
+7.3.1 Impact of Generation. Figure 12 illustrates the fitness
+overgenerationsof SpaceSched duringtheoptimizationpro-
+cessofthecoveragedistributor.Asthegenerationincreases,
+the best value of the fitness function shows a gradual im-
+provement, with its mean value converging quickly to near-
+optimal solutions (about 10 generations). This indicates that
+SpaceSched is able to refine the performance rapidly over
+time, but with diminishing returns as it approaches conver-
+gence. Furthermore, as satellite iterations increase, the fit-
+ness continues to improve due to more participating satel-
+lites and a broader solution space.
+7.3.2 Impact of Satellite Iteration. Figure 13 illustrates the
+fitness over iterations. For better visualization, we normal-
+ize both the best fitness values and the satellite iterations
+across different constellations. We observe that the fitness
+improves rapidly during the initial iterations and tends to
+stagnate or experience only marginal improvements in the
+later iterations. This behavior indicates the presence of di-
+minishing returns as more satellites are involved, suggest-
+ing the presence of redundant satellites.
+7.3.3 Impact of Attitude Range. We evaluate the impact of
+attituderangesof45°,30°,and15° ofSpaceSched inFigure14.
+As the attitude range decreases, the coverage shrinks, ren-
+dering 52.38%, 43.86%, and 36.44% for the attitude range of
+45°, 30°, and 15°, respectively. Furthermore, a smaller atti-
+tuderangemayinduceasmallerattitudevariationintensity.
+The reason is that a wider range allows for broader cover-
+age but more unstable variation. This suggests an elaborate
+choice in attitude range can balance the coverage and the
+attitude variation intensity.
+7.3.4 Impact of Step Size. We evaluate the impact of step
+sizes 𝜖 of 18, 36, and 72 ofSpaceSched in Figure 15. As the
+step size increases, we observe a slight improvement in cov-
+erage (i.e., 51.54%, 52.38%, and 52.71%) due to the more flex-
+ible attitude resolution. Furthermore, a larger step size re-
+sults in smaller attitude variation intensity, as it promotes
+842
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+(
+a) Fitness over total generations.
+ (
+b) Convergence margin.
+Figure 16: Impact of thresholds𝜏.
+smoother transitions between attitude profiles. These re-
+sults suggest that optimizing the step size can strike a bal-
+ance between maximizing coverage and minimizing control
+overhead, providing a practical guideline for system design.
+7.3.5 Impact of Threshold. We evaluate the impact of vary-
+ing thresholds 𝜏 of 0.03, 0.05, 0.07, and 0.1 ofSpaceSched
+in Figure 16. A higher threshold 𝜏 allows SpaceSched to
+achieve a lower satellite count by permitting greater tol-
+erance for coverage loss. Specifically, for the LEMUR con-
+stellation, the satellite count becomes 33, 31, 29, and 27, re-
+spectively. Furthermore, we observe that the optimization
+process in the satellite selector initially incurs a significant
+penaltyintheearlygenerationsbutconvergesrapidlythere-
+after. These findings suggest the importance of balancing
+the trade-offs between satellite count and coverage loss.
+7.4 Quantitative Comparison
+Setup. To further highlight the superior capabilities of
+SpaceSched, we conduct a quantitative comparison with the
+aforementioned benchmarks, i.e., the orbit-level organiza-
+tion methods. These kinds of methods require taking into
+account many limitations, such as policy regulation impo-
+sition and high-quality slot scarcity. Therefore, a fair and
+straightforward performance comparison is to select the
+same number of orbits (i.e., 31 as the satellite selector of
+SpaceSched) in the LEMUR constellation for comparison.
+Results. Figure 9 illustrates the coverage of orbit-level or-
+ganization methods, which only possess a ratio of 54.82%. It
+issignificantlylowerthan79.80%attainedby SpaceSched,as
+illustrated in Figure 4. The primary reason is that the orbits
+are fixed prior to satellite launch, and cannot adapt to dy-
+namic environments and task demands. WhileSpaceSched
+candynamicallyadjustattitudeovertimetomaximizesatel-
+lite operations, which underscores the fundamental advan-
+tage of software-level solutions.
+7.5 Case Study
+Setup. To verify theSpaceSched’s potential to meet diverse
+remote sensing task demands, we deploySpaceSched in dif-
+ferent task demands, i.e., the spotlight mode. For the spot-
+light mode, the coverage distributor prioritizes maximizing
+(
+a) 2D plane.
+ (
+b) 3D plane.
+Figure 17: Performance of the orbit-level organization methods.
+the duration of observation on a given region. Thus, two
+metrics are used to evaluate the observation task: observa-
+tion frequency (represented by the mean number of obser-
+vations 𝜇Γ′ across Γ) and observation uniformity (measured
+by the variance𝜎2
+Γ′). A higher mean indicates frequent and
+sufficient observation, while a low variance suggests that
+the observations are well-distributed. With these demands,
+the optimization objective is represented by
+min [−𝛼′×𝜇Γ′ +𝛽′×𝜎2
+Γ′], (17)
+where 𝛼′ and 𝛽′ are the weight parameters, 𝜇Γ′ =
+1
+𝐼
+𝐽
+∑𝐼
+𝑖=1
+∑𝐽
+𝑗=1 Γ′
+𝑖 𝑗 , 𝜎2
+Γ′ = 1
+𝐼
+𝐽
+∑𝐼
+𝑖=1
+∑𝐽
+𝑗=1
+(
+Γ′
+𝑖 𝑗 −𝜇Γ′
+)2
+. Further-
+more, for the satellite selector, the threshold𝜏 is set to 5
+as a coverage frequency loss tolerance. The optimization ob-
+jective remains unchanged for the queue regulator.
+Results. Figure18illustratestheperformanceof SpaceSched
+operating in spotlight mode. Overall, SpaceSched demon-
+strates a substantial improvement in coverage frequency
+and a decrement in satellite counts. Specifically,SpaceSched
+achieves a coverage frequency of 40.22 compared to 2.32 of
+Baseline, and reduces the satellite count to 9 from 17. While
+the downlink load remains smaller, even when the cover-
+age frequency increases significantly. These results validate
+SpaceSched ’s potential in various real-world applications,
+even in dynamic task adaptation to emergent situations.
+8 DISCUSSION
+Imagery deformation. While ideal imagery data is cap-
+tured under ONAs, maintaining consistent ONAs over time
+proves challenging and operationally inefficient for satel-
+lites. In contrast, such flexibility provides opportunities for
+strategic attitude adjustments. Although attitude variations
+can introduce partial image distortions [77],SpaceSched al-
+leviates these deformations by minimizing the attitude vari-
+ation range and intensity (i.e., near-zero deformation levels
+as evidenced in Figure 7). Moreover, residual deformation
+can be further corrected using multi-channel data registra-
+tion, geometric correction, and co-registration techniques.
+Latency, efficiency, and resilience.SpaceSched operates
+through a coordinated ground-space architecture. Ground
+stations, with substantial processing capabilities, perform
+843
+SpaceSche d: Constellation-Wide Scheduling for Resolving Ground Track Congestion ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+(
+a) Baseline.
+ (
+b) SpaceSched.
+ (
+c) Coverage & count.
+ (
+d) Coverage fre. & var.
+Figure 18: Case study: the spotlight mode.
+computationally intensive optimization tasks in advance
+and periodically to render minimal latency. Satellites in
+space efficiently execute the received commands and per-
+form the queue regulator. Furthermore,SpaceSched enables
+fault-tolerant operation through confidence-based restart
+capability, regardless of which side encounters an issue.
+Such responsive, efficient, and resilient design shows signif-
+icant potential in real-world deployment.
+9 RELATED WORK
+Satellite networking. Recent advancements in satellite
+networking include but not limited to in-orbit edge com-
+puting [10, 15, 18, 49], ground station design [19, 25, 67, 72],
+networking protocols [8, 40, 43, 48, 61, 81], and security
+& privacy concerns [24, 50]. In-orbit edge computing has
+emerged to move the computation paradigm from various
+ground embedded devices [13, 23, 46, 55, 56, 60, 64, 75] to
+satellites. Specifically, Orbital Edge Computing (OEC) [16]
+is first proposed to organize satellite constellations into
+computational pipelines. Serval [69] relies on a bifurcated
+query execution that uses glacial filters to obtain relatively
+still boundaries from ground stations, and dynamic filters
+toquery rapidly changing objects fromsatellites. Regarding
+ground station infrastructure design, PMSat [58] utilizes
+a phased array-coupled passive meta-surface to enhance
+satellite communication. Spectrumize [66] leverages the
+Doppler shift from satellites’ motions as a signature to
+boost signal strength and de-multiplex transmission colli-
+sions. For networking protocols, SaTCP [7] is a cross-layer
+solution that exploits the predictability of satellite locations
+to prevent overly conservative Transmission Control
+Protocol (TCP) congestion. CosMAC [65] incorporates
+a constellation-scale medium access protocol for uplink,
+and a new network layer to schedule downlink traffic
+for Pico-satellites. SaTE [78] is a low-latency traffic engi-
+neering solution for dynamic LEO satellite constellations,
+which formulates a heterogeneous graph to infer traffic
+allocations. Additionally, plenty of works focus on GPS
+localization [28, 41] and GPS sensing [17].
+Satellite scheduling. Satellite scheduling has attracted
+growing attention at both the satellite and constellation
+scales. Early satellite-level scheduling works primarily pur-
+sue ta[redacted-api-key] objectives, e.g., observation section, down-
+link transmission [39, 68]. At the constellation scale, sched-
+uling becomes inherently multifaceted, involving system-
+wide service, load balancing, resource allocation, etc. Re-
+garding the non-uniform reception of data across ground
+stations, Umbra [70] introduces a new scheduling algo-
+rithm to selectively under-utilize some links to ground sta-
+tions.Forone-to-manyinterferenceongroundstations,Cos-
+MAC [65] formulates downlink transmission as a graph
+problemtoensureenoughinterference-freecontacts.Differ-
+ently,SpaceSched focuses on resolving ground track conges-
+tionbytheco-designofon-groundconstellationscheduling
+and in-space downlink scheduling.
+10 CONCLUSION
+In this paper, we propose the design, implementation, and
+evaluation of SpaceSched, a hierarchical scheduling frame-
+work to resolve ground track congestion in satellite con-
+stellations. SpaceSched consists of two key components: an
+on-ground constellation scheduling pipeline, comprising a
+coverage distributor and a satellite selector, and an in-space
+downlink scheduling pipeline, featuring a queue regulator.
+Experimental results on three well-established satellite con-
+stellation systems demonstrate that SpaceSched improves
+coverage by up to 1.84×, reduces satellite counts by up to
+2.38×, and decreases downlink queue load by up to 36.46×.
+Furthermore, our case study highlightsSpaceSched’s poten-
+tial to meet diverse task demands, which presents a trans-
+formative advancement for modern satellite constellations.
+ACKNOWLEDGMENTS
+We sincerely thank the anonymous shepherd and review-
+ers for their constructive comments. This project was sup-
+ported by the Innovation and Technology Commission
+of Hong Kong (Project No. MHP/072/23), the Research
+Grants Council of the Hong Kong Special Administrative
+Region, China (Project No. CityU 11202124 and CityU
+11201422), and the NSF of Guangdong Province (Project No.
+2024A1515010192).
+844
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+REFERENCES
+[1] SlingshotAerospace.2024. CongestioninEarth’sorbitisgettingeven
+worse. https://www.axios.com/2024/05/05/satellites-crowded-orbit-
+spacex.
+[2] Richard Bellman. 1966. Dynamic programming. science 153, 3731
+(1966), 34–37.
+[3] Pierre Bernhard, Marc Deschamps, and Georges Zaccour. 2023. Large
+satellite constellations and space debris: Exploratory analysis of
+strategic management of the space commons. European Journal of
+Operational Research304, 3 (2023), 1140–1157.
+[4] David C Beste. 1978. Design of satellite constellations for optimal
+continuouscoverage. IEEE Trans. Aerospace Electron. Systems3(1978),
+466–473.
+[5] AaronCBoleyandMichaelByers.2021. Satellitemega-constellations
+create risks in Low Earth Orbit, the atmosphere and on Earth.Scien-
+tific Reports11, 1 (2021), 1–8.
+[6] Christopher Boshuizen, James Mason, Pete Klupar, and Shannon
+Spanhake. 2014. Results from the planet labs flock constellation.
+(2014).
+[7] Xuyang Cao and Xinyu Zhang. 2023. SaTCP: Link-Layer Informed
+TCP Adaptation for Highly Dynamic LEO Satellite Networks. InIEEE
+INFOCOM 2023-IEEE Conference on Computer Communications. IEEE,
+1–10.
+[8] Jing Chen, Feilong Tang, Heteng Zhang, and Laurence T Yang. 2018.
+Lightweight retransmission for random access in satellite networks.
+In IEEE INFOCOM 2018-IEEE Conference on Computer Communica-
+tions. IEEE, 549–557.
+[9] YongliangChen,JinghuiZhong,LiangFeng,andJunZhang.2019. An
+adaptive archive-based evolutionary framework for many-task opti-
+mization. IEEE Transactions on Emerging Topics in Computational In-
+telligence 4, 3 (2019), 369–384.
+[10] Zhuo Cheng, Bradley Denby, Kyle McCleary, and Brandon Lucia.
+2024. EagleEye: Nanosatellite constellation design for high-coverage,
+high-resolution sensing. InProceedings of the 29th ACM International
+Conference on Architectural Support for Programming Languages and
+Operating Systems, Volume 1. 117–132.
+[11] Anthony J Correale. 2022. A Decision Analysis Framework to Con-
+sider Space Congestion in Orbit Selection. (2022).
+[12] Gaofeng Cui, Yanan Wang, Feng Li, and Weidong Wang. 2024. Com-
+pletion Time Optimization with Coupled Uplink-Downlink Resource
+Allocation for Satellite Systems.IEEE Trans. Aerospace Electron. Sys-
+tems (2024).
+[13] Kaiyan Cui, Qiang Yang, Yuanqing Zheng, and Jinsong Han. 2023.
+mmRipple: Communicating with mmWave radars through smart-
+phone vibration. InProceedings of the 22nd International Conference
+on Information Processing in Sensor Networks. 149–162.
+[14] George B Dantzig. 2002. Linear programming.Operations research50,
+1 (2002), 42–47.
+[15] BradleyDenby,KrishnaChintalapudi,RanveerChandra,BrandonLu-
+cia, and Shadi Noghabi. 2023. Kodan: Addressing the computational
+bottleneck in space. InProceedings of the 28th ACM International Con-
+ference on Architectural Support for Programming Languages and Op-
+erating Systems, Volume 3. 392–403.
+[16] Bradley Denby and Brandon Lucia. 2020. Orbital edge computing:
+Nanosatelliteconstellationsasanewclassofcomputersystem.In Pro-
+ceedings of the Twenty-Fifth International Conference on Architectural
+Support for Programming Languages and Operating Systems. 939–954.
+[17] Huixin Dong, Minhao Cui, Ning Wang, Lili Qiu, Jie Xiong, and Wei
+Wang. 2024. GPSense: Passive Sensing with Pervasive GPS Signals.
+In Proceedings of the 30th Annual International Conference on Mobile
+Computing And Networking. 1000–1014.
+[18] Kuntai Du, Yihua Cheng, Peder Olsen, Shadi Noghabi, and Junchen
+Jiang. 2025. Earth+: On-board satellite imagery compression leverag-
+ing historical earth observations. InProceedings of the 30th ACM In-
+ternational Conference on Architectural Support for Programming Lan-
+guages and Operating Systems, Volume 1. 361–376.
+[19] Geneva Ecola, Bill Yen, Ana Banzer Morgado, Bodhi Priyantha, Ran-
+veer Chandra, and Zerina Kapetanovic. 2025. SARLink: Satellite
+Backscatter Connectivity using Synthetic Aperture Radar. InProceed-
+ings of the 23rd ACM Conference on Embedded Networked Sensor Sys-
+tems. 398–410.
+[20] Christos N Efrem and Athanasios D Panagopoulos. 2020. Globally
+optimal selection of ground stations in satellite systems with site di-
+versity. IEEE Wireless Communications Letters9, 7 (2020), 1101–1104.
+[21] Austria European Space Policy Institute, Vienna and Ram S Jakhu.
+2010. Iridium-Cosmos collision and its implications for space oper-
+ations. Yearbook on Space Policy 2008/2009: Setting New Trends(2010),
+254–275.
+[22] Cyrus Foster, Henry Hallam, and James Mason. 2015. Orbit determi-
+nation and differential-drag control of Planet Labs CubeSat constella-
+tions. arXiv preprint arXiv:1509.03270(2015).
+[23] Ming Gao, Feng Lin, Weiye Xu, Muertikepu Nuermaimaiti, Jinsong
+Han, Wenyao Xu, and Kui Ren. 2020. Deaf-aid: Mobile IoT communi-
+cation exploiting stealthy speaker-to-gyroscope channel. InProceed-
+ings of the 26th Annual International Conference on Mobile Computing
+and Networking. 1–13.
+[24] GiacomoGiuliari,TommasoCiussani,AdrianPerrig,andAnkitSingla.
+2021. {ICARUS}:Attackinglowearthorbitsatellitenetworks.In 2021
+USENIX Annual Technical Conference (USENIX ATC 21). 317–331.
+[25] Chenwei Gu, Qian Wu, Zeqi Lai, Hewu Li, Yuxuan Weng, Weisen Liu,
+Jihao Li, Jun Liu, and Yuanjie Li. 2025. NovaPlan: An Efficient Plan
+of Renting Ground Stations for Emerging LEO Satellite Networks. In
+IEEE INFOCOM 2025-IEEE Conference on Computer Communications.
+IEEE, 1–10.
+[26] Sheikh Salman Hassan, Yu Min Park, Yan Kyaw Tun, Walid Saad, Zhu
+Han, and Choong Seon Hong. 2024. SpaceRIS: LEO satellite coverage
+maximizationin6Gsub-THznetworksbyMAPPODRLandwhaleop-
+timization. IEEE Journal on Selected Areas in Communications(2024).
+[27] Chunlin He, Yong Zhang, Dunwei Gong, and Xinfang Ji. 2023. A
+review of surrogate-assisted evolutionary algorithms for expensive
+optimization problems. Expert Systems with Applications217 (2023),
+119495.
+[28] Songtao He, Mohammad Amin Sadeghi, Sanjay Chawla, Mohammad
+Alizadeh, Hari Balakrishnan, and Samuel Madden. 2021. Inferring
+high-resolution traffic accident risk maps based on satellite imagery
+andGPStrajectories.In Proceedings of the IEEE/CVF International Con-
+ference on Computer Vision. 11977–11985.
+[29] YvonHenri.2020. TheOneWebsatellitesystem. In Handbook of Small
+Satellites: Technology, Design, Manufacture, Applications, Economics
+and Regulation. Springer, 1091–1100.
+[30] TaoHuang,ZeruFang,QinqinTang,RenchaoXie,TianjiaoChen,and
+F Richard Yu. 2024. Dual-Timescales Optimization of Task Schedul-
+ing and Resource Slicing in Satellite-Terrestrial Edge Computing Net-
+works. IEEE Transactions on Mobile Computing(2024).
+[31] Rasha H Ibrahim and Abdul-Rahman H Saleh. 2019. Re-Evaluation
+solution methods for Kepler’s equation of an elliptical orbit. Iraqi
+Journal of Science(2019), 2269–2279.
+[32] Akira Iwasaki. 2011. Detection and estimation satellite attitude jitter
+usingremotesensing imagery. Advances in Spacecraft Technologies13
+(2011), 257–272.
+[33] Zhong Ji, Yujin Liu, Chuanxi Zhao, Zhong Lin Wang, and Wenjie Mai.
+2022. Perovskite Wide-Angle Field-Of-View Camera.Advanced Ma-
+terials 34, 41 (2022), 2206957.
+845
+SpaceSche d: Constellation-Wide Scheduling for Resolving Ground Track Congestion ACM MOBICOM ’25, November 4–8, 2025, Hong Kong, China
+[34] Erin Kahr, Oliver Montenbruck, and Kyle PG O’Keefe. 2013. Estima-
+tion and analysis of two-line elements for small satellites.Journal of
+Spacecraft and Rockets50, 2 (2013), 433–439.
+[35] Patrick Kelly and Riccardo Bevilacqua. 2019. An optimized analyti-
+cal solution for geostationary debris removal using solar sails.Acta
+Astronautica 162 (2019), 72–86.
+[36] Raymond Kristiansen and Per Johan Nicklasson. 2005. Satellite atti-
+tude control by quaternion-based backstepping. InProceedings of the
+2005, American Control Conference, 2005.IEEE, 907–912.
+[37] Enrico Lagona, Samuel Hilton, Andoh Afful, Alessandro Gardi, and
+Roberto Sabatini. 2022. Autonomous trajectory optimisation for intel-
+ligent satellite systems and space traffic management.Acta Astronau-
+tica 194 (2022), 185–201.
+[38] Lei Lei, Anyue Wang, Eva Lagunas, Xin Hu, Zhengquan Zhang,
+Zhiqiang Wei, and Symeon Chatzinotas. 2024. Spatial-temporal re-
+source optimization for uneven-traffic LEO satellite systems: Beam
+pattern selection and user scheduling.IEEE Journal on Selected Areas
+in Communications(2024).
+[39] Michel Lemaitre, Gérard Verfaillie, Frank Jouhaud, Jean-Michel
+Lachiver, and Nicolas Bataille. 2002. Selecting and scheduling obser-
+vationsofagilesatellites. Aerospace Science and Technology6,5(2002),
+367–381.
+[40] Jihao Li, Hewu Li, Zeqi Lai, Qian Wu, Yijie Liu, Qi Zhang, Yuanjie Li,
+and Jun Liu. 2024. Satguard: Concealing endless and bursty packet
+losses in leo satellite networks for delay-sensitive web applications.
+In Proceedings of the ACM Web Conference 2024. 3053–3063.
+[41] Ruinan Li, Xiaolong Zheng, Liang Liu, and Huadong Ma. 2024. Plug-
+and-play Indoor GPS Positioning System with the Assistance of Op-
+tically Transparent Metasurfaces. InProceedings of the 30th Annual
+International Conference on Mobile Computing and Networking. 875–
+889.
+[42] Yijie Li, Weichong Ling, Taiting Lu, Yi-Chao Chen, Vaishnavi Ran-
+ganathan, Lili Qiu, and Jingxian Wang. 2025. MmBack: Clock-free
+Multi-Sensor Backscatter with Synchronous Acquisition and Multi-
+plexing. arXiv preprint arXiv:2507.01360(2025).
+[43] Yuanjie Li, Lixin Liu, Hewu Li, Wei Liu, Yimei Chen, Wei Zhao, Jian-
+ping Wu, Qian Wu, Jun Liu, and Zeqi Lai. 2024. Stable Hierarchical
+Routing for Operational LEO Networks. InProceedings of the 30th An-
+nual International Conference on Mobile Computing and Networking.
+296–311.
+[44] Yuanfeng Li, Qi Zhang, Haipeng Yao, Ran Gao, Xiangjun Xin, and
+F Richard Yu. 2024. Stigmergy and hierarchical learning for routing
+optimization in multi-domain collaborative satellite networks.IEEE
+Journal on Selected Areas in Communications(2024).
+[45] Zhiwei Li, Huanfeng Shen, Qihao Weng, Yuzhuo Zhang, Peng Dou,
+and Liangpei Zhang. 2022. Cloud and cloud shadow detection for op-
+ticalsatelliteimagery: Features,algorithms,validation, andprospects.
+ISPRS Journal of Photogrammetry and Remote Sensing188 (2022), 89–
+108.
+[46] Jianwei Liu, Yinghui He, Chaowei Xiao, Jinsong Han, Le Cheng, and
+Kui Ren. 2022. Physical-world attack towards WiFi-based behav-
+ior recognition. InIEEE INFOCOM 2022-IEEE Conference on Computer
+Communications. IEEE, 400–409.
+[47] Jie Liu, Bodhi Priyantha, Ted Hart, Yuzhe Jin, Woosuk Lee, Vijay
+Raghunathan, Heitor S Ramos, and Qiang Wang. 2015. CO-GPS: En-
+ergy efficient GPS sensing with cloud offloading.IEEE Transactions
+on Mobile Computing15, 6 (2015), 1348–1361.
+[48] LixinLiu,YuanjieLi,HewuLi,JiaboYang,WeiLiu,JingyiLan,Yufeng
+Wang, Jiarui Li, Jianping Wu, Qian Wu, et al. 2024. Democratizing
+{Direct-to-Cell}Low Earth Orbit Satellite Networks. In21st USENIX
+Symposium on Networked Systems Design and Implementation (NSDI
+24). 791–808.
+[49] Weisen Liu, Zeqi Lai, Qian Wu, Hewu Li, Qi Zhang, Zonglun Li,
+Yuanjie Li, and Jun Liu. 2024. In-Orbit Processing or Not? Sunlight-
+Aware Task Scheduling for Energy-Efficient Space Edge Computing
+Networks. InIEEE INFOCOM 2024-IEEE Conference on Computer Com-
+munications. IEEE, 881–890.
+[50] Wei Liu, Yuanjie Li, Hewu Li, Yimei Chen, Yufeng Wang, Jingyi Lan,
+Jianping Wu, Qian Wu, Jun Liu, and Zeqi Lai. 2024. The dark side of
+scale: Insecurity of direct-to-cell satellite mega-constellations. In2024
+IEEE Symposium on Security and Privacy (SP). IEEE, 445–464.
+[51] Sami Ma, Yi Ching Chou, Haoyuan Zhao, Long Chen, Xiaoqiang Ma,
+and Jiangchuan Liu. 2023. Network characteristics of LEO satellite
+constellations:AStarlink-basedmeasurementfromendusers.In IEEE
+INFOCOM 2023-IEEE Conference on Computer Communications. IEEE,
+1–10.
+[52] Sara Maqrot, Stéphanie Roussel, Gauthier Picard, and Cédric Pralet.
+2022. Orbit slot allocation in earth observation constellations. In
+PAIS 2022. IOS Press, 3–16.
+[53] RTimothyMarlerandJasbirSArora.2010. Theweightedsummethod
+for multi-objective optimization: new insights.Structural and multi-
+disciplinary optimization41 (2010), 853–862.
+[54] Sujay Narayana, R Venkatesha Prasad, Vijay Rao, Luca Mottola, and
+T Venkata Prabhakar. 2020. Hummingbird: Energy efficient gps re-
+ceiver for small satellites. InProceedings of the 26th Annual Interna-
+tional Conference on Mobile Computing and Networking. 1–13.
+[55] TaoNi,ZehuaSun,MingdaHan,YaxiongXie,GuohaoLan,Zhenjiang
+Li, Tao Gu, and Weitao Xu. 2024. Rehsense: Towards battery-free
+wireless sensing via radio frequency energy harvesting. InProceed-
+ings of the Twenty-Fifth International Symposium on Theory, Algorith-
+mic Foundations, and Protocol Design for Mobile Networks and Mobile
+Computing. 211–220.
+[56] Jingyi Ning, Lei Xie, Zhihao Yan, Yanling Bu, and Jun Luo. 2024.
+Moirévision: A generalized moiré-based mechanism for 6-dof motion
+sensing. InProceedings of the 30th Annual International Conference on
+Mobile Computing and Networking. 467–481.
+[57] HirokiNishiyama,DaigoKudoh,NeiKato,andNaotoKadowaki.2011.
+Load balancing and QoS provisioning based on congestion prediction
+forGEO/LEOhybridsatellitenetworks. Proc. IEEE99,11(2011),1998–
+2007.
+[58] Hao Pan, Lili Qiu, Bei Ouyang, Shicheng Zheng, Yongzhao Zhang,
+Yi-Chao Chen, and Guangtao Xue. 2023. PMSat: Optimizing Passive
+MetasurfaceforLowEarthOrbitSatelliteCommunication.In Proceed-
+ings of the 29th Annual International Conference on Mobile Computing
+and Networking. 1–15.
+[59] Darius Phiri, Matamyo Simwanda, Serajis Salekin, Vincent R
+Nyirenda, Yuji Murayama, and Manjula Ranagalage. 2020. Sentinel-
+2 data for land cover/use mapping: A review.Remote Sensing 12, 14
+(2020), 2291.
+[60] YidongRen,PuyuCai,JinyanJiang,JialuoDu,andZhichaoCao.2023.
+Prism: High-throughput lora backscatter with non-linear chirps. In
+IEEE INFOCOM 2023-IEEE Conference on Computer Communications.
+IEEE, 1–10.
+[61] YidongRen,AmalindaGamage,LiLiu,MoLi,ShigangChen,Younsuk
+Dong, and Zhichao Cao. 2024. SateRIoT: High-performance Ground-
+Space Networking for Rural IoT. InProceedings of the 30th Annual
+International Conference on Mobile Computing and Networking. 755–
+769.
+[62] Christopher T Russell. 1971. Geophysical coordinate transformations.
+Cosmic electrodynamics2, 2 (1971), 184–196.
+[63] John L Russell. 1964. Kepler’s laws of planetary motion: 1609–1666.
+The British journal for the history of science2, 1 (1964), 1–24.
+846
+A CM MOBICOM ’25, November 4–8, 2025, Hong Kong, China Zehua Sun, Tao Ni, Pengfei Hu, Tao Gu, Weitao Xu
+[64] Leming Shen, Qiang Yang, Kaiyan Cui, Yuanqing Zheng, Xiao-Yong
+Wei, Jianwei Liu, and Jinsong Han. 2024. Fedconv: A learning-on-
+model paradigm for heterogeneous federated clients. InProceedings
+of the 22nd Annual International Conference on Mobile Systems, Appli-
+cations and Services. 398–411.
+[65] Jayanth Shenoy, Om Chabra, Tusher Chakraborty, Suraj Jog, Deepak
+Vasisht, and Ranveer Chandra. 2024. CosMAC: Constellation-Aware
+MediumAccessandSchedulingforIoTSatellites.In Proceedings of the
+30th Annual International Conference on Mobile Computing and Net-
+working. 724–739.
+[66] Vaibhav Singh, Tusher Chakraborty, Suraj Jog, Om Chabra, Deepak
+Vasisht, and Ranveer Chandra. 2024. Spectrumize: Spectrum-efficient
+Satellite Networks for the Internet of Things. InUSENIX Symposium
+on Networked Systems Design and Implementation, Santa Clara, CA.
+[67] Vaibhav Singh, Akarsh Prabhakara, Diana Zhang, Osman Yağan, and
+Swarun Kumar. 2021. A community-driven approach to democratize
+access to satellite ground stations. InProceedings of the 27th Annual
+International Conference on Mobile Computing and Networking. 1–14.
+[68] Panwadee Tangpattanakul, Nicolas Jozefowiez, and Pierre Lopez.
+2015. A multi-objective local search heuristic for scheduling Earth
+observations taken by an agile satellite.European Journal of Opera-
+tional Research245, 2 (2015), 542–554.
+[69] Bill Tao, Om Chabra, Ishani Janveja, Indranil Gupta, and Deepak Va-
+sisht. 2024. Known Knowns and Unknowns: Near-realtime Earth Ob-
+servation Via Query Bifurcation in Serval. In21st USENIX Symposium
+on Networked Systems Design and Implementation (NSDI 24). USENIX
+Association, 809–824.
+[70] Bill Tao, Maleeha Masood, Indranil Gupta, and Deepak Vasisht. 2023.
+Transmitting, fast and slow: Scheduling satellite traffic through space
+and time. InProceedings of the 29th Annual International Conference
+on Mobile Computing and Networking. 1–15.
+[71] Deepak Vasisht and Ranveer Chandra. 2020. A distributed and hybrid
+ground station network for low earth orbit satellites. InProceedings
+of the 19th ACM Workshop on Hot Topics in Networks. 190–196.
+[72] Deepak Vasisht, Jayanth Shenoy, and Ranveer Chandra. 2021. L2D2:
+Low latency distributed downlink for LEO satellites. InProceedings of
+the 2021 ACM SIGCOMM 2021 Conference. 151–164.
+[73] Jerome R Vetter. 2007. Fifty years of orbit determination.Johns Hop-
+kins APL technical digest27, 3 (2007), 239.
+[74] Jingxian Wang, Junbo Zhang, Rajarshi Saha, Haojian Jin, and Swarun
+Kumar.2019. Pushingtherangelimitsofcommercialpassive {RFIDs}.
+In 16th USENIX Symposium on Networked Systems Design and Imple-
+mentation (NSDI 19). 301–316.
+[75] Kun Wang, Jiani Cao, Zimu Zhou, and Zhenjiang Li. 2024. Swapnet:
+Efficient swapping for dnn inference on edge ai devices beyond the
+memory budget.IEEE Transactions on Mobile Computing23, 9 (2024),
+8935–8950.
+[76] Darrel L Williams, Samuel Goward, and Terry Arvidson. 2006. Land-
+sat. Photogrammetric Engineering & Remote Sensing72, 10 (2006),
+1171–1178.
+[77] TimJ Wright,Barry E Parsons,and Zhong Lu.2004. Towardmapping
+surface deformation in three dimensions using InSAR.Geophysical
+Research Letters31, 1 (2004).
+[78] Hao Wu, Yizhan Han, Mohit Rajpal, Qizhen Zhang, and Jingxian
+Wang. 2025. SaTE: Low-Latency Traffic Engineering for Satellite Net-
+works. In Proceedings of the ACM SIGCOMM 2025 Conference. 896–
+916.
+[79] Haoran Xie, Yafeng Zhan, Guanming Zeng, and Xiaohan Pan. 2021.
+LEO mega-constellations for 6G global coverage: Challenges and op-
+portunities. IEEE Access9 (2021), 164223–164244.
+[80] RuolinXing,MengweiXu,AoZhou,QingLi,YiranZhang,FengQian,
+and Shangguang Wang. 2024. Deciphering the enigma of satellite
+computing with cots devices: Measurement and analysis. InProceed-
+ings of the 30th Annual International Conference on Mobile Computing
+and Networking. 420–435.
+[81] Yaoying Zhang, Qian Wu, Zeqi Lai, and Hewu Li. 2022. Enabling low-
+latency-capable satellite-ground topology for emerging leo satellite
+networks. InIEEE INFOCOM 2022-IEEE Conference on Computer Com-
+munications. IEEE, 1329–1338.
+[82] Mingmin Zhao, Peder Olsen, and Ranveer Chandra. 2023. Seeing
+through clouds in satellite images.IEEE Transactions on Geoscience
+and Remote Sensing61 (2023), 1–16.
+[83] Qiang Zhao, Le Yu, Zhenrong Du, Dailiang Peng, Pengyu Hao, Yong-
+guang Zhang, and Peng Gong. 2022. An overview of the applications
+of earth observation satellite data: impacts and future trends.Remote
+Sensing 14, 8 (2022), 1863.
+[84] ZiYanZhao,MengChuZhou,andShiXinLiu.2021. Iteratedgreedyal-
+gorithmsforflow-shopschedulingproblems:Atutorial. IEEE Transac-
+tions on Automation Science and Engineering19, 3 (2021), 1941–1959.
+[85] Lipeng Zhu, Xiangyu Pi, Wenyan Ma, Zhenyu Xiao, and Rui Zhang.
+2024. Dynamic beam coverage for satellite communications aided by
+movable-antenna array. IEEE Transactions on Wireless Communica-
+tions (2024).
+847

@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[43]",
+  "target_reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-the-wall eavesdropping on loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25, Dec. 2021.",
+  "paper_level_summary_zh": "该论文在相关工作中将目标论文列为代表性RFID穿墙窃听工作，但未提供具体的亚毫米精度或能力确认语句；引用属于普通的相关工作归类。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Other studies, such as MILLIEAR [18], mmSpy [6], and mmWave-Whisper [7], focused on eavesdropping phone conversations by capturing speech radiated from smartphones.",
+      "evidence_context": "Active-source attacks directly detect vibrations from the speaker or device. For example, Li et al. [28] captured screen vibrations to infer on-screen content, while WaveEar [49] recovered speech by sensing throat vibrations in noisy environments. Subsequent studies enhanced speaker recognition and speech detection using mmWave signals [13, 26]. Other studies, such as MILLIEAR [18], mmSpy [6], and mmWave-Whisper [7], focused on eavesdropping phone conversations by capturing speech radiated from smartphones. Passive-source attacks, by contrast, extract secondary vibrations from nearby objects. Radiomic [35] proposed reconstructing speech via micro-vibrations on non-contact surfaces. mmPhone [41] augmented sensing with piezoelectric films to address weak vibration scenarios. mmEcho [17] departed from learning-based methods, instead using signal processing to recover intelligible speech from radar reflections off everyday indoor objects.",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-the-wall eavesdropping on loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25, Dec. 2021.",
+      "why_this_judgment_zh": "该引用出现在正文6.2节的被动型攻击（passive-source attacks）的描述中，但目标论文[43]被错误地归类为主动源攻击示例：引文列表中的[43]实际是目标论文，而正文中对应的被动攻击描述并未提及[43]。目标论文在参考文献中出现，但正文中没有显式引用[43]的语句。因此，该引用属于误放或未在正文中实际使用，推荐排除。",
+      "copy_ready_zh": "该论文在参考文献中列出目标论文，但正文中未出现直接引用或讨论目标论文的内容。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "In the References section, target paper appears as [43] but is not cited in the main body text.",
+      "evidence_context": "The Reference section lists [43] as the target paper, but a thorough search of the entire main text (Sections 1-8) shows no inline citation to [43]. The only appearance of [43] is in the reference list.",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-the-wall eavesdropping on loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25, Dec. 2021.",
+      "why_this_judgment_zh": "正文中未找到对[43]的任何引用，仅在参考文献列表中列出。因此无法评估引用意图，推荐排除以保持数据准确性。",
+      "copy_ready_zh": "目标论文仅出现在参考文献列表中，正文中未引用。",
+      "confidence": "high"
+    }
+  ]
+}

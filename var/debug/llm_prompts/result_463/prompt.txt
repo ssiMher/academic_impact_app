@@ -1,0 +1,1440 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: Multi-User Behavioral Privacy Filtering for mmWave Radar Sensing
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025 8347
+Multi-User Behavioral Privacy Filtering for mmWave
+Radar Sensing
+Xiulong Liu , Senior Member , IEEE, Hankai Liu , Jiaqi Zhang ,X i nX i e , Member , IEEE,
+and Keqiu Li , Fellow, IEEE
+Abstract—As an advanced technology for non-contact sensing,
+mmWave radar enables ﬁne-grained measurement of a wide variety
+of user behaviors. While creating intelligence and convenience, it
+also concerns behavioral privacy and security, as radar signals
+contain a wealth of behavioral information. Existing solutions are
+either incapable of customizable privacy protections or cannot cope
+with multi-person scenarios. This paper presents a M ulti-user be-
+havioral privacy Filter , MuFilter, a data masking system centered
+on the idea of dimensional signal interference. It determines the
+sensing signatures that need to be preserved or interfered with
+based on the sensing services that users want to enable and disable,
+thereby making targeted tampering on the radar signal. On this
+basis, we introduce the multi-person tracking technology to allow
+MuFilter to determine the number of users in unknown scenarios.
+Moreover, a subspace tampering technique is proposed to ensure
+that each tampering only affects the target user and not other
+users, thus supporting personalized privacy protection for multiple
+users. Experiments show that MuFilter can interfere with targeted
+behavioral signatures with a 100% success rate, while the degree
+of impact on other users’ signatures ranges from 0% to 3.85%.
+Index Terms—mmWave radar, sensing security, behavioral
+privacy, data masking.
+I. I NTRODUCTION
+A. Motivation & Problem Statement
+N
+ON-CONTACT human sensing technology collects and
+monitors human-related data conveniently without direct
+contact with the human body. It is applicable to smart homes,
+healthcare, and security surveillance, offering users a more
+comfortable experience and opening up possibilities for smarter
+living. In recent years, Millimeter-Wave (mmWave) sensing
+technology has supported a wide range of human sensing ap-
+plications due to its excellent sensing performance and low de-
+ployment costs [1]. However, the rapid development of mmWave
+technology, while bringing convenience to people’s lives, has
+also prompted concerns about privacy and security [2].I nt h i s
+paper, we focus on privacy issues of user behavior resulting
+Received 8 August 2024; revised 26 February 2025; accepted 26 March 2025.
+Date of publication 1 April 2025; date of current version 6 August 2025. This
+work was supported in part by the National Natural Science Foundation of China
+under Grant 62372324 and Grant 62402336, and in part by the Innovation Capa-
+bility Support Program of Shaanxi under Grant 2023-CX-TD-08. Recommended
+for acceptance by J.S. Sun. (Corresponding author: Jiaqi Zhang.)
+The authors are with the College of Intelligence and Computing,
+Tianjin University, Tianjin 300350, China (e-mail: xiulong_liu@tju.edu.cn;
+hkliu@tju.edu.cn; jqzhang0731@tju.edu.cn; xinxie@tju.edu.cn; ke-
+qiu@tju.edu.cn).
+Digital Object Identiﬁer 10.1109/TMC.2025.3556674
+from the leakage of radar raw data. The radar data supports a
+variety of services such as localization & tracking [3], posture
+estimation [4], [5], hand & gesture sensing [6], [7], activity
+recognition [8], vital signs monitoring [9], etc. Whether or not
+the user needs and turns them on, these sensing services can be
+realized by data processing of the raw radar signals, which raises
+behavioral privacy issues as the user may not want to expose
+all the information on their behavior. For example, a user may
+want radar to provide in-air writing and respiration monitoring
+services, but does not want to give away their position and
+posture information. Further, with multiple users in the sensing
+area, their respective privacy needs are more diverse or even
+conﬂicting. Therefore, this article aims to achieve customizable
+behavioral privacy protection for multiple users, allowing each
+user to freely set the enabled sensing services and hidden be-
+havioral information.
+B. Limitations of Prior Art
+Some studies propose to deceive external radar detection from
+the physical layer. They place speciﬁc tags [10] or backscatter
+arrays [2], [11] in the environment to modulate the radar reﬂec-
+tion signals and thus spoof radar measurements of range, angle,
+and velocity. This approach only interferes with the detection of
+human presence and cannot achieve the retention and hiding of
+speciﬁc behavioral information. mmFilter [12] proposes the idea
+of dimensional signal interference, which implements various
+data tampering methods based on the signature dimensions that
+different sensing applications rely on, achieving customizable
+behavioral privacy protection. However, it only considers single-
+user scenarios, and two reasons constrain mmFilter from being
+deployed in multi-user scenarios. On the one hand, it lacks the
+capability to detect and separate multiple users in the scene.O n
+the other hand, mmFilter’s data tampering methods act on the
+global, meaning that tampering for one user will inevitably affect
+other users, and thus it cannot support personalized privacy
+protection settings for multiple users.
+C. Our Approach
+To overcome existing limitations, we propose MuFilter, a
+multi-user behavioral privacy ﬁlter for mmWave sensing tech-
+nology. Its core idea follows the dimensional signal interference.
+Utilizing the invertibility of Fast Fourier Transform (FFT), we
+spatially unfold the radar data, tamper with the information in
+some dimensions, and then transform the tampered data into
+1536-1233 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and similar technologi es.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index. html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+8348 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025
+Fig. 1. Illustration of the multi-user behavioral privacy ﬁlter.
+the raw signal form by Inverse FFT (IFFT). In this way, we
+avoid behavioral information leakage, as it has already been
+tampered with at the data source of the sensing services. In
+order to serve multiple users, we introduce mmWave multi-
+person tracking technology to create spatial records for each
+user. Then, we utilize the spatial segmentation capability of
+mmWave radar to isolate each user and perform signal tampering
+in subspaces, thereby limiting the area of impact to the vicinity
+of the user’s location. As shown in Fig. 1, MuFilter can be
+deployed in software or hardware between the Analog-to-Digital
+Converter (ADC) and sensing processors. It can provide users
+with customizable privacy protection for ﬁve types of behavioral
+information: position, hand motion, posture, activity, and vital
+signs.
+D. Novelty & Advantages
+MuFilter is the ﬁrst system to implement multi-user cus-
+tomizable behavioral privacy ﬁltering, and it has two main
+advantages over previous works. Compared with physical-layer
+deception methods, MuFilter achieves targeted privacy protec-
+tion, with various data tampering methods being compatible with
+each other. Compared with another data layer signal tampering
+method mmFilter, MuFilter can effectively deal with multi-user
+scenarios, achieving personalized information hiding for multi-
+user without affecting each other. In other words, the main
+novelty of MuFilter is that it solves two challenges: how to
+determine the number of users in unknown scenarios, and how
+to independently interfere with the behavior information of each
+user.
+This achievement is largely attributed to two capabilities of
+our system. (1) Multi-person tracking. In mmWave multi-person
+sensing, it is essential to determine the location of each user and
+to isolate their signals. MuFilter adopts the point target tracking
+framework based on spatial point clouds. The Range-Azimuth
+(RA) point cloud obtained from Multiple-Input-Multiple-Output
+(MIMO) array signals is clustered to detect human targets. User
+trajectories and new clusters will be correlated and updated
+between frames using the Hungarian algorithm and Kalman
+ﬁltering. We also use a state mechanism for trajectory manage-
+ment. The obtained user positions will contribute to multi-user
+signal isolation and targeted tampering. (2) Subspace signal
+tampering. Tampering based only on data dimensions affects
+all targets globally, which goes against the need for multi-user
+personalization. To solve this, MuFilter fully utilizes the spatial
+separation capability of mmWave radar. We use Range-Angle
+FFT to slice the space into RA bins, and then extract the
+subspaces around each user based on the tracking results. Signal
+tampering will be performed on one subspace after another, and
+the tampered subspaces will then be restored to their original
+positions and eventually uniformly inverted to the original signal
+format by full-space Angle-Range IFFT. We also solve collision
+problems that can occur in subspace separations. In this way, data
+tampering for one user is prevented from affecting other users.
+Experiments show that MuFilter can interfere with targeted
+behavioral signatures with a 100% success rate, while its impact
+on the signatures of other users ranges from 0% to 3.85%.
+The remainder of this paper is organized as follows. Section II
+provides the principle of radar-based human sensing and the
+threat model. Section III presents the system overview of Mu-
+Filter. Section IV demonstrates the customizable behavioral pri-
+vacy ﬁlter in single-user scenarios, and Section V describes the
+methodology to achieve multi-user personalization. We evaluate
+the performance of MuFilter in Section VI. The related works
+are summarized in Section VII, and Section VIII concludes this
+paper.
+II. P RELIMINARIES
+This section introduces the preliminaries of this work, includ-
+ing the working principle of mmWave radar, typical sensing
+applications and corresponding dependency signatures, and the
+threat model.
+A. mmWave Working Principles
+mmWave radar detects the distance, velocity, and angle of ob-
+jects by transmitting the frequency-modulated continuous wave
+(FMCW) signal known as the chirp signal, with the frequency
+increasing linearly over time. Suppose the chirp signal starts at
+the initial frequency fc, linearly increases over time Tc, and ends
+at fc +B where B is the bandwidth, as illustrated in Fig. 2.T h e
+frequency of the chirp signal can be expressed as f(t)= fc +kt,
+where the slope kis given byk = B
+Tc
+. The transmitted (Tx) signal
+can be expressed as
+ST(t)= ATej2π(fct+ B
+2Tc t2+φ0), (1)
+where AT is the amplitude of Tx signal, and φ0 is the initial
+phase, which is a constant. The Tx signal will be reﬂected by
+objects and back to the radar. The received (Rx) signal is a
+delayed version of the Tx signal, with a time delay given by
+τ = 2d
+c , where c is the speed of light and d is the radar-object
+distance. The Rx signal can be expressed as
+SR(t)= ARej2π(fc(t−τ)+ B
+2Tc (t−τ)2+φ0), (2)
+where AR is the Rx signal amplitude after attenuation. Then, the
+Tx and Rx signal are mixed to obtain the Intermediate Frequency
+(IF) signal
+S(t)= AIF e
+j2π
+(
+fcτ+ Bτ
+Tc t−Bτ2
+2Tc
+)
+. (3)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+LIU et al.: MULTI-USER BEHA VIORAL PRIV ACY FILTERING FOR mmWave RADAR SENSING 8349
+Fig. 2. Principles of mmWave radar human sensing.
+The time interval consisting of multiple chirps is called a frame,
+which is the basic unit of radar signal processing.
+B. Sensing Applications and Signatures
+This paper involves ﬁve commonly used human sensing ap-
+plications. While introducing them, we focus on the sensing
+signatures they rely on and the ways in which these signatures
+are obtained, which are depicted in Fig. 2. The sensing sig-
+natures contain essential information for their corresponding
+applications, and their illustrations will intuitively demonstrate
+the interference effects of the MuFilter system.
+Tracking: Tracking is a crucial application and serves as the
+foundation for other sensing applications. The resulting trajec-
+tory from tracking contains the user’s position at any moment,
+including two signature dimensions: range and azimuth. There-
+fore, its sensing signature can be represented by the RA Map
+(RAM). For the range dimension, an FFT is usually conducted
+to the IF signal to separate reﬂective objects, which is known
+as Range FFT. For the angle dimension, direction of arrival
+(DoA) estimation is applied to obtain the azimuth of the user.
+The most commonly used DoA estimation method is to perform
+FFT on the antenna array signal, which is called Angle FFT.
+Another method is Capon beamforming which minimizes the
+variance distortion response to enhance the desired signal while
+minimizing interference and noise. Capon beamforming has
+higher resolution and stronger anti-noise capabilities. Therefore,
+although our MuFilter system can act on any DoA estimation
+algorithm, for the sake of writing simplicity and demonstration
+purposes, the sensing applications in this paper will solely utilize
+Capon beamforming and showcase its results.
+Posture Estimation: The user’s posture estimation in 3D
+space, including skeleton [4] and mesh [5], can vividly depict the
+human body shape. The posture involves horizontal and vertical
+information in 3D space, therefore the Elevation-Azimuth Map
+(EAM) can be used as the sensing signature for posture esti-
+mation. 2D DoA estimation is needed to obtain information in
+the two angular dimensions. Similar to 1D DoA estimation, 2D
+Angle FFT and 2D Capon beamforming are the most commonly
+used 2D DoA estimation methods.
+In-air Writing:As one of the typical applications of human-
+computer interaction, in-air writing tracks the user’s hand move-
+ment and converts it into text or graphic input, which can be ap-
+plied to scenarios such as virtual reality and in-air whiteboards.
+Regardless of the speciﬁc method of in-air writing, it must detect
+the position of the hand in 3D space. Both in-air writing and
+posture estimation require azimuth and elevation information.
+The difference lies in the observation targets: in-air writing fo-
+cuses solely on the hand, while posture estimation encompasses
+the entire body. Therefore, based on practical needs, we make
+the following reasonable preconditions: a user who is unwilling
+to expose their hand trajectory is also unwilling to reveal their
+posture information. Conversely, if a user is willing to provide
+their posture information, they would also be willing to perform
+in-air writing detection.
+Activity Recognition:The user’s behavior and intentions can
+be inferred through recognizing and analyzing user’s motion ac-
+tivities. Activity recognition is usually accomplished by training
+neural networks using micro-Doppler spectrum [13]. The phase
+change of the chirp signal represents the displacement of the
+reﬂector and can be used to measure instantaneous velocity. By
+conducting FFT on signals from multiple chirps within a single
+frame, which is known as Doppler FFT, the velocity spectrum
+for this frame is obtained. After performing Doppler FFT across
+multiple frames and stitching the velocity spectrum together,
+the micro-Doppler spectrum is generated, which contains rich
+velocity information of the user’s motion.
+Respiration Monitoring:We can gain insights into the user’s
+health status and perform exercise management through res-
+piration monitoring, which plays a signiﬁcant role in elder
+healthcare and ﬁtness domains. When a person breathes, there
+is a tiny periodic displacement in the chest and abdomen which
+can be measured by analyzing the phase change of the signal.
+Therefore, the respiration curve can be regarded as the sensing
+signature. The ﬁrst step to obtain the respiration curve is to
+locate the torso containing the chest or abdomen. Next, mit-
+igate the effects of direct current component (DC) and jitter.
+Finally, the phase is extracted and converted into the respiration
+curve.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+8350 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025
+Fig. 3. System overview of MuFilter.
+C. Threat Model
+Attack Capability. Cyberattack Capabilities:Attackers can
+gain control of the sensing backend and obtain all radar data
+streaming into the backend. Attackers cannot bypass the privacy
+ﬁlter to obtain the original radar data. Attackers cannot modify
+the privacy ﬁlter’s settings and inﬂuence its actions.
+Sensing Capabilities: Attackers know all the radar param-
+eters, including chirp slope, ADC sampling numbers, frame
+period, antenna layout, etc. Attackers know the radar data format
+and can convert the data stream or ﬁles into the signal matrix.
+Attackers can implement each sensing application in multiple
+ways.
+2) Attack Goal: Attackers want to obtain and monitor users’
+behavioral information on position, posture, hand motion, activ-
+ity, and vital signs.
+3) Defense Guideline: The defense should be effective for
+most sensing methods of a certain kind of behavioral infor-
+mation. The data perturbation should be restrictive and not
+affect the acquisition of allowed behavioral information. The
+computational burden should be low to reduce deployment costs
+and maintain real-time data.
+III. S YSTEM OVERVIEW
+To achieve personalized privacy protection in multi-user sce-
+narios, we propose the MuFilter system, the overview of which
+is shown in Fig. 3. The mmWave radar collects users’ reﬂected
+signals and outputs digital IF signals, which will be passed to the
+hardware or software system equipped with MuFilter. MuFilter
+ﬁrst obtains RA point clouds and performs multi-target detection
+through Density-Based Spatial Clustering of Applications with
+Noise (DBSCAN) clustering. Then, we get each user’s trajec-
+tory through a multi-target tracking process involving Kalman
+ﬁltering and the Hungarian algorithm. Next, MuFilter performs
+Range FFT and Angle FFT on the raw radar data to obtain a
+reversible RA signal matrix. We map the user position obtained
+by tracking into the RA signal matrix, and expand the users’ RA
+Fig. 4. Principle of dimensional data interference.
+bins to cover the entire body. The expanded bins are then input
+to the collision processing module to detect the spatial overlap
+of users and determine the appropriate tamper bins based on
+the anti-collision mechanism. Then, we extract the sub-signal
+matrix contained in each user’s tamper bins and perform per-
+sonalized tampering according to the user’s privacy protection
+needs. Finally, the tampered signal matrix will be converted to
+raw radar signal format through Angle and Range IFFT. Our
+system is capable of multi-user customizable behavioral privacy
+protection across ﬁve sensing applications: tracking, activity
+recognition, posture estimation, in-air writing, and respiration
+monitoring.
+IV . C USTOMIZABLE BEHA VIORALPRIV ACYFILTER
+This section demonstrates customizable behavioral privacy
+ﬁlter for ﬁve sensing applications in the single-user scenario. We
+begin with an elaboration of the core concepts of dimensional
+data interference and signal reversion, and then introduce and
+review data tampering methods for each signature dimension.
+A. Core Concept
+In general, different sensing applications rely on different
+signature dimensions, which makes it possible to implement
+customizable privacy protection. The basic idea is to interfere
+with the signature dimensions on which the disabled application
+depends, so as to protect speciﬁc behavioral information without
+affecting other sensing applications, which is called dimensional
+data interference. The implementation of this idea is based on
+another important concept, signal reversion, which utilizes the
+invertibility of FFT. That is, data can be converted from “time
+domain” to “frequency domain” by FFT, or from “frequency
+domain” back to “time domain” by IFFT.
+As shown in Fig. 4, the radar data has ﬁve data dimensions,
+three of which are temporal (ADC sample, chirp, and frame) and
+two of which are spatial (horizontal and vertical antennas). After
+FFT, these data dimensions are transformed into range, angle,
+short-time, and long-time signature dimensions for subsequent
+sensing applications. We are then able to eliminate or change
+the corresponding behavioral information contained in the radar
+data by performing data tampering in speciﬁc signature dimen-
+sions. Finally, with IFFT, the radar data is converted from the
+signature dimensions back to the data dimensions, its original
+data format. In this way, we achieve targeted data masking while
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+LIU et al.: MULTI-USER BEHA VIORAL PRIV ACY FILTERING FOR mmWave RADAR SENSING 8351
+Fig. 5. Demonstration of behavioral privacy ﬁltering in single-user scenarios.
+maintaining the data integrity. This approach shares a similar
+principle with differential privacy [14], [15] by protecting user
+privacy by adding noise to the data, where the amount of noise is
+crucial as it must effectively protect user privacy without causing
+the data to become unusable due to excessive noise.
+B. Tampering Method
+A total of ﬁve dimensional data interference methods or
+modes have been proposed for ﬁve typical applications: track-
+ing, posture estimation, in-air writing, activity recognition, and
+respiration monitoring. Rows (a) and (b) of Fig. 5 respectively
+show the sensing signatures before and after tampering.
+Position Reset: Position information mainly contains two
+dimensions, range and azimuth. In the hiding of the position,
+the integrity and continuity of the user’s signal need to be
+maintained, as the position information is the basis for other
+sensing applications and guides the subsequent signal extraction.
+Therefore, the Position Reset (PR) is proposed. It ﬁrst performs
+Range FFT and then 1D Angle FFT with the number of FFT
+points as the number of horizontal array elements. After deter-
+mining the user’s position in the RA domain, the RA bins near
+the user will be moved to a preset position. For example, in
+Fig. 5(Column 1), the user’s position is reset to (3 m, −20◦).
+Then, the Angle IFFT and Range IFFT are performed to convert
+the azimuth bins and range bins to horizontal array signals and
+ADC sampled signals. In this way, the user’s real position is
+eliminated, but the signal near the fake position retains the user’s
+full local temporal and spatial information, thus other functions
+such as activity recognition and respiration monitoring can be
+conducted normally.
+V ertical Information Erasure:Posture estimation and in-air
+writing are obviously inseparable from elevation estimation,
+or in other words, the vertical information. Thus, when we
+want to protect information of posture or hand motion, we can
+perform Vertical Information Erasure (VIE). Speciﬁcally, we
+replicate signals of a horizontal array in the 2D array as signals of
+horizontal arrays at other heights, so that the horizontal signals
+at each height are the same, which will completely invalidate
+the vertical dimension. As shown in Fig. 5(Columns 2 ∼3),
+VIE compresses the spatial information onto the plane of 0 ◦
+elevation. In the elevation-azimuth map, the highlighted area
+Fig. 6. The impact of VIE-B on an in-air writing user’s EAM.
+undergoes deformation: while the azimuth information which
+indicates user’s position is retained, the height information of
+the body is removed. In the hand trajectory, variations in hand
+height are eliminated, resulting in a distorted trajectory that lies
+on a horizontal plane, which differs signiﬁcantly from the actual
+hand movement. Note that the posture information includes hand
+motion, thus when a user wants to hide their hand motions, they
+are likely to want to hide their posture. With this in mind, we
+consider two scenarios. (1) The user wants to hide posture and
+hand motion. The signal replication can be performed directly
+to eliminate all vertical information from the signal, which we
+call VIE-A mode. (2) The user wants to hide posture but retain
+hand motion. In this case, we need to perform Range FFT to
+separate the hand and body in the range dimension, and then skip
+the range bins of the hand when performing signal replication,
+w h i c hw ec a l lVIE-B mode. Fig. 6 shows the impact of VIE-B on
+vertical information. The sensing object is an in-air writing user,
+whose EAMs of the body (with the extended hand separated for
+demonstration) and the extended hand are shown as Fig. 6(a) and
+(c), respectively. After VIE-B, the EAMs change to Fig. 6(b)
+and (d), which shows that the body is erased and the hand is
+preserved.
+Chirp Disorganization:The Doppler FFT converts the phase
+changes of chirp signals into a velocity spectrum, the crucial
+information for activity recognition. It is easy to interfere with
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+8352 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025
+this information by simply changing the chirp ordering in each
+frame, so that the phase changes cannot align with the time
+changes. We refer to this method as Chirp Disorganization (CD).
+As shown in Fig. 5(Column 4), after chirp disorganization, the
+velocity information is completely erased. This is because the
+correlation between the chirps is broken, feeding the wrong
+sampling order into the FFT. The temporal disturbance of the
+data in the time domain caused an energy disturbance in the
+frequency domain, preventing the user’s instantaneous velocity
+information from being captured. In addition to this method,
+ﬁne-grained data modiﬁcations can be performed on velocity
+bins and then convert velocity bins back to chirp signals by
+Doppler IFFT.
+Inter-frame Phase Fluctuation:Since frames are the basic unit
+of radar signal processing, they can be considered as a long-time
+dimension independent of the chirp dimension. Frames carry
+the objective temporal logic. We cannot simply reorder it like
+we do with chirps, as this will cause confusion in all sensing
+applications. Fortunately, for complex signals in one frame, su-
+perimposing a phase on them does not affect the signal process-
+ing result, i.e., F(ejφS)= F(S), where F represents the signal
+processing operations and φ is the superimposed phase. When
+a random phase is superimposed on each frame, the inter-frame
+phase correlation is erased without affecting the intra-frame
+signal processing, which is called Inter-Frame Phase Fluctuation
+(IFPF). This method can interfere with applications that rely on
+inter-frame phase coupling such as respiration monitoring. As
+shown in Fig. 5(Column 5), the disruption of phase continuity
+simultaneously disrupts the continuity of the respiration curve,
+therefore the sensing result is a meaningless noise curve.
+The above methods have been proven to be independent and
+compatible [12]. Once the attacker acquires the tampered raw
+signal and performs FFT on it, they will obtain results that
+have been manipulated by MuFilter. The attacker is unaware
+of the composition, sequence, and parameters of the tamper-
+ing methods, and lacks access to process variables involved
+during tampering. Consequently, the attacker cannot recover
+the original information, even if they recognize that the data
+has been altered. Brute-force cracking is also difﬁcult to re-
+store data for the following reasons. (1) The correctness of
+the cracking attempt cannot be veriﬁed. The proposed privacy
+ﬁlter is not an encryption system with a clear password, but
+an entropy-increasing process for the information contained in
+radar data. Each cracking attempt yields a seemingly correct
+answer, but it is uncertain which answer is true. For example,
+the PR moves the user’s RA bins from the real position to a
+fake position. Reverse attempts to the true position always yield
+reasonable results because RA bins can be moved from any
+position to the false position. Similarly, based on the phase
+noise sequence caused by the IFPF, an arbitrary respiration
+curve can be generated by resetting the phase, but it is uncertain
+which one is the user’s respiration curve. Therefore, the inherent
+nature of the privacy ﬁlter makes brute-force cracking lose
+the critical attempt feedback. (2) The probability of a single
+attempt being correct is extremely low. Attackers obtain as many
+sensing results as cracking attempts. Therefore, due to the lack of
+feedback on cracking attempts, attackers have only one chance
+Fig. 7. Multi-person tracking workﬂow.
+to guess the privacy ﬁlter’s settings, and the probability of this
+guess being correct is very low. For example, the probability
+of correctly guessing the real order of 128 chirps is as small as
+1/128! ≈ 2.6×10−216. Note that this is only the probability of
+cracking the single CD technique. Considering the combinations
+of multiple tampering techniques, the probability of restoring
+the entire privacy ﬁltering process will be even much smaller
+than 2.6×10−216. Thus, attackers are almost unable to correctly
+restore the tampered signal in a single attempt.
+V. A CHIEVING MULTI-USER PERSONALIZATION
+In this section, we extend the customizable behavioral privacy
+ﬁlter to multi-user scenarios. Undoubtedly, the greatest difﬁculty
+stems from the spreading effect of signal interference, thus
+requiring us to effectively isolate each user’s signal. Our solution
+utilizes the spatial separation capability of radar. MuFilter ﬁrst
+performs multi-person tracking to obtain user positions. Then,
+extract spatial bins near each user to provide further spatial
+boundaries for dimensional data interference. Ultimately, the
+data tampering is performed only within the subspaces, thus
+preventing cross-interference between users.
+A. Multi-Person Tracking
+Beneﬁting from the development of mmWave MIMO technol-
+ogy, mmWave radars nowadays have excellent enough angular
+resolution. From standard steps of Range FFT, 1D DoA estima-
+tion, and 2D Constant False Alarm Rate (CFAR) we can obtain
+sufﬁcient RA point cloud. Therefore, we adopt the point target
+tracking scheme based on RA point cloud. One representative
+of this tracking approach is PmTrack [3], the basic workﬂow
+of which is shown in Fig. 7. In each frame, the point cloud
+is clustered by the DBSCAN algorithm and the centroid of
+each cluster will be obtained. Then, we compute the euclidean
+distances between existing trajectories and centroids, and input
+them as the cost matrix into the Hungarian algorithm to obtain
+the optimized trajectory-centroid association for trajectory up-
+dating. Moreover, the Kalman ﬁltering of constant velocity mode
+is introduced for trajectory prediction and correction, thereby
+updating trajectories when they fail to associate and obtaining
+more accurate results. The trajectory states are categorized into
+four types. The initial state is candidate, which is converted
+to active after successive successful associations. After that,
+the state transitions between active and missing depending on
+the association result. Trajectories with continuous association
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+LIU et al.: MULTI-USER BEHA VIORAL PRIV ACY FILTERING FOR mmWave RADAR SENSING 8353
+Fig. 8. Demonstration of behavioral privacy ﬁltering in multi-user scenarios. The observation target is always the UO.
+failure will be marked as lost. Through this state management,
+the accuracy of trajectory numbers and the stability of position
+updates can be effectively ensured. PmTrack also provides a
+variety of optimization methods that can effectively overcome
+conventional tracking challenges, such as using angular consis-
+tency to screen out ghost clusters caused by multipath effects.
+It should be noted that multi-user personalized services re-
+quire the support of human identiﬁcation technology, as only
+then can radar targets be effectively associated with users
+and their preferences accurately obtained. A wide variety of
+mmWave-based identiﬁcation methods have been proposed
+based on features such as gait [16], point clouds [17], behavioral
+patterns [18], or vital signs [19]. MuFilter does not rely on
+speciﬁc identiﬁcation methods and can work well with existing
+methods to facilitate personalized and secure mmWave sensing.
+Certainly, to identify individuals based on signal features, it
+may need to retain relevant behavioral information within the
+privacy ﬁltering system. To maintain ﬂexibility in privacy pro-
+tection, user identiﬁcation and maintenance can be achieved by
+utilizing additional sensors [3] or employing re-identiﬁcation
+techniques [20], along with continuous position data obtained
+from the tracking module.
+B. Subspace Tampering
+Next, we take advantage of the radar’s spatial separation
+capabilities to isolate each user’s data tampering. The spatial
+separation capability is reﬂected in two aspects. First, based
+on the frequency of the IF signal and the phase vector of the
+MIMO array, the space can be separated into RA bins by Range
+FFT and Angle FFT. Second, the energy leakage of the FFT
+result “spectrum” is limited and acceptable. In other words, the
+energy of the human reﬂected signal is concentrated in the RA
+bins where they are located. Thus, we can isolate each user’s
+signal through RA domain signal extraction, which includes
+three steps. (1) Perform Range FFT and Angle FFT to obtain
+RA bins. Note that to ensure the signal can be reversed back to
+the original signal format, the number of FFT points is the ADC
+sample number and the array element number, respectively. To
+Fig. 9. Position mapping and subspace extraction.
+maintain the ﬁdelity and stability of the reversed signal, no
+windowing or static clutter ﬁltering is performed. (2) Generate
+subspace through RA bin focus. Take user 1 in Fig. 9 as an
+example. First, calculate its distance r1 and azimuth θ1 relative
+to the radar based on its position (x1,y1). Then, ﬁnd the RA bin
+where (r1,θ1)is located, and use it as the center bin to spread a
+reasonable number of bins to serve as the subspace for the user.
+(3) Perform trampering in each user’s subspace. The tampered
+subspaces will return and form the complete RA domain, and
+be inverted back to the raw signal format through Angle IFFT
+and Range IFFT.
+In Fig. 8, we validate the effectiveness of subspace tampering
+in a two-user scenario. For the efﬁciency of the experiment and
+the need to control a single variable, we deﬁne two types of
+users: Observation User (UO) and Coexisting User (UC). In each
+column, we perform the tampering method corresponding to the
+application on one user, but we only show the sensing signatures
+of UO. In this way, we can validate the effectiveness of privacy
+ﬁltering in multi-user scenarios and whether tampering with one
+user will affect others. In rows (b) and (c), the tampered users
+are UO and UC, respectively. These two rows respectively verify
+the effectiveness and isolation of data tampering. As we can see,
+when UO is tampered with, their signatures are disrupted. When
+UC is tampered with, UO’s signatures remain unaffected. These
+results indicate that subspace tampering achieves spatial iso-
+lation in signal tampering, effectively supporting customizable
+behavioral privacy protection in multi-user scenarios.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+8354 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025
+Fig. 10. Subspace collisions and anti-collision solutions.
+C. Anti-Collision Mechanism
+In the deployment of MuFilter, position collisions may occur
+in the subspaces of multiple users, which can be categorized
+into the three types shown in Fig. 10. (1) User overlap collision.
+When multiple users are close, their subspaces may overlap.
+We use the Gaussian Mixture Model (GMM) algorithm to
+cluster the union of RA bins in multiple subspaces to obtain
+the boundary between subspaces and maintain their isolation.
+(2) Self-collision of position reset. The PR methods that modify
+position information can also cause subspace collision. For the
+user itself, the original subspace and destination subspace may
+overlap, making it infeasible to exchange the two subspaces to
+complete PR. In this case, MuFilter ﬁlls the non-overlapping
+bins of the original space with the non-overlapping bins of
+the destination subspace. This process should minimize the
+abruptness caused by the ﬁlling, thus we adopt the rotation
+method shown in Fig. 10 to avoid RA bin confusion during
+the exchange process. (3) Mutual-collision of position reset.
+PR’s destination subspace may also overlap with other users’
+subspaces. At this moment, we must change the destination to
+avoid the collision. Considering that there are usually far more
+range bins than azimuth bins, we suggest sliding the subspace
+in the range dimension to determine new destinations. In prac-
+tice, it is better to set a less-passed position as the destination
+for PR.
+In addition to position-related collisions, we observe that
+MuFilter’s local tampering can have a slight impact on high-
+resolution DoA estimation algorithms such as Conventional
+Beamforming and Capon. This is because tampering with only
+part of the azimuth bins affects the covariance matrix of the
+array signal to some extent. In contrast, if the tampered azimuth
+bins cover the full dimension, the signal maintains integrity and
+continuity in the azimuth dimension, and thus does not change
+the covariance matrix. Therefore, we suggest extending azimuth
+bins to the entire azimuth dimension when the subspace does not
+overlap in range with other subspaces.
+Fig. 11. Experimental environment.
+VI. E VA L UAT I O N
+In this section, we conduct extensive experiments to verify
+the performance of MuFilter. Each participant is fully informed
+about the experimental content and purpose.
+A. Setup
+1) Environment: The experimental site is shown in Fig. 11.
+Our experiment is conducted in a rectangular area of 5.6 m ×
+6.4 m and the height of radar is 1.2 m.
+2) Hardware & Software:We verify the software prototype
+of MuFilter using a commercial mmWave radar. We use TI
+MMWCAS-RF-EVM [21] to collect mmWave data. The radar is
+conﬁgured to a 2-chip (#1 and #4) cascade mode, which contains
+6 Tx antennas and 8 Rx antennas. The speciﬁc parameter settings
+of the mmWave radar are as follows: the start frequency is set to
+77 GHz with an effective bandwidth of 3.6 GHz. The sampling
+rate is 7.04 MHz, and the frequency slope is 99 MHz/us. Each Tx
+emits 128 chirps per frame, each chirp contains 256 sampling
+points, and the frame period is 50 ms. MuFilter and various
+sensing applications are conducted on MATLAB 2022b.
+3) Evaluation Strategy: As before, both UO and UC undergo
+various tampering modes, and we only obtain sensing signatures
+of UO and calculate the corresponding metrics. Most exper-
+iments are conducted in scenarios involving two users, with
+one UO and one UC. We design three progressive experimental
+schemes to evaluate MuFilter in depth from different perspec-
+tives.
+Single Tampering:This scheme focuses on the effectiveness
+of each tampering method and whether it impairs non-target
+sensing applications. Therefore, we disable only one sensing
+application for one user.
+Combined Tampering:Perform multiple tampering methods
+on only one user. This scheme aims to explore the compati-
+bility between tampering methods and observe whether their
+simultaneous usage would lead to conﬂicts. We consider the
+most extreme scenario, enabling as many tampering methods as
+possible. As a result, only one sensing application is retained,
+while all other sensing applications are disabled.
+Conﬂicted Tampering:This scheme validates the core contri-
+bution of MuFilter, i.e., when multiple users set different privacy
+ﬁlter modes, whether the enabled sensing applications of each
+user remain unaffected. Similarly, we consider the most extreme
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+LIU et al.: MULTI-USER BEHA VIORAL PRIV ACY FILTERING FOR mmWave RADAR SENSING 8355
+Fig. 12. Preset paths.
+scenario. We enable one sensing application for one user while
+disabling all other sensing applications. The enabled or disabled
+sensing applications will be disabled or enabled for the other
+user. In this way, we stimulate the conﬂicts caused by user
+variability to the greatest extent.
+Additionally, we compare MuFilter with mmFilter and con-
+duct experiments in scenarios involving more users to further
+validate MuFilter’s ability to address the personalized needs of
+multiple users.
+4) Data Collection: Some sensing applications are limited
+by scenarios. For example, in respiration monitoring, the user’s
+movement will obscure the chest displacement caused by breath-
+ing, leading to difﬁculties in extracting the respiration curve.
+Dynamic reﬂections from nearby users can also interfere with the
+respiration waveform. Therefore, although the tampering meth-
+ods of MuFilter won’t be affected by the deployment scenario,
+in order to make each sensing result effective and stable, we
+set three experimental scenarios: walking, in-air writing, and
+respiration monitoring, as shown in Fig. 12. In each schematic
+diagram, the red line and point represent the walking trajectory
+and position of UO, while the blue line and area represent the
+walking trajectory and free movement area of UC.
+Walking: The two users walk along the preset paths. We
+consider four situations of RA bins overlap: (a) no overlap; (b)
+overlap in range bins; (c) overlap in angle bins; (d) overlap in
+both range and angle bins. Under each path setting, we collect
+data of 6 s for 10 times.
+In-air Writing:The UO stands at a distance of 3.2 m from the
+radar and performs in-air writing. The UC walks freely in the
+area behind the UO. We collect two hand-drawn patterns, each
+collecting 6 s for 5 times.
+Respiration Monitoring: The UO sits in a chair at (0.96 m,
+30◦), facing the radar and breathing steadily. The UC walks
+freely in the area behind the UO. Ten sets of data are collected,
+each lasting 30 s.
+5) Evaluation Metrics: We need quantitative results to eval-
+uate the performance of our system. Although we intuitively
+demonstrate the impact of data tampering through ﬁve sensing
+signatures in Sections IV and V, these signatures are not nec-
+essarily suitable as evaluation objects. Thus, we select the most
+representative numerical results for each sensing application and
+set tampering metrics based on them.
+TABLE I
+CLASSIFICATION OF INTERFERENCE LEVELS
+Tracking: We implement a standard multi-user tracking algo-
+rithm to obtain the moving trajectory of each user. The tamper
+metric is the euclidean distance of the trajectory coordinates
+Before Tampering (BT) and After Tampering (AT), i.e., Et =
+∥pa −pb∥2, where pb and pa represent the coordinates of BT
+and AT respectively.
+Posture Estimation:VIE technique can eliminate information
+in the vertical dimension. However, the AI model will always
+output predictions that resemble a normal human body. In other
+words, posture estimation results such as skeletal coordinates
+may not accurately reﬂect the interference effect of MuFilter.
+Therefore, we obtain the user’s 3D point clouds through 2-pass
+Capon and calculate the standard deviation of their elevation.
+The tamper metric is the change rate of standard deviation,
+i.e., CRe = |ea
+std −eb
+std|/eb
+std, where eb
+std and ea
+std represent
+the elevation’s standard deviation of BT and AT respectively.
+In-air Writing: The 3D hand trajectory is projected onto a
+virtual plane to obtain a 2D image that plots the written character.
+Then, we use a siamese network to compute the similarity of
+images of BT and AT, denoted as Sges, which is the tamper
+metric of this sensing application.
+Activity Recognition:For the same considerations as posture
+estimation, we utilize the sensing signature of activity recog-
+nition to evaluate the interference effect. We obtain the user’s
+micro-Doppler spectrum and calculate the Structural Similarity
+(SSIM) index between the spectrum of BT and AT as the tamper
+metric. SSIM can better demonstrate changes in image structure,
+and clearly reﬂect the interference of MuFilter on velocity
+information.
+Respiration Monitoring:We focus on the measurement results
+of respiration rate. Speciﬁcally, we ﬁrst ﬁnd the peaks of the
+respiration curve. Then we divide the time difference between
+the ﬁrst peak and the last peak Δt by the number of peaks N
+to obtain the average respiration cycle T =Δ t/N. The tamper
+metric is the difference between the average respiration cycles
+of BT and AT, i.e., Erc = |Ta −Tb|.
+To evaluate the degree of interference on sensing applications,
+we deﬁne four levels of interference: (1) Unchanged. Sensing
+results are (almost) unchanged. (2) Slightly interfered. Sensing
+results are changed but still functional. (3) Greatly interfered.
+Sensing results are severely disrupted that they are not func-
+tional. (4) Disabled: Sensing results are completely destroyed.
+The result metrics and interference level determinations for each
+sensing application are detailed in Table I.
+B. Single Tampering
+In this evaluation, we interfere with only one sensing appli-
+cation of one user while leaving the other user undisturbed. To
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+8356 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025
+Fig. 13. Evaluation results under single tampering.
+TABLE II
+SINGLE TAMPERING CONFIGURATIONS
+align with privacy protection principles, VIE-B which preserves
+hand information, eliminates the spatial information of the torso
+required for posture estimation. As mentioned earlier, a user
+who does not want to reveal their hand trajectory will not
+want to reveal their posture information either. To independently
+evaluate posture estimation and in-air writing to meet the preset
+evaluation strategy, we adopt two VIE modes. The speciﬁc
+conﬁgurations are shown in Table II. For the VIE column, we
+set different VIE modes for posture estimation and in-air writing
+respectively, where A represents VIE-A, B represents VIE-B,
+and × represents no VIE. For example, we perform VIE-A
+and VIE-B in posture estimation and in-air writing respectively
+in conﬁguration 2. We also follow similar experimental con-
+siderations in the subsequent evaluations. The UO and UC
+serve as the tampered user in turn. We record UO’s tamper
+metrics in Fig. 13. In each subﬁgure, the bars represent the
+proportion of different interference levels during the sensing
+process, while the lines depict speciﬁc tamper metrics. In each
+grouped bar, the left bar and blue line represent the results when
+UO serves as the tampered user, whereas the right bar and red
+line represent the results when UC serves as the tampered user.
+We observe that: (1) Each tampering method of MuFilter can
+effectively protect user’s behavioral privacy. They interfere with
+the sensing signatures of the tampered user, resulting in the
+corresponding sensing applications being disabled. For tracking,
+the proportion of disabled and greatly interfered is greater than
+98.6%. The reason why it doesn’t achieve 100% disabled is
+that the UO’s actual position is sometimes close to the PR’s
+target position. In other words, PR is actually always effective
+throughout the user’s entire movement process. While for other
+sensing applications, MuFilter achieves 100% disabled. (2) Each
+tampering method has excellent isolation, ensuring that they do
+not affect the normal operation of other sensing applications. In
+terms of posture estimation, PR introduces slight interference
+TABLE III
+COMBINED TAMPERING CONFIGURATIONS
+to point cloud generation, causing a change of less than 20% in
+the elevation’s standard deviation. Furthermore, other sensing
+applications that are not tampered with remain 100% unchanged.
+(3) MuFilter successfully separates multiple users. When UC
+serves as the tampered user, all UO’s sensing applications are
+100% unchanged.
+C. Combined Tampering
+In practical application scenarios, users may have more di-
+verse privacy protection needs that cannot be adequately ad-
+dressed by a single tampering method. In such cases, it becomes
+necessary to combine tampering methods to accommodate di-
+verse privacy protection needs. In this evaluation, we only retain
+one sensing application and interfere with all other applications
+of one user while leaving the other user undisturbed. The speciﬁc
+conﬁgurations are shown in Table III. The UO and UC serve as
+the tampered user in turn. The UO’s tamper metrics are shown
+in Fig. 14. As we can see, various tampering methods are com-
+patible with each other, and their combination will not affect the
+effectiveness of MuFilter. On the one hand, multiple tampering
+methods can be enabled together to protect multiple behavioral
+privacy. On the other hand, enabling multiple tampering methods
+doesn’t cause confusion and the retained sensing applications
+can work normally. In addition, no matter what combination of
+tampering methods is performed on UC, it will not affect UO.
+D. Conﬂicted Tampering
+Next, we further evaluate MuFilter’s anti-conﬂict capability
+in multi-user tasks. We conduct signal tampering on both two
+users and maximize the degree of conﬂicts. In this evaluation, we
+only retain one sensing application and interfere with all other
+applications of one user while performing completely opposite
+tampering settings for the other user. The speciﬁc conﬁgurations
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+LIU et al.: MULTI-USER BEHA VIORAL PRIV ACY FILTERING FOR mmWave RADAR SENSING 8357
+Fig. 14. Evaluation results under combined tampering.
+Fig. 15. Evaluation results under conﬂicted tampering.
+TABLE IV
+CONFLICTED TAMPERING CONFIGURATIONS
+are shown in Table IV. The UO and UC serve as users a and b
+in turn. The tamper metrics for UO are shown in Fig. 15.I n
+each grouped bars, the left bar and blue line represent the results
+when UO serves as user a, whereas the right bar and red line
+represent the results when UO serves as user b. The results show
+that the interference degree of each sensing application is in
+line with its conﬁguration expectations. This demonstrates that
+even if users’ application needs are mutually exclusive, MuFilter
+can still provide precise privacy protection by retaining required
+applications while disabling sensitive ones.
+E. Conﬂicted Tampering in Complex Environment
+To further verify the effectiveness of MuFilter in real-world
+scenarios, we conduct the same data collection as in Fig. 11
+in the environment shown in Fig. 16. In this environment, the
+Fig. 16. Complex experimental scenario.
+edges of the activity area are adjacent to the walls, and the
+space is furnished with items such as the table, chair, cabinet,
+and monitor, effectively simulating the multipath interference
+in complex real-world environments. We perform conﬂicted
+tampering evaluation based on these data, and the results are
+s h o w ni nF i g .17. Due to the presence of furniture, the usable
+movement area is reduced, leading to a slight increase in the im-
+pact of PR on the non-target user’s positions, with an average
+error of 5.23 cm. This deviation is considered acceptable for
+human tracking tasks. The evaluation results for other sensing
+tasks are similar to those obtained in the hall scenario (Fig. 15),
+demonstrating that MuFilter can effectively operate in real-life
+and workplace environments.
+F . Performance Under More Users
+We evaluate the personalized privacy protection performance
+of MuFilter for more users. The number of users in the scene
+varies from 1 to 4, with one user selected as UO and the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+8358 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025
+Fig. 17. Evaluation results under conﬂicted tampering in the comlex environment.
+Fig. 18. Evaluation results under multi-user scenarios.
+remaining users as UC. To fully satisfy personalized require-
+ments, we randomly combine each user’s application settings.
+For each user, the ﬁve sensing applications are randomly set to
+be enabled or disabled with a probability of 50%. In particular,
+enabling posture estimation triggers in-air writing to be enabled,
+while disabling in-air writing triggers posture estimation to be
+disabled. Subsequently, MuFilter automatically combines the
+corresponding tampering methods. The results are shown in
+Fig. 18. During the evaluation, we manually set the speciﬁc sens-
+ing applications of UO to be enabled or disabled. For example,
+in each bar group in Fig. 18(a) which represents tracking, the
+tracking of UO is enabled and disabled in the left bar and right
+bar respectively. We ﬁnd that for tracking, in-air writing, activity
+recognition and respiration monitoring, the increase in the num-
+ber of users essentially does not affect the experimental results.
+In Fig. 18(b), as the number of users increases, the change rate
+of the standard deviation of the point cloud’s elevation gradually
+increases, growing from 6.89% to 12.61%. This is because when
+there are more users in the space, the overlap between them
+intensiﬁes, leading to spatial information distortion during signal
+tampering. However, this distortion remains slight and does not
+signiﬁcantly affect posture estimation. The above results demon-
+strate that our system achieves personalized privacy protection
+in multi-user scenarios successfully. Additionally, in the indoor
+environment examined in the experiment, the tracking system
+can accurately track four moving targets, which is sufﬁcient
+for typical household scenarios. However, as the number of
+individuals increases, the probability of obstruction, overlap, and
+multipath interference also escalates, which may result in trajec-
+tory errors. We recommend placing the radar at the upper corner
+of the wall to reduce the impact of obstructions and multipath
+TABLE V
+METRIC COMPARISON WITH MM FILTER
+propagation, and adopt ﬂexible point/group fusion target detec-
+tion schemes to cope with frequent point cloud overlaps, thus
+maintaining reliable multi-user tracking performance.
+G. Comparison With mmFilter
+We compare the performance of our system with mmFil-
+ter. mmFilter uses the idea of signal reversion to perform
+application-oriented privacy ﬁltering on the signal. It only con-
+siders single-user scenarios, thus the signal tampering will have
+a global impact on the radar signal. In this comparison, we omit
+in-air writing because mmFilter’s hand-preserving mechanism
+enables it to provide the same results as MuFilter when the range
+bins of multiple users do not overlap. Therefore, our comparative
+experiments involve four sensing applications: tracking, activ-
+ity recognition, posture estimation, and respiration monitoring,
+corresponding to four metrics. We disable each application for
+UC and observe the corresponding metric for UO. For example,
+for tracking, we perform PR on UC and observe the tracking
+error of UO. The experimental results are shown in Table V.
+Since mmFilter does not consider the presence of multiple users
+in the scene, its performance is unsatisfactory across the four
+evaluation metrics. In other words, when we perform signal
+tampering to any user, it will affect the normal use of sensing
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+LIU et al.: MULTI-USER BEHA VIORAL PRIV ACY FILTERING FOR mmWave RADAR SENSING 8359
+TABLE VI
+TRACKING ERROR UNDER DIFFERENT PRESET PATHS
+TABLE VII
+TIME COST COMPARISON WITH MM FILTER
+applications for other users. In contrast, MuFilter isolates the
+reﬂection signals for each user, thereby ensuring its effectiveness
+in multi-user scenarios.
+When performing VIE, CD, and IFPF, mmFilter’s global
+processing mechanism will inevitably affect other users. Fur-
+thermore, mmFilter’s PR also causes a deviation of 0.298 m in
+UO’s position, as the PR of mmFilter leads to compression and
+displacement of other range and angle bins in space. The tracking
+error in the four preset walking paths are shown in Table VI.W e
+ﬁnd that under path a, where there is no overlap in range and
+angle bins, the tracking error is only 0.067 m. However, under
+path d, where there is overlap in both range and angle bins for
+both users, the average tracking error increases to 0.577 m. In
+MuFilter, we design a new PR mechanism that can accurately
+separate the signals of two users in space, and will not affect other
+parts of the space when the position is moved. As a result, under
+path d, MuFilter can still achieve a tracking error of 0.013 m.
+In addition to the advantage of supporting multi-user scenar-
+ios, MuFilter’s subspace tampering strategy reduces the region
+of tampered data, thereby reducing computation time. The time
+cost of performing one tampering with mmFilter and MuFilter,
+using an Intel i7-11700 2.50 GHz CPU, is recorded in Table VII,
+which demonstrates that the subspace tampering strategy can
+reduce the computation time by 27% to 77%, thus enabling more
+efﬁcient service for multiple users.
+VII. R ELATED WORK
+A. RF-Based Sensing Security and Privacy
+The application of radio frequency (RF) technology is be-
+coming increasingly widespread, bringing along with it con-
+cerns regarding security and privacy. By measuring the subtle
+vibrations of objects, mmWave [22], [23], [24] and RFID [25]
+technologies can eavesdrop on human speech. Information leak-
+age from smartphones and screens poses a signiﬁcant threat
+to sensitive personal information such as passwords [26], [27],
+[28]. Additionally, leakage of user location information is also
+a serious problem. Many studies use through-wall radar to
+obtain users’ location [29], [30], leading to the risk of burglary.
+Some physical layer attack methods [10], [11], [31] perform
+appearing-disappearing spooﬁng through special physical de-
+vices, thereby tampering with the target’s existence or location
+information. RF-Protect [2] deploys reﬂectors in the environ-
+ment to inject dummy signals into the backscattered signal to
+deceive potential attackers. Radar 2 [32] allows users to utilize a
+single mmWave radar to detect the presence of other mmWave
+radars and obtain their locations. However, these works can’t
+achieve customizable tampering on signals to meet the user’s
+different behavioral privacy needs. mmFilter [12] can protect the
+behavioral privacy of single user through customizable tamper-
+ing on mmWave signals. However, the signal tampering scheme
+of mmFilter is global and thus fails multi-user scenarios. Our
+work performs subspace tampering on mmWave signals and
+considers the conﬂicts in multi-user scenarios, allowing multiple
+users to customize behavioral privacy protection according to
+their own needs.
+B. mmWave-Based Human Sensing
+The continuous development of mmWave technology sup-
+ports an increasing number of applications in human sensing.
+The high spatial resolution enables precise multi-person track-
+ing [3], [33], human imaging [34], skeleton estimation [4], [35],
+and mesh reconstruction [5], [36]. Human activity recognition
+such as gesture recognition [7], [37], [38] and in-air hand track-
+ing [6], [39], [40] is a promising technology in human-computer
+interaction. Gait [16], point clouds [17], behavioral patterns [18],
+vital signs [19], facial contours [41], voiceprints [42], or with
+the help of additional sensors [3], [20], user identity recogni-
+tion can be achieved. It involves activity classiﬁcation using
+micro-Doppler [8] or point cloud information [43]. Utilizing the
+sensitivity to small displacements, mmWave radar can empower
+health applications such as breathing and heartbeat monitor-
+ing [9], [44], [45]. In recent years, some works propose signal
+augmentation methods based on signal simulation to reduce
+the burden of collecting training data [13], [46], [47].T h e
+widespread use and powerful sensing capabilities of mmWave
+make it possible to extract user behavioral privacy by stealing
+and analyzing raw signals. Our work proposes signal tampering
+schemes applicable to various privacy protection requirements,
+effectively addressing privacy concerns caused by the leakage
+of radar data.
+VIII. C ONCLUSION
+This paper studied the behavioral privacy leakage threat of
+mmWave radar sensing and presented MuFilter, a data masking
+system for multi-user customizable behavioral privacy protec-
+tion. MuFilter adopts the idea of dimensional signal interference
+and performs targeted signal tampering based on users’ sensing
+service needs and privacy protection needs. The introduction of
+multi-person tracking technology and the proposal of subspace
+tampering technique allow MuFilter to isolate each user’s signal
+and prevent data tampering for one user from affecting other
+users. Extensive experiments evaluated the performance of Mu-
+Filter under various multi-user personalized privacy protection
+settings, which shows that it can interfere with targeted behav-
+ioral signatures with a 100% success rate, while the degree of
+impact on other users’ signatures ranges from 0% to 3.85%.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+8360 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 9, SEPTEMBER 2025
+REFERENCES
+[1] J. Zhang et al., “A survey of mmWave-based human sensing: Technology,
+platforms and applications,” IEEE Commun. Surv. Tut., vol. 25, no. 4,
+pp. 2052–2087, Fourth Quarter 2023.
+[2] J. Shenoy, Z. Liu, B. Tao, Z. Kabelac, and D. Vasisht, “RF-Protect: Privacy
+against device-free human tracking,” in Proc. ACM SIGCOMM Conf.,
+2022, pp. 588–600.
+[3] H. Liu, X. Liu, X. Xie, X. Tong, and K. Li, “PmTrack: Enabling personal-
+ized mmWave-based human tracking,” in Proc. ACM Interactive, Mobile,
+Wearable Ubiquitous Technol., vol. 7, no. 4, pp. 1–30, 2023.
+[4] H. Kong et al., “m3Track: mmWave-based multi-user 3D posture track-
+ing,” in Proc. ACM Annu. Int. Conf. Mobile Syst. Appl. Serv., 2022,
+pp. 491–503.
+[5] H. Xue et al., “M4esh: mmWave-based 3D human mesh construction for
+multiple subjects,” in Proc. ACM Conf. Embedded Netw. Sensor Syst.,
+2022, pp. 391–406.
+[6] C. Lin et al., “AirWrite: An aerial handwriting trajectory tracking and
+recognition system with mmWave,”IEEE Trans. Mobile Comput., vol. 23,
+no. 12, pp. 13 325–13 341, Dec. 2024.
+[7] Y . Li et al., “Towards domain-independent and real-time gesture recogni-
+tion using mmWave signal,” IEEE Trans. Mobile Comput., vol. 22, no. 12,
+pp. 7355–7369, Dec. 2023.
+[8] S. Zhu, R. G. Guendel, A. Yarovoy, and F. Fioranelli, “Continuous human
+activity recognition with distributed radar sensor networks and CNN-
+RNN architectures,” IEEE Trans. Geosci. Remote Sens., vol. 60, 2022,
+Art. no. 5115215.
+[9] G. Paterniani et al., “Radar-based monitoring of vital signs: A tutorial
+overview,” in Proc. IEEE, vol. 111, no. 3, pp. 277–317, Mar. 2023.
+[10] X. Chen et al., “MetaWave: Attacking mmWave sensing with meta-
+material-enhanced tags,” in Proc. Netw. Distrib. Syst. Secur . Symp., 2023,
+pp. 1–17.
+[11] R. Reddy Vennam et al., “mmSpoof: Resilient spooﬁng of automotive
+millimeter-wave radars using reﬂect array,” in Proc. IEEE Symp. Secur .
+Privacy, 2023, pp. 1807–1821.
+[12] H. Liu, X. Liu, X. Xie, X. Tong, T. Shi, and K. Li, “Application-oriented
+privacy ﬁlter for mmWave radar,” IEEE Commun. Mag., vol. 61, no. 12,
+pp. 168–174, Dec. 2023.
+[13] X. Zhang, Z. Li, and J. Zhang, “Synthesized millimeter-waves for human
+motion sensing,” in Proc. ACM Conf. Embedded Netw. Sensor Syst., 2022,
+pp. 377–390.
+[14] M. U. Hassan, M. H. Rehmani, and J. Chen, “Differential privacy tech-
+niques for cyber physical systems: A survey,” IEEE Commun. Surv. Tut.,
+vol. 22, no. 1, pp. 746–789, First Quarter 2020.
+[15] C. Dwork and A. Roth, “The algorithmic foundations of differential
+privacy,” 2014.
+[16] J. Pegoraro, F. Meneghello, and M. Rossi, “Multiperson continuous
+tracking and identiﬁcation from mm-Wave micro-doppler signatures,”
+IEEE Trans. Geosci. Remote Sens. , vol. 59, no. 4, pp. 2994–3009,
+Apr. 2021.
+[17] Y . Cheng and Y . Liu, “Person reidentiﬁcation based on automotive
+radar point clouds,” IEEE Trans. Geosci. Remote Sens., vol. 60, 2022,
+Art. no. 5101913.
+[18] C.-Y . Hsu, R. Hristov, G.-H. Lee, M. Zhao, and D. Katabi, “Enabling
+identiﬁcation and behavioral sensing in homes using radio reﬂections,”
+in Proc. ACM Annu. ACM Conf. Hum. Factors Comput. Syst., 2019,
+pp. 1–13.
+[19] Y . Wang, T. Gu, T. H. Luan, and Y . Yu, “Your breath doesn’t lie: Multi-user
+authentication by sensing respiration using mmWave radar,” in Proc. 19th
+Annu. IEEE Int. Conf. Sens. Commun. Netw., 2022, pp. 64–72.
+[20] D. Cao, R. Liu, H. Li, S. Wang, W. Jiang, and C. X. Lu, “Cross vision-RF
+gait re-identiﬁcation with low-cost RGB-D cameras and mmWave radars,”
+in Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol.,v o l .6 ,
+no. 3, pp. 1–25, 2022.
+[21] Texas Instruments, “AWRx cascaded radar RF evaluation module
+(MMWCAS-RF-EVM),” 2020. [Online]. Available: https://www.ti.com/
+lit/ug/swru553a/swru553a.pdf
+[22] S. Basak and M. Gowda, “mmSpy: Spying phone calls using mmWave
+radars,” in Proc. IEEE Symp. Secur . Privacy, 2022, pp. 1211–1228.
+[23] C. Wang et al., “mmEve: Eavesdropping on smartphone’s earpiece via
+COTS mmWave device,” in Proc. ACM Annu. Int. Conf. Mobile Comput.
+Netw., 2022, pp. 338–351.
+[24] P. Hu, W. Li, R. Spolaor, and X. Cheng, “mmEcho: A mmWave-based
+acoustic eavesdropping method,” in Proc. IEEE Symp. Secur . Privacy,
+2023, pp. 1840–1856.
+[25] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” in Proc. ACM Interactive, Mobile,
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+[26] Z. Li et al., “WaveSpy: Remote and through-wall screen attack
+via mmWave sensing,” in Proc. IEEE Symp. Secur . Privacy, 2020,
+pp. 217–232.
+[27] Z. Li et al., “SpiralSpy: Exploring a stealthy and practical covert channel
+to attack air-gapped computing devices via mmWave sensing,” in Proc.
+Netw. Distrib. Syst. Secur . Symp., 2022, pp. 1–16.
+[28] J. Hu et al., “Password-stealing without hacking: Wi-Fi enabled practical
+keystroke eavesdropping,” in Proc. ACM Conf. Comput. Commun. Secur .,
+2023, pp. 239–252.
+[29] G. Gennarelli, G. Vivone, P. Braca, F. Soldovieri, and M. G. Amin,
+“Multiple extended target tracking for through-wall radars,” IEEE Trans.
+Geosci. Remote Sens., vol. 53, no. 12, pp. 6482–6494, Dec. 2015.
+[30] H. Li, G. Cui, L. Kong, G. Chen, M. Wang, and S. Guo, “Robust human
+targets tracking for MIMO through-wall radar via multi-algorithm fusion,”
+IEEE J. Sel. Topics Appl. Earth Observ. Remote Sens., vol. 12, no. 4,
+pp. 1154–1164, Apr. 2019.
+[31] Z. Sun, S. Balakrishnan, L. Su, A. Bhuyan, P. Wang, and C. Qiao, “Who is
+in control? Practical physical layer attack and defense for mmWave-based
+sensing in autonomous vehicles,” IEEE Trans. Inf. Forensics Security,
+vol. 16, pp. 3199–3214, 2021.
+[32] Y . Qiu, J. Zhang, Y . Chen, J. Zhang, and B. Ji, “Radar2: Passive spy radar
+detection and localization using COTS mmWave radar,” IEEE Trans. Inf.
+Forensics Security, vol. 18, pp. 2810–2825, 2023.
+[33] W. Chen et al., “Environment-aware multi-person tracking in indoor
+environments with mmWave radars,” in Proc. ACM Interactive, Mobile,
+Wearable Ubiquitous Technol., vol. 7, no. 3, pp. 1–29, 2023.
+[34] A. Adhikari, H. Regmi, S. Sur, and S. Nelakuditi, “MiShape: Accurate
+human silhouettes and body joints from commodity millimeter-wave de-
+vices,” in Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol.,
+vol. 6, no. 3, pp. 1–31, 2022.
+[35] S. An and U. Y . Ogras, “MARS: mmWave-based assistive rehabilitation
+system for smart healthcare,” ACM Trans. Embedded Comput. Syst.,
+vol. 20, no. 5s, pp. 1–22, 2021.
+[36] H. Ding et al., “MI-Mesh: 3D human mesh construction by fusing im-
+age and millimeter wave,” in Proc. ACM Interactive, Mobile, Wearable
+Ubiquitous Technol., vol. 7, no. 1, pp. 1–24, 2023.
+[37] H. Wei et al., “IndexPen: Two-ﬁnger text input with millimeter-wave
+radar,” in Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol.,
+vol. 6, no. 2, pp. 1–39, 2022.
+[38] H. Liu et al., “mTransSee: Enabling environment-independent mmWave
+sensing based gesture recognition via transfer learning,” in Proc. ACM
+Interactive, Mobile, Wearable Ubiquitous Technol., vol. 6, no. 1, pp. 1–28,
+2022.
+[39] W. Li, T. He, N. Jing, and L. Wang, “mmHSV: In-air handwritten signa-
+ture veriﬁcation via millimeter-wave radar,” ACM Trans. Internet Things,
+vol. 4, pp. 1–22, 2023.
+[40] S. D. Regani, C. Wu, B. Wang, M. Wu, and K. J. R. Liu, “mmWrite: Passive
+handwriting tracking using a single millimeter-wave radio,” IEEE Internet
+Things J., vol. 8, no. 17, pp. 13 291–13 305, Sep. 2021.
+[41] W. Xu et al., “Mask does not matter: Anti-spooﬁng face authentication
+using mmWave without on-site registration,” in Proc. ACM Annu. Int.
+Conf. Mobile Comput. Netw., 2022, pp. 310–323.
+[42] H. Li et al., “V ocalPrint: Exploring a resilient and secure voice authentica-
+tion via mmWave biometric interrogation,” in Proc. ACM Conf. Embedded
+Netw. Sensor Syst., 2020, pp. 312–325.
+[43] D. Zhang et al., “LT-Fall: The design and implementation of a life-
+threatening fall detection and alarming system,” in Proc. ACM Interactive,
+Mobile, Wearable Ubiquitous Technol., vol. 7, no. 1, pp. 1–24, 2023.
+[44] X. Xu et al., “mmECG: Monitoring human cardiac cycle in driving envi-
+ronments leveraging millimeter wave,” in Proc. IEEE Int. Conf. Comput.
+Commun., 2022, pp. 90–99.
+[45] Y . Wang, Z. Wang, J. A. Zhang, H. Zhang, and M. Xu, “Vital sign mon-
+itoring in dynamic environment via mmWave radar and camera fusion,”
+IEEE Trans. Mobile Comput., vol. 23, no. 5, pp. 4163–4180, May 2024.
+[46] K. Deng, D. Zhao, Z. Zhang, S. Wang, W. Zheng, and H. Ma, “Midas++:
+Generating training data of mmWave radars from videos for privacy-
+preserving human sensing with mobility,” IEEE Trans. Mobile Comput.,
+vol. 23, no. 6, pp. 6650–6666, Jun. 2024.
+[47] K. Ahuja, Y . Jiang, M. Goel, and C. Harrison, “Vid2Doppler: Synthesizing
+Doppler radar data from videos for training privacy-preserving activity
+recognition,” inProc. ACM Annu. ACM Conf. Hum. Factors Comput. Syst.,
+2021, pp. 1–10.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.
+LIU et al.: MULTI-USER BEHA VIORAL PRIV ACY FILTERING FOR mmWave RADAR SENSING 8361
+Xiulong Liu (Senior Member, IEEE) received the BE
+and PhD degrees from the Dalian University of Tech-
+nology (China) in 2010 and 2016, respectively. He is
+currently a professor with the College of Intelligence
+and Computing, Tianjin University, China. He also
+worked as a visiting researcher in Aizu University,
+Japan; a postdoctoral fellow with The Hong Kong
+Polytechnic University, Hong Kong; and a postdoc-
+toral fellow with the School of Computing Science,
+Simon Fraser University, Canada. His research in-
+terests include wireless sensing and communication,
+indoor localization, and networking, etc. His research papers were published in
+many prestigious journals and conferences including IEEE/ACM Transactions
+on Networking, IEEE Transactions on Mobile Computing, IEEE Transactions
+on Computers, IEEE Transactions on Parallel and Distributed Systems, IEEE
+Transactions on Communications, INFOCOM, and ICNP, etc. He received Best
+Paper Awards from ICA3PP 2014 and IEEE System Journal 2017. He is also
+the recipient of CCF Outstanding Doctoral Dissertation award 2017.
+Hankai Liu received the BE degree in Internet of
+Things engineering and the MS degree in electronic
+and communication engineering from Tianjin Univer-
+sity, China, in 2018 and 2021, respectively, where he
+is currently working toward the PhD degree in com-
+puter science and technology. His current research
+interests include mmWave radar and RF computing.
+Jiaqi Zhang received the BE degree from the Dalian
+University of Technology, in 2022. She is currently
+working toward the master’s degree with the College
+of Intelligence and Computing, Tianjin University.
+Her research interests include wireless sensing and
+mmWave radar.
+Xin Xie (Member, IEEE) received the BE and PhD
+degrees from the School of Computer Science and
+Technology, Dalian University of Technology, China,
+in 2013 and 2019, respectively. He is currently is now
+a professor with the College of Intelligence and Com-
+puting, Tianjin University, China. He also worked as
+a visiting scholar with the Department of Computer
+Sciences, Purdue University, USA, a postdoctoral
+fellow with the Department of Computing, The Hong
+Kong Polytechnic University, Hong Kong SAR, and a
+researcher with the Theory Laboratory of 2012 Labs,
+Huawei, Hong Kong SAR. His research interests include IoT, edge intelligence,
+and network systems.
+Keqiu Li (Fellow, IEEE) received the bachelor’s and
+master’s degrees from the Department of Applied
+Mathematics, the Dalian University of Technology
+in 1994 and 1997, respectively and the PhD degree
+from the Graduate School of Information Science,
+Japan Advanced Institute of Science and Technology
+in 2005. He is currently a full professor, the dean with
+the College of Intelligence and Computing, Tianjin
+University, China. He is the recipient of National Sci-
+ence Foundation for Distinguished Young Scholars of
+China. He keeps working on the topics of blockchain,
+mobile computing, datacenter, and cloud computing. He has more than 150
+papers published on prestigious journals or conferences, such as IEEE/ACM
+Transactions on Networking, IEEE Transactions on Parallel and Distributed
+Systems, IEEE Transactions on Computers, IEEE Transactions on Mobile
+Computing, INFOCOM, ICNP, etc.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:49 UTC from IEEE Xplore.  Restrictions apply.

@@ -1,0 +1,32 @@
+{
+  "name": "theoretical_foundation_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Theory Foundation Study",
+    "authors": ["Nora Singh"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "Our theoretical foundation follows Cited Scholar Paper, especially its model of reviewable citation evidence."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "theoretical_foundation",
+        "stance": "positive",
+        "mention_type": "strong",
+        "citation_text": "Our theoretical foundation follows Cited Scholar Paper, especially its model of reviewable citation evidence.",
+        "reasoning": "The citing paper uses the target as a theoretical foundation.",
+        "keywords": ["theoretical foundation", "reviewable citation evidence"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": ["theoretical_foundation"],
+    "keep": true,
+    "evidence_strength": "strong",
+    "highlight_keywords": ["theoretical foundation", "reviewable citation evidence"],
+    "must_not_miss": true
+  }
+}

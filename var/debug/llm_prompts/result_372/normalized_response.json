@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[13]",
+  "target_reference_entry": "[13] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文将目标参考文献[23]作为ADNS-3050光学鼠标传感器的数据手册进行引用，用于说明光学鼠标的像素抓取器寄存器和相关技术细节，属于技术参考，未涉及目标论文的亚毫米级感知或穿墙窃听能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Upon reviewing technical datasheets, we made an unexpected discovery: mainstream optical sensors used in optical mice, such as the ADNS-3050 [23], include a special register called the 'pixel grabber'.",
+      "evidence_context": "Upon reviewing technical datasheets, we made an unexpected discovery: mainstream optical sensors used in optical mice, such as the ADNS-3050 [23], include a special register called the 'pixel grabber'. Originally intended for debugging or testing, this register captures and retains the value of a single pixel from each image frame captured by the sensor.",
+      "reference_entry": "A. Technologies, \"Adns-3050 optical mouse sensor datasheet,\" https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+      "why_this_judgment_zh": "引用正文中的[23]指向的是ADNS-3050光学鼠标传感器的数据手册，而非目标论文'Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration'。目标参考文献条目是数据手册，与目标论文无关，因此为误报。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "未发现引用论文对目标RFID亚毫米窃听论文的有效引用或评价。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[13]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] A. Technologies, “Adns-3050 optical mouse sensor datasheet,”\nhttps://www.mouser.com/datasheet/2/678/avagotechnologies\nADNS-3050-1217285.pdf.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[13] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

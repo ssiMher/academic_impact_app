@@ -1,0 +1,1631 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: MoiréLens: Bringing Schlieren Imaging into Real-World Environments Using Moiré Patterns
+CITED_PAPER_TITLE: MoiréVision: A Generalized Moiré-based Mechanism for 6-DoF Motion Sensing
+CITED_PAPER_YEAR: 2024
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3636534.3649374
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Zhihao Yan, Yanling Bu, Jun Luo 0001
+TARGET_REFERENCE_MARKER: [20]
+TARGET_REFERENCE_ENTRY: [20] Jingyi Ning, Lei Xie, Zhihao Yan, Yanling Bu, and Jun Luo. 2024. MoiréVision: A
+Generalized Moiré-based Mechanism for 6-DoF Motion Sensing. In Proceedings
+of ACM MobiCom . https://doi.org/10.1145/3636534.3649374
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=2 Related Work; context_type=formula_nearby; contains_formula=True
+lieren conversion pipeline that integrates near-
+invisible fringes into wallpapers and extracts Moiré distortions with
+tunable spatial–temporal sensitivity.
+•We demonstrate that MoiréLens effectively reconstructs thermal
+and gaseous flows using only commodity cameras and lightweight
+image processing, supporting diverse real-world applications such
+as gas-leak localization, HVAC monitoring and cooking automation.
+2 Related Work
+Sensing Using Moiré Patterns : Moiré patterns have been used
+in visual sensing because small geometric displacements yield
+large, measurable phase shifts in the fringes [5, 19–22, 33, 36, 37].
+Existing designs typically generate Moiré patterns in two ways:
+(i) Tag-based (stacked gratings). Two high-frequency gratings are
+rigidly stacked on a passive marker to produce stable, high-SNR
+interference: MoiréBoard enables low-cost, calibration-light 3-DoF
+tracking [33]; MoiréTag supports angular/6D snapshot tracking via
+chirped patterns [22, 37]; MoiréWidgets provide interactive controls
+such as buttons, sliders, and dials [ 5]. Because both gratings are
+rigidly bonded, these approaches are sensitive to solid motion but
+insensitive to minute refractive-index perturbations in air.(ii) Si
+
+[Context 2] section_heading=CFA and a high-frequency grid background enables ultra-precise; context_type=formula_nearby; contains_formula=True
+marker to produce stable, high-SNR
+interference: MoiréBoard enables low-cost, calibration-light 3-DoF
+tracking [33]; MoiréTag supports angular/6D snapshot tracking via
+chirped patterns [22, 37]; MoiréWidgets provide interactive controls
+such as buttons, sliders, and dials [ 5]. Because both gratings are
+rigidly bonded, these approaches are sensitive to solid motion but
+insensitive to minute refractive-index perturbations in air.(ii) Single
+high-frequency grid ×camera CFA. Interference between a camera
+CFA and a high-frequency grid background enables ultra-precise
+pose estimation and tracking [19–21]. MoiréPose targets 6-DoF lo-
+calization [19], and MoiréVision extends this concept to curvilinear
+patterns with sub-pixel feature extraction [20]. MoiréVib demod-
+ulates periodic fringe motion for micro-vibration sensing [21]. To
+our knowledge, MoiréLens is the first to employ Moiré patterns for
+sensing air refractive-index perturbations.
+Thermal and Gas Airflow Imaging. Traditional thermal airflow
+sensing relies on contact-based thermometers and anemometers,
+which provide only single-point measurements and require dense
+deployments to capture spatial temperature fields, impractical for
+large
+
+[Context 3] section_heading=CFA and a high-frequency grid background enables ultra-precise; context_type=formula_nearby; contains_formula=True
+apshot tracking via
+chirped patterns [22, 37]; MoiréWidgets provide interactive controls
+such as buttons, sliders, and dials [ 5]. Because both gratings are
+rigidly bonded, these approaches are sensitive to solid motion but
+insensitive to minute refractive-index perturbations in air.(ii) Single
+high-frequency grid ×camera CFA. Interference between a camera
+CFA and a high-frequency grid background enables ultra-precise
+pose estimation and tracking [19–21]. MoiréPose targets 6-DoF lo-
+calization [19], and MoiréVision extends this concept to curvilinear
+patterns with sub-pixel feature extraction [20]. MoiréVib demod-
+ulates periodic fringe motion for micro-vibration sensing [21]. To
+our knowledge, MoiréLens is the first to employ Moiré patterns for
+sensing air refractive-index perturbations.
+Thermal and Gas Airflow Imaging. Traditional thermal airflow
+sensing relies on contact-based thermometers and anemometers,
+which provide only single-point measurements and require dense
+deployments to capture spatial temperature fields, impractical for
+large or cluttered environments. Non-contact approaches instead
+aim to capture temperature and flow variations remotely. Infrared
+(IR) thermography mea
+
+TARGET_ALIAS_CONTEXTS:
+[Context 1] section_heading=CFA and a high-frequency grid background enables ultra-precise; context_type=alias_context; contains_formula=True
+acking via
+chirped patterns [22, 37]; MoiréWidgets provide interactive controls
+such as buttons, sliders, and dials [ 5]. Because both gratings are
+rigidly bonded, these approaches are sensitive to solid motion but
+insensitive to minute refractive-index perturbations in air.(ii) Single
+high-frequency grid ×camera CFA. Interference between a camera
+CFA and a high-frequency grid background enables ultra-precise
+pose estimation and tracking [19–21]. MoiréPose targets 6-DoF lo-
+calization [19], and MoiréVision extends this concept to curvilinear
+patterns with sub-pixel feature extraction [20]. MoiréVib demod-
+ulates periodic fringe motion for micro-vibration sensing [21]. To
+our knowledge, MoiréLens is the first to employ Moiré patterns for
+sensing air refractive-index perturbations.
+Thermal and Gas Airflow Imaging. Traditional thermal airflow
+sensing relies on contact-based thermometers and anemometers,
+which provide only single-point measurements and require dense
+deployments to capture spatial tem
+
+ACTIVE_EVIDENCE_TEMPLATES:
+
+FULL_EXTRACTED_TEXT:
+MoiréLens: Bringing Schlieren Imaging into Real-World
+Environments Using Moiré Patterns
+Linzhen Zhu∗
+University of Michigan
+Ann Arbor, MI, USA
+lzzhu@umich.edu
+Runqiu Wang∗
+University of Michigan
+Ann Arbor, MI, USA
+runqiu@umich.edu
+Yi Rong
+University of Michigan
+Ann Arbor, MI, USA
+yoyorong@umich.edu
+Ke Sun
+University of Michigan
+Ann Arbor, MI, USA
+kesuniot@umich.edu
+Abstract
+Airflows, heat plumes, and gas leaks are ubiquitous yet invisible to
+both human eyes and commodity cameras, limiting visual sensing of
+environmental dynamics critical to safety, comfort, and automation.
+Traditional Schlieren imaging reveals air refractive-index varia-
+tions but requires bulky, expensive optics and high-end cameras,
+restricting its use to controlled lab settings. We presentMoiréLens,
+a practical Schlieren imaging system that works in real-world envi-
+ronments by capturing Moiré interference with a low-cost embed-
+ded camera. By embedding high-frequency, human-imperceptible
+Moiré stimuli into everyday wallpaper, MoiréLens converts sub-
+tle refractive-index variations into measurable Moiré phase shifts
+formed between the background and the camera’s color-filter array.
+An automatic calibration module maintains stable, high-sensitivity
+Moiré pattern generation under camera viewpoint misalignment
+by dynamically adjusting the displayed Moiré stimulus. A color
+Moiré extraction and Moiré-to-Schlieren conversion pipeline iso-
+lates Moiré patterns from wallpaper and reconstructs refractive-
+index variations with adaptive spatial-temporal sensitivity. Exten-
+sive experiments show that MoiréLens achieves high-sensitivity
+Schlieren imaging for both regional airflows and global plumes.
+Using a 1-megapixel camera, it localizes a 1.5 hPa gas leak at 0.8
+m and butane from an unlit lighter at 1 m, extending the sensing
+range by 3×over background-oriented Schlieren. Leveraging heat-
+plume visualization, MoiréLens further classifies dry- and moist-
+heat cooking with 99.8% accuracy and estimates oil temperature
+with an average error of 7.10◦C under unseen heating powers.
+CCS Concepts
+• Human-centered computing →Ubiquitous and mobile com-
+puting; • Hardware →Sensor applications and deployments .
+Keywords
+Moiré Pattern, Schlieren Imaging, Airflow Visualization
+∗Both authors contributed equally to the paper.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+SenSys ’26, Saint Malo, France
+© 2026 Copyright held by the owner/author(s).
+ACM ISBN 979-8-4007-2309-4/26/05
+https://doi.org/10.1145/3774906.3802765
+ACM Reference Format:
+Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun. 2026. MoiréLens: Bringing
+Schlieren Imaging into Real-World Environments Using Moiré Patterns. In
+ACM/IEEE International Conference on Embedded Artificial Intelligence and
+Sensing Systems (SenSys ’26), May 11–14, 2026, Saint Malo, France. ACM,
+New York, NY, USA, 14 pages. https://doi.org/10.1145/3774906.3802765
+1 Introduction
+Everyday environments are filled with invisible air movements and
+variations that shape human comfort, safety, and energy efficiency,
+from the heat rising from a stove, to gas leaking from a burner, or air
+jets flowing through a ventilation outlet. Detecting and visualizing
+such flows is essential for applications, such as cooking automa-
+tion, HVAC monitoring, and environmental safety [6]. However,
+conventional temperature and gas sensors provide only point mea-
+surements, responding slowly to changes and lacking the spatial
+resolution needed to capture how air, heat, or gas actually propagate
+through space [15, 16]. In contrast, Schlieren imaging is an optical
+technique that visualizes these invisible phenomena by detecting
+minute air-density variations, arising from changes in tempera-
+ture, pressure, or gas composition, and converting refractive-index
+gradients into perceptible brightness variations [27].
+Practical Schlieren imaging systems for real-world environments
+need to satisfy three key requirements: First, they need high sensi-
+tivity to detect subtle refractive-index variations across meter-level
+camera–scene distances. Second, they must maintain robustness to
+ambient lighting and camera placement changes to operate reliably
+under diverse and dynamic conditions. Third, they should be low-
+cost and easily deployable on commodity mobile platforms and IoT
+devices, using optical components that are compact and visually
+unobtrusive to humans.
+Conventional optical Schlieren systems, while highly sensitive,
+rely on expensive mirrors, lenses, and knife-edge filters that de-
+mand precise alignment and stable illumination [27], limiting their
+use to laboratory environments. Background-Oriented Schlieren
+(BOS) mitigates these hardware constraints by replacing optical
+assemblies with patterned backgrounds and estimating pixel dis-
+placements between reference and distorted frames [24]. However,
+BOS still faces critical challenges: it requires dense, high-contrast,
+and visually intrusive backgrounds; its sensitivity is constrained
+by camera resolution and background texture; and its performance
+degrades under nonuniform lighting or large depth-of-field. Table 1
+1274
+SenSys ’26, May 11–14, 2026, Saint Malo, France Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun
+CMOS Grating
+BackgroundDisturbance
+Printed
+Digital
+Cameraon Mobile PlatformRefractive-index Changes Moiré-to-Schlieren VisualizationsMoiré PatternGeneration&SeparationMoiré StimuliImperceptibleEmbedding
+Applications
+Gas Leaks,Oil Fume,HVAC…
+Figure 1: MoiréLens uses Moiré patterns generated from back-
+ground and camera to visualize refractive-index disturbance.
+summarizes these constraints that hinder both optical Schlieren
+and BOS from being deployed in uncontrolled environments.
+In this paper, we present MoiréLens, a Schlieren imaging sys-
+tem that leverages Moiré interference to enable high-sensitivity
+flow visualization in real-world environments. As shown in Fig. 1,
+MoiréLens operates on a background-camera pair: the background
+can be either (i) a digital pattern rendered on a display or(ii) a phys-
+ical pattern mounted on a wall, while the camera can be either (i)
+fixed at a known location or(ii) carried on a mobile platform (e.g., a
+household or industrial robot). In the physical-background setting,
+a fixed camera needs to be placed at the designated location rather
+than an arbitrary one. Airflow disturbances in the space between
+the background and camera create refractive-index variations that
+bend light rays as they traverse thermal or gaseous flows, intro-
+ducing minute geometric distortions into the captured background
+image. By embedding high-frequency fringes into the background,
+these distortions strongly modulate the interference between the
+background fringes and the camera’s Color Filter Array (CFA), pro-
+ducing a Moiré effect that amplifies the distortions into measurable
+phase shifts and thereby makes invisible flow fields observable.
+MoiréLens faces the following key challenges.
+1) How to maintain stable Moiré patterns under varying cam-
+era–background alignment? Generating high-quality Moiré pat-
+terns requires precise geometric alignment between the camera
+and background, as even slight deviations can introduce distor-
+tions that degrade Schlieren reconstruction. To address this, we
+design AutoMoiré, an automatic calibration and control module
+that continuously adjusts either the rendered background patterns
+or the background-to-camera geometry to maintain optimal Moiré
+formation. AutoMoiré computes a homography mapping from back-
+ground to camera coordinates and pre-warps the fringe background
+so that the camera perceives an undistorted Moiré grid. When a
+physical background (e.g., printed wallpaper) is used, AutoMoiré
+instead controls the robot to adjust the camera’s position and ori-
+entation, achieving equivalent alignment and Moiré visibility. By
+compensating for minor deviations caused by mechanical impre-
+cision of the robot, AutoMoiré ensures consistently stable Moiré
+patterns for reliable Schlieren reconstruction.
+2) How to embed high-frequency patterns into a background wall-
+paper that remain invisible to humans while ensuring reliable Moiré
+extraction on cameras? Directly overlaying strong, high-frequency
+patterns into everyday wallpapers would be visually distracting in
+daily spaces, undermining the practicality and social acceptability
+of continuous deployment. We exploit the insight that Moiré-based
+Schlieren imaging is less sensitive to background contrast, allowing
+Table 1: Comparison of Schlieren imaging solutions. Abbrevi-
+ations: Sens. = Sensitivity; Robust. = Robustness; BG. = Back-
+ground; App. = Appearance; Align. = Alignment calibration
+need; Ada. = Adaptive; Med. = Medium.
+Method Cost Sens. Light
+Robust.
+BG.
+Contrast
+BG. Visual
+App. Align.
+Optical ✗ High ✓ High ✗ Low N/A N/A ✗ High
+BOS ✓ Low ✗ Low ✗ Low ✗ High ✗ Visible ✓ Low
+Moiré ✓ Low ✓ High/Ada. ✓ High ✓ Low ✓ Invisible ◆ Med.
+near-invisible fringes to be embedded into ordinary textured wall-
+paper without altering their visual appearance. To ensure robust
+signal extraction, MoiréLens leverages a counterintuitive phenom-
+enon called color Moiré, in which the camera’s demosaicing process
+interacts with high-frequency fringes to generate false-color bands.
+This effect allows monochrome cameras to isolate Moiré patterns
+from the grayscale background without additional computation.
+3) How to convert the captured Moiré patterns into Schlieren vi-
+sualization to support diverse downstream applications? We design
+a Moiré-to-Schlieren visualization pipeline that dynamically ad-
+justs its spatial–temporal sensitivity to achieve optimal Schlieren
+reconstruction across different scenarios. The pipeline adaptively
+tunes background fringes and visualization strategies based on task
+requirements, enabling optimal Schlieren representations across
+temporally stable and dynamic disturbances. It also serves as astable
+optical feature extraction layer , allowing Schlieren representations
+to be directly processed by ML models. Beyond visualizing thermal
+airflow and gas leakage, we demonstrate that a lightweight CNN
+trained with limited data can leverage these features for accurate
+dry- and moist-heat classification and oil-temperature regression.
+We implement and evaluate MoiréLens using commodity cam-
+eras mounted on both fixed tripods and mobile robots, with digital
+and physical wallpaper backgrounds where high-frequency fringes
+are embedded while remaining imperceptible to human observers.
+MoiréLens delivers real-time, high-quality visualization of airflows
+induced by variations in gas composition, air pressure, and tem-
+perature. It maintains stable Schlieren reconstruction even under
+±10◦ camera–background misalignment, demonstrating strong ro-
+bustness to geometric variations. Using a low-cost 1-MegaPixel
+(MP) camera, it clearly localizes a 1.5 hPa gas leak at 0.8 m and
+butane from an unlit lighter at 1 m, extending the sensing range
+by 3×and improving robustness over BOS. A smartphone camera
+can further extend the sensing range to 2.15 m. MoiréLens also
+visualizes gaseous plumes from heaters and candles, capturing the
+fine-grained optical flow of convective air movement. Leveraging
+the heat-plume features, it classifies dry- and moist-heat cooking
+with 99.8% accuracy and estimates oil temperature with an aver-
+age error of 6.06◦𝐶 under cross-validation, and 7.83◦𝐶 for unseen
+power conditions using unseen embedded wallpaper backgrounds.
+Our project webpage is available at: https://ambient-intelligence-
+lab-umich-eecs.github.io/MoireLens-Page/.
+We make the following contributions in this work:
+•We present MoiréLens, a Moiré-based Schlieren imaging frame-
+work that replaces traditional optical assemblies with high-
+frequency fringe backgrounds and commodity cameras, enabling
+low-cost, high-sensitivity, extended-range, and robust Schlieren
+imaging in real-world environments.
+1275
+MoiréLens: Bringing Schlieren Imaging into Real-World Environments Using Moiré Patterns SenSys ’26, May 11–14, 2026, Saint Malo, France
+•We develop AutoMoiré, an automatic calibration and control
+module that continuously maintains geometric alignment and stable
+Moiré formation under varying camera viewpoints.
+•We design a human-invisible background embedding and adap-
+tive Moiré-to-Schlieren conversion pipeline that integrates near-
+invisible fringes into wallpapers and extracts Moiré distortions with
+tunable spatial–temporal sensitivity.
+•We demonstrate that MoiréLens effectively reconstructs thermal
+and gaseous flows using only commodity cameras and lightweight
+image processing, supporting diverse real-world applications such
+as gas-leak localization, HVAC monitoring and cooking automation.
+2 Related Work
+Sensing Using Moiré Patterns : Moiré patterns have been used
+in visual sensing because small geometric displacements yield
+large, measurable phase shifts in the fringes [5, 19–22, 33, 36, 37].
+Existing designs typically generate Moiré patterns in two ways:
+(i) Tag-based (stacked gratings). Two high-frequency gratings are
+rigidly stacked on a passive marker to produce stable, high-SNR
+interference: MoiréBoard enables low-cost, calibration-light 3-DoF
+tracking [33]; MoiréTag supports angular/6D snapshot tracking via
+chirped patterns [22, 37]; MoiréWidgets provide interactive controls
+such as buttons, sliders, and dials [ 5]. Because both gratings are
+rigidly bonded, these approaches are sensitive to solid motion but
+insensitive to minute refractive-index perturbations in air.(ii) Single
+high-frequency grid ×camera CFA. Interference between a camera
+CFA and a high-frequency grid background enables ultra-precise
+pose estimation and tracking [19–21]. MoiréPose targets 6-DoF lo-
+calization [19], and MoiréVision extends this concept to curvilinear
+patterns with sub-pixel feature extraction [20]. MoiréVib demod-
+ulates periodic fringe motion for micro-vibration sensing [21]. To
+our knowledge, MoiréLens is the first to employ Moiré patterns for
+sensing air refractive-index perturbations.
+Thermal and Gas Airflow Imaging. Traditional thermal airflow
+sensing relies on contact-based thermometers and anemometers,
+which provide only single-point measurements and require dense
+deployments to capture spatial temperature fields, impractical for
+large or cluttered environments. Non-contact approaches instead
+aim to capture temperature and flow variations remotely. Infrared
+(IR) thermography measures emitted radiation to map surface tem-
+peratures, but it cannot visualize volumetric airflow and remains
+costly [39]. Schlieren imaging detects refractive-index gradients
+caused by thermal or density variations [17], yet traditional setups
+demand precise mirror alignment and knife-edge optics, restricting
+their use in everyday environments [17]. BOS relaxes these optical
+constraints by tracking displacements in textured backgrounds [23],
+but it sacrifices sensitivity, depends heavily on background contrast,
+and typically requires high-end Single-lens Reflex (SLR) cameras to
+achieve adequate SNR [13, 27]. A detailed comparison between BOS
+and MoiréLens is presented in §3.2 and Table 1. Acoustic thermom-
+etry offers another non-contact modality by estimating temperature
+from sound speed variations [ 3, 4, 9, 31], but typically demands
+dense sensor arrays and controlled conditions. MoiréLens achieves
+non-contact thermal airflow sensing using only a low-cost camera and
+patterned wallpaper, offering an unobtrusive, and scalable solution
+for IoT and robotic systems.
+Moiré Stimulus
+Refractive-index DisturbanceCamera
+CMOS Grating
+Background
+(a) Moiré-based solution
+(b) BOS-based solution
+𝑑 𝑙 𝑠=𝑙−𝑑
+Speckle Pattern
+Figure 2: Optical geometry of synthetic Schlieren.
+Applications for Schlieren Imaging. Schlieren imaging has been
+widely adopted across scientific, industrial, and safety domains for
+non-intrusive visualization of refractive-index variations caused
+by heat or gas flow [27]. In scientific and engineering research, it
+supports fluid-mechanics studies of convection, turbulence, and
+combustion, offering particle-free diagnostics of temperature and
+density gradients [ 13, 23]. In industrial and environmental sys-
+tems, they are used for HVAC testing, cleanroom airflow inspection,
+and gas-shielding evaluation in welding and additive manufactur-
+ing [13]. Health and safety applications include respiratory-flow
+visualization for infection control [34] and gas leakage detection
+[29] for early fire prevention. Unlike traditional methods confined
+to controlled settings, MoiréLens aims to bring Schlieren imag-
+ing to real-world environments, enabling low-cost, unobtrusive
+visualization of thermal and gas flows using only commodity cam-
+eras and wallpaper-embedded Moiré patterns. We demonstrate that
+MoiréLens can support everyday and industrial applications such
+as cooking oil detection, oil temperature regression, butane gas
+and compressed-air detection, and heater airflow visualization in
+uncontrolled daily environments.
+3 Primer and Preliminary Study
+This section introduces the optical principles of Moiré-based
+Schlieren imaging and compares it with the conventional BOS
+method.
+3.1 Primer on Synthetic Schlieren
+Schlieren imaging is a classical optical method for visualizing fluid
+flows with spatially varying refractive indices. Traditional Schlieren
+setups rely on expensive optics and carefully aligned light sources,
+making them difficult to deploy outside laboratories [17]. In con-
+trast, synthetic Schlieren offers a low-cost alternative that can be
+realized with commodity devices such as off-the-shelf cameras and
+printed background patterns [ 27]. Fig. 2 shows the basic setup,
+where a camera is placed in front of a structured background. Vari-
+ations in air density or temperature induce refractive-index distur-
+bances, which distort the background pattern captured by cameras.
+Computational analysis of these distortions then reconstructs the
+flow field.
+1276
+SenSys ’26, May 11–14, 2026, Saint Malo, France Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun
+We model this system as a thin-lens camera, with focal length
+𝑓 and pixel pitch 𝑝𝑐, observing a planar background at distance 𝑙.
+The measured image is given by
+𝐼meas(𝑥) =𝐼true(𝑥)+𝑛(𝑥), 𝑛 ∼𝒩(0,𝜎2
+𝐼),
+with 𝑛denoting additive white Gaussian noise (AWGN). For simplic-
+ity, we assume a thin refractive-index layer located at a fixed offset
+𝑑 from the background, and a small angular deflection 𝛼 produces
+a pixel displacement Δ𝑢 =𝑑tan 𝛼 ≈𝑑𝛼 on the background plane.
+The observed shift from the camera is
+Δ𝑥img =𝑓𝑥𝑔(𝑠)𝛼+𝑛, (1)
+where 𝑓𝑥 =𝑓/𝑝𝑐 is the camera’s focal gain,𝑔(𝑠) = 𝑑
+𝑙−𝑓 ≈ 𝑑
+𝑙 = 𝑑
+𝑠+𝑑
+is the geometry-dependent gain, and 𝑛accounts for ambient noise.
+This single-layer model can be extended to turbulent flows modeled
+as a stack of thin refractive-index layers.
+Eq. 1 highlights that observed displacement scales linearly with 𝛼.
+For a fixed 𝑑, sensitivity is governed by the camera’s focal gain 𝑓𝑥
+and placement gain 𝑔(𝑠). We aim to exploit these factors to achieve:
+i) high sensitivity to small deflections 𝛼, ii) extended sensing range
+𝑠, and iii) robust performance under noise 𝑛.
+3.2 Moiré-based Solution v.s. BOS
+Building on the model above, we now compare the Moiré-based
+solution against the well-known BOS technique [23].
+BOS. BOS visualizes refractive-index gradients by applying a ran-
+dom texture to a background and comparing the distorted image
+(with flow) to a reference frame [13]. The apparent displacement
+field Δ𝑢, caused by angular deflections𝛼, is estimated through pixel
+registration between the two images [ 24]. The accuracy of this
+displacement estimate depends on two background parameters: the
+root-mean-square (RMS) contrast 𝐶, which measures pixel-intensity
+variation, and the spatial bandwidth 𝐵(cycles/pixel), which quanti-
+fies the texture’s finest spatial detail. Based on the literature [23],
+the displacement uncertainty decreases with increasing 𝐶 and 𝐵:
+𝜎𝑢 ∝ 𝜎𝐼
+𝐶𝐵 . (2)
+In practice, BOS sensitivity is constrained by several factors:(1) Low
+SNR at large distances ( 𝑠): as the camera moves farther from the flow,
+the apparent displacements become smaller and the effective spatial
+bandwidth decreases ( 𝐵 ↓). (2) Illumination variability: changes
+in lighting, shadows, or glare can easily degrade image contrast,
+reducing displacement accuracy (𝐶 ↓). (3) Restricted background
+design: BOS relies on visible random textures, which are impractical
+in many real-world environments. For example, embedding such
+textures into wallpaper to remain visually unobtrusive inevitably
+reduces both contrast and spatial bandwidth (𝐶 ↓,𝐵 ↓). Therefore,
+existing BOS approaches have to use high-end SLR cameras with
+high contrast black-and-white backgrounds [13, 27].
+Moiré-based solution : To address these issues, we introduce a
+novel background design, referred to as Moiré stimulus , which
+generates Moiré patterns in captured frames to enable super-
+resolution synthetic Schlieren. Specifically, we employ a periodic
+high-frequency grid as the background. The key insight is to ex-
+ploit its interaction with the CFA of standard CMOS sensors, which
+inherently generates Moiré patterns in recorded images. These pat-
+terns serve as a carrier signal : sub-pixel displacements induced
+BOS 
+Moiré 
+20𝑐𝑚
+30𝑐𝑚40𝑐𝑚
+20𝑐𝑚30𝑐𝑚40𝑐𝑚
+60𝑐𝑚100𝑐𝑚140𝑐𝑚
+1.0 0.9 0.8
+1.0 0.9 0.8
+0.6 0.4 0.2(a). Different distance 𝑠. (b). Different contrast 𝑐. 
+Normalized Scale (dB)−40−20−10−6−3
+Figure 3: Comparison between BOS and MoiréLens.
+by refractive-index variations modulate the phase of the high-
+frequency grid, manifesting as amplified low-frequency Moiré
+phase shifts with improved SNR.
+Let the Moiré stimulus background consist of a sinusoidal grid
+with spatial frequency 𝑓𝑏 and the CFA introduce an effective sam-
+pling frequency 𝑓𝑐. When 𝑓𝑏 and 𝑓𝑐 are close but not identical, their
+interference produces Moiré patterns at frequency𝑓𝑚 =∣𝑓𝑏−𝑓𝑐∣ ≪
+𝑓𝑏. A small deflection 𝛼 induces a pixel shift Δ𝑥img, which is mag-
+nified into an apparent moiré displacement:
+Δ𝑥moir ∝ 𝑓𝑏
+𝑓𝑚
+Δ𝑥img. (3)
+Preliminary Comparison Study. Theoretical comparison be-
+tween BOS and the Moiré-based approach is challenging since
+their imaging mechanisms and outputs differ fundamentally [27].
+To enable a fair comparison, we conduct controlled experiments
+for visual comparison using a low-cost embedded camera (OV9281,
+1 MP) under identical parameters, including exposure, focus, res-
+olution, and optics. As shown in Fig. 2, the background is placed
+at 𝑑 =40 cm behind the disturbance layer, mimicking a practical
+MoiréLens configuration (e.g., the distance between a stove and
+a wall). A candle flame serves as a stable, thin thermal plume to
+introduce refractive-index variations. The camera is positioned at a
+distance 𝑠 from the candle, aligned nearly parallel to the wall sur-
+face. For fairness, each background is individually optimized. BOS
+uses optimal random-dot patterns from [ 13], Moiré-based setup
+employs a Moiré stimulus to produce six half-cycles Moiré pattern
+cells within the region of interest (ROI) to ensure global spatial
+sensitivity. Visualization results are obtained by computing inter-
+frame differences to highlight dynamic disturbances (see §4.3 for
+details on these design choices). We summarize two key findings
+based on Fig. 3:
+1) Sensitivity to camera–disturbance distance 𝑠: As shown in Fig. 3
+(a), increasing𝑠reduces BOS spatial details (𝐵 ↓), with signals fading
+by 𝑠 = 30 cm (𝑠/𝑙 ≈ 0.43). In contrast, the Moiré-based method
+maintains clear plume structures up to 𝑠 = 100 cm (𝑠/𝑙 ≈ 0.71),
+demonstrating superior long-range sensitivity.
+2) Sensitivity to background contrast 𝐶: 𝐶 reflects robustness to
+ambient lighting variations and the extent to which background
+patterns can be embedded into textured wallpapers while remaining
+imperceptible to humans. At a fixed𝑠 =20 cm, we vary𝐶to evaluate
+performance under degraded contrast. As shown in Fig. 3(b), BOS
+visualization deteriorates sharply as 𝐶 decreases from 1.0 to 0.8,
+1277
+MoiréLens: Bringing Schlieren Imaging into Real-World Environments Using Moiré Patterns SenSys ’26, May 11–14, 2026, Saint Malo, France
+whereas the Moiré-based approach remains effective even at𝐶 =
+0.4, since phase modulation of the grid is preserved regardless of 𝐶.
+4 System Design
+MoiréLens leverages the aforementioned advantages to realize
+Schlieren imaging using low-cost cameras embedded in IoT de-
+vices and household robots operating in uncontrolled environ-
+ments. Figure 4 illustrates the overall workflow ofMoiréLens. § 4.1
+presents the stable and controllable Moiré stimulus generation de-
+sign through coordinated geometric pre-warping and scale search
+to enable easy deployment without strict camera alignment. § 4.2
+introduces the invisible embedding technique, which integrates
+Moiré stimulus into wallpapers so that the patterns remain im-
+perceptible to humans yet produce measurable Moiré patterns on
+camera. § 4.3 details the adaptive Moiré-to-Schlieren visualization
+pipeline. Finally, § 4.4 describes the feature extraction and machine
+learning models used for downstream application tasks.
+4.1 Moiré Stimulus Calibration and Generation
+We first design the Moiré stimulus, i.e., the high-frequency grid pat-
+terns rendered on digital or physical background.The key objective is
+to ensure stable Moiré pattern formation with a fixed spatial scale, de-
+spite unknown and dynamically varying camera-to-background align-
+ment and distance. To this end, we developAutoMoiré, a calibration-
+and-rendering module that automatically generates the optimal
+Moiré stimulus. For digital backgrounds, AutoMoiré continuously
+captures video and uses visual feedback to calibrate geometric align-
+ment and render the optimal stimulus in real time. For physically
+printed stimuli, where the background is immutable, AutoMoiré
+instead assumes a camera mounted on a mobile robot and adjusts
+its pose to achieve stable Moiré formation. In the following, we
+focus on the digital-background case, while the printed-background
+scenario can be regarded as its inverse, where the camera pose is
+calibrated rather than the stimulus itself.
+4.1.1 Camera-to-Background Geometric Calibration. We consider
+scenarios where the background–camera alignment is unknown . We
+found that even small camera pose deviations can introduce mis-
+alignment between camera and background, significantly altering
+the resulting Moiré patterns. To quantify this effect, we place the
+camera at a distance of 𝑙 =100 cm from the digital display and ad-
+just its orientation by5◦and 10◦along the yaw, pitch, and roll axes,
+respectively. As shown in Fig. 5, each type of rotation produces a
+distinct Moiré pattern deformation. These discrepancies cause sub-
+stantial variations in Moiré pattern stability and sensitivity, which
+ultimately degrade the robustness of MoiréLens, particularly for
+downstream tasks that rely on data-driven ML models.
+To address this, we design a calibration method that maps back-
+ground coordinates to camera image coordinates before rendering
+the Moiré stimulus. Let s =[𝑢𝑠,𝑣𝑠,1]⊤denote background coor-
+dinates and c =[𝑢𝑐,𝑣𝑐,1]⊤denote camera coordinates. Under the
+planar assumption,
+𝜆c ∼H s, 𝜆 ≠0, (4)
+where H is a 3×3 homography mapping screen coordinates to cam-
+era coordinates. Our goal is to estimate H in order to (i) rectify
+camera frames into the screen coordinate system and (ii) pre-warp
+background Moiré stimulus so they appear undistorted after imag-
+ing.
+The calibration proceeds as follows. We compute H by render-
+ing a high-contrast chessboard and detecting internal corners [7].
+The homography is estimated using Direct Linear Transformation
+(DLT) within a RANdom SAmple Consensus (RANSAC) framework
+to ensure outlier robustness [11]. The resulting inverse mapping
+H−1 is stored to rectify camera frames and pre-warp stimulus. For
+printed background, this calibration is performed once using a
+digital display at the same location to estimate H−1.
+4.1.2 Moiré Stimulus Rendering. Next, AutoMoiré renders the
+Moiré stimulus on the background. It first generates a base 2D
+sinusoidal grid pattern:
+𝐼screen(𝑥,𝑦) =𝐶sin(2𝜋𝑓𝑏𝑥)sin(2𝜋𝑓𝑏𝑦), (5)
+where 𝑓b is the spatial frequency of Moiré stimulus (in cycles/pixel).
+We adopt sinusoidal gratings rather than hard-edged grids for two
+reasons. First, hard-edged grids may interfere with the discrete
+pixels of the display and introduce spurious low-frequency Moiré
+artifacts due to aliasing whereas smooth sinusoidal gratings sup-
+press such effects. Second, sinusoidal gratings are band-limited and
+yield sharp, predictable spectral peaks, which improves the robust-
+ness of peak detection and stabilizes the Moiré pattern scale search
+in § 4.1.3.
+Using H−1 estimated in § 4.1.1,AutoMoiré then applies aperspec-
+tive pre-warp to compensate for the camera’s viewing geometry:
+𝐼pre
+background =𝒲(𝐼background; 𝐻−1
+scaled), (6)
+where 𝒲(⋅; 𝑀) denotes a perspective warp operator. However,
+direct perspective pre-warping redistributes spatial frequencies non-
+uniformly, particularly in foreshortened regions, causing aliasing
+and intensity blurring. To mitigate it, AutoMoiré first renders the
+grid on a 𝑘×denser lattice, effectively oversampling the pattern so
+that even the most compressed regions remain above the Nyquist
+limit. The scaled inverse homography is applied as
+𝐻−1
+scaled =𝑆𝐻 −1 𝑆−1, 𝑆 =diag(𝑘,𝑘, 1), (7)
+and computing the pre-warped stimulus as
+𝐼pre
+𝑘 =𝒲(𝐼𝑘; 𝐻−1
+scaled). (8)
+Finally, AutoMoiré performs area-based downsampling on 𝐼pre
+𝑘 to
+match the background native resolution, producing 𝐼pre
+stim. This step
+serves as an anti-aliasing filter, preserving average intensity while
+restoring the high-frequency contrast and smooth transitions of
+the sinusoidal pattern. In practice, the oversampling factor 𝑘 is
+determined by the camera resolution: higher-resolution cameras
+require larger 𝑘 to avoid aliasing and maintain contrast fidelity.
+For a 1 MP camera, AutoMoiré empirically sets 𝑘 = 2 by default.
+Fig. 5 shows the captured patterns with AutoMoiré. Even with
+camera-to-background misalignments up to 10◦ along different
+axes, AutoMoiré maintains geometrically stable Moiré patterns.
+4.1.3 Target-Scale Moiré Patterns Generation. Lastly, we aim to
+generate stable Moiré patterns with a fixed spatial scale regardless of
+the unknown or varying camera-to-background distance . We define
+a Moiré cell as the fundamental repeating unit of the Moiré pattern,
+corresponding to one half-cycle of the interference between the
+1278
+SenSys ’26, May 11–14, 2026, Saint Malo, France Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun
+Digital/ PhysicalBackground
+Camera
+Camera-to-Background Geometric Calibration§4.1.1Chessboard
+Distorted chessboard
+Videocapture
+Homographymatrix (𝐻) 𝐻!"DLTInverse
+Perspective pre-warpPre-warped stimuli 
+Moiré Stimuli Rendering§4.1.22D sinusoidalMoiré stimuliTarget-Scale Moiré Generation §4.1.3# of Moirecells in ROI: 𝑚#$#Fibonacci SearchInvisible Moiré Patterns §4.2Moiré stimuli wallpaper embeddingAnti-aliasing upsampling
+Color Moiré CIELAB a* channelColor Moiré separationAdaptive Moiré-to-Schlieren §4.3Spatial Adaptivity §4.3.1Temporal Adaptivity §4.3.2Downstream Processing §4.4•Dry-and moist-cooking classif.•Oil temperature regressionGas leakage LocalizationPlume Flow Vis.Cooking Automation
+Figure 4: System workflow of MoiréLens. The upward arrow from the background (upper region) to the camera (lower region)
+indicates video capture. The downward arrow represents the processed visual feedback to guide background Moiré stimulus
+rendering.
+(a) 5°misalignment(b) 10°misalignment
+Yaw
+Roll
+Pitch
+W/o AutoMoiréW/ AutoMoiréW/o AutoMoiréW/ AutoMoiré
+RollPitch
+Yaw
+Figure 5: Moiré pattern distortion introduced by camera-to-
+background misalignment.
+rendered stimulus and the camera’s effective sampling grid. The
+number of Moiré cells within the ROI, denoted as 𝑚×𝑚with 𝑚
+cells along each spatial dimension, directly determines the spatial
+sensitivity of Schlieren imaging (§ 4.3.1). Our goal is to achieve a
+target number of cells 𝑚tgt by adaptively adjusting Moiré stimulus.
+Since AutoMoiré has already aligned the camera and background
+coordinate systems through geometric calibration (§ 4.1.1), it can
+directly tune the Moiré stimulus frequency 𝑓𝑏 so that 𝑚(𝑓tgt
+𝑏 ) ≈
+𝑚tgt.
+According to the Moiré pattern frequency relation𝑓𝑚 =∣𝑓𝑏−𝑓𝑐∣,
+the observed Moiré frequency 𝑓𝑚 reaches its minimum when the
+rendered period equals the Bayer CFA pitch (2 pixels), i.e.,𝑓𝑏 =1/2
+cycle/pixel. At this anchor frequency, the interference produces a
+single large-scale Moiré pattern spanning the entire background
+(Fig. 6a), corresponding to the largest Moiré scale 𝑚min.
+By slightly adjusting 𝑓𝑏 around this anchor, the number of Moiré
+cells 𝑚 increases monotonically with ∣𝑓𝑏 −𝑓𝑐∣. AutoMoiré thus
+performs a Fibonacci search to search for the optimal𝑓𝑏. Specifically,
+we empirically set 𝑚tgt ≤ 10, which is equivalent to searching
+within a narrow frequency range near the anchor,𝑓𝑏 ∈[1/2.1,1/2]
+cycle/pixel. For each candidate frequency 𝑓𝑖
+𝑏, AutoMoiré renders
+the stimulus, captures an image, and estimates 𝑚(𝑓𝑖
+𝑏). We design
+an algorithm to estimate 𝑚(𝑓𝑖
+𝑏) by locating Moiré-cell centroids
+and measures their spatial density to infer the effective (possibly
+fractional) number of cells m(𝑓𝑖
+𝑏) within the ROI. It enables fine-
+grained frequency tuning rather than discrete integer jumps in
+cell count. The details of this algorithm is in Appendix [ 1]. The
+optimization objective is
+𝐽(𝑓𝑖
+𝑏) =∣m(𝑓𝑖
+𝑏)−mtgt∣, (9)
+and the optimal rendering frequency is obtained as
+ˆ𝑓tgt
+𝑏 =arg min
+𝑓𝑖
+𝑏
+𝐽(𝑓𝑖
+𝑏). (10)
+Figure 6 shows the 𝑚min case along with captured Moiré patterns
+tuned by AutoMoiré at different spatial scales (𝑚=2,6,10).
+4.2 Human-Invisible Moiré Stimulus
+In this section, we describe how to seamlessly embed the Moiré
+stimulus from § 4.1 into a wallpaper so it is imperceptible to human
+observers yet produces Moiré patterns that can be reliably captured
+by a camera.
+4.2.1 Moiré Stimuli Embedding in Wallpaper. Given a wallpaper
+image 𝐼wallpaper ∈ [0,1]𝐻×𝑊×3 in standard sRGB format and a
+grayscale Moiré stimulus 𝐼pre
+stim ∈[0,1]𝐻×𝑊 (§ 4.1.2), we first con-
+vert the wallpaper to linear RGB space to avoid gamma-induced
+distortion, i.e., artifacts caused by multiplicative blending in the
+nonlinear sRGB space [ 2]. This is necessary because the Moiré
+stimulus should be uniform in the camera’s sensor-linear intensity
+domain, not in human-perceived brightness.
+𝐿wallpaper =srgb2lin(𝐼wallpaper), (11)
+Since the Moiré stimulus is a grayscale 2-D sinusoidal grid, we
+normalize it into a zero-centered achromatic field
+𝐼pre
+norm =2(𝐼pre
+stim −1
+2 ) ∈[−1,1] (12)
+and broadcast 𝐼pre
+norm across three color channels to preserve the
+wallpaper’s hue while modulating its luminance. We then perform
+achromatic multiplicative embedding as
+𝐿embed
+wallpaper =𝐿wallpaper ⋅(1 +𝛽𝐼pre
+norm), (13)
+where 𝛽 controls the modulation depth. This operation adjusts lu-
+minance while minimally affecting chromaticity, thereby reducing
+1279
+MoiréLens: Bringing Schlieren Imaging into Real-World Environments Using Moiré Patterns SenSys ’26, May 11–14, 2026, Saint Malo, France
+(a) 𝑚min (full background)
+ (b) 𝑚=2 (full background)
+ (c) 𝑚=2 (ROI)
+ (d) 𝑚=6 (ROI)
+ (e) 𝑚=10 (ROI)
+Figure 6: Moiré patterns at different spatial scales ( 𝑚) using AutoMoiré. The blue square denotes the region of interest (ROI).
+(a) Raw wallpaper
+15X Zoom In (b) Moiré embedding
+ (c) Bare eye view
+ (d) MoiréLens view
+ (e) Moiré extraction
+0 6 12
+SNR (dB)
+0.0
+0.5
+1.0CDF
+3 dB
+60 cm
+100 cm
+140 cm (f) Wallpaper proper-
+ties
+Figure 7: Moiré-embedded wallpaper. The Moiré stimulus is generated by the setting 𝑚=6, 𝑙 =60 cm. The embedded wallpaper
+has 𝛽 =0.8. (d) is captured by a monochrome camera (Arducam OV9281) at 𝑙 =60 cm, and the blue rectangle in (e) indicates the
+ROI. (f) is the CDFs of the generated Moiré pattern SNR, as determined by the wallpaper’s properties, for 𝑙 =60/100/140 cm.
+perceptual artifacts. We set 𝛽 =0.8 to balance Moiré visibility un-
+der cameras with imperceptibility to humans (§ 6.3). Finally, the
+embedded wallpaper is converted back to sRGB space:
+𝐼embed
+wallpaper =lin2srgb(𝐿embed
+wallpaper). (14)
+This embedding pipeline preserves the visual appearance of the
+original wallpaper for human observers while enabling commodity
+cameras to reliably capture the embedded Moiré patterns.
+4.2.2 Color Moiré Separation from Wallpaper. When the camera
+captures the patterned wallpaper,MoiréLens must isolate the Moiré
+patterns from the wallpaper texture and color, to prevent interfer-
+ence during processing. Our approach exploits a counterintuitive
+phenomenon known as color Moiré . When the captured Moiré cells
+are relatively large, the resulting patterns exhibit vivid false colors
+even though the Moiré stimulus is monochrome. For example, a
+purely black-and-white Moiré stimulus may appear as alternating
+magenta–green bands in the captured image (Fig. 6). The root cause
+lies in the design of most commodity RGB cameras, which employ
+a Bayer CFA (typically RGGB) where each pixel captures only one
+color component. Missing components are reconstructed through
+bilinear demosaicing, a key stage in the image signal processing (ISP)
+pipeline [12]. For a grayscale scene, all RGB channels should ideally
+be identical; however, aliasing between the CFA and the Moiré
+stimulus causes demosaicing to misinterpret the aliased structure
+as color variations, producing vivid false-color artifacts [8].
+Our key observation is that even monochrome cameras, despite
+lacking a Bayer CFA, often reuse the same ISP pipeline as RGB
+cameras. While negligible for standard imaging, this becomes cru-
+cial when capturing Moiré stimuli: the ISP still assumes an RGGB
+layout and expands grayscale values into RGB space, causing demo-
+saicing to generate vivid magenta–green artifacts from red–blue
+channel interactions. Fig. 7d shows this effect using a monochrome
+camera (Arducam OV9281): the wallpaper remains grayscale, while
+the Moiré patterns appear in false color. This finding informs our
+design: a monochrome camera with a standard ISP pipeline can auto-
+matically separate Moiré patterns from the wallpaper through color
+differentiation. In practice, we convert the RGB image to the CIELAB
+color space [26], where the 𝑎∗ channel (red–green axis) highlights
+Moiré color transitions while suppressing the grayscale wallpaper,
+as shown in Fig. 7e.
+Generalization Discussion of Color Moiré Separation. The
+proposed separation algorithm is mainly influenced by two factors:
+(1) Wallpaper Properties. First, wallpaper’s inherent texture fre-
+quency needs to be different from that of the Moiré stimulus. How-
+ever, dense high-frequency textures can spectrally overlap with
+the stimulus and produce false-color artifacts. Second, wallpaper’s
+brightness is also important. The background must be captured
+without per-channel saturation or underexposure, as luminance
+clipping disrupts demosaicing. Conversely, insufficient brightness
+reduces chroma contrast during the multiplicative embedding pro-
+cess, lowering the SNR further. To quantify these effects, we an-
+alyzed 4,269 images from a 4K wallpaper dataset [ 14]. For each
+wallpaper, we design a simulation pipeline using a 1MP embed-
+ded camera to capture the image rendered on a 32-inch 4K dis-
+play across testing distances (i.e., 𝑙 = 60/100/140 cm). We sim-
+ulate the ISP processing and color Moiré separation on two sim-
+ulated captures: (i) the raw wallpaper and (ii) the same wallpa-
+per with the Moiré stimulus embedded. We define the generated
+Moiré pattern SNR, as determined by the wallpaper’s properties,
+as SNR(dB) =10 log10((𝐹(𝑖𝑖) −𝐹(𝑖))2/(𝐹2
+(𝑖) +𝜖)), where 𝐹(𝑖) and
+𝐹(𝑖𝑖) are the extracted Moiré separation outputs of (i) and (ii), re-
+spectively. As shown in Fig. 7(f), 72.8% / 69.9% / 64.2% of wallpapers
+achieves >3 dB SNR (sufficient for stable extraction in our empri-
+cally experiments) for 𝑙 =60/100/140 cm, respectively.
+(2) Monochrome vs. RGB camera . MoiréLens leverages bilinear de-
+mosaicing in the ISP to extract magenta–green Moiré patterns, even
+on monochrome sensors. While compatible with RGB cameras, in-
+herent wallpaper colors may require additional separation steps,
+which are left for future work.
+4.3 Adaptive Moiré-to-Schlieren Visualizations
+After extracting Moiré patterns, MoiréLens converts them into
+Schlieren-like visualizations that reveal invisible refractive-index
+1280
+SenSys ’26, May 11–14, 2026, Saint Malo, France Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun
+𝑚𝑚 = 1 𝑚𝑚 = 6
+Pixel 𝑦𝑦 Position
+0
+200
+400
+600
+CIELAB a*𝑚𝑚 = 1 𝑚𝑚 = 6
+(b). RMS a* sensitivity map, Δ𝑥𝑥𝑖𝑖𝑖𝑖𝑖𝑖 = 1 pixel (1
+8 ⋅2𝜋𝜋𝑓𝑓𝑏𝑏).(a). Plume-shaped area with a phase shift in the +𝑦𝑦-direction, Δ𝑥𝑥𝑖𝑖𝑖𝑖𝑖𝑖 = 1 pixel (1
+8
+⋅2𝜋𝜋𝑓𝑓𝑏𝑏).
+Plume area
+Normalized Scale 
+(dB)
+−40
+−20
+−10
+−6
+−3
+Figure 8: Sensitivity and phase behavior vs. Moiré cell count 𝑚.
+Global: mtgt↑Regional: mtgt↓
+Diff.
+Background ModelingEMAInput
+ Output
+Input
+ OutputInter-frame differencing
+m=1
+m=6
+NthFrame0-5 FramesBG. Frame
+Nth, N-1thFrameNthFrameN-1thFrame
+Plume MonitoringGlobalDynamic
+Spatial AdaptivityTemporal AdaptivityApplicationAnalysisGasLeakageRegionalStatic
+Static: Background subtractionDynamic: Inter-frame differencingAdaptive Schlieren§4.3.1 §4.3.2
+Figure 9: Moiré-to-Schlieren visualization pipeline.
+variations. To achieve robust performance across different physical
+phenomena, MoiréLens adapts its visualization strategy along two
+axes: spatial adaptivity , which adjusts the sensitivity field to match
+the scale of the target phenomenon, andtemporal adaptivity, which
+responds to the dynamics of refractive-index changes.
+4.3.1 Spatial Adaptivity for Schlieren Visualization. The sensitiv-
+ity of Moiré-based Schlieren visualization is inherently spatially
+nonuniform. Within each Moiré cell, the center, where color gradi-
+ents are minimal, responds weakly to refractive-index changes,
+whereas the periphery, with steeper color transitions, exhibits
+stronger phase sensitivity (Fig. 8(a)). Spatial sensitivity varies with
+cell size: smaller cells yield broader region coverage suited for global
+flow visualization, whereas larger cells enhance peripheral contrast
+and reveal finer local variations.
+Theoretical analysis: We analyze how a refractive-index-induced
+angular deflection 𝛼 affects the Moiré phase shift Δ𝜙moire. For sim-
+plicity, we model a 1-D Moiré pattern in the CIELAB 𝑎∗ channel:
+𝑎∗(𝑥) =𝐴 sin(2𝜋𝑓𝑚𝑥+𝜙𝑥), (15)
+where 𝐴is the amplitude, 𝑓𝑚 is the Moiré spatial frequency, and
+𝜙𝑥 is the local phase. From Eq. 1, 𝛼 produces an image-plane shift
+Δ𝑥img of the carrier pattern (frequency 𝑓𝑏), producing a Moiré
+displacement Δ𝑥moire =𝛾 𝑓𝑏
+𝑓𝑚
+Δ𝑥img, with 𝛾 determined by system
+geometry. Substituting this displacement into Eq. (15) yields
+𝑎∗(𝑥+Δ𝑥moire) =𝐴 sin(2𝜋𝑓𝑚𝑥+2𝜋𝛾𝑓𝑏Δ𝑥img +𝜙𝑥), (16)
+resulting in a Moiré phase shift
+Δ𝜙moire =2𝜋𝛾𝑓𝑏Δ𝑥img =2𝜋𝛾𝑓𝑏𝑓𝑥𝑔(𝑠)𝛼 ∝𝑓𝑏𝛼. (17)
+Hence, the Moiré phase shift introduced by 𝛼 is independent of the
+Moiré pattern frequency 𝑓𝑚 or the number of cells 𝑚in the ROI.
+Simulation results. We then develop an end-to-end Moiré pat-
+tern simulator that replicates the entire imaging pipeline, from
+Moiré stimulus generation to camera sampling and ISP. To emulate
+refractive-index disturbances, a small image-plane displacement
+Δ𝑥img is applied to different directions. Because the induced phase
+shift Δ𝜙moire =2𝜋𝛾𝑓𝑏Δ𝑥img is independent of the Moiré frequency
+𝑓𝑚, the resulting phase responses can be directly compared across
+different Moiré cell configurations. Figure 8(b) shows the RMS re-
+sponse of the𝑎∗channel when theΔ𝑥img =1 pixel (1/8⋅2𝜋𝑓𝑏). This
+confirms our conclusion of the spatial sensitivity ofMoiréLens. We
+further visualize the sensitivity of different𝑓𝑚 by applying a plume-
+shaped mask and assuming a uniform +𝑦-directed displacement
+Δ𝑥img =1 pixel (1/8 ⋅2𝜋𝑓𝑏). Fig. 8(a) compares the resulting Moiré
+distortions when 𝑚=1 and 6, respectively. At 𝑚=1, the visualiza-
+tion is sharp near the top and bottom of the ROI but blurred at the
+center, where sensitivity is low. By contrast, 𝑚=6 achieves more
+uniformly distributed high-sensitivity regions.
+Based on these results, MoiréLens adaptively selects the Moiré
+cell configuration according to the target scale: larger 𝑚values are
+used for global plumes and turbulence to enhance uniform spatial
+coverage, whereas smaller 𝑚values are used for regional airflows to
+emphasize fine local details.
+4.3.2 Temporal Adaptivity. Based on the temporal behavior of
+refractive-index disturbances, MoiréLens employs two complemen-
+tary visualization strategies: background subtraction for quasi-static
+phenomena (e.g., continuous gas leaks) and inter-frame differencing
+for dynamic flows (e.g., thermal plumes and turbulence).
+Temporally stable disturbances. When the refractive field
+evolves slowly over time, such as during gas diffusion, the dis-
+turbance is quasi-static relative to the frame rate. MoiréLens con-
+structs a background model using an Exponential Moving Average
+(EMA) over a short initialization window (typically 5 frames at
+100 fps, ≈50 ms). Subsequent frames are compared against this
+background in the CIELAB 𝑎∗ channel, maximizing sensitivity to
+small phase shifts. The resulting difference map reveals persistent
+refractive-index distortions as a steady Schlieren visualization.
+Dynamic disturbances. For rapidly varying refractive fields, such
+as convective airflows, heat plumes, or cooking-induced turbulence,
+MoiréLens applies inter-frame differencing between consecutive
+frames in the 𝑎∗ channel. This suppresses static background com-
+ponents while accentuating transient color-phase changes, yielding
+clear, real-time visualization of evolving flow patterns.
+4.3.3 Adaptive Visualizations Pipeline. Figure 9 summarizes the
+complete adaptive Moiré-to-Schlieren visualization pipeline.
+(1) Spatial adaptivity by adjusting the Moiré stimulus. Based on the
+spatial objective, MoiréLens renders the Moiré stimulus with the
+appropriate 𝑚tgt: larger 𝑚tgt for global plumes and turbulence, and
+smaller 𝑚tgt for regional airflows.
+(2) Temporal adaptivity by adjusting the visualization strategies. De-
+pending on temporal characteristics, either EMA-based background
+subtraction or inter-frame differencing is applied to extract refractive-
+index–induced perturbations.
+1281
+MoiréLens: Bringing Schlieren Imaging into Real-World Environments Using Moiré Patterns SenSys ’26, May 11–14, 2026, Saint Malo, France
+(3) Signal amplification and visualization. The extracted disturbance
+map is converted into a jet colormap, enhancing visibility for human
+observation.
+4.4 Downstream Application Processing
+Finally, the Schlieren visualizations produced by MoiréLens are
+processed using ML models to support various downstream applica-
+tions. To demonstrate end-to-end usability, we evaluateMoiréLens
+on two representative cooking-automation tasks.
+4.4.1 ROI Feature Extraction. Compared to visualization, ML infer-
+ence requires temporally stable input features. We design a feature-
+extraction pipeline that converts Schlieren frames into consistent,
+low-variance representations. For each frame, we first apply the
+inverse homography 𝐻−1 from AutoMoiré to warp the image into
+the background coordinate system and resize it to the background
+resolution. We then crop the central region as the ROI, where Moiré
+patterns exhibit minimal distortion. Last, we downsample the ROI
+and extract the CIELAB 𝑎∗ channel as the input feature.
+4.4.2 Task 1: Dry vs. Moist Heat Cooking Classification. Moist-heat
+cooking uses water or steam (e.g., boiling, simmering, steaming,
+braising), whereas dry-heat relies on surface contact or oil (e.g.,
+searing, roasting, stir-frying, deep-frying) [28]. Identifying these
+two modes enables range-hood automation, which should activate
+only during dry-heat cooking to improve safety, comfort, and en-
+ergy efficiency. This task classifies each cooking episode as moist-
+or dry-heat based on Schlieren visualizations. We focus on stages
+where the liquid temperature exceeds 80◦C, producing heat and
+fume plumes that MoiréLens can reliably capture.
+Preprocessing. We use a 5-second window for each prediction.
+Each window is transformed into a single feature map via: (1) per-
+frame mean-absolute-deviation (MAD) normalization, (2) inter-
+frame differencing, and (3) pixel-wise variance aggregation over
+time.
+DNN model. We train a lightweight 2D CNN for binary classifi-
+cation. The backbone consists of three Conv–BN–ReLU–MaxPool
+blocks. The classification head flattens the feature maps and applies
+two fully connected layers with dropout, followed by a final layer
+that outputs two logits. The model is trained with cross-entropy
+loss. Detailed network parameters are provided in the Appendix[1].
+4.4.3 Task 2: Cooking Oil Temperature Regression. We further eval-
+uate MoiréLens ’s ability to perform fine-grained thermal estima-
+tion. Real-time oil-temperature regression is a critical proxy for
+cooking safety and quality, enabling automatic heat control, pre-
+venting overheating, and supporting adaptive ventilation [15]. We
+perform this task using Schlieren visualizations of rising heat and
+fume plumes, focusing on the temperature range of 80∼240◦C,
+which covers the typical smoke points of common cooking oils [35].
+Preprocessing. We follow the same preprocessing pipeline for each
+5-second window as in Task 1, except that we replace pixel-wise
+variance aggregation over time with: (1) a first-order Butterworth
+low-pass filter to suppress spatial Moiré texture and (2) a temporal
+median filter to remove temporal camera-induced outliers.
+DNN model. For regression, we adopt an R(2+1)D-style archi-
+tecture [30], a widely used spatiotemporal convolutional design
+for video analysis. Three R(2+1)D blocks extract spatiotemporal
+Background
+Refractive-index Disturbance
+𝑑 𝑠=𝑙−𝑑𝑙
+ Camera
+Figure 10: Hardware setup. The right figure shows the mobile
+robot platform camera setup.
+features, which are then flattened and fed into a regression head
+consisting of a SiLU activation [10], one dropout layer, and a final
+fully connected layer. The model is trained using Huber loss [18], a
+robust objective for regression tasks. Detailed network parameters
+are provided in the Appendix[1].
+5 Setup and Implementation
+5.1 Hardware Setup
+Experimental Configuration Geometry. Fig. 10 shows our basic
+experimental configuration geometry. It consists of three compo-
+nents: Moiré-stimulus-embedded background, camera sensor, and
+refractive-index disturbance region. By default, the distance be-
+tween the background and the refractive-index disturbance region
+is 𝑑 ≈40 cm, which is the typical spacing between a stove and a
+kitchen wall. As discussed in §3.2, MoiréLens is insensitive to the
+variations in 𝑑 but more sensitive to 𝑠. Therefore, we mainly vary 𝑠
+to explore MoiréLens ’s sensing range and spatial resolution limits.
+Moiré-stimulus-embedded background. We deploy four back-
+ground configurations under either digital or physical conditions:
+(1) On-screen background . A digitally rendered Moiré stimulus is dis-
+played on a 32-inch 4K LCD panel (71.4 ×41.9 cm, 3840 ×2160, 120
+Hz, 350 nits). This configuration serves as the baseline to demon-
+strate performance for ideal conditions.
+(2) On-screen background with wallpaper (Fig. 10(b)). The Moiré
+stimulus is embedded into a wallpaper (§ 4.2) on the same display,
+remaining imperceptible to human but detectable by the camera.
+This is our default setup , enabling rapid switching among Moiré
+stimulus frequencies and pre-warped patterns to accommodate
+different camera distances and poses without any physical changes.
+(3) Physical background (Fig. 12(a)). A 300 Pixels Per Inch (PPI)
+photo-quality glossy poster containing only the Moiré stimulus is
+printed at the same size as the digital display, providing a reference
+for comparisons between printed and digital backgrounds.
+(4) Physical background with wallpaper (Fig. 12(b)). A 300 PPI printed
+poster embedding the Moiré stimulus into a wallpaper texture,
+representing a realistic wall-mounted installation.
+Camera sensor. We use a monochrome camera (Arducam OV9281,
+1 MP, 1280 ×800, 100 fps) as the default sensor . The camera is
+mounted on a rigid, adjustable tripod and manually positioned
+along the central axis of the background, facing approximately
+perpendicular to the background. With the assistance ofAutoMoiré,
+MoiréLens remains robust to small angular or positional deviations,
+enabling deployment without precise calibration. We also deploy
+the same camera on a TurtleBot 4 mobile robot platform (Fig. 10),
+which can autonomously identify and adjust to the optimal viewing
+location for MoiréLens. In addition, we test consumer-grade RGB
+1282
+SenSys ’26, May 11–14, 2026, Saint Malo, France Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun
+Normalized Scale (dB)−40−20−10−6−3
+20𝑐𝑚40𝑐𝑚60𝑐𝑚
+20𝑐𝑚60𝑐𝑚100𝑐𝑚
+160𝑐𝑚180𝑐𝑚215𝑐𝑚
+20𝑐𝑚40𝑐𝑚
+160𝑐𝑚180𝑐𝑚215𝑐𝑚(a). Composition-diff Based Leakage At Different 𝑠. (b). Pressure-diff Based Leakage At Different 𝑠. 
+EmbCamm=6EmbCamm=1
+Phonem=1
+20𝑐𝑚40𝑐𝑚80𝑐𝑚
+20𝑐𝑚60𝑐𝑚100𝑐𝑚
+EmbCamm=1
+Digital BG.W/ Wallpaper
+20𝑐𝑚40𝑐𝑚80𝑐𝑚
+Figure 11: Airflow Visualization Benchmark
+cameras, i.e., a Pixel 9 Pro (50 MP, 4K, 24 fps), to examine its sensing-
+range limits. To investigate the color Moiré effects introduced by
+ISP, we test commercial cameras, including iPhone 15 Pro Max,
+Google Pixel 9 Pro, and Insta360 Ace Pro 2. All exhibit similar color
+Moiré patterns, except the DJI Osmo Action 5 Pro, which likely
+employs a distinct demosaicing algorithm.
+Refractive-index disturbance. We evaluate two major categories
+of disturbances, i.e., regional airflows and global plumes/turbulence .
+(1) Regional airflow visualization. This category targets small, local-
+ized refractive-index variations that require local spatial sensitivity
+to capture subtle gas leaks and boundary formation.
+(1.a) Butane leakage from an Unlit Lighter. A standard butane lighter
+releases unlit gas horizontally in the disturbance region. The butane
+diffuses slowly, creating layered refractive gradients that test the
+ability to capture low-velocity, small-scale gas composition changes.
+(1.b) Compressed-air leakage. A 2 mm plastic nozzle attached to a
+compressed-air canister produces an upward jet. The resulting∼1.5
+hPa pressure drop forms sharp refractive boundaries and transient
+turbulence, evaluating response to high-gradient flows.
+(2) Global plume and turbulence characterization. This category
+examines large-scale, continuous flow dynamics relevant to envi-
+ronmental and thermal monitoring.
+(2.a) Candle plume. A candle flame produces a steady vertical plume
+with natural oscillations, offering a controlled and repeatable tur-
+bulence source for evaluating fine-scale temporal sensitivity.
+(2.b) Thermal plume generated by cooking. As shown in Fig. 10, a
+stovetop pan generates plume flows under dry-heat (frying) and
+moist-heat (boiling) conditions. Variations in plume density and
+texture reflect temperature and humidity changes.
+5.2 Software Implementation
+MoiréLens is implemented in Python 3 with OpenCV 4 on a Win-
+dows laptop. For the digital-background setup, the laptop connects
+to the display via HDMI and to the camera via USB 3.0. The sys-
+tem continuously captures live video at 1280 ×800 resolution and
+100 FPS (MJPEG) and processes the stream in real time. During
+initialization, MoiréLens runs AutoMoiré to calibrate incoming
+frames and render the target Moiré stimulus that achieves 𝑚tgt,
+Normalized Scale (dB)−40−20−10−6−3
+Comp.Air
+Camera
+Comp. Air
+Camera
+Setup, 𝑠=60𝑐𝑚Moiré  Pattern on Printed BackgroundComp. AirVisualization 
+Printed BG.w/ wallpaper
+Printed BG.
+（a). Visualization by Using Printed Background 
+（b). Visualization by Using Printed Background with Wallpaper 
+Figure 12: Gas leakage detection visualization using printed
+background (𝑑 =40 cm, 𝑠 =60 cm).
+which is then embedded into the wallpaper. For real-time visual-
+ization, MoiréLens executes the pipeline described in §4.3.3. For
+downstream applications, MoiréLens maps each camera frame into
+the background coordinate system at 4K resolution, crops the cen-
+tral 1280 ×1280 region to maintain consistent focus and reduce
+boundary distortion, and downsamples it to 160 ×160 to obtain
+the ROI features. These ROI features are then pre-processed before
+being fed to the ML models (see §4.4.2 and §4.4.3).
+DNN: We implement downstream DNN models in PyTorch. For the
+classification model, we train for 10 epochs using Adam (learning
+rate 10−3) with a batch size of 32. For the regression model, we use
+AdamW (weight decay 1e−4) with an initial learning rate of 5e−4,
+a cosine learning-rate schedule with warmup, and 30 epochs.
+6 Experimental Results
+Establishing a precise ground-truth of airflow change is inherently
+difficult, which requires specialized infrastructure or tightly con-
+trolled Computational Fluid Dynamics (CFD) simulations [27]. Thus,
+we follow the existing literature [13] to evaluate our system through
+(1) qualitative airflow visualization benchmarks against established
+baselines, and (2) quantitative end-to-end ML performance in clas-
+sification and regression tasks. We further assess real-world deploy-
+ment, (3) the imperceptibility of the Moiré-embedded wallpaper,
+and (4) the system’s real-time processing overhead.
+6.1 Airflow Visualization Benchmark
+We first benchmarkMoiréLens through controlled airflow visualiza-
+tion experiments, a standard evaluation method for Schlieren-based
+imaging systems [ 13]. We evaluate three representative scenar-
+ios: (1.a) butane leakage from an unlit lighter (gas-composition
+change, Fig. 11(a)), (1.b) compressed-air leakage (air-pressure
+change, Fig. 11(b)), and (2.a) candle plume (temperature change,
+Fig. 3(c)). The default setup is the on-screen background without
+wallpaper.
+Generalization and sensitivity. As shown in Fig. 11 and Fig. 3,
+MoiréLens successfully visualizes various disturbances across gas
+composition, pressure, and thermal gradients. Compared to the
+baseline BOS, MoiréLens extends the effective sensing range 𝑠
+by 3×, from 30 cm to 100 cm, for (2.a) candle-plume scenario.
+Sensitivity across different Moiré cell sizes. We vary the Moiré
+cell size using 𝑚 (larger 𝑚 yields smaller cells). As discussed in
+§4.3.1, 𝑚 does not significantly affect the maximum sensitivity
+1283
+MoiréLens: Bringing Schlieren Imaging into Real-World Environments Using Moiré Patterns SenSys ’26, May 11–14, 2026, Saint Malo, France
+but influences the spatial distribution of high-sensitivity regions.
+Fig. 11 shows airflow visualizations with 𝑚 = 6 and 𝑚 = 1, re-
+spectively. When 𝑚 = 1, sensitivity is more spatially connected,
+resulting in smoother and more continuous flow reconstruction.
+When 𝑚=6, sensitivity concentrates near cell edges, resulting in
+more fragmented patterns and a reduced effective range. In sum-
+mary, larger Moiré cells ( 𝑚 ↓) are preferable for regional airflow
+visualization, whereas smaller cells ( 𝑚↑) provide broader coverage
+for global plumes , which is used in our cooking-automation evalua-
+tion (§6.2).
+Sensitivity w/ and w/o wallpaper. The third row of Fig. 11 shows
+results using a wallpaper-embedded pattern with𝛽 =0.8, the invisi-
+bility threshold defined in §6.3, and a digital background brightness
+of 350 nits. For this benchmark, we randomly select a wallpaper
+that satisfies the color and frequency constraints in §4.2.2. In our
+E2E evaluation §6.2, we alternate among 40 wallpapers to assess
+robustness across diverse backgrounds. Despite the visual overlay,
+MoiréLens delivers Schlieren visualizations comparable to using a
+pure Moiré stimulus.
+Sensitivity using different cameras. We replace the default cam-
+era with the 50 MP main camera of a Google Pixel 9 Pro to assess
+cross-camera generalization. As shown in the fourth row of Fig. 11,
+the smartphone camera significantly extends the effective sensing
+range, reaching 𝑠 =215 cm. At this distance, disturbances appear
+finer and more compact due to reduced angular coverage, but the
+overall flow structures remain clearly identifiable. For long-range
+setups, high-resolution cameras, however, are more susceptible to
+minor vibrations (e.g., footsteps). Using a gimbal or optical stabiliza-
+tion is advisable. Overall, MoiréLens maintains robust performance
+across different cameras and benefits from the extended range provided
+by high-end cameras.
+Sensitivity of physical backgrounds w/ and w/o wallpaper. Be-
+cause the printed Moiré stimulus is immutable, the camera must be
+positioned at the specific location corresponding to each Moiré fre-
+quency, and AutoMoiré cannot recalibrate the background–camera
+geometry. We first determine the optimal background–camera dis-
+tance 𝑙 using a digital display, then print the corresponding back-
+grounds and mount them on drywall. The printed setup is con-
+figured for 𝑑 = 40 cm and 𝑠 = 60 cm. Figure 12 shows the setup,
+captured Moiré patterns, and resulting visualizations. Compared
+with the digital display, the printed Moiré patterns exhibit reduced
+uniformity due to (1) the lack of AutoMoiré-based geometric cal-
+ibration and (2) slight non-planarity of the poster and wall. In
+addition, printed backgrounds rely on ambient illumination rather
+than backlighting, which lowers contrast. As shown in Fig. 12, de-
+spite the reduced sensitivity, MoiréLens still clearly visualizes the 1.5
+hPa compressed-air leakage, demonstrating that it remains effective
+on passive, wallpaper-based backgrounds.
+MoiréLens vs. Gas Sensors. We summarize the comparison be-
+tween a conventional gas sensor (i.e., MQ-5) and MoiréLens for
+butane leakage detection in Tab. 2. We provide near-instant visu-
+alization and reaches a 215 cm sensing range using a Pixel 9 Pro
+camera, achieving over 40×the range and 125×the detection speed
+of MQ-5. (See details in Appendix [1]).
+Table 2: Comparison between Gas Sensor and MoiréLens.
+Sensor Distance Latency Gas Type Spatial Info Warmup
+MQ- 5 ✗ 10cm a ✗ 2.75 sb ◆ Specified ✗ No ✗ >48h c
+MoiréLens ✓ 215cm ✓ 20ms ◆ General ✓ Visible ✓ <1s
+a 200 PPM; b at 5 cm sensing range; c >48h, after <1 month storage time.
+(a). SamplesDistribution(b). Accuracy on Different Temperature ZoneType
+99.6%%%%100
+0.4
+0DM
+MD.80120160200
+MD
+Temperature (℃)
+Temperature (℃)
+Accuracy
+0.900.920.940.960.981.00
+ActualPredicted(c). Confusion MatrixDM
+80-100100-120120-140140-160160-180180-200200-220
+Figure 13: Moist(M)- and Dry(D)-Heat Cooking Classification.
+6.2 E2E Evaluation for Cooking Automation
+We evaluate two E2E cooking automation tasks that leverage the
+visualization of plume dynamics during cooking: (i) Moist- and dry-
+heat cooking classification, (ii) Cooking oil temperature regression.
+6.2.1 Evaluation Setup and Data Collection. We collect an 8.25-
+hour dataset in an indoor kitchen.
+Setup. 1) Background. We adopt the (1) Digital background and (2)
+Digital background with wallpaper setups (see §5.1).
+2) Disturbance. We generate refractive-index disturbances by boiling
+water and heating canola oil (smoke point ∼230◦C) in an 8-inch
+ceramic non-stick pan (3 mm), using ≥150 mL liquid on a power-
+adjustable induction cooktop.
+3) Camera and geometry. We set 𝑑 ≈ 40 cm, i.e., the spacing be-
+tween a stove and a kitchen wall (Fig.10). The camera is positioned
+𝑠 ≈20 cm from the pan. We use𝑚=6 to provide sufficient spatial
+coverage for capturing global plumes (§4.3).
+Data Collection Procedure. All experiments are conducted in an
+indoor kitchen environment. Each session begins with AutoMoiré.
+A specific heating power on the induction range is first selected.
+Video recording starts from room temperature and continues
+through controlled heating (oil to ∼240◦C, water to ∼100◦C) and
+passive cooling to ∼80◦C. For water, the boiling point (100◦C) is
+maintained for at least 2 minutes to capture additional data. A Type-
+K thermocouple with ±2.5% accuracy is immersed ∼5 mm below
+the liquid surface without touching the pan bottom, sampled at 1 Hz
+for ground truth temperature measurement. For each session, we
+record (i) raw video (1280×800 resolution at100 fps), (ii) per-session
+metadata (session ID, liquid type, power, AutoMoiré parameters,
+and ventilation status), and (iii) synchronized temperature traces.
+Dataset Scale. 1) Baseline dataset. We define four base powers
+{200,600,1000,1400}W for training/validation and three unseen
+powers {400,800,1200}W for testing. For each base power, we col-
+lect 6 oil and 4 water sessions (40 total). For each unseen power, 2
+oil and 2 water sessions are collected (12 total). This dataset uses
+no wallpaper backgrounds.
+2) Generalization testing dataset. To evaluate generalization under
+unseen conditions , we further collect data: (1) with wallpaper back-
+ground (WP); (2) with range hood on (Hood); and (3) with both
+wallpaper and range hood on (WP+Hood). A wallpaper is randomly
+1284
+SenSys ’26, May 11–14, 2026, Saint Malo, France Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun
+Temp. Error (℃)
+0816243240
+MoiréHood(H)Wallpaper(W)H&W
+200W600W1000W1400W400W800W1200WSeen ScenarioUnseen Scenario
+Evaluation Scenarios
+(a) Power Condition Generalization
+Temp. Error (℃)
+0816243240
+MoiréHood(H)Wallpaper(W)H&WEvaluation Scenarios
+100 FPS50 FPS30 FPS
+(b) FPS Condition Generalization
+Figure 14: Temperature Regression Generalization
+8
+40
+12
+2610
+Time (s)
+Temperature (℃)
+020406080100140100120140160180200220240
+Temperature (℃)
+Mean Absolute Error (℃)
+(a) Temperature Prediction(b) Cross Validation
+10 -20℃Error Band 0 -10℃Error BandGround TruthPredicted ValuePredicted Value (Low-Pass Filtered)
+100-120120-140160-180
+200-220180-200
+220-240
+Figure 15: Temp Prediction and Cross Validation
+selected from a pool of 40 designs. Each scenario includes one
+session across all 7 power levels (21 in total) for testing only.
+We summarize the scale of collected datasets in Appendix [1].
+6.2.2 Moist- and Dry-Heat Cooking Classification. We first train
+and validate the model using the baseline dataset. To ensure class
+balance, we use 2 oil and 4 water sessions across the 4 base power
+levels (3.75 h oil and 2.75 h water data). The dataset is split into
+training and validation sets with a 2:1 ratio. The model takes a
+5-second video segment as input and outputs a binary label. We
+then evaluate the trained model zero-shot on testing data collected
+under three unseen power levels. Classification accuracy, F1-score,
+and AUROC are used as evaluation metrics.
+Results. Figure 13 summarizes the performance. We achieve 99.8%
+accuracy, an F1-score of 0.998, and an AUROC of 0.9963. As ex-
+pected, oil exceeding100◦C produces perfect classification accuracy
+(Fig. 13(b)). In the overlapping 80–100◦C range, where water and
+oil exhibit similar temperatures and temperature alone is not dis-
+criminative, MoiréLens still achieves 99.3% moist-heat and 100.0%
+dry-heat accuracy. These results confirm that MoiréLens reliably
+distinguishes the plume dynamics of the two cooking modes even
+when their liquid temperatures are comparable.
+6.2.3 Dry-Heat Cooking Oil Temperature Regression. We train the
+regression model on thebaseline dataset collected at four base power
+levels using a 5-fold cross-validation split (4:1:1 train/val/test). The
+model takes a 5-second video segment as input, with the mean tem-
+perature in the same window as ground truth. During validation and
+testing, windows are non-overlapping, and a causal Savitzky–Golay
+filter is applied for smoothing [25]. We evaluate zero-shot general-
+ization on data collected under unseen power levels, with/without
+Table 3: Wallpaper invisibility across viewing distances.
+Viewing
+Distance
+LPIPS ↓
+BOS MoiréLens
+63 cm 0.711 ±0.055 0.527 ±0.067
+180 cm 0.711 ±0.049 0.019 ±0.009
+200 cm 0.674 ±0.046 0.007 ±0.008
+wallpaper, with/without range-hood ventilation, and under varying
+frame rates. Performance is reported using MAE.
+Cross-validation results. Fig. 15(b) shows the cross-validation
+MAE across different temperature ranges. MoiréLens achieves an
+average MAE of 6.06◦C with a standard deviation of 5.11◦C. The
+70th-, 80th-, and 90th-percentile regression errors are 7.30, 9.63, and
+13.41 ◦C, respectively. Lower temperatures exhibit stronger thermal
+gradients and clearer plume structures, yielding lower errors. As
+shown in Fig. 15(a), MoiréLens tracks temperature reliably over an
+entire cooking session (MAE 11.82◦C), which further improves to
+7.91◦C after smoothing (33% reduction).
+Generalization results. Fig. 14 summarizes zero-shot performance
+across diverse conditions.MoiréLens generalizes to unseen heating
+levels with an average MAE of 7.10◦C, and embedding the Moiré
+stimulus into wallpaper yields a similar MAE of 7.83◦C. Range-
+hood airflow slightly increases turbulence, resulting in an MAE of
+8.83◦C. Positioning the ROI lower may mitigate this effect. With
+both wallpaper and range hood active (WP+Hood), performance
+degrades to 17.98◦C due to compounded disturbances. Last, we
+downsample the video to lower frame rates without changing the
+input window duration and retrain the models. Fig. 14b shows
+that MoiréLens remains robust under reduced temporal resolution,
+achieving an MAE of 10.30◦C even at 30 FPS.
+6.3 Wallpaper Invisibility
+Wallpaper invisibility is determined by spatial resolution and view-
+ing distance. We evaluate this using retinal resolution, with60 pixels
+per degree (PPD) [32] as the perceptual limit for 20/20 vision. For
+our 32-inch 4K display (138 DPI), we simulate visual blur by apply-
+ing a Gaussian low-pass filter to attenuate frequencies beyond the
+Nyquist limit, then resample the wallpaper to the target 60 PPD
+for various distances. We compare MoiréLens (𝛽 =0.8) (see §4.2)
+against a standard high-contrast random-dot BOS background (2.5-
+pixel dots) [13]. Crucially, we maintain the high contrast of the BOS
+background because lowering it would disproportionately reduce
+BOS sensitivity(see §3.2), ensuring a fair comparison.
+Metrics. We use LPIPS as the evaluation metric [38]. The LPIPS
+score ranges from 0 to 1, where lower values indicate higher per-
+ceptual similarity. Following established perceptual thresholds [38],
+we define human imperceptibility as LPIPS ≤0.02.
+Results. Table 3 shows the average results on 40 selected wallpa-
+pers. When the viewing distance exceeds 1.8 m, the LPIPS approaches
+the imperceptibility threshold, indicating that wallpapers with the
+embedded Moiré stimulus appear visually imperceptible to humans.
+6.4 System Efficiency
+We evaluate the warm-up time and real-time latency ofMoiréLens
+on a Windows laptop equipped with an AMD Ryzen 7 8845H CPU
+and an NVIDIA GeForce RTX 4060 GPU.
+Warm-up time is defined as the duration required for a fixed cam-
+era to run AutoMoiré until stable Moiré patterns with the target
+1285
+MoiréLens: Bringing Schlieren Imaging into Real-World Environments Using Moiré Patterns SenSys ’26, May 11–14, 2026, Saint Malo, France
+𝑚tgt are achieved. All warm-up operations run entirely on the CPU.
+Tab. 4 is the breakdown. MoiréLens reaches the maximum Moiré
+pattern 𝑚min within 1.314 s. When searching for 𝑚tgt, AutoMoiré
+performs a Fibonacci search, taking on average 1.07 s per iteration.
+It requires ≈ 3 iterations to reach 𝑚tgt within a 5% error range ,
+resulting in a total warm-up time of 4.092 s. Note that AutoMoiré
+needs to run only once for a fixed camera–background configura-
+tion.
+Real-time latency. For Schlieren visualization, we achieve an av-
+erage per-frame latency of 3.01 ms (331.92 FPS). For downstream
+tasks, Tab. 4 reports the processing latency breakdown. All process-
+ing runs on the CPU except for DNN inference, which is executed
+on the GPU. The overall average latency for the classification task
+and the regression task are 1.192s (0.84 FPS) and 1.765s (0.57 FPS),
+respectively.
+Table 4: MoiréLens warm-up time and downstream latency.
+(a) Warm-up Time Breakdown
+Step Time
+Calibration 0.010 s
+Target-scale search (each) 1.045 s
+Rendering 0.357 s
+Estimating 𝑚(𝑓𝑖
+𝑏 ) 0.688 s
+Wallpaper embedding 0.947 s
+Overall (𝑚min) 1.314 s
+Overall (3 iters) 4.092 s
+(b) Downstream Latency
+Step Time FPS
+ROI extraction 0.822 s —
+Classification
+Preproc. 0.353 s —
+DNN Inference 0.017 s —
+Overall 1.192 s 0.84
+Regression
+Preprocess 0.821 s —
+DNN Inference 0.122 s —
+Overall 1.765 s 0.57
+7 Conclusion
+We presented MoiréLens, a practical Schlieren imaging system
+that repurposes commodity cameras and unobtrusive wallpaper
+backgrounds to visualize invisible air refractive-index changes. Ex-
+tensive evaluations demonstrate that MoiréLens points to a new
+direction for transforming everyday cameras into accessible sen-
+sors for visualizing air-flow and refractive-index dynamics. As fu-
+ture work, we aim to replace the background requirement with a
+projector-based configuration that follows the same optical princi-
+ples while removing the need for distributed hardware.
+Acknowledgments
+This project is supported by University of Michigan EECS Startup
+Fund and Summer Undergraduate Research in Engineering.
+References
+[1] 2026. Appendix. https://ambient-intelligence-lab-umich-eecs.github.io/
+MoireLens-Page/static/pdfs/appendix.pdf
+[2] Matthew Anderson, Ricardo Motta, Srinivasan Chandrasekar, Michael Stokes,
+Ricardo Motta, Srinivasan Chandrasekar, and Michael Stokes. 1996. Proposal
+for a Standard Default Color Space for the Internet;sRGB. Color and Imaging
+Conference 4 (Jan. 1996), 238–245. https://doi.org/10.2352/CIC.1996.4.1.art00061
+Publisher: Society of Imaging Science and Technology.
+[3] Chao Cai, Zhe Chen, Henglin Pu, Liyuan Ye, Menglan Hu, and Jun Luo. 2020.
+AcuTe: acoustic thermometer empowered by a single smartphone. InProceedings
+of ACM/IEEE SenSys . 28–41. https://doi.org/10.1145/3384419.3430714
+[4] Chao Cai, Henglin Pu, Liyuan Ye, Hongbo Jiang, and Jun Luo. 2023. Active
+Acoustic Sensing for “Hearing” Temperature Under Acoustic Interference. IEEE
+Transactions on Mobile Computing 22, 2 (Feb. 2023), 661–673. https://doi.org/10.
+1109/TMC.2021.3096792
+[5] Daniel Campos Zamora, Mustafa Doga Dogan, Alexa F Siu, Eunyee Koh, and
+Chang Xiao. 2024. MoiréWidgets: High-Precision, Passive Tangible Interfaces via
+Moiré Effect. InProceedings of ACM CHI . https://doi.org/10.1145/3613904.3642734
+[6] Bhawana Chhaglani, Camellia Zakaria, Adam Lechowicz, Jeremy Gummeson, and
+Prashant Shenoy. 2022. FlowSense: Monitoring Airflow in Building Ventilation
+Systems Using Audio Sensing.Proceedings of ACM IMWUT (UbiComp) 6, 1 (March
+2022), 5:1–5:26. https://doi.org/10.1145/3517258
+[7] Zhou Chuan, Tan Da Long, Zhu Feng, and Dong Zai Li. 2003. A planar homogra-
+phy estimation method for camera calibration. In Proceedings 2003 IEEE Interna-
+tional Symposium on Computational Intelligence in Robotics and Automation. Com-
+putational Intelligence in Robotics and Automation for the New Millennium (Cat.
+No.03EX694), Vol. 1. 424–429 vol.1. https://doi.org/10.1109/CIRA.2003.1222127
+[8] Adrian Davies and Phil Fennessy. 2012. Digital Imaging for Photographers (4 ed.).
+Routledge, New York. https://doi.org/10.4324/9780080504452
+[9] Sakis Drosopoulos and Michael F. Claridge. 2005. Insect Sounds and Communica-
+tion: Physiology, Behaviour, Ecology, and Evolution . CRC Press. Google-Books-ID:
+APPLBQAAQBAJ.
+[10] Stefan Elfwing, Eiji Uchibe, and Kenji Doya. 2018. Sigmoid-weighted linear units
+for neural network function approximation in reinforcement learning. Neural
+Networks 107 (Nov. 2018), 3–11. https://doi.org/10.1016/j.neunet.2017.12.012
+[11] Martin A. Fischler and Robert C. Bolles. 1981. Random sample consensus: a
+paradigm for model fitting with applications to image analysis and automated
+cartography. Commun. ACM 24, 6 (June 1981), 381–395. https://doi.org/10.1145/
+358669.358692
+[12] B.K. Gunturk, J. Glotzbach, Y. Altunbasak, R.W. Schafer, and R.M. Mersereau. 2005.
+Demosaicking: color filter array interpolation. IEEE Signal Processing Magazine
+22, 1 (Jan. 2005), 44–54. https://doi.org/10.1109/MSP.2005.1407714
+[13] Michael J. Hargather and Gary S. Settles. 2011. Background-oriented schlieren
+visualization of heating and ventilation flows: HVAC-BOS. HVAC&R Research 17,
+5 (Oct. 2011), 771–780. https://doi.org/10.1080/10789669.2011.588985 Publisher:
+Taylor & Francis _eprint: https://doi.org/10.1080/10789669.2011.588985.
+[14] Vlad Hosu, Lorenzo Agnolucci, Oliver Wiedemann, Daisuke Iso, and Dietmar
+Saupe. 2025. UHD-IQA Benchmark Database: Pushing the Boundaries of Blind
+Photo Quality Assessment. In Computer Vision – ECCV 2024 Workshops , Alessio
+Del Bue, Cristian Canton, Jordi Pont-Tuset, and Tatiana Tommasi (Eds.). Springer
+Nature Switzerland, Cham, 467–482. https://doi.org/10.1007/978-3-031-91838-
+4_28
+[15] Pooya Khaloo, Brandon Oubre, Jeremy Yang, Tauhidur Rahman, and
+Sunghoon Ivan Lee. 2019. NOSE: A Novel Odor Sensing Engine for Am-
+bient Monitoring of the Frying Cooking Method in Kitchen Environments.
+Proceedings of ACM IMWUT (UbiComp) 3, 2 (June 2019), 49:1–49:25. https:
+//doi.org/10.1145/3328920
+[16] Kanak Kumar, Anshul Verma, and Pradeepika Verma. 2024. IoT-HGDS: Internet
+of Things integrated machine learning based hazardous gases detection system
+for smart kitchen. Internet of Things 28 (Dec. 2024), 101396. https://doi.org/10.
+1016/j.iot.2024.101396
+[17] Amrita Mazumdar. 2013. Principles and Techniques of Schlieren Imaging Systems.
+(2013). https://doi.org/10.7916/D8TX3PWV
+[18] Gregory P. Meyer. 2021. An Alternative Probabilistic Interpretation of the
+Huber Loss. 5261–5269. https://openaccess.thecvf.com/content/CVPR2021/html/
+Meyer_An_Alternative_Probabilistic_Interpretation_of_the_Huber_Loss_
+CVPR_2021_paper.html
+[19] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu, Baoliu Ye, and Sanglu Lu.
+2022. MoiréPose: ultra high precision camera-to-screen pose estimation based on
+Moiré pattern. In Proceedings of ACM MobiCom . https://doi.org/10.1145/3495243.
+3560537
+[20] Jingyi Ning, Lei Xie, Zhihao Yan, Yanling Bu, and Jun Luo. 2024. MoiréVision: A
+Generalized Moiré-based Mechanism for 6-DoF Motion Sensing. In Proceedings
+of ACM MobiCom . https://doi.org/10.1145/3636534.3649374
+[21] Jingyi Ning, Zhihao Yan, Zhaowei Wu, Lei Xie, Chuyu Wang, Yingying Chen,
+Baoliu Ye, and Sanglu Lu. 2024. MoiréVib: Micron-level Vibration Detection
+based on Moiré Pattern. In Proceedings of ACM MobiCom . https://doi.org/10.
+1145/3636534.3690700
+[22] Simeng Qiu, Hadi Amata, and Wolfgang Heidrich. 2023. MoiréTag: Angular Mea-
+surement and Tracking with a Passive Marker. InProceedings of ACM SIGGRAPH .
+https://doi.org/10.1145/3588432.3591538
+[23] Markus Raffel. 2015. Background-oriented schlieren (BOS) techniques. Experi-
+ments in Fluids 56, 3 (March 2015), 60. https://doi.org/10.1007/s00348-015-1927-5
+[24] Hugues Richard and Markus Raffel. 2001. Principle and applications of
+the background oriented schlieren (BOS) method. Measurement science
+and technology 12, 9 (2001), 1576. https://iopscience.iop.org/article/10.
+1088/0957-0233/12/9/325/meta?casa_token=nxQ5ismYM3YAAAAA:IC-
+cMvj6P3qVbsG_wi-5_rxQLkjJhCK3I74i86mrPS2BGip72stt2Pkr_GbUCOd7S9_
+Aqfa7tuy07YDRVDzlg4HznZvj Publisher: IOP Publishing.
+[25] Ronald W. Schafer. 2011. What Is a Savitzky-Golay Filter? IEEE Signal Processing
+Magazine 28, 4 (July 2011), 111–117. https://doi.org/10.1109/MSP.2011.941097
+[26] Janos Schanda. 2007. Colorimetry: Understanding the CIE System . John Wiley &
+Sons. Google-Books-ID: o8XOEAAAQBAJ.
+[27] Bryan E. Schmidt, Brett F. Bathel, Samuel J. Grauer, Michael J. Hargather, James T.
+Heineck, and Markus Raffel. 2025. Twenty-Five Years of Background-Oriented
+Schlieren: Advances and Novel Applications. AIAA Journal (Sept. 2025), 1–31.
+https://doi.org/10.2514/1.J065669
+1286
+SenSys ’26, May 11–14, 2026, Saint Malo, France Linzhen Zhu, Runqiu Wang, Yi Rong, and Ke Sun
+[28] Dianne R. Schock, Dorothy L. Harrison, and Lois L. Anderson. 1970. Effect
+of Dry and Moist Heat Treatments on Selected Beef Quality Factors. Jour-
+nal of Food Science 35, 3 (1970), 195–198. https://doi.org/10.1111/j.1365-2621.
+1970.tb12137.x _eprint: https://ift.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1365-
+2621.1970.tb12137.x.
+[29] Chen-Ching Ting and Chien-Chih Chen. 2013. Detection of gas leakage using
+microcolor schlieren technique. Measurement 46, 8 (Oct. 2013), 2467–2472. https:
+//doi.org/10.1016/j.measurement.2013.04.073
+[30] Du Tran, Heng Wang, Lorenzo Torresani, Jamie Ray, Yann LeCun, and Manohar
+Paluri. 2018. A Closer Look at Spatiotemporal Convolutions for Action Recogni-
+tion. In Proceedings of the IEEE CVPR . 6450–6459. https://openaccess.thecvf.com/
+content_cvpr_2018/html/Tran_A_Closer_Look_CVPR_2018_paper.html
+[31] Haoran Wan, Lei Wang, Ting Zhao, Ke Sun, Shuyu Shi, Haipeng Dai, Guihai
+Chen, Haodong Liu, and Wei Wang. 2022. VECTOR: Velocity Based Temperature-
+field Monitoring with Distributed Acoustic Devices. Proc. ACM Interact. Mob.
+Wearable Ubiquitous Technol. 6, 3 (Sept. 2022), 144:1–144:28. https://doi.org/10.
+1145/3550336
+[32] Brian A. Wandell. 1995. Foundations of vision . Sinauer Associates, Sunderland,
+MA, US. Pages: xvi, 476.
+[33] Chang Xiao and Changxi Zheng. 2021. MoiréBoard: A Stable, Accurate and
+Low-cost Camera Tracking Method. In Proceedings of ACM UIST . https://doi.
+org/10.1145/3472749.3474793
+[34] Chunwen Xu, Peter V. Nielsen, Li Liu, Rasmus L. Jensen, and Guangcai Gong.
+2017. Human exhalation characterization with the aid of schlieren imaging
+technique. Building and Environment 112 (Feb. 2017), 190–199. https://doi.org/
+10.1016/j.buildenv.2016.11.032
+[35] Suk Hoo Yoon, Sun Ki Kim, Kil Hwan Kim, Tai Wan Kwon, and
+Yau Kun Teah. 1987. Evaluation of physicochemical changes in cook-
+ing oil during heating. Journal of the American Oil Chemists’ Soci-
+ety 64, 6 (1987), 870–873. https://doi.org/10.1007/BF02641496 _eprint:
+https://aocs.onlinelibrary.wiley.com/doi/pdf/10.1007/BF02641496.
+[36] Peiyu Zhang, Wen Ying, and Seongkook Heo. 2022. Fringer: A Finger-Worn
+Passive Device Enabling Computer Vision Based Force Sensing Using Moiré
+Fringes. In Proceedings of ACM UIST . https://doi.org/10.1145/3526114.3558706
+[37] Peiyu Zhang, Wen Ying, Sara L Riggs, and Seongkook Heo. 2024. MoiréTag: A
+Low-Cost Tag for High-Precision Tangible Interactions without Active Compo-
+nents. Proceedings of ACM ISS 8 (Oct. 2024). https://doi.org/10.1145/3698113
+[38] Richard Zhang, Phillip Isola, Alexei A. Efros, Eli Shechtman, and Oliver Wang.
+2018. The Unreasonable Effectiveness of Deep Features as a Perceptual Metric.
+586–595. https://openaccess.thecvf.com/content_cvpr_2018/html/Zhang_The_
+Unreasonable_Effectiveness_CVPR_2018_paper.html
+[39] Yuanzhe Zhao and Jeroen H. M. Bergmann. 2023. Non-Contact Infrared Ther-
+mometers and Thermal Scanners for Human Body Temperature Monitoring: A
+Systematic Review. Sensors 23, 17 (Jan. 2023), 7439. https://doi.org/10.3390/
+s23177439 Publisher: Multidisciplinary Digital Publishing Institute.
+1287

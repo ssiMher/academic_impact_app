@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "academic-impact-app"
+version = "0.1.0"
+description = "Academic Impact Web system rewrite skeleton."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "fastapi",
+    "jinja2",
+    "Pillow",
+    "pypdf",
+    "python-pptx",
+    "python-multipart",
+    "SQLAlchemy>=2.0,<3.0",
+    "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx",
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-s"

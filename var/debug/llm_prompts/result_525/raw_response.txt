@@ -1,0 +1,37 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+  "paper_level_summary_zh": "该引用论文引用[23]仅作为ADNS-3050光学传感器数据手册的编号来源，用于说明硬件规格，并非引用本目标论文（Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration）。目标论文在Related Work中被标记为[13]。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Upon reviewing technical datasheets, we made an unexpected discovery: mainstream optical sensors used in optical mice, such as the ADNS-3050 [23], include a special register called the ‘pixel grabber’.",
+      "evidence_context": "Upon reviewing technical datasheets, we made an unexpected discovery: mainstream optical sensors used in optical mice, such as the ADNS-3050 [23], include a special register called the ‘pixel grabber’. Originally intended for debugging or testing, this register captures and retains the value of a single pixel from each image frame captured by the sensor.",
+      "reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+      "why_this_judgment_zh": "引用的[23]指向的是ADNS-3050传感器的数据手册（datasheet），并非目标论文。目标论文在引用论文中的正确标记是[13]。因此这是一个错误关联。",
+      "copy_ready_zh": "引用论文中[23]对应的是传感器数据手册，而非目标论文，属于假阳性。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Therefore, this paper will refer to the datasheet of the ADNS-3050 for explanations [23], which integrates more than 30 registers.",
+      "evidence_context": "For illustrative purposes, we will use the Logitech G402 optical mouse as an example, however, the datasheet for its optical sensor AM-010 is not public. Fortunately, AM-010 can be considered a variant of ADNS-3050 (since AM-010 is a variant of PMW-3320 [33], which in turn is a variant of the ADNS-3050 [34], [35]), while the biggest difference is that the pixel array size increases from 19 × 19 of ADNS-3050 to 26 × 26 of AM-010. Therefore, this paper will refer to the datasheet of the ADNS-3050 for explanations [23], which integrates more than 30 registers.",
+      "reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+      "why_this_judgment_zh": "引用再次指向ADNS-3050数据手册，不是目标论文。目标论文标记[13]在Related Work中出现。",
+      "copy_ready_zh": "引用[23]为传感器数据手册，非目标论文，属于假阳性。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "RFID-based methods have also been explored, with Wang et al. [13] showing how audio can be intercepted via RFID.",
+      "evidence_context": "Wireless signals have also been exploited by researchers for sound recovery [8]–[13]. ... RFID-based methods have also been explored, with Wang et al. [13] showing how audio can be intercepted via RFID.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "虽然[13]是目标论文，但此处仅作为普通相关工作进行一句话列举，并未提及亚毫米级、穿透墙壁、具体性能等关键信息，属于ordinary_reference。",
+      "copy_ready_zh": "引用论文在Related Work中将目标论文作为RFID音频窃听的普通相关工作进行概述。",
+      "confidence": "high"
+    }
+  ]
+}

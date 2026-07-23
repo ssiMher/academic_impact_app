@@ -1,0 +1,1454 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Understanding Privacy Threat for Side-channel Speech Eavesdropping Attack
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [26]
+TARGET_REFERENCE_ENTRY: [26] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-
+the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,”
+ACM IMWUT (UbiComp) , 2020.
+50
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=UHF RFID; context_type=formula_nearby; contains_formula=True
+urces (human vocal cords) [ 8, 9].
+6
+Table 1.1. Key factors of different side channels may affect SSEA.
+Side-channel Sensors Location Resolution FS FR Noise&Interference
+Gyroscope [1, 10] Internal µm <4 kHz Poor
+Accelerometer [11, 12, 13, 14, 15, 8, 16, 17, 10, 18, 19]Internal µm <4 kHz Good
+Sensor Noise&
+Surface Vibration
+Magnetometer [9, 10] Internal µm <4 kHz Fair
+Piezoelectric [20] Internal µm <16 kHz Good
+Vibra-motor [21] Internal µm <16 kHz Fair
+Magnetic HD [22] Internal µm <17 kHz Fair
+Wi-Fi [23] Int/Ext mm∼cm <1 kHz Distance Sensor Noise&
+Human Motion&
+Environmental Vibration
+UHF RFID [24, 25, 26] Int/Ext mm∼cm <2 MHz Distance
+UWB [27] External mm∼cm <2 kHz Distance
+mmWave [7, 28, 29, 30, 31, 32, 33, 34] External µm∼cm <16 kHz Distance
+Visible Light [35, 36, 37] External Distance <16 kHz Distance Sensor Noise&
+Environmental VibrationLaser [38, 39, 40] External Distance <16 kHz Distance
+Finally, the sound volume of human voice will affect both frequency and vibration
+displacement factors, which is also a challenge for SSEA.
+Loudspeakers: Compared to the human live voice, loudspeaker replays the sound
+recorded by microphone. The voice frequency, vibration displacement and volume vary a
+l
+
+[Context 2] section_heading=External Attack: The second scenario is to sense the sound source vibration by; context_type=formula_nearby; contains_formula=True
+l noise and interference of such side channels
+are close to motion sensors. Since they assumes adversaries can modify the hardware/
+software, the sampling rates achieve 16 kHz and the frequency responses are good enough
+to capture the full band speech signals typically.
+External Attack: The second scenario is to sense the sound source vibration by
+using external sensors that are not co-located with the sound sources. RF signals and
+laser/light are considered as two potential side channels to sense the remote sound source
+vibration.
+i). RF-based SSEA. RF signals, including WiFi [ 23], UHF RFID [ 24, 41, 25, 26],
+UWB [ 27], mmWave signals [ 29, 31, 32, 28, 42, 7], can be considered as a wireless
+vibrometry to measure the RF signal changes caused by the sound source vibration. There
+are two different setup for RF-based SSEAs including reflective and emissive attacks. For
+reflective attack, adversaries employ a pair of transmitter and receiver to capture the
+vibration of the sound source. However, for emissive attack, adversaries assume that the
+transmitter is co-located with vibration sound source and keep transmitting RF signals
+while adversaries only control the receiver to capture the vibration of
+
+[Context 3] section_heading=Tag-bug; context_type=exact_marker; contains_formula=False
+Hz VC WC, SI 20 36 W
+Vibphone [16] LS Phone Acc Phone 500 Hz VC WC 10 10 W
+Accear [17] LS Phone Acc Phone 500 Hz VC SR 16 ? S
+StealthyIMU [18] LS Phone Acc Phone 500 Hz VA SLU, SI 10 >3000 S
+InertiEAR [19] LS Phone Acc Phone ? VC ? ? ? ?
+V-speech [20] HVC Human Piez Glass 16 kHz VRe SR, ASR 30 145 S
+Vibra-phone [21] LS Phone Vibr Phone 16 kHz VC SR, ASR 8 2000 W
+HDH [22] LS Standalone Mag HD HDD 17 kHz VA SR, SC ? ? S
+ART [23] LS Standalone Wi-Fi Router 2 kHz VA WC 6 10 W
+RF-ear [24] LS Standalone RFID On objects 80 Hz ? / / / /
+Tag-sound [25] LS Standalone RFID On LS 2 MHz ? / / / /
+Tag-bug [26] LS Standalone RFID On objects 2 MHz VA WC 4 10/26 W
+UWHear [27] LS Standalone UWB Radar 1600 Hz VA SS / / /
+RadioMic [28] HVC Human mmWave Radar 6250 Hz VRe SR / / SLS Standalone VC
+Waveear [29] HVC Human mmWave Radar 8 kHz VRe SR, ASR 21 ? S
+Wavesdropper [30] ? ? mmWave Radar ? ? ? ? ? ?
+Voice Recovery [32] LS Standalone mmWave Radar ? ? SR ? ? ?
+MILLIEAR [33] LS Standalone mmWave Radar 10 kHz VC SR 7 ? S
+mmphone [34] ? ? mmWave Radar ? ? ? ? ? ?
+94 GHz [7] HVC Human mmWave Radar 16 kHz VRe SR 1 2 W
+VisualMic [35] LS Standalone Light Camera 2.2 kHz VA SR 6 ? S
+Lamphone [36] LS Standalone Lig
+
+[Context 4] section_heading=Since the side channel has some limitations for eavesdropping the sound, like low; context_type=formula_nearby; contains_formula=True
+For example, Accelword [ 11] proposes to detect the
+wake word by using accelerometer side channel.
+2.3 Ideal Scenario for Classification
+Since the side channel has some limitations for eavesdropping the sound, like low
+sampling rate, poor frequency response, significant noise, etc, some side channels can not
+achieve the difficult privacy threat tasks as above. The third privacy threat level contains
+16
+some ideal attacking tasks, including word classification and sound classification.
+Word Classification (WC): Word classification is the most frequently task that is
+evaluated in existing works [1, 13, 14, 8, 23, 26] because this task is relatively easy than
+the tasks above. Typically, these works try to recognize a small-scale privacy sensitive
+words, including digital numbers and other privacy sensitive words in both user dependent
+and user independent scenarios. They first collect a small-scale dataset with eavesdropping
+signals for each separated word. And then, they separate this dataset as training and
+testing dataset and train a classification model to classify the words. The reason why
+researchers choose this task as their privacy threat evaluation task are:
+• Easy task: compared to the tasks abov
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- Template goal (custom): 判断引用论文是否明确承认、概括、使用或评价目标论文实现了 RFID 亚毫米级 / sub-mm level / millimeter-level 振动感知能力，尤其关注 loudspeaker vibration、through-wall eavesdropping、voice/acoustic vibration sensing、fine-grained RFID sensing 等语境。必须给出原文证据，并解释为什么该原文能支持“亚毫米级精度佐证”。. Prioritize evidence matching these terms: sub-mm, submillimeter, sub-millimeter, sub millimeter, millimeter-level, mm-level, fine-grained vibration, tiny vibration, micro-vibration, vibration sensing, RFID sensing, RFID tag, loudspeaker vibration, speaker vibration, through-wall, eavesdropping, acoustic sensing, voice sensing, audio sensing, high-precision sensing. Still require original citation_text and avoid promoting grouped citation or weak mention.
+- Template goal (custom): 判断引用论文是否明确称目标论文是 first / pioneering / early / seminal / first-of-its-kind / the first to achieve 等首次、早期或开创性工作。只能在原文明确出现相关表述时给出该判断，不能根据年份或系统推断自动生成。. Prioritize evidence matching these terms: first, the first, first-of-its-kind, pioneering, early work, seminal, earliest, for the first time, 首次, 开创性, 率先, 最早. Still require original citation_text and avoid promoting grouped citation or weak mention.
+FULL_EXTRACTED_TEXT:
+UC San Diego
+UC San Diego Electronic Theses and Dissertations
+Title
+Understanding Privacy Threat for Side-channel Speech Eavesdropping Attack
+Permalink
+https://escholarship.org/uc/item/8tc4j924
+Author
+Xia, Chunyu
+Publication Date
+2022
+ 
+Peer reviewed|Thesis/dissertation
+eScholarship.org Powered by the California Digital Library
+University of California
+UNIVERSITY OF CALIFORNIA SAN DIEGO
+Understanding Privacy Threat for Side-channel Speech Eavesdropping Attack
+A Thesis submitted in partial satisfaction of the requirements
+for the degree Master of Science
+in
+Computer Science
+by
+Chunyu Xia
+Committee in charge:
+Professor Xinyu Zhang, Chair
+Professor Imani N. S. Munyaka, Co-Chair
+Professor Taylor Berg-Kirkpatrick
+2022
+Copyright
+Chunyu Xia, 2022
+All rights reserved.
+The Thesis of Chunyu Xia is approved, and it is acceptable in quality and
+form for publication on microfilm and electronically.
+University of California San Diego
+2022
+iii
+TABLE OF CONTENTS
+THESIS APPROVAL PAGE . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . iii
+TABLE OF CONTENTS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . iv
+LIST OF FIGURES . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . vi
+LIST OF TABLES . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . vii
+ACKNOWLEDGEMENTS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ix
+ABSTRACT OF THE THESIS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x
+INTRODUCTION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+CHAPTER 1 BACKGROUND AND PROBLEM STATEMENT . . . . . . . . . . . . . . . 4
+1.1 Difference between SSEA and Traditional Voice Recording . . . . . . . . . . . . . 4
+1.2 Eavesdropping Sound Sources . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+1.3 Eavesdropping Side Channels . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+CHAPTER 2 UNDERSTANDING SSEA PRIVACY THREAT . . . . . . . . . . . . . . . . . 12
+2.1 Translate the eavesdropping speech . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+2.2 Extract users’ privacy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+2.3 Ideal Scenario for Classification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+2.4 Speaker and gender Identification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+CHAPTER 3 SSEA SIGNALS GENERATION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+3.1 Motivation. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+3.2 SSEA Signal Generation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+3.3 Internal SSEA Measurement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+3.4 External SSEA Measurement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+CHAPTER 4 SSEA PRIVACY THREAT EVAL . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+4.1 Privacy Threat Tasks . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+4.1.1 Automatic Speech Recognition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+4.1.2 Spoken Language Understanding . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+4.1.3 Word Classification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+4.1.4 User Identification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+4.2 Datasets . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+4.2.1 LibriSpeech . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+4.2.2 Google Speech Command . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+4.2.3 StealthyIMU . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+4.3 Evaluation Metrics. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+4.3.1 Word Error Rate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+iv
+4.3.2 Bilingual Evaluation Understudy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+4.3.3 Character Error Rate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+4.3.4 Sentence Error Rate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+4.3.5 Classification Accuracy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+4.4 Implementation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+4.4.1 Dataset Integration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+4.4.2 Existing Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+4.4.3 Self-training Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+4.5 Experiment . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+4.5.1 Sampling Rate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+4.5.2 Frequency Response . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+4.5.3 Noise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+4.5.4 Feature Extraction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+4.5.5 Classification Comparison Experiments . . . . . . . . . . . . . . . . . . . . . . . . 45
+CHAPTER 5 FUTURE WORK AND CONCLUSION . . . . . . . . . . . . . . . . . . . . . . . . 47
+REFERENCES . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+v
+LIST OF FIGURES
+Figure 1.1. Difference between SSEA and traditional voice recording . . . . . . . . . . 5
+Figure 3.1. GUI for SSEA Signal Generation Tool . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+Figure 3.2. 8s FMCW ranging from 0 to 8000Hz . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+Figure 3.3. Plot of Accelerometer with FMCW . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+Figure 3.4. Spectrogram of Accelerometer with FMCW . . . . . . . . . . . . . . . . . . . . . 23
+Figure 3.5. Cross-correlation Result . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+Figure 3.6. Spectrogram and frequency mapping . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+Figure 3.7. Frequency Response of Accelerometer . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+Figure 3.8. FIR filter to fit the frequency response of accelerometer . . . . . . . . . . . 25
+Figure 3.9. Normal distribution to fit the noise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+Figure 3.10. Generated and real accelerometer signals . . . . . . . . . . . . . . . . . . . . . . . 26
+Figure 3.11. Cross-Correlation between original and generated signals . . . . . . . . . . 27
+Figure 3.12. mmWave Radar Setup . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+Figure 3.13. mmWave Frequency Response . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+vi
+LIST OF TABLES
+Table 1.1. Key factors of different side channels may affect SSEA. . . . . . . . . . . . . 7
+Table 2.1. Eavesdropping scenarios and privacy threat evaluation for existing works 13
+Table 4.1. State-of-the-art Pretrained Model Results for ASR . . . . . . . . . . . . . . . . 38
+Table 4.2. State-of-the-art Pretrained Model Results for Word Classification . . . 38
+Table 4.3. Commercial Model Results for ASR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+Table 4.4. Self-training Model Results for ASR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+Table 4.5. Self-training Model Results for SLU . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+Table 4.6. Self-training Model Results for Word Classification . . . . . . . . . . . . . . . . 40
+Table 4.7. Self-training Model Results for User Identification . . . . . . . . . . . . . . . . . 40
+Table 4.8. ASR results with Accelerometer FR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+Table 4.9. SLU results with Accelerometer FR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+Table 4.10. Word Classification results with Accelerometer FR . . . . . . . . . . . . . . . . . 41
+Table 4.11. User Identification results with Accelerometer FR . . . . . . . . . . . . . . . . . 42
+Table 4.12. ASR results with mmWave Radar FR . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+Table 4.13. SLU results with mmWave Radar FR . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+Table 4.14. Word Classification results with mmWave Radar FR . . . . . . . . . . . . . . 43
+Table 4.15. User Identification results with mmWave Radar FR . . . . . . . . . . . . . . . 43
+Table 4.16. ASR results with Accelerometer FR and Noise . . . . . . . . . . . . . . . . . . . . 43
+Table 4.17. SLU results with Accelerometer FR and Noise . . . . . . . . . . . . . . . . . . . . 44
+Table 4.18. Word Classification results with Accelerometer FR and Noise . . . . . . . 44
+Table 4.19. User Identification results with Accelerometer FR and Noise . . . . . . . . 44
+Table 4.20. Comparison between Fbank and AccSpec for SLU . . . . . . . . . . . . . . . . . 45
+vii
+Table 4.21. Word Classification with 12 different categories . . . . . . . . . . . . . . . . . . . 45
+Table 4.22. Word Classification with only 400 different speakers . . . . . . . . . . . . . . . 46
+viii
+ACKNOWLEDGEMENTS
+I would like to acknowledge Professor Xinyu Zhang for his invaluable guidance,
+Professor Imani N. S. Munyaka for her support as the co-chair of my committee and
+Professor Taylor Berg-Kirkpatrick for his help as my committee member.
+I would also like to acknowledge the help from Ph.D. students in the lab. It is their
+support that helped me find the research topic.
+Chapter 4 utilizes the dataset from one paper that has been submitted for publi-
+cation, as it may appear in MobiCom 2022, Ke, Sun; Xia, Chunyu; Xu, Songlin; Zhang,
+Xinyu: ”StealthyIMU: Stealing Permissions from Smartphone Voice Assistant using Zero-
+Permission Sensors”. The thesis author was the author of this paper.
+ix
+ABSTRACT OF THE THESIS
+Understanding Privacy Threat for Side-channel Speech Eavesdropping Attack
+by
+Chunyu Xia
+Master of Science in Computer Science
+University of California San Diego, 2022
+Professor Xinyu Zhang, Chair
+Professor Imani N. S. Munyaka, Co-Chair
+With the prevalence of voice-driven applications, the related privacy issues became a
+popular topic, especially the potential privacy threat for side-channel speech eavesdropping
+attack (SSEA). In this thesis, we roughly divide the SSEA into four main tasks, including
+Automatic Speech Recognition (ASR), Spoken Language Understanding (SLU), Word
+Classification (WC) and User Identification (UI). In order to mimic SSEA signals, we
+measure the frequency response and noise model from different sensors, and design SSEA
+signals generation tools that utilize the large-scale open-sourced speech dataset. We
+also evaluate the generated signals with above four tasks to understand SSEA from
+x
+several significant factors, like sampling rate, frequency response and noise. Our findings
+demonstrate that sampling rate is the key factor for SSEA since less than 4kHz SSEA
+signals are not suitable for ASR tasks, while frequency response and noise will reduce
+performance in separate ways.
+xi
+INTRODUCTION
+Speech has been the most wildly used wireless communication method far early
+before the invention of wireless network. Eavesdropping is to secretly steal private
+information without users’ awareness, so eavesdropping attacks for speech or conversation
+has always been a big concern. In addition, with the development of Artificial Intelligence
+(AI) and pervasiveness of mobile devices, Voice User Interfaces (VUIs) like Voice Assistant
+(VA) have become a popular research and application field. In the meantime, related
+eavesdropping issues have also become more and more severe since eavesdropping attacks
+expose threats for privacy leakage between human and machine.
+Microphone is the common tools utilized to steal private conversation while there
+are several defenses or protection methods. Nonetheless, side-channel speech eavesdropping
+attack is a new threat domain where little work has been done. The basic idea of side-
+channel speech eavesdropping is that adversaries use channels that are not aware by the
+users to capture the side effects of sound waves like vibration, which is generated by sound
+sources or caused by nearby sound reflector. Due to the limitation of hardware design,
+such attacks are hard to be prevented. Even though such side-channels are not designed as
+microphone to record users’ audio, the vibration of loudspeakers also contain huge privacy
+information especially when users have conversation with voice assistant.
+Loudspeaker and human throat are two main types of sound sources that can
+emit human sound, and are two main channel to be attacked by related side-channel
+eavesdropping attack. For example, loudspeaker is vulnerable to side-channels like motion
+sensors and in-built hardwares which can record the vibration from loudspeakers. Human
+1
+throat is threatened by high-resolution laser or millimeter wave radar because there will
+be movement of human throat when human speaks. Moreover, the location and the type
+of sound source will also change the side-channel eavesdropping attack. In this thesis,
+we mainly focus on the loudspeaker related side-channel eavesdropping attack, because
+side-channel like motion sensors are more feasible to be measured and motion sensors
+based side-channel eavesdropping is becoming prevalent in recent years.
+Loudspeakers are easily attacked by in-built sensors, which can be called internal
+eavesdropping, while human throat is threatened by sensors outside, which can be called
+external eavesdropping. In this thesis, we mainly focus on in-built sensors eavesdropping
+like motion sensors, and we identify two key factors that make side-channel signals heavily
+different from audio signals are sampling rate and frequency response.
+Most eavesdropping attacks can be categorized into four different speech tasks:
+Automatic speech recognition (ASR), Spoken Language understanding (SLU), Word
+Classification (WC) and User Identification(UI). Although some side-channel speech
+eavesdropping attack papers mention their incredible results for eavesdropping tasks, such
+eavesdropping attacks are mostly constrained in specific experiment settings and open to
+explore more insights about the real-world scenarios.
+The goal of this thesis is to generate the SSEA data and check its threat for different
+tasks under various parameter settings. Our contribution in this work is shown as follows.
+• Categorization and understanding the privacy threat of existing SSEA works.
+• Design a SSEA signals generation tool which is able to generate the SSEA signals of
+different modalities by using existing large-scale speech datasets.
+• Design a SSEA evaluation tool which helps people understand the comprehensive
+privacy threat of a specific SSEA.
+• Identify the key factors that affects the privacy threat of SSEA.
+2
+The rest of the thesis is organized as follow: Chapter 1 introduces basic ideas
+of SSEA, different sound sources and side channels. Chapter 2 tries to understand the
+privacy threat for side-channel speech eavesdropping. Chapter 3 shows the SSEA signals
+generation tools while Chapter 4 presents SSEA evaluation tools. In Chapter 5, we will
+discuss some open issues and possible directions in the future work. We also include our
+conclusion in Chapter 5.
+3
+CHAPTER 1:
+BACKGROUND AND PROBLEM
+STATEMENT
+Sound eavesdropping, the act of secretly or stealthily listening to the private
+conversation or communications of others without the user’s knowledge or consent, has
+always been considered a significant privacy threat for a long time. In this thesis, we focus
+on investigating the Side-channel Speech Eavesdropping Attack (SSEA), which means
+that adversaries use covert side channels, which are not designed for voice recording, to
+eavesdrop on human speech without users’ perception by analyzing the side effects of
+speech signals generated [ 1]. In this chapter, we first discuss the potential eavesdropping
+sound sources and side channels in such attacks without considering the specific threat
+model.
+1.1 Difference between SSEA and Traditional Voice
+Recording
+The basic idea of traditional voice recording is to design a microphone sensor
+to sense acoustic waves by using a flexible membrane. Such membrane moves under
+pressure induced by acoustic waves. Most of the existing microphones on smart devices
+are capacitive MEMS microphones which work by measuring the capacitance between a
+flexible micro-scale membrane and a fixed backplate. Figure 1.1 shows a typical design
+4
+Fixed Backplate
+Flexible membrane
+Squeezed-film with perforations
+Compressible volume
+Vent resistor
+ElectrodesSound WaveMicrophoneSound Sources
+Traditional Microphone
+Sound Sources
+Side-channel Sensors on Smart Devices
+VibrationSide-channel Speech Eavesdropping
+or
+or
+Figure 1.1. Difference between SSEA and traditional voice recording. Traditional voice
+recording uses microphone to record the sound wave while SSEA captures the vibration
+introduced by sound sources via side-channel sensors.
+for a single backplate MEMS microphone. The backplate is perforated to let the air flow
+through it and is designed to remain rigid since the air can pass through its perforations.
+As the membrane moves, the capacitance between the moving membrane and the fixed
+backplate change correspondingly, and this change in electrical response can be analyzed
+and recorded.
+Compared to microphone sensor, SSEA mainly focuses on the side channel sensors
+that are unexpectedly able to record the speech. Since most of the side channel sensors
+do not have the flexible membrane design, they are merely possible to directly sense the
+acoustic waves. In contrast, these side channel sensors are mainly sense the sound source
+vibration when generating the speech signals as shown in Figure 1.1. As a result, the
+factors that may affect SSEA are different from traditional voice recording. Next, we will
+category the types of eavesdropping side channels and sound sources in SSEA and discuss
+the factors that may affect the potentials of SSEA.
+5
+1.2 Eavesdropping Sound Sources
+In general, the voiced speech of an adult male and female has a fundamental
+frequency 85 ∼ 180 Hz and 165 ∼ 255 Hz, respectively. The whole voice frequency band
+ranges from 50 ∼ 8 kHz. Such speech signals can be generated by not only human throat
+but also loudspeaker. In this section, we mainly summarize how these two sound sources
+generate the speech signals and the factors that may affect the SSEA, including voice
+frequency, vibration displacement and volume.
+Human Vocal Cords: Human speech generation involves multiple articulators,
+e.g., tongue, lips, jaw, vocal cords, and other speech organs [ 2]. Human voice is mainly
+generated by moving air past their vocal cords, which makes them vibrate, while other
+articulators may introduce some additional motions to affect the sound tones. Although
+existing works show that by sensing the motion of other articulators, e.g., tongue, lips
+and jaw, is able to partly recover/ recognize the speech signals, compared to sensing the
+vibration of vocal cords, the resolution is still coarse-grained [ 3, 4, 5]. We mainly focus on
+sensing the vibration of vocal cords in SSEA.
+Typically, the generated human voice of an adult male and female has a fundamental
+frequency 85 ∼ 180 Hz and 165 ∼ 255 Hz, respectively. The whole voice frequency band
+ranges from 50 ∼ 8000 Hz. Different subjects have their unique voiceprint, which can be
+used as biometrics to identify the subject [ 6]. Such user dependencies make it hard for
+machine to automatically recognize the speech content with high accuracy across different
+subjects, which is also a key challenge for SSEA.
+Another key challenge of sensing the vibration of vocal cords is that the vibration
+displacement of human vocal cords is less than 20 µm [7]. Therefore, existing side-channel
+sensors are merely able to sense the human voice. Side-channel sensors on head-mounted
+wearable devices, like AR/VR devices and smart earbud, are able to sense the vibration of
+human vocal cords since they are co-located with sound sources (human vocal cords) [ 8, 9].
+6
+Table 1.1. Key factors of different side channels may affect SSEA.
+Side-channel Sensors Location Resolution FS FR Noise&Interference
+Gyroscope [1, 10] Internal µm <4 kHz Poor
+Accelerometer [11, 12, 13, 14, 15, 8, 16, 17, 10, 18, 19]Internal µm <4 kHz Good
+Sensor Noise&
+Surface Vibration
+Magnetometer [9, 10] Internal µm <4 kHz Fair
+Piezoelectric [20] Internal µm <16 kHz Good
+Vibra-motor [21] Internal µm <16 kHz Fair
+Magnetic HD [22] Internal µm <17 kHz Fair
+Wi-Fi [23] Int/Ext mm∼cm <1 kHz Distance Sensor Noise&
+Human Motion&
+Environmental Vibration
+UHF RFID [24, 25, 26] Int/Ext mm∼cm <2 MHz Distance
+UWB [27] External mm∼cm <2 kHz Distance
+mmWave [7, 28, 29, 30, 31, 32, 33, 34] External µm∼cm <16 kHz Distance
+Visible Light [35, 36, 37] External Distance <16 kHz Distance Sensor Noise&
+Environmental VibrationLaser [38, 39, 40] External Distance <16 kHz Distance
+Finally, the sound volume of human voice will affect both frequency and vibration
+displacement factors, which is also a challenge for SSEA.
+Loudspeakers: Compared to the human live voice, loudspeaker replays the sound
+recorded by microphone. The voice frequency, vibration displacement and volume vary a
+lot for different kinds of loudspeakers.
+The voice frequency of loudspeaker replies on i). the frequency response of the
+loudspeaker itself; ii). the standard of the replayed speech signals; iii). the voiceprint of
+the replayed speech signals. Compared to the live human voice generated by human vocal
+cords, most of the replayed speech signals from loudspeaker are machine-rendered voice,
+resulting in a constrained user dependent problem. For example, the voice assistant only
+has a limited set of voice profiles, e.g., 5 male and 5 female voices on Google Assistant.
+Second, the vibration displacement of loudspeaker ranges from 1 ∼ 50 mm de-
+pending on the type of loudspeaker and the sound volume. For instance, the MEMS
+loudspeaker on smart devices, e.g., smartphone and smartwatch, has only less than 3 mm
+vibration displacement. The excursion loudspeaker on voice assistant has more than 8 mm
+vibration displacement.
+1.3 Eavesdropping Side Channels
+Since the side-channel sensors are not designed for voice recordings, they have
+some hardware constraints that may affect the SSEA, including sensor location, sensing
+resolution, sampling rate, frequency response, sensing noise, and sensing interference. We
+7
+only summarize the hardware specifications of different side channels as shown in Tab.
+1.1 without considering the software constraints and SSEA scenarios (see Chapter 2). In
+this section, we discuss the eavesdropping side channels by considering the location of the
+side-channel sensors. Side-channel sensors can be co-located or not co-located with the
+sound sources, which are defined as internal and external eavesdropping respectively.
+Internal Attack: Internal eavesdropping relies on a compromised device/sensor
+that co-located with the sound sources to capture the vibration of sound sources.
+i). Internal side channels without hardware modification. Motion sensors, i.e.
+accelerometer, gyroscope and magnetometer, are considered to be the potential sensors to
+conduct such SSEA. When the sound source, i.e. human voice cords or loudspeaker, is
+generating the speech signals, the co-located motion sensors will vibrate with the sound
+source and ultimately capture the vibration signals. The sensing resolution of motion
+sensors achieves µm level depending on the specifications of these sensors, including ADC
+range, measurement range, which is sufficient to capture the vibration of different sound
+sources [12]. Most of the existing motion sensors have more than 4000 Hz sampling rate
+based on their specifications [ 12]. However, most of the smart devices will not support
+such high speed sampling rate, which will be discussed in Chapter 2. Existing study
+[14] also show that different motion sensor have different frequency responses. Typically,
+accelerometer acheives better frequency response than the gyroscope and magnetometer
+[14]. The main noise and interference of side-channel motion sensors come from the sensor
+thermal noise and other vibration interference from other vibration sources on the same
+surface respectively. For example, if there exists an additional vibration source on the same
+surface, the vibration signals captured by motion sensor will contain both the vibration
+from the sound source and the additional vibration source. The key advantage of motion
+sensor is that typically these sensors are located on different smart devices like smartphone,
+smartwatch, and AR/VR devices, and they are known as zero-permission sensors which
+means that they are accessible by any app without user permission or oversight [ 14]. We
+8
+will discuss the threat model of using motion sensor to deploy SSEAs on different smart
+devices in Chapter 2.
+ii). Internal side channels with additional modification. Except for motion sensor,
+other internal side channels may need additional software/ hardware modification to deploy
+SSEAs. VibraPhone [ 21] modifies the vibration motor into a sound sensor by using reverse
+electromotive force (back-EMF) in electronic circuits. HDH [ 22] demonstrates that the
+mechanical components in magnetic hard disk drives behave as microphones with sufficient
+precision to extract and parse human speech. V-speech [ 20] employs piezoelectric sensor
+on glasses to capture the vibration of human vocal cords. Since they are also internal side
+channels, the sensing resolution, potential noise and interference of such side channels
+are close to motion sensors. Since they assumes adversaries can modify the hardware/
+software, the sampling rates achieve 16 kHz and the frequency responses are good enough
+to capture the full band speech signals typically.
+External Attack: The second scenario is to sense the sound source vibration by
+using external sensors that are not co-located with the sound sources. RF signals and
+laser/light are considered as two potential side channels to sense the remote sound source
+vibration.
+i). RF-based SSEA. RF signals, including WiFi [ 23], UHF RFID [ 24, 41, 25, 26],
+UWB [ 27], mmWave signals [ 29, 31, 32, 28, 42, 7], can be considered as a wireless
+vibrometry to measure the RF signal changes caused by the sound source vibration. There
+are two different setup for RF-based SSEAs including reflective and emissive attacks. For
+reflective attack, adversaries employ a pair of transmitter and receiver to capture the
+vibration of the sound source. However, for emissive attack, adversaries assume that the
+transmitter is co-located with vibration sound source and keep transmitting RF signals
+while adversaries only control the receiver to capture the vibration of the sound source [ 23].
+The key difference of these RF signals is the wavelength of the RF signal carrier frequency,
+the frequency bandwidth of the RF signal, and the antenna array, which determines the
+9
+sensing resolution and anti-interference ability (distance, velocity and angular resolution).
+Generally, since most of the vibration sensing is based on phase/ amplitude measurement,
+smaller wavelength of the RF signal carrier frequency corresponds to more fine-grained
+sensing resolution. Therefore, UHF RFID, Wi-Fi, and UWB have cm-level wavelength,
+which can only capture the vibration of the loudspeaker while mmWave with mm-level
+wavelength is possible to capture the vibration of the human vocal cord. UHF RFID and
+Wi-Fi have limited frequency bandwidth, resulting in coarse-grained distance resolution
+and poor anti-interference ability, which means that they are sensitive to any vibration
+source in the environment. In comparison, UWB and mmWave radars can estimate the
+distance between sound sources and radars and filter out other vibration interference.
+When there exists a larger antenna array, they are even possible to locate the sound source.
+The limitations of RF-based SSEA are that i). the specific frequency response
+depends on the distance between side channel and devices; ii). the Signal to Interference
+& Noise Ratio (SINR) of eavesdropping signals is low because there exist many large
+interference introduced by human motion and other environmental vibration sources.
+ii). Light-based SSEA. Light-based SSEAs [35, 39, 36, 38, 40] typically use laser
+signals or visible light signals to sense the vibration of the sound source. We category the
+light-based SSEAs into two classes, i.e. passive light-based SSEAs and active light-based
+SSEAs. The passive light-based SSEAs do not require adversaries to transmit light signal
+and directly use visible light to sense the vibration of sound source [ 35, 36]. The active
+light-based SSEAs transmit laser and measure the time for the reflected light to capture
+the vibration of sound source. The sensing resolution of light-based SSEAs depends on
+the distance between the receiver and sound source since they capture the vibration by
+analyze the brightness change of light. Since light-based SSEAs use self-designed hardware,
+there is typically no constraints on sampling rate.
+Light-based SSEAs can achieve long-distance sound eavesdropping as long as there is
+no Line-of-Sight (LoS) blockage. However, the key drawback for light-based eavesdropping
+10
+is that it can only sense the sound source vibration without the LoS blockage. Meanwhile,
+these attacks need self-designed hardware to deploy the SSEAs.
+11
+CHAPTER 2:
+UNDERSTANDING SSEA PRI-
+VACY THREAT
+In this chapter, we first summarize SSEA potential privacy threat levels by analyzing
+their evaluation.
+Existing works demonstrate that side-channel sensors have potentials to partly
+eavesdrop the speech signals. However, compared to voice recordings, such eavesdropping
+signals have low quality and are hard to be understood and recognized by both human and
+machine, which leads to different privacy threat levels. For example, if the eavesdropping
+signals are able to recover the full-band speech signals, the privacy threat will be significant.
+In contrast, if the eavesdropping signals can only be used to recognize few words, the
+privacy threat will be less important. In this section, we summarize the privacy threat
+levels by investigating the privacy threat evaluation tasks (see Tab. 2.1) in existing works.
+We categorize the potential privacy threat evaluation tasks into 4 privacy threat
+levels:
+1. Translate the eavesdropping speech word-by-word, including Speech Recovery (SR)
+and Automatic Speech Recognition (ASR).
+2. Extract users’ privacy from the eavesdropping speech, including Spoken Language
+Understanding (SLU) and Keyword Spotting (KS).
+12
+Table 2.1. Eavesdropping scenarios and privacy threat evaluation for existing works
+Literature Sound Source Side Channel SC Privacy Threat Evaluation
+Type Device Type Device SR Tasks User Dict Level
+Gyrophone [1] LS Phone Gyro Phone 200 Hz VC WC 5 10 W
+Face-mic [8] HVC Human Acc Headset 1 kHz AR/VR WC, SI 15 20 W
+MagEar [9] HVC Human Mag Earbud ? ? SR ? ? ?
+Pitchln [10] LS Standalone Motion On table 8 kHz VA SR 230 40 W
+Accelword [11] LS Phone Acc Phone 200 Hz VA KS 10 2 S
+Speechless [12] LS Phone Acc Phone 200 Hz VC / 10 / W
+Spearphone [13] LS Phone Acc Phone 300 Hz VC WC, SI 10 11 W
+AccelEve [14] LS Phone Acc Phone 500 Hz VC WC, SI 20 36 W
+Vibphone [16] LS Phone Acc Phone 500 Hz VC WC 10 10 W
+Accear [17] LS Phone Acc Phone 500 Hz VC SR 16 ? S
+StealthyIMU [18] LS Phone Acc Phone 500 Hz VA SLU, SI 10 >3000 S
+InertiEAR [19] LS Phone Acc Phone ? VC ? ? ? ?
+V-speech [20] HVC Human Piez Glass 16 kHz VRe SR, ASR 30 145 S
+Vibra-phone [21] LS Phone Vibr Phone 16 kHz VC SR, ASR 8 2000 W
+HDH [22] LS Standalone Mag HD HDD 17 kHz VA SR, SC ? ? S
+ART [23] LS Standalone Wi-Fi Router 2 kHz VA WC 6 10 W
+RF-ear [24] LS Standalone RFID On objects 80 Hz ? / / / /
+Tag-sound [25] LS Standalone RFID On LS 2 MHz ? / / / /
+Tag-bug [26] LS Standalone RFID On objects 2 MHz VA WC 4 10/26 W
+UWHear [27] LS Standalone UWB Radar 1600 Hz VA SS / / /
+RadioMic [28] HVC Human mmWave Radar 6250 Hz VRe SR / / SLS Standalone VC
+Waveear [29] HVC Human mmWave Radar 8 kHz VRe SR, ASR 21 ? S
+Wavesdropper [30] ? ? mmWave Radar ? ? ? ? ? ?
+Voice Recovery [32] LS Standalone mmWave Radar ? ? SR ? ? ?
+MILLIEAR [33] LS Standalone mmWave Radar 10 kHz VC SR 7 ? S
+mmphone [34] ? ? mmWave Radar ? ? ? ? ? ?
+94 GHz [7] HVC Human mmWave Radar 16 kHz VRe SR 1 2 W
+VisualMic [35] LS Standalone Light Camera 2.2 kHz VA SR 6 ? S
+Lamphone [36] LS Standalone Light PD Sensor 4 kHz VA SR 6 ? S
+Glowworm [37] LS Standalone Light PD Sensor 8 kHz VA SR 6 ? S
+Vibrosight [39] LS Standalone Laser PD Sensor 5 kHz Object SC / / /
+LidarPhone [40] LS Standalone Lidar Vacuum 1.8 kHz VA WC, SI 10 10 W
+3. Ideal scenarios, including Word Classification (WC) and Sound Classification (SC).
+4. Speaker and gender Identification (SI)
+2.1 Translate the eavesdropping speech
+The most serious privacy threat is to translate the eavesdropping speech word-by-
+word, which includes two typical tasks, i.e., speech recovery and speech recognition.
+Speech Recovery (SR): As shown in Table 2.1, side channels with high sampling rate
+(> 2 kHz), i.e., vibration motor, mmWave radar, and laser transceiver, are demonstrated
+that they are possible to recover speech. However, the evaluation of speech recovery is not
+systematic. Some of the existing works use the speech quality and intelligibility to evaluate
+eavesdropping privacy threat of speech recovery task [ 36, 35, 28, 32, 22]. Typically, the
+evaluation metrics are objective metrics, including Signal-to-Noise Ratio (SSNR) [ 43],
+Perceptual evaluation of speech quality (PESQ) [ 44], Short-time objective intelligibility
+measure (STOI) [45], Log-likelihood ratio (LLR) [46], Pearson correlation coefficient (PCC)
+13
+[47], etc. However, these evaluation metrics only compare the recovered speech with
+original speech and show the objective results, which fail to demonstrate the potential
+privacy threat to humans.
+In comparison, two existing works [ 29, 21] propose to use Word Error Rate (WER)
+as the evaluation metrics by using commercial automatic speech recognition (ASR), e.g.,
+Amazon Transcribe [48], and Google Speech-to-text [ 49], or human ear to recognize the
+recovered speech. Specifically, the WER is defined as:
+WER = S + D + I
+S + D + C (2.1)
+where S, D, I and C represent the number of substitutions, deletions, insertions, and
+correct words, respectively. Note that since researchers assume that speech can be recovered
+by side channel, they propose to use the pretrained or commercial ASR model or human ear
+to evaluate the speech recovery task. Vibro-phone [ 21] evaluates the WER by using both
+ASR and human ear. They collect 9 hours of sound with a total of 20,000 separated words.
+It achieves 20% WER when the sound pressure level is higher than 70 dB SPL. Waveear
+[29] collects a dataset containing 5 materials (the scale of the dictionary is unknown) with
+21 subjects. It achieves less than 6% WER for all these materials. V-speech [ 20] achieves
+12.0% ± 5.6% WER across 30 different subjects and 145 words.
+The limitations of existing speech recovery evaluation are that: i). Most of the
+works use speech quality as the evaluation metrics other than WER, which is not exactly
+corresponding to user privacy threat. ii) It only considers the word-level speech and
+does not take the sentence-level speech into consideration; iii). The dictionary of the
+training and testing dataset is limited. Existing works do not release the dictionary scale
+of their dataset; vi). User dependent v.s. User independent. Although existing papers
+demonstrate that their methods are able to recover the speech across different subjects,
+the amount of subjects in their evaluation is typically limited ( < 20 subjects). v). There
+14
+is no open-sourced dataset and code for SSEA speech recovery, which makes it hard to
+reproduce and compare.
+Speech Recognition (ASR): The second task is speech recognition. Compared to
+the speech recovery, speech recognition is to use a self-designed self-trained DNN model
+to evaluate the WER of the eavesdropping signals. Besides, the input of DNN model
+is the eavesdropping signals with a relative low sampling rate. The advantage of self-
+designed DNN model and DNN input feature is that it mitigates the domain adaptation
+problem from the traditional speech signals to the eavesdropping signals, resulting in
+higher accuracy. None of the existing works tried to evaluate this speech recognition task
+because training a self-designed DNN model needs a large-scale side-channel eavesdropping
+signal dataset, and collecting such dataset is challenging.
+2.2 Extract users’ privacy
+The first privacy threat level shows the potentials of understanding the whole
+sentence from the eavesdropping signals. Nevertheless, due to the constraints of side
+channels, the eavesdropping signals are not always possible to recognize the whole speech
+sentence accurately. In this section, I will introduce new privacy threat tasks, i.e., Spoken
+Language Understanding (SLU) [18] and Keyword Spotting [50, 11], which only extracts
+the privacy information from the eavesdropping signals without considering other irrelevant
+words.
+Spoken Language Understanding (SLU) : In the speech processing community,
+Spoken Language Understanding (SLU) systems infer the intents and meanings of a spoken
+utterance [51]. This task is critical for VUIs, which convert the speaker’s utterance into
+action or query. SLU typically consists of two tasks: intent detection, a classification
+problem where utterances are labeled with predefined intents; slot filling, a sequence
+labeling task which identifies the semantic concepts. For example, when users first use
+15
+their natural language to describe their requests like voice commands, e.g., “Turn on the
+lights in the living room”, the VUI utilizes SLU systems to extract the keywords from the
+voice commands and fed to the devices, including intent “SwitchLightOn” and slots “room:
+living room” and “brightness: None”. Finally, the devices response to the users via VUI.
+In the eavesdropping scenarios, we propose to use such SLU system to extract users’
+privacy from the eavesdropping signals. It tries to first classify the leaky information
+type (corresponding to intent detection) and then recognize the private information
+(corresponding to slot filling) from the eavesdropping signals. For example, supposing
+the users say “My social security number is XXX.”. Then, eavesdropping SLU system
+will extract it as intents “identification” and slots “social security number: XXX”. This
+task is typically suitable for the scenario where the eavesdropping signals are rendered by
+machine which has deterministic format [ 18]. StealthyIMU [ 18] proposes to use SLU task
+to steal the private permissions, including calendar, home address, and GPS trace, etc.,
+from voice assistant reply to the voice commands.
+Keyword Spotting: Keyword spotting task is somewhat close to SLU. The difference
+between them is that keyword spotting is to identify a single keyword from a sentence, like
+wake-up words. Thus, this task will be much easier but lower risky than SLU. Adversaries
+can use keyword spotting to identify the privacy sensitive words and then deploy a more
+constrained privacy threat task, e.g., word classification as discussed in the next Section,
+to extract the private information. For example, Accelword [ 11] proposes to detect the
+wake word by using accelerometer side channel.
+2.3 Ideal Scenario for Classification
+Since the side channel has some limitations for eavesdropping the sound, like low
+sampling rate, poor frequency response, significant noise, etc, some side channels can not
+achieve the difficult privacy threat tasks as above. The third privacy threat level contains
+16
+some ideal attacking tasks, including word classification and sound classification.
+Word Classification (WC): Word classification is the most frequently task that is
+evaluated in existing works [1, 13, 14, 8, 23, 26] because this task is relatively easy than
+the tasks above. Typically, these works try to recognize a small-scale privacy sensitive
+words, including digital numbers and other privacy sensitive words in both user dependent
+and user independent scenarios. They first collect a small-scale dataset with eavesdropping
+signals for each separated word. And then, they separate this dataset as training and
+testing dataset and train a classification model to classify the words. The reason why
+researchers choose this task as their privacy threat evaluation task are:
+• Easy task: compared to the tasks above, word classification is much easier because
+it only need to recognize limited words (10 ∼ 50 words).
+• Easy to deploy: they only need to collect a small-scale dataset.
+• Easy to demonstrate the potential threat: since the digital number and privacy
+sensitive words are serious for user privacy, it is easy to convince readers that this
+side channel eavesdropping attack is promising.
+However, there are many limitations so that this privacy threat task is hard to demonstrate
+the real-world privacy threat as follows:
+• The threat model is not real. In the real scenario, the speech signals will always be
+sentence-level, and such attack also needs to consider the false alarm other than only
+recognizing the limited separated words.
+• The accuracy is overestimated. Since the collected dataset is small-scale with limited
+number of subjects, the overall recognition accuracy is overestimated.
+Sound Classification (SC) task is close to the word classification task. The only
+difference is that the classes are sound event classes, which will not be covered in our
+speech eavesdropping task.
+17
+2.4 Speaker and gender Identification
+Speaker and gender identification task is to identify the speaker/gender of the
+eavesdropping signals, which is also widely used in existing works [ 8, 13, 14, 18, 40].
+Compared to previous tasks, this task is mainly for stealing the contact history by using
+side channels. However, existing works only recruit limited number of users ( < 15 Users)
+and consider that all the users has been already known by adversaries. The key challenge
+is still because it is time-consuming to collect the eavesdropping signals from more users.
+To better demonstrate the privacy threat for speaker identification, the solution is also to
+collect a large-scale dataset with evaluating the false alarm.
+18
+CHAPTER 3:
+SSEA SIGNALS GENERATION
+3.1 Motivation
+The main motivation for generating SSEA signals is the lack of sufficient data
+for evaluation. As shown in the Table 2.1, most of the data collected in privacy threat
+evaluation contained less than 20 participants, less than 50 words from dictionary and less
+than 3 tasks, while even these small-scale data can take researchers weeks or even months
+to collect.
+Sometimes researchers find that some side-channel modalities hardly pose a privacy
+threat by trying different models, which means that the data they spend a lot of time
+collecting has no further research value. Therefore, if there is a platform to generate SSEA
+signals, the generated data can be used to test the effect of different privacy threat models
+first, and then the real-world data can be collected to fine-tune the model to achieve better
+performance. This is the first goal for generating SSEA signals.
+Moreover, some side-channel modalities indeed have no pervasive privacy threat and
+are only feasible with small amounts of data. In many cases, because the collected data is
+less and the model is more complex, overfitting and loss of robustness and generalization
+will occur. Therefore, if there is a platform to generate SSEA signals, a large amount of
+data can be used to help us check the robustness and generalization of the model. More
+importantly, this can show the feasibility, thereby removing some side-channel modalities
+19
+that do not have feasible privacy threat.
+Additionally, most privacy threat evaluations only consider one or two tasks, but
+it is likely that some side-channel modalities contain more privacy threats. If there is a
+platform that can generate multiple privacy threat tasks while generating SSEA signals,
+then researchers can fully investigate the impact of different side-channel modalities on
+different tasks.
+In conclusion, the most significant goal of SSEA signals generation tool is to provide
+an open-sourced dataset and code for researchers to reproduce and compare. For instance,
+almost every paper on SSEA presents its own model, so it’s hard to know who has the
+best results, or even check if those results are plausible. The proposed platform provides
+baselines and benchmarks, where SSEA-related papers can be evaluated under the same
+rubrics, so it is convenient to judge which model is more generalizable and robust.
+3.2 SSEA Signal Generation
+Figure 3.1. GUI for SSEA Signal Generation Tool
+20
+Figure 3.1 shows the GUI for SSEA signal generation tool. For side channels,
+users can choose Accelerometer, Gyroscope, Magnetometer, mmWave, UWB etc. For
+eavesdropping tasks, users can choose four main tasks mentioned before, i.e., ASR, SLU,
+WC, UI.
+Also, users can modify the frequency response file, sampling rate, sound volume
+and gaussion noise std to fit their side-channel modalities. Note, FR filter order is used to
+fit the curve of frequency response, so it measures how precise the frequency response will
+be compared to the uploaded one. Higher filter order represents more accurate frequency
+response fitting with longer generation time.
+In addition, users can change their input dataset with corresponding CSV description
+file. Even for the same task like ASR, users can utilize plenty of open-sourced speech
+datasets for trial, as long as they upload the CSV file with required information and format.
+We leave interference for future work about the location-related measurements.
+3.3 Internal SSEA Measurement
+Frequency response is the quantitative measure of the output spectrum of a system
+or device in response to a stimulus, and is used to characterize the dynamics of the
+system. The frequency responses are different for various side-channels and do not have
+the flat frequency response for the speech bandwidth. Internal eavesdropping attack is
+easy to measure while external eavesdropping attack is hard to measure because of the
+multipath effect and the propagation channels from different placements. In this part, we
+will demonstrate how to mimic the frequency response for motion sensors in smartphone.
+21
+Figure 3.2. 8s FMCW ranging from 0 to 8000Hz
+Fig 3.2 shows our well-designed Frequency-Modulated Continuous Wave (FMCW)
+ranging from 0 to 8000Hz in 8 seconds, and we choose the sampling rate 48kHz for FMCW
+audio signals. We directly measure the frequency response by choosing the maximum
+value in the spectrogram.
+We play such FMCW audios in the smartphone to measure the frequency response
+of motion sensor (accelerometer). Figure 3.3 shows the plot of accelerometer signals
+with played FMCW, and Figure 3.4 shows the spectrogram. We can find that there are
+waves shown in the spectrogram due to the low sampling rate of the accelerometer in the
+smartphone.
+Figure 3.3. Plot of Accelerometer with FMCW
+22
+Figure 3.4. Spectrogram of Accelerometer with FMCW
+Next, we upsample the accelerometer signals to 48kHz, which is the same as the
+FMCW audio signals. Figure 3.5 shows the cross-correlation result with 250Hz FMCW,
+so we can find the beginning of the measurement signals.
+Figure 3.5. Cross-correlation Result
+23
+Figure 3.6. Spectrogram and frequency mapping
+We generate the spectrogram after synchronization, and select the maximum index
+of the spectrogram as frequency mapping as shown in the Figure 3.6.
+Figure 3.7. Frequency Response of Accelerometer
+Figure 3.7 shows the results for accelerometer frequency response and frequency
+mapping. For the frequency response, the green line above shows the frequency response
+24
+based on the fitting slope, blue line above shows the frequency response based on the
+maximum value, and orange line above shows the frequency response based on the original
+FMCW signals with flat frequency response. We discover that blue and green line is close
+to each other, so we choose the green line as our result. For the frequency mapping, the
+orange and blue lines below represent the frequency mapping for the original FMCW
+signals and recorded signals respectively.
+After successfully measuring the frequency response for accelerometer in smartphone,
+we design a finite impulse response (FIR) filter to fit the frequency response. Figure 3.8
+show the result for FIR filter, and we set filter order (the same parameter as mentioned
+in GUI) to 10000 to better fit the frequency response. However, in our SSEA generation
+process, we set it to 1000 for efficiency.
+Figure 3.8. FIR filter to fit the frequency response of accelerometer
+25
+Figure 3.9. Normal distribution to fit the noise
+We then use the gaussian distribution to the noise from accelerometer. Figure 3.9
+shows the result normal distribution with µ = 10, σ= 0.01.
+Figure 3.10. Generated and real accelerometer signals
+26
+Figure 3.11. Cross-Correlation between original and generated signals
+Eventually, we add the gaussian noise and frequency response to the audio signals.
+Figure 3.10 represents the generated accelerometer signals and real accelerometer signals.
+Our generated signals have high similarity with the original signals. To fully demonstrate
+the similarity, we use cross-correlation to evaluate. As shown in Figure 3.11, our generated
+signals have high cross-correlation value with the original signals, so we assume that our
+artificial data successfully mimic the accelerometer data. We will utilize this pipeline to
+measure other internal SSEA modalities.
+27
+3.4 External SSEA Measurement
+Figure 3.12. mmWave Radar Setup
+Figure 3.12 shows one typical example for external SSEA measurements, mmWave
+radar setup. For mmWave radar, we use TI radar AWR1243Boost while we use Logitech
+980 as speaker. We only set 20% volume for this large speaker since 20% volume is loud
+enough. Speaker is 50 centimeter from the TI radar with around 80 dB. We leave the
+parameters tuning about distance and volume for the future work.
+28
+Figure 3.13. mmWave Frequency Response
+Figure 3.13 shows our frequency response measurement with mmWave radar. The
+curve is flat between 3000 to 6000, which demonstrates that we will lose frequency response
+for higher sampling rate. More detailed experiment presents that we can only capture
+frequency response with 600Hz.
+29
+CHAPTER 4:
+SSEA PRIVACY THREAT EVAL
+4.1 Privacy Threat Tasks
+4.1.1 Automatic Speech Recognition
+Automatic Speech Recognition (ASR), which is alternatively referred to as
+speech-to-text (STT) or machine speech recognition, is aimed at recovering the correspond-
+ing text from spoken language. Instead of transcribing only the spoken speech into written
+text, ASR for SSEA explores the possibility of converting side-channel signals into text,
+which exposes the most significant privacy threat. On one hand, text from side-channel
+modality contains more privacy information, including personal hobbies, preferences and
+attitudes. On the other hand, text can be also utilized for another downstream tasks
+like Sentiment Analysis, Natural Language Understanding (NLU) and Recommendation
+System.
+4.1.2 Spoken Language Understanding
+Spoken Language Understanding (SLU), which is a rising field in both speech
+processing and natural language processing areas. The goal of SLU is to directly understand
+the latent purpose from human speech. Even though text transcribed from state-of-the-art
+ASR model can be feed into NLU to obtain similar understanding about human speech,
+the sampling rate and noise have negative effect on ASR recognition rate, and such error
+30
+will accumulate in NLU, which leads to deviated results. In contrary, SLU attempts to
+build End-to-End model to deduce the intentions of the user from their speech utterances,
+so it has looser constraints about sampling rate and noise for the input signals, which
+reveals more prevalent privacy attack for side-channel modality.
+4.1.3 Word Classification
+The fundamental privacy threat task for SSEA is called Word Classification.
+This task required us to categorize the words into a discrete set of categories. For example,
+some classes can be directions (up, down, left, right) or commands such as open and close.
+Word Classification is the easiest task for recognizing the text directly from input signals
+due to limited categories without consideration about the fluency of the transcribed text
+or latent meaning. Therefore, Word classification can be achieved with extremely low
+sampling rate and loud noise, and it becomes the most common evaluation task that
+exhibits side-channel privacy threats.
+4.1.4 User Identification
+User Identification is a special privacy threat task targeted at speakers. Instead
+of stealing the content of the speech, attackers identified the speakers in the speech to
+infer victims’ social connections and routines. User Identification is also a classification
+task with predefined user categories.
+4.2 Datasets
+4.2.1 LibriSpeech
+The dataset we used for ASR and User Identification task is LibriSpeech [52].
+LibriSpeech is a corpus which contains approximately 1000 hours of read English speech,
+which is collected by Vassil Panayotov with the assistance of Daniel Povey. The data is
+derived from read audiobooks from the LibriVox project.
+31
+In addition, there exists the language model trained on this corpus, which can be
+useful in our tasks. Also, the average duration of the speech in this dataset is over 10
+second, which is longer than other datasets we used, and longer speech is beneficial to
+User Identification task.
+However, even though LibriSpeech has 1000 hours of speech, we only use the
+100 hours ”clean” speech for training. The reason behind is that normally we cannot
+collect 1000 hours data for side-channel speech eavesdropping task. We want to mimic the
+side-channel datasets under the real-world setting, and 100 hours dataset is enough for
+showing some insights with high efficiency.
+The privacy threat for this dataset is that if we can accurately transcribe the
+speech based on 100 hours training data, it is more likely that attackers can utilize the
+side-channle signals to recover your private conversation.
+4.2.2 Google Speech Command
+The dataset we used for Word Classification is Google Speech Command (GSC)
+dataset [53]. The Google Speech Command dataset, as its name implies, is provided by
+Google, containing 105, 829 utterances of 35 words, recorded by 2 , 618 people, contributed
+by public through the AIY website. Compared to other datasets available for Word
+Classification at the time, the GSC dataset is regarded as less complex since it consists of
+only one second data samples from 35 categories.
+The 35 categories contain digit words and pervasive commands, so higher recognition
+rate in this dataset means that attacker can successfully steal your bank account/password
+and identify some keywords in the conversation, which leads to huge privacy threat. The
+leakage of bank account/password may result in financial fraud, and human attackers can
+basically understand your conversation when they correctly localize some keywords.
+32
+4.2.3 StealthyIMU
+We use StealthyIMU dataset for SLU tasks, which contains three types of voice
+replies.
+• The first type of voice replies are set/check calendar/reminder command replies,
+which are used to steal the “Read calendar” permission. They collect 5 , 031 different
+reminder commands with 300 frequently-used TODO entities and 300 TIME entities.
+• The weather-related command replies, which are used to steal the “Access
+coarse location” permission, contribute to the second type. They collect 12 , 527 different
+weather-related command replies from 120 US cities with more than 200k population each.
+• The last type of voice replies represents navigation applications, and the navigation
+recordings come from two different cities. City A is a typical city with a population of
+> 1.5 million and area approximately 800 km 2. They collect 300 routes with 5 , 091
+navigation voices which contain more than 1 , 800 km mileage, 419 roads (95% coverage)
+and 7 highways (100% coverage) and 55 highway (92% coverage) exits. A real-world field
+test is conducted in City A. City B is a metropolitan city with a population of > 5 million
+and area of 800 km 2. They collect 150 routes with 2794 navigation voices which contain
+more than 900 km mileage, 559 roads (37% coverage) and 8 highways (100% coverage)
+and 42 highway (84% coverage) exits.
+Note that the voice replies are highly diverse, totaling > 50 hours and containing
+> 3000 frequently-used words. This dataset is aimed at personal schedules and locations
+from zero-permission side-channel modalities.
+4.3 Evaluation Metrics
+4.3.1 Word Error Rate
+Word Error Rate (WER) [54] is for assessing the accuracy of automatic speech
+recognition (ASR) systems in converting voice to text. It is a useful tool for comparing
+33
+different systems as well as evaluating improvements within one system.
+It can be calculated using the following formula:
+WER = S + I + D
+N (4.1)
+Where S stands for substitutions (replacing a word), I stands for insertions (inserting
+a word), D stands for deletions (omitting a word), N is the number of words that
+were actually said. In general, this metric represents how many words can be correctly
+recognized, and human attackers can rephrase the sentences if most of the words are right.
+Therefore, the lower WER means the more private information is leaked.
+4.3.2 Bilingual Evaluation Understudy
+Bilingual Evaluation Understudy (BLEU) [55] is another metric used to
+evaluate the quality of machine translation of natural language words and sentences. The
+core concept is that the quality of translation depends on the corresponding relationship
+between the output of machine translation and human translation. The closer the machine
+translation is to the professional human translation result, the better the performance is.
+Therefore, BLEU scores basically represent the ratio of the stolen private information.
+The improved evaluation metric, unigram’s precision, the most widely used metric
+in BLEU, can be calculated as:
+P = min(wmax, wtest)
+m (4.2)
+where
+• m is the total number of words in the test phrase.
+• wmax is the maximum total count of that word in the candidate translations.
+• wtest is the count of that word in the test phrase.
+34
+If we have more than one reference, for each word, BLEU first determines the
+maximum matching word count among all references aswmax. It then chooses the minimum
+of that value between the test phrase word count wtest and wmax. Finally, it divides the
+min value with the total words in test phrase.
+4.3.3 Character Error Rate
+Character Error Rate (CER) is another widely used metric for assessing the
+accuracy of automatic speech recognition (ASR) systems. However, unlike the WER,
+which calculates the number of words that did not interpret correctly, the CER calculates
+the number of characters.
+The CER can be calculated using the following formula:
+CER = S + I + D
+N (4.3)
+Where each variable is the same with WER, except they are on a scale of character not a
+word. However, CER may be not good to measure the privacy threat.
+4.3.4 Sentence Error Rate
+Sentence Error Rate (SER), like the CER and WER, is another widely used
+metric for assessing the accuracy of ASR/SLU systems in converting voice to text. SER
+calculates the number of sentences in a speech that is incorrect.
+The SER can be calculated using the following formula:
+SER = 1 − Correct Sentences
+Total Sentences (4.4)
+If a single character in a sentence is different, then the whole sentence will be classified as
+a wrong translation. So the SER will be larger than that of WER or CER.
+35
+4.3.5 Classification Accuracy
+Classification Accuracy is the most common metric used to evaluate the per-
+formance of a classification predictive model, including User Identification and Word
+Classification. Accuracy may be calculated in a straightforward manner using the
+formula:
+Accuracy = Correct Predictions
+Total Predictions . (4.5)
+4.4 Implementation
+4.4.1 Dataset Integration
+Before the implementation of models for different tasks, we unified the data format
+of different datasets. For instance, we converted the .flac and .mp3 audio files into .wav
+files, and resampled the 8kHz audio into 16kHz audio. In addition, we provided the
+unique ids (uids) for indexing each data samples in these three datasets, and the filenames
+of the audio files are replaced by their uids. Moreover, we extracted five fundamental
+properties for each dataset, including uid, audio duration, semantics, transcript and user,
+and assigned each property with one column in the CSV file. Note, semantics property is
+only capable for StealthyIMU dataset for SLU task.
+• For LibriSpeech dataset, we have 100 hours audio data with 28 , 539 items and
+585 speakers, which costs 12 GB storage space.
+• In order to obtain clear and representative data for StealthyIMU dataset, we
+regenerated the dataset via Google text-to-speech API with Wavenet and Interactive Voice
+Response (IVR) system preferences, so this dataset is user-dependent (only one speaker).
+In total, there are 20 , 993 items for three different types of voice replies and need 2 .41 GB
+storage space.
+• Even though there are only audio files for 35 different words with 1 second
+36
+duration in the GSC dataset, this dataset has 105 , 829 items with 2618 different speakers,
+so it takes about 3 .33 GB storage space.
+4.4.2 Existing Model
+There are two types of existing models we used for evaluation.
+• One type is the commercial models. Google Speech-to-Text and Amazon Transcribe
+are two wildly used commercial APIs for ASR tasks. Note, these APIs actually do
+not support audio files with less than 4kHz sampling rate, so we upsampled all the
+low sampling rate audio files for evaluation.
+• Another type is the pretrained models from the previous work. In order to achieve
+the state-of-the-art results, we utilized SpeechBrain [56], which is a PyTorch Powered
+Speech Toolkit, and loaded the pretrained models they provided in Hugging Face.
+4.4.3 Self-training Model
+The disadvantages of existing pretrained models is that we can only treat the
+pretrained models as black boxes without changing/fine-tuning the parameters inside.
+However, under the real-world scenarios, a more realistic attack may build their own
+models and train their models based on targeted SSEA data, so they can achieve amazing
+performance under their settings.
+In order to achieve such self-training models, we implemented the self-training
+platform for ASR, SLU, Word Classification and User identification models in PyTorch
+via SpeechBrain framework. People who use our platform can build their own speech
+eavesdropping models, and train/test on specific SSEA signals.
+37
+4.5 Experiment
+4.5.1 Sampling Rate
+Sampling rate is the fundamental factor for side-channel speech eavesdropping
+attack. In this part, we will show the effect of sampling rate for different tasks. The goal
+of this experiment is to figure out whether we should adjust the threat models given varied
+sampling rates.
+Table 4.1. State-of-the-art Pretrained Model Results for ASR
+16000 8000 4000 2000 1000 500
+WER 0.28% 1.14% 3.13% 13.35% 86.93% 96.59%
+BLEU 0.9940 0.9784 0.9278 0.7399 0.1648 0.0514
+CER 0.14% 0.43% 1.37% 8.61% 61.02% 82.50%
+Table 4.2. State-of-the-art Pretrained Model Results for Word Classification
+16000 8000 4000 2000 1000 500
+ACC 98.00% 96.50% 88.30% 52.10% 19.50% 10.50%
+At first, we used pretrained models trained from 16kHz audio data to evaluate the
+effect of sampling rate on ASR and Word classification task.
+According to the Librispeech test results (Table 4.1), there is a noticeable increase
+in both WER and CER, as well as a decrease in BLEU precision between 2000 Hz and
+1000 Hz, which means side-channel modalities with ≤ 2kHz sampling rate are not suitable
+for ASR tasks.
+In addition, we discovered an intriguing result when we examined the results from
+Google Speech Command (Table 4.2). GSC maintains over 10% percent accuracy at 500
+Hz, while Librispeech’s BLEU drops to 0.0514 at the same rate. This result indicates that,
+38
+the side-channel modalities with 500 Hz low sampling rate theoretically are not successful
+in ASR task, but they are still capable of recognizing words or commands.
+Table 4.3. Commercial Model Results for ASR
+16000 8000 4000 2000 1000 500
+Amazon
+WER
+8% 4.30% 19.66% 59.26% 92.51% 100%
+Google
+WER
+4% 14.88% 45.78% 96.95% 100% 100%
+Table 4.3 demonstrates the WER results for LibriSpeech ASR task with Google
+and Amazon Commercial APIs. Overall, the model from Amazon Transcribe is robust
+for low sampling rate audio files, and Amazon Transcribe seems to involve 8kHz audio
+files for training so they achieve even better results than 16kHz audio files. Nevertheless,
+there exists a similar trend as the pretrained ASR model that WER increases dramatically
+between 2000 and 1000 Hz. We may draw a conclusion that side-channel modalities with
+≤ 2kHz sampling rate will fail in the ASR task if the pretrained models are not fine-tuned
+for low sampling rate.
+Table 4.4. Self-training Model Results for ASR
+16000 8000 4000 2000 1000 500
+WER 4.88% 6.29% 10.72% 161.92% 165.29% 141.50%
+SER 63.10% 70.99% 82.20% 100% 100% 100%
+Table 4.5. Self-training Model Results for SLU
+16000 8000 4000 2000 1000 500
+WER 1.89% 1.85% 1.45% 5.11% 4.54% 6.34%
+SER 5.90% 6.48% 5.62% 16.67% 15.43% 18.86%
+39
+Table 4.6. Self-training Model Results for Word Classification
+16000 8000 4000 2000 1000 500
+ACC 95.68% 95.35% 93.86% 87.6% 68.7% 35.5%
+Table 4.7. Self-training Model Results for User Identification
+16000 8000 4000 2000 1000 500
+ACC 91.77% 92.71% 90.43% 91.73% 88.7% 84.4%
+In order to fully investigate the influence of sampling rate for privacy threat tasks,
+we provided the self-training model results for ASR, SLU, Word Classification and User
+Identification in Table 4.4, 4.5, 4.6 and 4.7. Note, we used Fbank feature for ≥ 4kHz
+sampling rate data samples, and used AccSpec feature for ≤ 2kHz sampling rate data
+samples.
+Similar to the results for pretrained models, models trained on low sampling rate (≤
+2kHz) data samples fail to reach high recognition rate for ASR task, which again exposes
+the limit of SSEA ASR task. However, the self-training models for SLU can still achieve
+low WER/SER even for 500Hz sampling rate, which demonstrates that SLU is a perfect
+SSEA task for extremely low sampling rate data. We assume the reason is that SLU is to
+understand the speech instead of transcribing, so keywords in the sentences with extremely
+low sampling rate data can still be recognized, and such keywords are beneficial to SLU.
+Additionally, Word Classification and User Identification models trained on low
+sampling rate (≤ 2kHz) data obtain about 90% accuracy, which means low sampling rate
+datasets still have serious privacy threat for classification tasks. Moreover, with 500Hz
+sampling rate, word classification can reach 35.5% accuracy which is reasonable result since
+the dictionary size is 35. User identification models with 500Hz achieve 84.4% accuracy,
+which is credible and beyond our expectations since there are over 500 different speakers.
+40
+4.5.2 Frequency Response
+Frequency response is another important factor for SSEA. In this section, we will
+show the effect of frequency response for different tasks with two different frequency
+responses measured with accelerometer and mmWave radar. The purpose is to understand
+if frequency response will dramatically affect the threat levels.
+Table 4.8. ASR results with Accelerometer FR
+16000 8000 4000 2000 1000 500
+WER 5.72% 6.04% 9.39% N/A N/A N/A
+SER 68.22% 68.50% 80.17% N/A N/A N/A
+Table 4.8 shows the ASR results with acceleromter frequency response. We only
+evaluate the result with ≥ 4kHz sampling rate because ASR results with lower sampling
+rate are hard to compare with terrible WER (over 100%). Compared with Table 4.4, the
+results are even slightly better. We assume that frequency response may not have huge
+influence on ASR.
+Table 4.9. SLU results with Accelerometer FR
+16000 8000 4000 2000 1000 500
+WER 2.78% 4.48% 2.29% 4.83% 10.21% 16.91%
+SER 9.48% 13.86% 7.24% 16.10% 36.43% 74.33%
+Table 4.9 shows the SLU results with acceleromter frequency response. The results
+are worse compared to Table 4.5 especially for 1000Hz and 500Hz, which means the
+frequency response will decrease the recognition rate for SLU tasks.
+Table 4.10. Word Classification results with Accelerometer FR
+16000 8000 4000 2000 1000 500
+ACC 94.94% 94.32% 93.16% 86.8% 66.4% 33.8%
+41
+Table 4.11. User Identification results with Accelerometer FR
+16000 8000 4000 2000 1000 500
+ACC 93.13% 90.68% 89.8% 90.05% 87.6% 82.5%
+Table 4.10 and 4.11 presents two classification tasks results. Compared to Table
+4.6 and 4.7, we observe a slight drop in accuracy ( < 2%), which means frequency response
+does decrease the performance for classification tasks.
+In general, frequency response from accelerometer will slightly reduce the recognition
+rate or increase the error rate for four different tasks. The only exception is the SLU task
+with ≤ 1000Hz sampling rate. Our hypothesis is that frequency response will distort the
+keywords from extremely low sampling rate, and the keywords are crucial to the SLU task.
+Table 4.12. ASR results with mmWave Radar FR
+16000 8000 4000 2000 1000 500
+WER 53.07% 177.14% 158.15% N/A N/A N/A
+SER 99.47% 100% 100% N/A N/A N/A
+Compared with Table 4.8, Table 4.12 presents much worse ASR results than we
+expected. Even 16kHz sampling rate data achieves 53.07% WER and nearly 100% SER.
+We assume that frequency response from mmWave radar will seriously distort the higher
+sampling rate parts.
+Table 4.13. SLU results with mmWave Radar FR
+16000 8000 4000 2000 1000 500
+WER 3.73% 6.54% 6.27% 8.41% 3.14% 5.17%
+SER 12.43% 17.48% 23.38% 26.33% 11.43% 16.71%
+Compared with Table 4.9 and 4.5, we realize that SLU results for higher sampling
+42
+rate (≥ 2kHz) are much worse. Our hypothesis is that frequency response from mmWave
+radar will heavily affect the higher sampling rate parts while lower sampling rate parts
+remain stable, which matches our previous assumption for ASR task.
+Table 4.14. Word Classification results with mmWave Radar FR
+16000 8000 4000 2000 1000 500
+ACC 84.6% 83.4% 79% 68.2% 47.6% 33.5%
+Table 4.15. User Identification results with mmWave Radar FR
+16000 8000 4000 2000 1000 500
+ACC 86.8% 86.6% 85.4% 86.3% 86.4% 83.3%
+Table 4.14 and 4.15 show the classification results with mmWave radar frequency
+responses. The classification results for lower sampling rate ( ≤ 1000Hz) just drop slightly
+compared to previous classification results, while classification results with higher sampling
+rate (≥ 2000Hz) drop dramatically, which is similar to the findings for SLU tasks. Also,
+Figure 3.13 matches our results.
+4.5.3 Noise
+We also add Gaussian Noise with µ = 0, σ= 0.01 to the generated accelerometer
+SSEA signals for evaluation. The goal is to investigate the effect of noise.
+Table 4.16. ASR results with Accelerometer FR and Noise
+16000 8000 4000 2000 1000 500
+WER 50.81% 47.84% 64.62% N/A N/A N/A
+SER 99.30% 98.84% 99.86% N/A N/A N/A
+Table 4.16 shows the ASR results with accelerometer frequency response and
+43
+gaussian noise. The WER and SER have increased a lot compared to Table 4.8, which
+means noise will heavily affect the ASR task.
+Table 4.17. SLU results with Accelerometer FR and Noise
+16000 8000 4000 2000 1000 500
+WER 3.35% 4.30% 4.33% 5.45% 4.00% 5.03%
+SER 11.52% 13.29% 5.14% 18.95% 13.62% 18.05%
+However, Table 4.17 demonstrates that the SLU results are stable compared to
+Table 4.2. The reason is that noised keywords may still be recognized, so the overall SLU
+performance remains unchanged.
+Table 4.18. Word Classification results with Accelerometer FR and Noise
+16000 8000 4000 2000 1000 500
+ACC 87.5% 86.6% 86.3% 81.3% 56.4% 29.5%
+Table 4.19. User Identification results with Accelerometer FR and Noise
+16000 8000 4000 2000 1000 500
+ACC 79% 77.8% 79.2% 78% 72% 60.2%
+From Table 4.18 and 4.19, we find that the accuracy has decreases heavily compared
+to Table 4.6 and 4.7, especially for higher sampling rate ( ≥ 2kHz). The reason is
+that classification tasks with lower sampling rate are hard to got high accuracy, while
+classification tasks with higher sampling rate are easier, so the noise has huge influence on
+higher sampling rate data.
+4.5.4 Feature Extraction
+We have two types of feature extraction methods, Fbank and AccSpec. Fbank
+feature utilizes 25 ms Window size and 10 ms hopping size while AccSpec feature utilizes
+44
+80 ms Window size and 20 ms hopping size. NFFT in both features are calculated based
+on:
+NFFT = Sampling Rate ∗ Window Size
+1000 (4.6)
+We list one typical example from SLU task in Table 4.20. We can see that Fbank
+feature leads to dramatically increased WER and SER for ≤ 2kHz sampling rate while
+AccSpec feature achieves state-of-the-art results. Therefore, we choose to use AccSpec for
+≤ 2kHz sampling rate and Fbank for ≥ 4kHz sampling rate. The reason is that AccSpec is
+designed to extract feature from sparse signals with large window and hopping size while
+Fbank is more suitable for dense data points.
+Table 4.20. Comparison between Fbank and AccSpec for SLU
+16000 8000 4000 2000 1000 500
+WER Fbank 1.89% 1.85% 1.45% 55.34% 61.38% 51.07%
+SER Fbank 5.90% 6.48% 5.62% 99.62% 99.00% 97.33%
+WER AccSpec N/A N/A 25.67% 5.11% 4.54% 6.34%
+SER AccSpec N/A N/A 90.95% 16.67% 15.43% 18.86%
+4.5.5 Classification Comparison Experiments
+As we all know, the number of categories will heavily affect the classification
+performance. In this part, we will provide some findings about Word Classification task.
+Table 4.21. Word Classification with 12 different categories
+16000 8000 4000 2000 1000 500
+ACC 97.2% 96.81% 95.3% 91.44% 76.8% 46%
+Table 4.21 shows the word classification results for 12 different categories while
+Table 4.6 shows the original word classification results for 35 different categories. We
+45
+can observe 10% accuracy improvement for 500Hz sampling rate, which means that low
+sampling rate exposes higher privacy threat when the decoding size is smaller.
+Table 4.22. Word Classification with only 400 different speakers
+16000 8000 4000 2000 1000 500
+ACC 93.91% 92.45% 91.62% 84.5% 62.9% 32.2%
+In addition, the number of speakers in the dataset will affect the classification
+performance. In order to demonstrate the effect of speakers, we only select 400 different
+speakers for evaluation. Table 4.22 presents the result, and it decreased by 3% compared
+to Table 4.6. The reason is that the dataset is imbalanced when we limit the number of
+speakers.
+Acknowledgements
+Chapter 4 utilizes the dataset from one paper that has been submitted for publi-
+cation, as it may appear in MobiCom 2022, Ke, Sun; Xia, Chunyu; Xu, Songlin; Zhang,
+Xinyu: ”StealthyIMU: Stealing Permissions from Smartphone Voice Assistant using Zero-
+Permission Sensors”. The thesis author was the author of this paper.
+46
+CHAPTER 5:
+FUTURE WORK AND CONCLU-
+SION
+For future work, the first thing we can do is to measure more side-channel modalities.
+On the one hand, we can introduce new hardwares like UWB, lidar, laser, and these new
+hardwares will expose new privacy threat. On the other hand, old side-channel modalities
+may be modified to fit new requirements. For example, there exists new IMU in VR
+headsets can support 1000Hz sampling rate instead of 200Hz in smartphone.
+In terms of privacy threat scenarios, there are other new potential scenarios about
+AR/VR. With the popularity of Metaverse, researchers pay more attention to the privacy
+and security issues about AR/VR devices that are fundamental elements in Metaverse.
+AR/VR devices contain most of the SSEA from smartphones, including voice call, voice
+assistant and voice record, while they expose new privacy threat about head movement,
+eye tracking and user identity. These are potential directions to extend for our work.
+In this thesis, we only evaluate four main SSEA privacy threat tasks, including
+ASR, SLU, WC and UI. However, more SSEA privacy threat tasks can be added into the
+evaluation list. For instance, voice activity detection can be used to check whether there
+exists speech activity during one time slot. Speech separation can be applied to filter out
+users’ privacy information. Moreover, emotion recognition can be utilized to infer users’
+attitudes and preferences while language identification can tell the nationality of users.
+47
+In addition, for SSEA signals generation tools, we have not considered interference,
+dynamic volume and dynamic frequency response. Interference defines something disrupts
+or weakens the transmitted signals, so external interference is more severe and hard to
+measure. In our current setting, we use fixed volume and frequency response for each
+batch. Dynamic parameters mean that generated signals hold various parameters settings
+even in the same batch, which can be utilized to test the robustness of the models.
+How to defend SSEA is another interesting topic. One typical solution is chirp
+distortion. We can defend SSEA for smartphone by sending out chirp continuously while
+the users cannot even hear. More defense attempts are allowed to explore in the future
+work.
+Last, side-channel modalities even have some positive effects. For example, side-
+channel modalities can enhance the speech recognition since side-channel modalities may
+capture the vibration from speech. Similarly, such vibration can be used for whisper
+recognition, voice activity detection and sound event classification etc. We leave the
+positive effects for future work.
+In conclusion, we introduce the privacy threat of SSEA from various sound sources
+and side channels, and summarize the SSEA privacy threat tasks into four main categories.
+We design a GUI SSEA signals generation tool by using existing open-sourced speech
+datasets. A SSEA evaluation tool is developed by PyTorch to investigate privacy threat of
+different SSEA tasks. We also bring out some insights from evaluation about sampling
+rate, frequency response and noise. We leave other side-channel modalities measurements,
+privacy threat scenarios, tasks and defense mechanisms for future work.
+48
+REFERENCES
+[1] Y. Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing speech from
+gyroscope signals,” in Usenix Security, 2014.
+[2] L. Zhang, S. Tan, and J. Yang, “Hearing your voice is not enough: An articulatory
+gesture based liveness detection for voice authentication,” in ACM CCS, 2017.
+[3] K. Sun and X. Zhang, “UltraSE: Single-Channel Speech Enhancement Using Ultra-
+sound,” in ACM MobiCom, 2021.
+[4] J. Tan, C.-T. Nguyen, and X. Wang, “Silenttalk: Lip reading through ultrasonic
+sensing on mobile phones,” in IEEE INFOCOM, 2017.
+[5] J. S. Chung, A. Senior, O. Vinyals, and A. Zisserman, “Lip reading sentences in the
+wild,” in IEEE CVPR, 2017.
+[6] D. A. Reynolds, “An overview of automatic speaker recognition technology,” in IEEE
+ICASSP, 2002.
+[7] F. Chen, S. Li, Y. Zhang, and J. Wang, “Detection of the vibration signal from human
+vocal folds using a 94-ghz millimeter-wave radar,” Sensors, 2017.
+[8] C. Shi, X. Xu, T. Zhang, P. Walker, Y. Wu, J. Liu, N. Saxena, Y. Chen, and J. Yu,
+“Face-mic: inferring live speech and speaker identity via subtle facial dynamics captured
+by ar/vr motion sensors,” in ACM MobiCom, 2021.
+[9] Q. Liao, Y. Huang, Y. Huang, Y. Zhong, H. Jin, and K. Wu, “Magear: Eavesdropping
+via audio recovery using magnetic side channel,” in ACM MobiSys, 2022.
+[10] J. Han, A. J. Chung, and P. Tague, “Pitchln: eavesdropping via intelligible speech
+reconstruction using non-acoustic sensor fusion,” in ACM IPSN, 2017.
+[11] L. Zhang, P. H. Pathak, M. Wu, Y. Zhao, and P. Mohapatra, “Accelword: Energy
+efficient hotword detection through accelerometer,” in ACM MobiSys, 2015.
+[12] S. A. Anand and N. Saxena, “Speechless: Analyzing the threat to speech privacy from
+smartphone motion sensors,” in IEEE Symposium on Security and Privacy (S&P) ,
+2018.
+49
+[13] S. A. Anand, C. Wang, J. Liu, N. Saxena, and Y. Chen, “Spearphone: a lightweight
+speech privacy exploit via accelerometer-sensed reverberations from smartphone
+loudspeakers,” in ACM WiSec, 2021.
+[14] Z. Ba, T. Zheng, X. Zhang, Z. Qin, B. Li, X. Liu, and K. Ren, “Learning-based
+practical smartphone eavesdropping with built-in accelerometer,” in NDSS, 2020.
+[15] J. Clark and P. C. van Oorschot, “Sok: Ssl and https: Revisiting past challenges and
+evaluating certificate trust model enhancements,” in IEEE Symposium on Security
+and Privacy, 2013.
+[16] W. Su, D. Liu, T. Zhang, and H. Jiang, “Towards device independent eavesdropping
+on telephone conversations with built-in accelerometer,” ACM IMWUT (UbiComp) ,
+2022.
+[17] P. Hu, H. Zhuang, P. S. Santhalingam, R. Spolaor, P. Pathak, G. Zhang, and X. Cheng,
+“Accear: Accelerometer acoustic eavesdropping with unconstrained vocabulary,” in
+IEEE S&P, 2022.
+[18] K. Sun, C. Xia, S. Xu, and X. Zhang, “Stealthyimu: Stealing permissions from
+smartphone voice user interfaces using zero-permission sensors,” in In submission,
+2022.
+[19] M. Gao, Y. Liu, Y. Chen, Y. Li, Z. Ba, X. Xu, and J. Han, “Inertiear: Automatic and
+device-independent imu-based eavesdropping on smartphones,” in IEEE INFOCOM,
+2022.
+[20] H. A. C. Maruri, P. Lopez-Meyer, J. Huang, W. M. Beltman, L. Nachman, and
+H. Lu, “V-speech: Noise-robust speech capturing glasses using vibration sensors,”
+ACM IMWUT, 2018.
+[21] N. Roy and R. Roy Choudhury, “Listening through a vibration motor,” in ACM
+MobiSys, 2016.
+[22] A. Kwong, W. Xu, and K. Fu, “Hard drive of hearing: Disks that eavesdrop with a
+synthesized microphone,” in IEEE S&P, 2019.
+[23] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping through wireless
+vibrometry,” in ACM MobiCom, 2015.
+[24] P. Yang, Y. Feng, J. Xiong, Z. Chen, and X.-Y. Li, “Rf-ear: Contactless multi-device
+vibration sensing and identification using cots rfid,” in IEEE INFOCOM, 2020.
+[25] P. Li, Z. An, L. Yang, and P. Yang, “Towards physical-layer vibration sensing with
+rfids,” in IEEE INFOCOM, 2019.
+[26] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-
+the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,”
+ACM IMWUT (UbiComp) , 2020.
+50
+[27] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava, “Uwhear:
+through-wall extraction and separation of audio vibrations using wireless signals,” in
+ACM SenSys, 2020.
+[28] M. Zahid Ozturk, C. Wu, B. Wang, and K. Liu, “Radiomic: Sound sensing via
+mmwave signals,” arXiv e-prints, 2021.
+[29] C. Xu, Z. Li, H. Zhang, A. S. Rathore, H. Li, C. Song, K. Wang, and W. Xu, “Waveear:
+Exploring a mmwave-based noise-resistant speech sensing for voice-user interface,” in
+ACM MobiSys, 2019.
+[30] C. Wang, F. Lin, Z. Ba, F. Zhang, W. Xu, and K. Ren, “Wavesdropper: Through-wall
+word detection of human speech via commercial mmwave devices,” ACM IMWUT,
+2022.
+[31] C. Jiang, J. Guo, Y. He, M. Jin, S. Li, and Y. Liu, “mmvib: micrometer-level vibration
+measurement with mmwave radar,” in ACM MobiCom, 2020.
+[32] Y. Zhou, A. A. Siddiqi, J. Zhang, J. Guo, R. Xi, M. Jin, Z. Zhai, and Y. He,
+“Voice recovery from human surroundings with millimeter wave radar,” in INFOCOM
+Workshops, 2021.
+[33] P. Hu, Y. Ma, P. S. Santhalingam, P. Pathak, and X. Cheng, “Milliear: Millimeter-
+wave acoustic eavesdropping with unconstrainted vocabulary,” in IEEE INFOCOM,
+2022.
+[34] C. Wang, F. Lin, T. Liu, Z. Liu, Y. Shen, L. Lu, W. Xun, and K. Ren, “mmphone:
+Acoustic eavesdropping on loudspeakers via mmwave-characterized piezoelectric effect,”
+in IEEE INFOCOM, 2022.
+[35] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and W. T. Freeman,
+“The visual microphone: Passive recovery of sound from video,” ACM SigGraph, 2014.
+[36] B. Nassi, Y. Pirutin, A. Shamir, Y. Elovici, and B. Zadov, “Lamphone: Real-time
+passive sound recovery from light bulb vibrations.,” 2022.
+[37] B. Nassi, Y. Pirutin, T. Galor, Y. Elovici, and B. Zadov, “Glowworm attack: Optical
+tempest sound recovery via a device’s power indicator led,” in ACM CCS, 2021.
+[38] R. P. Muscatell, “Laser microphone,”The Journal of the Acoustical Society of America,
+vol. 76, no. 4, pp. 1284–1284, 1984.
+[39] Y. Zhang, G. Laput, and C. Harrison, “Vibrosight: Long-range vibrometry for smart
+environment sensing,” in ACM UIST, pp. 225–236, 2018.
+[40] S. Sami, Y. Dai, S. R. X. Tan, N. Roy, and J. Han, “Spying with your robot vacuum
+cleaner: eavesdropping via lidar sensors,” in ACM SenSys, 2020.
+51
+[41] L. Yang, Y. Li, Q. Lin, X.-Y. Li, and Y. Liu, “Making sense of mechanical vibration
+period with sub-millisecond accuracy using backscatter signals,” in ACM MobiCom,
+2016.
+[42] R. Khanna, D. Oh, and Y. Kim, “Through-wall remote human voice recognition using
+doppler radar with transfer learning,” IEEE Sensors Journal , 2019.
+[43] Y. Luo and N. Mesgarani, “Tasnet: time-domain audio separation network for real-
+time, single-channel speech separation,” in IEEE ICASSP, 2018.
+[44] A. W. Rix, M. P. Hollier, A. P. Hekstra, and J. G. Beerends, “Perceptual evaluation of
+speech quality (pesq) the new itu standard for end-to-end speech quality assessment
+part i–time-delay compensation,” Journal of the Audio Engineering Society , vol. 50,
+no. 10, pp. 755–764, 2002.
+[45] C. H. Taal, R. C. Hendriks, R. Heusdens, and J. Jensen, “A short-time objective
+intelligibility measure for time-frequency weighted noisy speech,” in IEEE ICASSP,
+2010.
+[46] S. R. Quackenbush, “Objective measures of speech quality (subjective).,” 1986.
+[47] J. Benesty, J. Chen, Y. Huang, and I. Cohen, “Pearson correlation coefficient,” in
+Noise reduction in speech processing, pp. 1–4, Springer, 2009.
+[48] “Amazon Transcribe,” 2019. https://aws.amazon.com/transcribe/.
+[49] “Google Cloud Speech-to-Text,” 2019. https://cloud.google.com/speech-to-text/.
+[50] R. Alvarez and H.-J. Park, “End-to-end streaming keyword spotting,” in IEEE
+ICASSP, 2019.
+[51] G. Tur and R. De Mori, Spoken language understanding: Systems for extracting
+semantic information from speech. John Wiley & Sons, 2011.
+[52] V. Panayotov, G. Chen, D. Povey, and S. Khudanpur, “Librispeech: An asr corpus
+based on public domain audio books,” 2015.
+[53] P. Warden, “Speech Commands: A Dataset for Limited-Vocabulary Speech Recogni-
+tion,” ArXiv e-prints, Apr. 2018.
+[54] M. Gevirtz, “What is word error rate (wer)?,” Sep 2021.
+[55] K. Wo lk and K. Marasek, “Enhanced bilingual evaluation understudy,”arXiv preprint
+arXiv:1509.09088, 2015.
+[56] M. Ravanelli, T. Parcollet, P. Plantinga, A. Rouhe, S. Cornell, L. Lugosch, C. Subakan,
+N. Dawalatabad, A. Heba, J. Zhong, J.-C. Chou, S.-L. Yeh, S.-W. Fu, C.-F. Liao,
+E. Rastorgueva, F. Grondin, W. Aris, H. Na, Y. Gao, R. D. Mori, and Y. Bengio,
+“SpeechBrain: A general-purpose speech toolkit,” 2021. arXiv:2106.04624.
+52

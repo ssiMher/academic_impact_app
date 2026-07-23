@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% from "components/status_badge.html" import status_badge %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}分析调试{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">开发诊断</div>
+      <h1>分析调试</h1>
+      <span class="sr-only">Analysis Debug</span>
+      <p>最近 10 条 FulltextAnalysisResult 安全诊断，敏感信息已脱敏。</p>
+    </div>
+    <nav class="quick-links">
+      <a href="/scholar-sessions/{{ session_id }}/evidence">证据</a>
+      <a href="/scholar-sessions/{{ session_id }}/queue">队列</a>
+      <a href="/scholar-sessions/{{ session_id }}">学者详情</a>
+    </nav>
+  </header>
+
+  <section class="notice">
+    本页不显示 API key、request headers、本地 PDF 绝对路径、storage_path 或 extracted_text_path。
+  </section>
+
+  {% if debug_rows %}
+    {% for row in debug_rows %}
+      <article class="diagnostic-card">
+        <div class="card-row card-row-between">
+          <div>
+            <div class="eyebrow">FulltextAnalysisResult #{{ row.id }}</div>
+            <h2>{{ row.citing_paper_title or "Unknown citing paper" }}</h2>
+            <p class="muted">被引用论文 / 目标论文：{{ row.cited_paper_title or "unknown" }}</p>
+          </div>
+          {{ status_badge(row.status) }}
+        </div>
+        <dl class="meta-grid">
+          <div><dt>结果 ID</dt><dd>{{ row.id }}</dd></div>
+          <div><dt>queue_item_id</dt><dd>{{ row.queue_item_id or "n/a" }}</dd></div>
+          <div><dt>analysis_scope</dt><dd>{{ row.analysis_scope }}</dd></div>
+          <div><dt>全文字符数</dt><dd>{{ row.fulltext_chars or "n/a" }}</dd></div>
+          <div><dt>Prompt 字符数</dt><dd>{{ row.prompt_chars or "n/a" }}</dd></div>
+          <div><dt>LLM Provider</dt><dd>{{ row.llm_provider or "n/a" }}</dd></div>
+          <div><dt>LLM Model</dt><dd>{{ row.llm_model or "n/a" }}</dd></div>
+          <div><dt>LLM findings 数</dt><dd>{{ row.llm_findings_count }}</dd></div>
+          <div><dt>候选段数</dt><dd>{{ row.candidate_spans_count }}</dd></div>
+          <div><dt>目标引用编号</dt><dd>{{ row.target_reference_marker or "n/a" }}</dd></div>
+          <div><dt>目标编号上下文数</dt><dd>{{ row.target_reference_context_count }}</dd></div>
+          <div><dt>别名上下文数</dt><dd>{{ row.target_alias_context_count }}</dd></div>
+          <div><dt>Prompt 包含目标上下文</dt><dd>{{ row.prompt_contains_target_contexts }}</dd></div>
+          <div><dt>active_template_count</dt><dd>{{ row.active_template_count }}</dd></div>
+          <div><dt>active_template_names</dt><dd>{{ row.active_template_names }}</dd></div>
+          <div><dt>prompt contains templates</dt><dd>{{ row.prompt_contains_templates }}</dd></div>
+          <div><dt>template_satisfied_count</dt><dd>{{ row.template_satisfied_count }}</dd></div>
+          <div><dt>template_unsatisfied_count</dt><dd>{{ row.template_unsatisfied_count }}</dd></div>
+          <div><dt>template_failure_reason distribution</dt><dd>{{ row.template_failure_reason_distribution }}</dd></div>
+          <div><dt>生成强证据数</dt><dd>{{ row.generated_strong_evidence_count }}</dd></div>
+          <div><dt>过滤 findings 数</dt><dd>{{ row.filtered_findings_count }}</dd></div>
+          <div><dt>过滤诊断</dt><dd>{{ row.filter_reason_distribution }}</dd></div>
+          <div><dt>prompt 调试文件</dt><dd>{{ row.prompt_debug_file or "未捕获" }}</dd></div>
+          <div><dt>response 调试文件</dt><dd>{{ row.response_debug_file or "未捕获" }}</dd></div>
+        </dl>
+        {% if row.error_message %}<p class="task-error">{{ row.error_message }}</p>{% endif %}
+        {% if row.prompt_debug_file %}
+          <div class="quick-links">
+            <a href="/scholar-sessions/{{ session_id }}/analysis-debug/{{ row.id }}/prompt">下载完整 Prompt</a>
+            <a href="/scholar-sessions/{{ session_id }}/analysis-debug/{{ row.id }}/raw_response">查看 Raw response</a>
+            <a href="/scholar-sessions/{{ session_id }}/analysis-debug/{{ row.id }}/normalized_response">查看 Parsed findings</a>
+            <a href="/scholar-sessions/{{ session_id }}/analysis-debug/{{ row.id }}/metadata">查看 Filtering diagnostics</a>
+          </div>
+        {% endif %}
+        {% if row.prompt_preview %}
+          <details open>
+            <summary>查看 Prompt 摘要</summary>
+            <pre>{{ row.prompt_preview }}</pre>
+          </details>
+        {% endif %}
+        {% if row.parsed_findings_preview %}
+          <details open>
+            <summary>parsed findings 预览</summary>
+            <pre>{{ row.parsed_findings_preview }}</pre>
+          </details>
+        {% endif %}
+        {% if row.finding_diagnostics %}
+          <details>
+            <summary>Filtering diagnostics</summary>
+            <pre>{{ row.finding_diagnostics }}</pre>
+          </details>
+        {% endif %}
+        {% if row.prompt_template_snapshot_json %}
+          <details>
+            <summary>prompt_template_snapshot_json</summary>
+            <pre>{{ row.prompt_template_snapshot_json }}</pre>
+          </details>
+        {% endif %}
+        {% if row.target_reference_entry %}
+          <details>
+            <summary>TARGET_REFERENCE_ENTRY</summary>
+            <pre>{{ row.target_reference_entry }}</pre>
+          </details>
+        {% endif %}
+        {% if row.target_contexts_preview %}
+          <details open>
+            <summary>TARGET_REFERENCE_CONTEXTS</summary>
+            <pre>{{ row.target_contexts_preview }}</pre>
+          </details>
+        {% endif %}
+        {% if row.alias_contexts_preview %}
+          <details>
+            <summary>TARGET_ALIAS_CONTEXTS</summary>
+            <pre>{{ row.alias_contexts_preview }}</pre>
+          </details>
+        {% endif %}
+        {% if row.raw_output_preview %}
+          <details>
+            <summary>raw_output_preview</summary>
+            <pre>{{ row.raw_output_preview }}</pre>
+          </details>
+        {% endif %}
+        {% if row.schema_error %}
+          <details>
+            <summary>schema_error</summary>
+            <pre>{{ row.schema_error }}</pre>
+          </details>
+        {% endif %}
+      </article>
+    {% endfor %}
+  {% else %}
+    {{ empty_state("暂无分析结果", "该学者分析会话还没有 FulltextAnalysisResult 记录。", "返回队列", "/scholar-sessions/" ~ session_id ~ "/queue") }}
+  {% endif %}
+{% endblock %}

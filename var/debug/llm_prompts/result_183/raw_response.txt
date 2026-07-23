@@ -1,0 +1,31 @@
+{
+  "findings": [
+    {
+      "citation_text": "Recent advancements have demonstrated the interception of audio signals wirelessly by capturing the physical surface vibrations of surrounding objects using RF signals [1]–[6], laser [7], and videos [8].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "Context lists [6] as part of a general background of vibration-based audio eavesdropping methods, without specific discussion of the cited paper's method or results.",
+      "highlight_keywords": ["RF signals [1]–[6]"],
+      "keep": true
+    },
+    {
+      "citation_text": "Acoustic signals are mechanical waves that force surrounding elastic objects to vibrate continuously. Researchers harness such phenomenon to investigate various vibration sensors, e.g., accelerometer [34]–[36], laser [7], RFID [6], WiFi [5], mmWave [2]–[4] and videos [8], for audio eavesdropping.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "Context cites [6] as an example of an RFID-based vibration sensor for eavesdropping, but does not provide detailed description or evaluation of the cited paper's approach.",
+      "highlight_keywords": ["RFID [6]"],
+      "keep": true
+    },
+    {
+      "citation_text": "Tag-Bug places RFID tags on the surrounding objects around the loudspeaker and collects the backscattered RFID signal for eavesdropping [6].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "Context describes Tag-Bug (the cited paper) as a representative RFID-based method for vibration eavesdropping, then contrasts it with the proposed RF-Parrot.",
+      "highlight_keywords": ["Tag-Bug places RFID tags on the surrounding objects around the loudspeaker and collects the backscattered RFID signal for eavesdropping [6]"],
+      "keep": true
+    }
+  ]
+}

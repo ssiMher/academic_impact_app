@@ -1,0 +1,1533 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: RadEye: Tracking Eye Motion Using FMCW Radar
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [35]
+TARGET_REFERENCE_ENTRY: [35] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai 
+Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via 
+RFID by capturing sub-mm level vibration. Proceedings of the ACM on Interactive, 
+Mobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–25. doi:10.1145/ 
+3494975
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=Recently, acoustic signals have been studied for eye tracking on; context_type=formula_nearby; contains_formula=True
+g Zeng 
+detection within a small distance. Millimeter-wave (mmWave) radio 
+frequency (RF) radar has also been studied for facial recognition and 
+eye blink detection (e.g., [13, 46]). While mmWave radar can achieve 
+mm-level motion detection, its detection range is very limited due 
+to its small wavelength. Additionally, existing mmWave-based sens-
+ing work focuses mainly on eye blink detection rather than eye 
+motion tracking. Low-frequency radio signals have been widely 
+leveraged for fine-grained human activity recognition (HAR), such 
+as Wi-Fi sensing [9, 15, 19, 20, 36, 37], RFID sensing [35, 43], and 
+4G/5G sensing [7, 40]. However, due to their large wavelength as 
+well as their non-coherent sensing approaches, those systems may 
+not be able to detect such subtle eye motions. So far, there is no 
+RF-based system that can track human eye motions from a distance. 
+In this paper, we present RadEye, an RF sensing system that can 
+track eye motions from a distance. Compared to camera-based eye 
+tracking, RadEye not only mitigates privacy concerns but also per-
+forms reliably in poor lighting conditions. The privacy-preserving 
+nature of RF signals stems from their inherent characteristic
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- Template goal (custom): 判断引用论文是否明确承认、概括、使用或评价目标论文实现了 RFID 亚毫米级 / sub-mm level / millimeter-level 振动感知能力，尤其关注 loudspeaker vibration、through-wall eavesdropping、voice/acoustic vibration sensing、fine-grained RFID sensing 等语境。必须给出原文证据，并解释为什么该原文能支持“亚毫米级精度佐证”。. Prioritize evidence matching these terms: sub-mm, submillimeter, sub-millimeter, sub millimeter, millimeter-level, mm-level, fine-grained vibration, tiny vibration, micro-vibration, vibration sensing, RFID sensing, RFID tag, loudspeaker vibration, speaker vibration, through-wall, eavesdropping, acoustic sensing, voice sensing, audio sensing, high-precision sensing. Still require original citation_text and avoid promoting grouped citation or weak mention.
+- Template goal (custom): 判断引用论文是否明确称目标论文是 first / pioneering / early / seminal / first-of-its-kind / the first to achieve 等首次、早期或开创性工作。只能在原文明确出现相关表述时给出该判断，不能根据年份或系统推断自动生成。. Prioritize evidence matching these terms: first, the first, first-of-its-kind, pioneering, early work, seminal, earliest, for the first time, 首次, 开创性, 率先, 最早. Still require original citation_text and avoid promoting grouped citation or weak mention.
+FULL_EXTRACTED_TEXT:
+RadEye: Tracking Eye Motion Using FMCW Radar 
+Shichen Zhang 
+Computer Science and Engineering 
+Michigan State University 
+East Lansing, Michigan, USA 
+sczhang@msu.edu 
+Qijun Wang 
+Computer Science and Engineering 
+Michigan State University 
+East Lansing, Michigan, USA 
+qjwang@msu.edu 
+Kunzhe Song 
+Computer Science and Engineering 
+Michigan State University 
+East Lansing, Michigan, USA 
+songkunz@msu.edu 
+Qiben Yan 
+Computer Science and Engineering 
+Michigan State University 
+East Lansing, Michigan, USA 
+qyan@msu.edu 
+Huacheng Zeng 
+Computer Science and Engineering 
+Michigan State University 
+East Lansing, Michigan, USA 
+hzeng@msu.edu 
+Abstract 
+Eye motion tracking plays a vital role in many applications such 
+as human-computer interaction (HCI), virtual reality, and disease 
+detection. Camera-based eye tracking, albeit accurate and easy 
+to use, may raise privacy concerns and appear to be unreliable 
+in poor lighting conditions. In this paper, we present RadEye, a 
+radar system capable of detecting fine-grained human eye motions 
+from a distance. RadEye is realized through an integrated hardware 
+and software design. It customizes a sub-6GHz FMCW radar so 
+as to detect millimeter-level eye movement while extending its 
+detection range using low frequency. It further employs a deep 
+neural network (DNN) to refine the detection accuracy through 
+camera-guided supervisory training. We have built a prototype of 
+RadEye. Extensive experimental results show that it achieves 90% 
+accuracy when detecting human eye rotation directions (up, down, 
+left, and right) in various scenarios. 
+CCS Concepts 
+• Human-centered computing → Human computer interac-
+tion (HCI); • Hardware → Printed circuit boards.
+Keywords 
+FMCW radar, Human-Computer Interaction, Eye tracking, Deep 
+learning 
+ACM Reference Format: 
+Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng 
+Zeng. 2025. RadEye: Tracking Eye Motion Using FMCW Radar. In CHI
+Conference on Human Factors in Computing Systems (CHI ’25), April 26– 
+May 01, 2025, Yokohama, Japan. ACM, New York, NY, USA, 13 pages. https:
+//doi.org/10.1145/3706598.3713775 
+This work is licensed under a Creative Commons Attribution 4.0 International License. 
+CHI ’25, Yokohama, Japan 
+© 2025 Copyright held by the owner/author(s). 
+ACM ISBN 979-8-4007-1394-1/25/04 
+https://doi.org/10.1145/3706598.3713775 
+Target Area 
+Eye Motion 
+Virtual 
+keyboard 
+Custom-designed 
+patch antenna 
+Custom-designed 
+FMCW radar board 
+Figure 1: Illustration of RadEye. 
+1 Introduction 
+Eye motion tracking has many applications. As per the Amyotrophic 
+Lateral Sclerosis (ALS) Association, more than 5,000 people in the 
+U.S. are diagnosed with ALS every year [1]. Individuals with ALS 
+lose control of their muscles and thus cannot move, speak, eat, 
+and breathe [28]. Eye movements become their only method to 
+convey messages for communications [2]. A non-intrusive, privacy-
+preserving eye tracking system can better understand their convey-
+ing messages and help them achieve efficient communications. In 
+addition to assisting individuals with disabilities, eye motion track-
+ing can serve as an effective human-computer interaction (HCI) 
+tool in various scenarios. For example, it can help immobile patients 
+communicate, as illustrated in Fig. 1. It can also be used to remotely 
+control devices such as smart TVs, home appliances, elevators, and 
+virtual reality systems. Furthermore, a reliable eye-tracking system 
+has broader applications in healthcare, including psychology re-
+search [25], marketing analysis [44], and early disease detection 
+[31]. 
+Existing contactless eye tracking solutions employ various sen-
+sors, including cameras, acoustic, and radar. While cameras have 
+demonstrated high accuracy in eye motion detection [10, 33], their 
+application may pose privacy concerns in some scenarios. Addi-
+tionally, cameras do not perform well in poor lighting conditions. 
+Recently, acoustic signals have been studied for eye tracking on 
+smartphones [5, 22]. However, due to the propagation nature of 
+sounds, acoustic-based eye tracking systems are limited to eye blink
+CHI ’25, April 26–May 01, 2025, Yokohama, Japan Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng Zeng 
+detection within a small distance. Millimeter-wave (mmWave) radio 
+frequency (RF) radar has also been studied for facial recognition and 
+eye blink detection (e.g., [13, 46]). While mmWave radar can achieve 
+mm-level motion detection, its detection range is very limited due 
+to its small wavelength. Additionally, existing mmWave-based sens-
+ing work focuses mainly on eye blink detection rather than eye 
+motion tracking. Low-frequency radio signals have been widely 
+leveraged for fine-grained human activity recognition (HAR), such 
+as Wi-Fi sensing [9, 15, 19, 20, 36, 37], RFID sensing [35, 43], and 
+4G/5G sensing [7, 40]. However, due to their large wavelength as 
+well as their non-coherent sensing approaches, those systems may 
+not be able to detect such subtle eye motions. So far, there is no 
+RF-based system that can track human eye motions from a distance. 
+In this paper, we present RadEye, an RF sensing system that can 
+track eye motions from a distance. Compared to camera-based eye 
+tracking, RadEye not only mitigates privacy concerns but also per-
+forms reliably in poor lighting conditions. The privacy-preserving 
+nature of RF signals stems from their inherent characteristics. Un-
+like camera images, RF signals are not visually interpretable by 
+humans and inherently possess low spatial resolution. As a result, 
+they are unlikely to reveal detailed, identifiable features of indi-
+viduals. Extracting personal information from RF signals involves 
+complex processes that require advanced signal processing and 
+AI models, making misuse significantly less accessible compared 
+to camera systems. Furthermore, RF sensing systems are typically 
+designed to capture only coarse-grained human activities—such as 
+presence, movement, or positioning—rather than detailed personal 
+characteristics like facial features or voice. This makes RF-based 
+sensing systems inherently more privacy-preserving than cameras, 
+ensuring better protection of individual privacy. 
+Compared to acoustic- and mmWave-based eye detection ap-
+proaches, RadEye extends both the RF sensing capability (from eye 
+blink to eye motion) and detection range (from less than 1 m to 
+more than 5 m). We note that the eye motion tracking task is very 
+different from eye blink detection. The former is a regression prob-
+lem, while the latter is a binary classification problem. Such an 
+extension will significantly enlarge RadEye’s application landscape 
+in real life. 
+In the design of RadEye, we face two challenges. Challenge 
+#1: subtle eye movement and long detection range. On one 
+hand, eye rotation, encompassing eyelid and eye muscle displace-
+ment, involves movement around 1 mm [18]. Such a subtle motion 
+makes it hard to detect for an RF system. On the other hand, an 
+eye-tracking sensor may be used in indoor or outdoor scenarios. 
+The eye detection distance varies significantly, ranging from 0.5 m 
+(e.g., from smartphone to eyes) to 5 m (e.g., from smart TV to eyes). 
+Devising an RF system that can detect subtle (mm-level) eyeball ro-
+tation movement from a distance is not a trivial task. Challenge #2: 
+interference mitigation by design. An eye-tracking system may 
+suffer from interference from three sources: i) multipath from the 
+target person to the RF sensor, ii) the movement of the target per-
+son’s other body parts such as chest breathing, arm waving, and 
+leg shaking, and iii) other moving objects/people in the area. For 
+instance, when the RF sensor detects eye movement, another per-
+son may walk around in the same room, generating interference 
+to the received signals at the RF sensor. In general, interference is 
+a notorious problem for RF sensing. Given the subtlety of eyeball 
+Table 1: Comparison of RadEye and existing eye detection 
+works. 
+Reference Technique Max. 
+distance 
+Track eye 
+motion 
+Work in 
+low light 
+Blink Listener [22] Acoustic 0.8 m ✗ ✓
+TwinkleTwinkle [5] Acoustic 0.6 m ✗ ✓
+BlinkRadar [13] IR-UWB 0.8 m ✗ ✓
+X. Zhang [47] mmWave 1.2 m ✗ ✓
+C. Ryan [27] Event Camera 0.6 m ✓ ✗
+GazeRecorder [10] Web Camera 0.7 m ✓ ✗
+RadEye Sub-6GHz FMCW Radar 5 m ✓ ✓
+movement, the interference must be mitigated by design so as to 
+accurately detect eye’s movement. 
+RadEye addresses the above two challenges through a joint hard-
+ware and software design. To achieve the required detection resolu-
+tion and range (i.e., Challenge #1), we design and optimize a 5 GHz 
+FMCW radar for eye movement tracking. We choose 5 GHz radar 
+for two reasons: i) high-frequency radio wave (e.g., mmWave) is 
+suited for detecting tiny motions, but has a small detection range; 
+and ii) low-frequency radio wave is suited for long detection, but not 
+suited for detecting subtle movement. A tradeoff between detection 
+resolution and range leads to our selection of 5 GHz frequency band. 
+Additionally, the market has rich electronic devices (e.g., power 
+amplifiers, mixers, and low noise amplifiers) at 5 GHz frequency 
+bands due to the maturity of Wi-Fi industry. Thus, it is cost-friendly 
+to build 5 GHz radars. To mitigate interference from multipath and 
+other moving objects (i.e., Challenge #2), we combine four tech-
+niques: i) FMCW modulation for the 5 GHz radar, ii) a sophisticated 
+signal processing pipeline for eye-related feature extraction, iii) 
+a transformer-based deep neural network (DNN) for eye motion 
+detection, and iv) a camera-guided supervisory training method 
+for the DNN model. Together, these four techniques make RadEye 
+capable of separating the eye motion features from the interference 
+from multipath and other objects. More importantly, these four tech-
+niques make RadEye transferable to unseen scenarios, enhancing 
+its generalizability in practice. 
+We have built a prototype of RadEye and evaluated its perfor-
+mance in multiple scenarios. Experimental results show that, for 
+a person at a 5 m distance, the average estimation error of eye 
+rotation is 24 degrees in azimuth and 21 degrees in elevation. By 
+formulating the eye rotation problem to a classification (up, down, 
+left, and right) problem, RadEye achieves 90% accuracy. Extensive 
+results confirm the generalizability of RadEye in unseen scenarios 
+as well as its resilience to interference. 
+Table 1 shows how RadEye advances the state-of-the-art (SOTA) 
+RF sensing technology. The main contributions of RadEye are sum-
+marized as follows: 
+• To the best of our knowledge, RadEye is the first-of-its-kind 
+system that utilizes RF signals to estimate eye rotation angles 
+from a distance. 
+• RadEye presents a joint hardware and software scheme for subtle 
+eye motion detection in the presence of interference. 
+• Extensive experimental results validate the performance, robust-
+ness, and generalizability of RadEye.
+RadEye: Tracking Eye Motion Using FMCW Radar CHI ’25, April 26–May 01, 2025, Yokohama, Japan 
+FFT FFT FFT 
+Chirps 
+Range
+Target bin 
+Time 
+Frequency 
+f0 
+f0 + B 
+B 
+T 
+Transmitted signal 
+Received   signal 
+11 
+FFT 
+τ fm 
+Figure 2: Illustration of FMCW signal. 
+2 RadEye: Design Analysis 
+2.1 Backgr ound 
+RadEye leverages the FMCW signal to detect the eye motions. The 
+signal is transmitted from the radar’s TX antenna towards the eyes; 
+and the reflective signal from the eyes is received by the radar’s 
+RX antenna. The difference between the transmitted and received 
+signal is used to extract the eye motion features. As shown in Fig. 2, 
+the FMCW signal starts from frequency 𝑓0 and ramps up linearly
+over time 𝑇 . The transmitted signal can be written as: 
+𝑆𝑇 (𝑡 ) = 𝑒 −𝑗 2𝜋 (𝑓0𝑡 + 𝐵 
+2𝑇 𝑡 2 ) . (1) 
+The received signal reflected from the target can be written as: 
+𝑆𝑅 (𝑡 ) = 𝛼𝑒 −𝑗 2𝜋 (𝑓0 (𝑡 −𝜏 )+ 𝐵 
+2𝑇 (𝑡 −𝜏 ) 2 ) . (2) 
+The transmitted and received signals are mixed together, leading 
+to an immediate frequency (IF) signal as follows: 
+𝑆𝑀 (𝑡 ) = 𝑆𝑇 (𝑡 )𝑆𝑅 (𝑡 ) ∗ = 𝛼𝑒 −𝑗 2𝜋 (𝑓0𝜏 +𝐵 
+𝑇 𝜏 𝑡 − 𝐵 
+2𝑇 𝜏 2 ) . (3) 
+RadEye uses the IF signal to infer the eye motions. As we can 
+see from the Eqn. 3, both the frequency and phase of the IF signal 
+are proportional to the delay of the signal. The frequency of the IF 
+signal 𝑓𝑚 = 𝐵 
+𝑇𝜏 . The time delay can be calculated as 𝜏 = 𝑓𝑚𝑇 
+𝐵 and,
+as a result, the distance can be calculated by 𝑑 = 𝑐𝜏
+2 = 𝑐 𝑓𝑚𝑇 
+2𝐵 .
+To separate the signal reflected from different objects, we do 
+range-FFT on each chirp of the IF signal, as illustrated in Fig. 2. Each 
+range bin represents the signal coming from different distances. The 
+range resolution Δ𝑑 = 𝑐
+2𝐵 is determined only by the bandwidth of
+the signal. To identify the FFT bin corresponding to eye motions, a 
+user will be asked to blink his/her eye as a reference. The algorithm 
+will be presented in §3. 
+2.2 Detectability of Human Eye Rotation 
+The kinematics of eye rotation is a complex process involving the 
+stretching and contraction of six extraocular muscles. The combined 
+movement of these muscles alters the shape of the reflection surface, 
+affecting the length of the signal reflection path and influencing 
+the phase shift of the FMCW signal. Additionally, these muscle 
+movements impact signal attenuation, as muscles and surrounding 
+tissues absorb and scatter FMCW signals to varying degrees based 
+0 1 2 3 4 5
+Time (second)
+-3
+-2
+-1
+0
+1
+2
+3Phase (rad)
+3m 4m 5m
+0 1 2 3 4 5
+Time (second)
+-3
+-2
+-1
+0
+1
+2
+3Phase (rad)
+3m 4m 5m
+0 1 2 3 4 5 
+Time (second) 
+-3 
+-2 
+-1 
+0 
+1 
+2 
+3 Phase (rad) 
+3m 4m 5m
+0 1 2 3 4 5
+Time (second)
+-3
+-2
+-1
+0
+1
+2
+3Phase (rad)
+3m 4m 5m
+0 1 2 3 4 5
+Time (second)
+-3
+-2
+-1
+0
+1
+2
+3Phase (rad)
+3m 4m 5m
+0 1 2 3 4 5 
+Time (second) 
+-3 
+-2 
+-1 
+0 
+1 
+2 
+3 Phase (rad) 
+3m 4m 5m
+(a) 
+(b) 
+Figure 3: (a) The phase change of the corresponding FFT-
+bin from the mmWave radar. (b) The phase change of the 
+corresponding FFT-bin from the RadEye. 
+on their density, composition, and position. When eye muscles 
+move, the spatial distribution of these tissues changes, altering the 
+amount of signal absorbed or scattered and leading to variations in 
+attenuation. 
+In addition to muscle movements, eyelid motion also affects 
+reflected FMCW signals. During eye rotations, the eyelids fold or 
+stretch, and this change in thickness modifies the distance of the 
+signal reflection path. Furthermore, eyelid movement alters the 
+size of the exposed area of the eyeball, further influencing the 
+attenuation of the reflected signal. 
+2.3 Feasibility Analysis 
+We conducted experiments to compare the performance of RadEye 
+with a 60 GHz FMCW mmWave radar (i.e., AWR6843 [32]), both 
+of which have 1.1 GHz bandwidth. Specifically, a participant per-
+formed eye blinks at distances of 3 m, 4 m, and 5 m. Fig. 3 presents 
+our experimental measurements. The experimental results show 
+that mmWave radar can detect human eye blinks within a range of 3 
+meters. However, the detectability decreases rapidly as the distance 
+increases. In contrast, RadEye exhibits a consistent capability of 
+detecting human eye blinks at those three distances. 
+In some cases, the line-of-sight path from human eyes to the 
+radar device might be blocked. Thus, we conducted comparative 
+tests to evaluate the ability of two types of radars to track eye 
+movements under obstructed conditions. To simulate such cases, 
+we repeated the same test at a distance of 3 m but placed a wooden 
+door between the radar and the participant. As shown in Fig. 4, 
+RadEye is capable of detecting eye blinks even behind the door, 
+whereas the mmWave radar fails to do so. This limitation of the 
+mmWave radar can likely be attributed to the high attenuation of 
+mmWave signals. It is worth noting that these experiments were 
+conducted in the same environment and used an identical signal 
+processing pipeline. The detailed parameters of the two systems 
+are provided in Table 2.
+CHI ’25, April 26–May 01, 2025, Yokohama, Japan Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng Zeng 
+0 1 2 3 4 5 6
+Time (second)
+-3
+-2
+-1
+0
+1
+2
+3
+Phase (rad)
+RadEye
+0 1 2 3 4 5 6
+Time (second)
+-3
+-2
+-1
+0
+1
+2
+3
+Phase (rad)
+RadEye
+0 1 2 3 4 5 6 
+Time (second) 
+-3 
+-2 
+-1 
+0 
+1 
+2 
+3 
+Phase (rad) 
+RadEye 
+(a) (b) (c) 
+mmWave 
+Figure 4: (a) RadEye tracking behind a wooden door. (b) 
+mmWave radar tracking behind a wooden door. (c) Phase 
+change of the corresponding FFT-bin from both systems. 
+Table 2: Detailed Parameters for the RadEye and mmWave 
+Radar. 
+        Parameters 
+Systems 
+RadEye AWR6843 
+Tx / Rx antenna gain 15 dBi 7 dBi 
+Transmission power 15 dBm 12 dBm 
+Chirp duration 600 𝜇𝑠 600 𝜇𝑠 
+Idle time 400 𝜇𝑠 400 𝜇𝑠 
+Bandwidth 1.1 GHz 1.1 GHz 
+Gain figure (Rx chain) – 48 dB 
+Noise figure (Rx chain) 7 dB 12 dB 
+Gain from baseband amplifier 8 dB – 
+Millimeter-Level Motion Detection. As we mentioned earlier,
+the ranging resolution of an FMCW radar is not enough to detect 
+the tiny eye motion. However, the phase of the demodulated FMCW 
+signal can reflect the eye rotation motion. Eye rotation involves 
+eyelid and eye muscles displacement, which moves at millimeter 
+level [18]. Based on Eqn. (3), one-millimeter movement of eyeball 
+can cause a phase change of FMCW signal by: 2𝜋 𝑓0 2𝑑 
+𝑐 = 0.25 radian
+(i.e., 14◦), which is easy to detect and measure on the corresponding 
+Range-FFT bin. 
+Resilience to Interference. An eye-tracking system may suffer
+from interference from three sources: i) multipath from the target 
+person to the RF sensor, ii) the movement of the target person’s 
+other body parts such as chest breathing, arm waving, and leg shak-
+ing, and iii) other moving objects/people in the area. To mitigate 
+such interference, RadEye employs wideband FMCW modulation 
+and high-optimized directional antennas. The FMCW modulation 
+with 1.1 GHz offers a ranging resolution of 14 cm, allowing RadEye 
+to distinguish objects separated by 14 cm. The FMCW modulation 
+can effectively filter out the interference from the target person’s 
+other body motions such as chest breathing. A custom-designed 
+patch antenna is used for signal transmission and reception, serving 
+as an angular filter for suppressing interference from other direc-
+tions. As shown in Fig. 5, the patch antenna has a 3 dB beamwidth 
+of 21 degrees. In addition to the hardware design and optimization, 
+a transformer-based DNN, trained through a video-guided pipeline, 
+will be useful to focus on the desired features while eliminating the 
+interfering features through a self-attention mechanism. 
+21 degree (3dB beamwidth) 
+Figure 5: The custom-designed patch antennas (left) and their 
+gain pattern (right). 
+(c) (d) 
+Ground 
+truth 
+(a) 
+sd 
+ss 
+(b) 
+Figure 6: The feature for eye rotations. (a) The signal ampli-
+tude when eye rotates toward different directions. (b) The 
+signal in the complex domain when eye is rotating. (c) The 
+kernel density estimation of the signal amplitude variation 
+ratio. (d) The kernel density estimation of the motion pattern 
+eccentricity. 
+2.4 Feature Validation 
+We conducted a preliminary study of the sub-6GHz radar’s capabil-
+ity for detecting eye motions. A participant was seated 3 m in front 
+of the radar and instructed to rotate his eyeballs in four different 
+directions (up, down, left, and right). Fig. 6(a) depicts the signal 
+amplitude from the corresponding Range-FFT bin during these eye 
+rotations. The “Ground truth” points in the figure were captured by 
+a camera with the SOTA computer vision-based eye detection algo-
+rithm [17], marking the moment of real eye rotations. It is evident 
+that the eyeball rotations towards the four directions indeed induce 
+the amplitude change of the radar’s IF signal. This indicates that the 
+5 GHz FMCW radar is capable of capturing the eye motions. When 
+delving into eye rotation signals in different directions, we observe 
+that up/down movements exhibit a more substantial change com-
+pared to left/right movements. This is not surprising, because the 
+eyelid of vertical actions has larger movements. Additionally, the 
+up-rolling of eyes results in an amplitude increase. This is because 
+the eyelid’s movement during the upward gaze involves more parts
+RadEye: Tracking Eye Motion Using FMCW Radar CHI ’25, April 26–May 01, 2025, Yokohama, Japan 
+of the eyeball in reflection. The water-textured nature of the eyeball, 
+in contrast to the skin, enhances signal reflection. Given that the 
+different eye rotations cause different amplitude changes, we use 
+the amplitude variation ratio as one of the features for inference. 
+Features in Complex Domain. In addition to the observation
+in the temporal domain, we further observe the IF signal in the 
+complex domain as shown in Fig. 6(b). For the eye motion signal 
+𝑆𝑒 from the corresponding Range-FFT Bin, it can be decomposed
+into a static component 𝑆𝑠 and a dynamic component 𝑆𝑑 . They can
+be written as: 
+𝑆𝑒 = 𝑆𝑑 + 𝑆𝑠 = 𝛼𝑑 𝑒 𝜙𝑑 + 𝛼𝑠 𝑒 𝜙𝑠 , (4) 
+where 𝛼𝑠 and 𝜙𝑠 are the amplitude and phase of the static com-
+ponent. 𝛼𝑑 and 𝜙𝑑 are the amplitude and phase of the dynamic
+component. As shown in Fig. 6(b), the curve shape of the dynamic 
+component in the complex domain is determined by both amplitude 
+and phase. 
+Different Eye Rotation Directions. For different directional
+movements of the eyeball, the folding of the eyelid and the rota-
+tion of the eyeball create a unique relative relationship, manifesting 
+through the changes in IF signal amplitude and phase. We character-
+ize this feature by utilizing the curvature of the curve. Specifically, 
+we perform regression on the curve, identify an elliptical equation 
+[8], and use the eccentricity of the ellipse to characterize this feature. 
+As shown in Fig. 6(b), the ellipse generated by the up/down eye mo-
+tions exhibits a more elongated shape, while the right/left motions 
+lead to a more circular shape. This can be attributed to the fact that 
+up/down eye motions involve more eyelid movements, leading to 
+changes in reflective surface, while left/right eye rotations mainly 
+cause changes in the length of the reflection path. 
+Experimental Validation. To verify the robustness of the am-
+plitude and eccentricity features, we conduct experiments involving 
+five participants. We repeat the experiments in the same setting as 
+described above. Each participant performs his/her eye rotations 
+in each direction 50 times. Then, we perform the kernel density 
+estimation for all the participants. Fig. 6(c) presents the density 
+estimation results of amplitude changing ratio. The up and down 
+motions are centered on the 0.3 and -0.4, respectively. The left 
+and right motions have a relatively smaller variation; and they are 
+centered around zero. Fig. 6(d) shows the eccentricity density esti-
+mation results. The up/down motions are centered close to 1; and 
+the left/right motions are close to 0.8. The statistical results across 
+different individuals align with the findings described earlier for 
+a single person. This consistency suggests the potential of segre-
+gating these motions based on the radar’s signal. To enhance the 
+recognition of eye motions, we employ a DNN model, which will 
+be described in §4. 
+3 RadEye: Signal Processing 
+In this section, we describe the signal processing of the radar’s IF 
+signal for eye rotation detection. Fig. 7 shows the overall structure 
+of the system. In what follows, we introduce the signal processing 
+techniques for RadEye, which include the selection of the range bin 
+and the extraction of eye motions. 
+Range-FFT. RadEye sets the chirp duration to 1 ms for detecting
+eye motions. In each cycle, the chirp takes 0.6 ms, and the delay 
+takes 0.4 ms. RadEye employs a sample rate of 2.5 MSps to observe 
+Chirp sync 
+Range FFT 
+Filtering 
+α 
+β 
+Data 
+preprocessing 
+Bin selection 
+Eye motion 
+detection 
+DNN 
+TX 
+antenna 
+RX 
+antenna 
+Camera-based Eye 
+tracking algorithm 
+Web 
+camera 
+Selected bin 
+supervise 
+Figure 7: The system overview of RadEye. 
+the signal in the digital domain. Consequently, in each cycle, 1500 
+complex numbers are acquired. Subsequently, RadEye appends ze-
+ros to the end of the samples and performs a 4096-point range-FFT 
+operation to obtain the signal at different ranges. In the 4096 bins, 
+only the first 256 will be used since it already covers the range to 
+13 m. 
+Filtering for Range-FFT. RadEye applies a second-order But-
+terworth bandpass filter to suppress noise and out-of-band inter-
+ference. It sets the filter’s pass band to 1 Hz∼5 Hz [46, 50]. We note 
+that, although the eye blink frequency may overlap with the chest 
+breathing frequency (0.1 Hz∼0.5 Hz), the input eye motion com-
+mand for RadEye has a higher frequency and will not be affected by 
+the filter. One may ask whether the heartbeat will cause the slight 
+head shaking and thus pollute the eye motion signals, our answer 
+is no. Based on our experimental results, the heartbeat is too weak 
+to cause the head shaking that can be captured by RadEye. 
+FFT Bin Selection. Eye rotation motions have a very small
+dynamic range. Therefore, it is nontrivial to find the FFT bin that 
+carries the eye motion features. To do so, RadEye requires users 
+to blink their eyes three times with an interval of 2 seconds as a 
+‘start button’ to initiate the control process. The user only needs to 
+provide the initialization command once. In this period, the users 
+should keep their head still (no movement more than 14 cm). If 
+the user’s head position moves beyond this range, the initialization 
+command must be re-entered. Since this is a human input device, 
+it is reasonable to require the user to remain relatively stationary 
+within a short time period. RadEye utilizes the amplitude dynamic 
+range as an indicator to find the candidate bin. The reason for using 
+the amplitude is that, when the eyes switch between opening and 
+closing, the blink motion causes the reflective surface to switch 
+from the water-textured eyeball to the skin-textured eyelid [22], 
+causing the amplitude change of the radar’s IF signal. 
+We describe the bin selection algorithm as follows. RadEye cal-
+culates the window-slides variance for each Range-FFT bin 𝑖 by:
+CHI ’25, April 26–May 01, 2025, Yokohama, Japan Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng Zeng 
+Figure 8: (a) The signal amplitude variance for different Range-FFT bins during eye blinks. (b) Eye motion detected based on 
+signal phase (with the camera-based ground truth marked). (c) Comparison of Eye motions and interfering motions from the 
+target person’s head. 
+𝑣𝑖 (𝑗 ) = 1 
+𝑊
+𝑗 +𝑊−1 
+𝑚=𝑗 (|𝑦𝑖 (𝑚)|− ¯𝑦𝑖 )2 , where ¯𝑦𝑖 = 1 
+𝑊
+𝑗 +𝑊−1 
+𝑚=𝑗 |𝑦𝑖 (𝑚)|, 
+and 𝑤 is the window size which is set to 200 to fit the duration 
+of the eye blink. If 𝑣𝑖 (𝑗 ) is larger than a predefined threshold 𝑇 , 
+the timestamp 𝑗 will be recorded as 𝑡𝑛 . Here, 𝑇 is empirically set 
+to 0.05. Only when the next detected timestamp 𝑗 satisfies the 
+2000 < 𝑗 −𝑡𝑛 < 3000 (fit in the interval of blink), it will be counted 
+as the continuous blink. Once the three continuous blinks have 
+been detected, we mark the Range-FFT bin 𝑖 as the candidate bin. 
+Multiple Range-FFT bins might satisfy this condition as shown in 
+Fig. 8(a). In this case, RadEye chooses the bin that has the smallest 
+index. The smallest-index Range-FFT bin represents the shortest 
+path of signal travel, which best reflects the eye motion pattern. 
+Eye Motion Detection. After RadEye identifies the Range-FFT 
+bin, it will continue to monitor this bin and estimate eye motions 
+based on it. Each eye motion can be separated into three phases: 
+start moving the eyeball, the eyeball reaches the edge, and the 
+eyeball backs to the start position. RadEye tries to detect these 
+three positions for each eye motion. Although both amplitude and 
+phase contain information about eye motions, we found that phase 
+exhibits a more significant pattern when detecting eye rotations. 
+Eyeball rotations involve repetitive movement. It rolls back to its 
+central point when reaching the edge. This motion occurs swiftly, 
+resulting in a repetitive phase change pattern. Hence, the posi-
+tions of local phase extremums correspond to where eye movement 
+reaches the edge. Additionally, we noticed that there are inflec-
+tion points in the signal phase at the beginning and end of eye 
+movements. RadEye utilizes these features to extract eye motions, 
+it first searches for the local maximum/minimum on phase with 
+an interval of 1 second. After identifying the local peaks, RadEye 
+will search along the gradients of samples before/after the peak. 
+The position in which the gradient is equal to zero will be defined 
+as the start/end position. Fig. 8(b) presents the phase of the signal 
+when          
+start, peak, and end positions are marked on the figure. 
+To mitigate interference from the target person’s other body 
+parts, we utilize both phase shift and time duration to refine the 
+detection results. Fig. 8(c) shows eye blinks, eye rotations, head 
+motions, and mouth motions. It can be seen that head and mouth 
+motions induce significant changes in the signal phase. Conse-
+quently, if the phase shift surpasses a specified threshold, the signal 
+is discarded. For motions falling below the threshold, the time du-
+ration is considered. Only signals within the duration range of 
+a participant repeats the look-up motion, and the detected
+4.1 Sequential Signal 
+200 ms∼600 ms are deemed as valid eye motion signals. Doing so 
+will effectively filter out eye blinks, which typically last for less 
+than 100 ms. 
+4 RadEye: DNN-based Eye Movement Detection 
+In this section, we present a DNN model for eye rotation recognition 
+by using the amplitude and phase of the radar’s IF signal. RadEye 
+utilizes a transformer encoder to extract features and feeds these 
+features into a fully connected layer to output the azimuth and 
+elevation angles of a target person’s eyeball. The DNN is trained 
+using a camera-guided method, transferring the knowledge from 
+computer vision to radio sensing. 
+The input signal to our DNN model is a time-series signal with a 
+high sampling rate. As the subject’s eyeballs rotate toward different 
+angles, the swift motions of the eyeballs and eyelids cause fluctu-
+ations in the amplitude and phase of the input signal over time. 
+Therefore, to accurately model the temporal dependencies between 
+various sampling points, we employ a DNN model that is capable 
+of efficiently encoding information over the temporal domain. 
+Traditional time-series models, such as Recurrent Neural Net-
+work (RNN) [26] and LSTM [12], are capable of temporal sequence 
+modeling. However, they struggle with gradient vanishing and ex-
+ploding problems when dealing with long sequence inputs, limiting 
+their capabilities of capturing dependencies over a long distance. 
+In contrast, Transformer [34], employing a self-attention mech-
+anism, can effectively overcome these issues. The self-attention 
+mechanism allocates a weight to the output of each position in 
+a time series, reflecting the degree of attention that the position 
+pays to other positions within the sequence. This method allows for 
+the computation of correlations between any two positions in the 
+sequence without being constrained by their physical separation, 
+thus better capturing long-range dependencies. Furthermore, the 
+multi-head attention mechanism within Transformers can project 
+eye movement signals into various subspaces, including different 
+frequency spaces. Frequency analysis can better distinguish cer-
+tain angle information, as the movement of the eyeball at different 
+angles will have different speeds.
+RadEye: Tracking Eye Motion Using FMCW Radar CHI ’25, April 26–May 01, 2025, Yokohama, Japan 
+Fully connected layer (64 ×32×2) 
+Multi-head Attention 
+Add &Norm 
+Feed Forward 
+Add &Norm 
+Input embeding 
+Linear 
+Concatenate 
+Scaled  Dot-Product 
+Attention 
+Linear Linear Linear 
+N (2) × 
+Input signal 
+shape 200×2 
+Output shape 
+200×64 
+Output 
+shape 
+200×64 
+Output shape 
+200×2 
+y = [α , β ] Output shape 
+1×2 
+Positional 
+Encoding 
+VKQ 
+squeeze 
+TX 
+RX 
+Web camera 
+Signal processing 
+^Supervise 
+Vision processing 
+Figure 9: A camera-guided DNN structure for RadEye. 
+4.2 Camera-guided DNN Framework 
+The overall structure of our designed model, as shown in Fig. 9, 
+primarily utilizes Transformer to predict an angle vector based on 
+the input time-series data, which includes both the amplitude and 
+phase derived from the corresponding Range-FFT bin. We introduce 
+its key elements as follows. 
+•Input Data. The input data for the eye motion signal is captured
+by RadEye from the corresponding Range-FFT bin. Each input
+data sample consists of 200 × 2 dimensions, where 200 is the
+time length of the data sample, and 2 is the number of features:
+amplitude and phase. The data have been normalized to ensure
+that they share the same dynamic range.
+•Signal Encoder. Before sending to Transformer, the signal data
+are first passed through a projection layer to up-sample them
+to a higher-dimensional representation. The output size of this
+projection layer is 200 × 64. Additionally, to enable the model
+to discern the temporal relationships within the input sequence
+embeddings, each signal representation is augmented with posi-
+tional embeddings.
+•Backbone. The transformer encoder can extract features from
+the embedded data. RadEye uses two transformer encoders; and
+each encoder has four heads. The self-attention mechanism in
+the transformer encoder can build connections across different
+time steps in the signal and also attend to different parts of
+the signal. These connections enable the model to easily derive
+information about the eye rotation angle.
+•Prediction Head. The extracted features finally feed into the
+fully connected layer, which has a size of 64 × 32 × 2. It combines
+features from previous layers and flattens the output into the
+appropriate shape. The output of the model is a direction vector
+𝑦 = [𝛼, 𝛽], where 𝛼 is the eyeball’s azimuth angle and the 𝛽 is
+the eyeball’s elevation angle.
+•Camera-guided Training. The vision processing module ini-
+tially tracks the user’s face and subsequently localizes the posi-
+tion of the eyes. It then calculates the eye rotation angle based on
+the relative position of the pupil within the eye region. Guided
+by these vision-based techniques, the DNN model endeavors to
+create a feature extractor similar to those used in vision process-
+ing, but specifically designed to handle RF signals. The vision
+processing module ultimately provides the ground truth angle
+to the DNN, which then utilizes Mean Squared Error (MSE) to
+calculate the loss for angle estimation. The loss function is as 
+follows: 
+L𝑎𝑛𝑔𝑙𝑒 = 1 
+𝑁 
+𝑁∑︁ 
+𝑖 =1 
+(𝑦𝑖 − ˆ𝑦𝑖 )2 , (5) 
+where 𝑦𝑖 is the predicted angle vector and the ˆ𝑦𝑖 is the ground
+truth angle vector. 
+4.3 Data Collection 
+We gathered training data exclusively in a controlled laboratory 
+setting, where participants engaged with the radar and camera 
+setup positioned on a table before them. Participants were seated 
+3 m away from the radar, facing it directly as shown in Fig. 10(a). A 
+total of 8 participants took part in the data collection. In each data 
+collection session, participants were instructed to rotate their eyes 
+in up, down, right, and left directions. Recognizing the potential 
+fatigue associated with eye rotation, each test session had a limited 
+duration of 3 minutes. Each participant will repeat 15 sessions, 
+generating a total of 27,000 data samples. 
+We note that during the test phase, the eye motion signals are di-
+rectly captured using RadEye (no camera presents). In this scenario, 
+the length of the signal vector may differ from the training data. To 
+ensure consistent input dimensions, downsampling or interpolation 
+techniques are employed to normalize the data dimension. 
+5 Experimental Evaluation 
+In this section, we conduct experiments to evaluate the performance 
+of RadEye. Particularly, we aim to answer the following questions. 
+•Q1 (§5.4): What is RadEye’s detection rate of eye motions?
+•Q2 (§5.5): What is RadEye’s accuracy in estimating eye rotation
+angles?
+•Q3 (§5.6): What is RadEye’s resilience to environmental changes
+and interference?
+•Q4 (§5.7): What is RadEye’s zero-shot performance (for unseen
+users and in unseen scenarios)?
+5.1 Implementation 
+Hardware. Fig. 11 shows the hardware of RadEye. We have a fab-
+ricated a PCB board capable of transmitting and receiving FMCW 
+signals at 5 GHz, using Wi-Fi’s electronic components. The received 
+signal undergoes amplification with a power amplifier (PA), and 
+then it is mixed with the transmitted signal. The electronic compo-
+nents of this board also include Tx/Rx 16 dB coupling, RF I/Q mixer, 
+and baseband filtering. Additionally, we have custom-designed and 
+optimized a 4 × 4 patch antenna using HFSS for signal transmission 
+and reception. A single patch antenna provides an 15 dBi gain, re-
+sulting in a total gain of 30 dBi. The patch antenna design maintains 
+the signal beam within a narrow range while providing significant 
+gain, enabling RadEye to detect eye motions from a distance. The 
+mixed signal is subsequently fed into a USRP N210 with an LFRX 
+daughterboard to convert the analog signal into baseband I/Q sam-
+ples. The FMCW signal generated by RadEye sweeps from 5.4 GHz 
+to 6.5 GHz. Each chirp has a time duration of 1 ms, with 600 𝜇s for 
+frequency ramping and 400 𝜇s idle. 
+Software. We implemented our data preprocessing module in
+C++ using the GNURadio out-of-tree module. A crucial function
+CHI ’25, April 26–May 01, 2025, Yokohama, Japan Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng Zeng 
+Camera 
+Antenna 
+15 o 
+30 o 
+(a) (b) (c) (d) (e) 
+Figure 10: Experiment settings in a lab for different distances and angles. (a) 3 meters. (b) 4 meters (c) 5 meters. (d) 15◦ . (e) 30◦ .
+Camera 
+USRP N210 
+Custom-made 
+antenna 
+LFRX 
+Custom-made 
+PCB board 
+PA 
+VCO 
+RF coupler LNA 
+RF mixer 
+Filter 
+Power 
+Figure 11: The system setting for RadEye. 
+of this module is to synchronize the chirps, facilitating the extrac-
+tion of useful samples. However, owing to the absence of clock 
+synchronization between the USRP ADC and FMCW chirps, only 
+the software-based method can be employed for synchronization. 
+To address this issue, we utilize a high-sampling rate of 2.5 MSps 
+and the idle period for synchronization. Initially, we detect the idle 
+period based on the smooth amplitude during this interval, followed 
+by fine-grained detection to identify the first sample of the chirp. 
+The DNN model was implemented using PyTorch with the Adam 
+optimizer. Throughout the training process, a batch size of 200 and 
+50 epochs were set. 
+5.2 Experimental Setting 
+During the experiments, participants were seated on a chair facing 
+the antennas of RadEye. The antennas were positioned 1.1 m above 
+the ground on a tripod. A varifocal camera was placed on top of the 
+laptop to capture the participants’ face video for their eye motion 
+detection using the SOTA gaze tracking tool [17]. Our experimental 
+studies show that this camera-based eye detection tool achieves 
+about 98% accuracy as shown in Fig. 13. While it is not perfect, 
+we use the detection results from the camera-based tool as the 
+ground-truth labels to supervise the training of RadEye’s DNN 
+model. During the inference, we also use the camera-based detection 
+results as the ground-truth to evaluate the estimation accuracy of 
+RadEye. 
+RadEye and camera operated concurrently, synchronized with 
+the PC clock, to estimate participants’ eye rotations. RadEye, with 
+a higher sample rate than the camera’s frame rate (10 frames/s), 
+resulted in each camera-captured direction being mapped to 200 
+continuous chirps. Each training sample in our dataset is a 200 × 
+2 matrix, where 200 is the time dimension, and 2 is the feature 
+dimensions (azimuth and elevation). 
+DownUp Left Right 
+Looking up 
+Left pupil: (92, 161) 
+Right pupil: (88, 163) 
+Looking down 
+Left pupil: (93, 21) 
+Right pupil: (86, 23) 
+Looking left 
+Left pupil: (12, 91) 
+Right pupil: (19, 93) 
+Looking right 
+Left pupil: (163, 90) 
+Right pupil: (160, 91) 
+Figure 12: The eye rotation directions captured by a camera. 
+It is used as ground truth for DNN training and evaluation. 
+3m 4m 5m
+0%
+20%
+40%
+60%
+80%
+100%Accuracy
+0.98 0.98 0.97
+Figure 13: Tracking accuracy of eye rotation with camera at 
+varying distances. 
+5.3 Performance Metrics 
+We consider the following three performance metrics. 
+•Eye Motion Detection Rate (EMR). The eye motion here is
+defined as the eye blink and eye rotation. The signal processing
+module extracts the eye motion signals from RF data before
+sending them to the DNN model. We define Detection rate =
+Number of eye motions detected 
+Total eye motions performed . 
+•Estimation Error of Eye Rotation Angle (ERA). The eye
+rotation angles are illustrated in the bottom right corner of Fig. 7.
+The estimation error of azimuth angle is defined as 𝑒𝛼 = |𝛼 − ˆ 𝛼|,
+where ˆ 𝛼 is the estimated eye rotation azimuth angle and 𝛼 is
+the eye rotation angle ground truth provided by the camera.
+Similarly, the estimation error of elevation angle is defined as:
+𝑒𝛽 = |𝛽 − ˆ𝛽|.
+•Estimation Accuracy of Eye Rotation Direction (ERD).
+Some applications of RadEye (e.g., remote TV control) may
+not require precise angle measurements for functionality but
+instead focus on eye rotation direction. This metric evaluates
+the accuracy of classifying eye movement directions into four
+categories: up, down, left, and right. Specifically, we define
+𝐴𝑐𝑐𝑢𝑟 𝑎𝑐𝑦 = Number of correct direction estimations 
+Total eye rotations performed .
+RadEye: Tracking Eye Motion Using FMCW Radar CHI ’25, April 26–May 01, 2025, Yokohama, Japan 
+Figure 14: (a) RadEye’s eye blink/rotation detection rate. (b) RadEye’s eye rotation estimation error at different distances. (c) 
+RadEye’s accuracy of estimating eye rotation directions. (d) The confusion matrix of RadEye’s eye rotation direction estimation 
+at 3 m distance. 
+5.4 Eye Motion Detection Rate 
+RadEye’s eye motion detection ability, including eye rotation and 
+eye blink detection, serves as the foundation of many eye track-
+ing applications. While RadEye focuses on estimating eye rotation 
+angles, eye blink detection is also one of its key components. This 
+feature not only enhances the input of RadEye but also enriches 
+its functionalities. Therefore, we evaluate RadEye’s success rate of 
+detecting eye rotation and blink. 
+We instructed eight participants to perform eye rotations and 
+blinks from three different distances: 3 m, 4 m, and 5 m, as shown 
+in Fig. 10(a)-(c). A total of 5 minutes of data were collected at each 
+distance for each participant. Fig. 14(a) shows RadEye’s average eye 
+motion detection rate for 8 individuals at various distances. The 
+highest detection rate for eye blink and eye rotation is 94% and 
+96%, respectively. This was observed at the distance of 3 m. Overall, 
+the detection rate is consistent. Even at a distance of 5 m, RadEye 
+achieves 88% detection rate for eye blinks and 91% detection rate 
+for eye rotation. This confirms the robustness of RadEye in eye 
+motion detection in different environmental settings. Numerically, 
+the standard deviation of eye blink detection across the eight in-
+dividuals is about 2%. For the eye rotation detection, the standard 
+deviation is about 4%. This slight difference can be attributed to 
+the simplicity and similarity of eye blink motion across different 
+individuals. Additionally, the detection rate of eye rotations is con-
+sistently higher than that of eye blinks in all cases. This is not 
+surprising, as eye rotations involve more significant facial muscle 
+movements compared to eye blinks. 
+5.5 Eye Rotation Angle/Direction Estimation 
+Eye Rotation Angle Estimation. We conducted the experiments 
+in the same way as described in §5.4. Fig. 14(b) presents the cumu-
+lative distribution function (CDF) of the angle estimation errors of 
+RadEye for all participants at three different distances. The mean 
+azimuth/elevation errors at 3 m, 4 m, and 5 m are approximately 
+14◦/7◦ , 20◦/18◦ , and 24◦/21◦ , respectively. Evidently, the eye ro-
+tation angle estimation error increases as the distance increases. 
+This is not surprising, as the radio signal has a larger attenuation 
+over a longer distance. Additionally, we observed that the elevation 
+angle estimation error is consistently smaller than the azimuth 
+angle estimation error. This observation agrees with our previous 
+observation in §2, i.e., eye’s vertical movements (up and down) 
+generate more pronounced changes in radar signal’s amplitude and 
+phase compared to eye’s horizontal movements (right and left). 
+Figure 15: RadEye’s estimation accuracy of eye rotation direc-
+tions when the target person is located at different distances 
+and angles. 
+Eye Rotation Direction Estimation. As some applications of 
+RadEye need only the eye rotation direction information, we first 
+classify the estimated eye rotation angle into four directions (up, 
+down, left, and right) and then evaluate the estimation accuracy. 
+Since the slight eye motions are always accompanied by humans, 
+we consider the eye rotation action effective only when the azimuth 
+𝛼 < 50◦ or 𝛼 > 130◦ , or the elevation 𝛽 < 50◦ or 𝛽 > 130◦ , as exem-
+plified by Fig. 12. Using the effective input captured by the camera 
+as ground truth, we can measure RadEye’s estimation accuracy. 
+Fig. 14(c) plots the average estimation accuracy for eight people at 
+three different distances. The average estimation accuracy at 3 m, 
+4 m, and 5 m is 90.0%, 84.7%, and 83.5%, respectively. These accuracy 
+levels are suited for most daily applications requiring human input. 
+The standard deviations at 3 m, 4 m and 5 m are 3%, 5% and 5.5%. 
+This indicates RadEye’s robustness when detecting eye rotation 
+of different users. Additionally, Fig. 14(d) presents the confusion 
+matrix in the 3-meter case. It is evident that distinguishing between 
+right and left eye rotations is more challenging compared to up 
+and down eye rotations. This suggests that developing an applica-
+tion with binary input for up and down movements could enhance 
+RadEye’s robustness. 
+5.6 RadEye’s Robustness 
+RadEye’s Field of View. RadEye has two patch antennas for signal 
+transmission and reception. Ideally, the target person should be 
+perpendicularly facing RadEye’s antenna. In practice, the target 
+person may not be ideally positioned. Therefore, we conducted 
+experiments to evaluate RadEye’s field of view by examining its 
+estimation accuracy when the target person was located in different 
+directions, as illustrated in Fig. 10(d)-(e). Specifically, five partici-
+pants performed eye rotations at angles of 15◦ and 30◦ from three
+CHI ’25, April 26–May 01, 2025, Yokohama, Japan Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng Zeng 
+(a) (b) (c) 
+Figure 16: (a) The interference test in a lab. (b) Test at 5 m in 
+the conference room. (c) Test at 5 m in the hallway. 
+No int. 1 m 2 m 3 m
+Distance to interference
+0%
+20%
+40%
+60%
+80%
+100% 
+Accuracy
+0.9 0.84 0.88 0.89
+Figure 17: RadEye’s estimation 
+accuracy of eye rotation direc-
+tions when experiencing inter-
+ference from walking people. 
+Mouth Head Leg & Hand
+0%
+20%
+40%
+60%
+80%
+100%Accuracy
+0.45 
+0.34 
+0.82
+Figure 18: RadEye’s estima-
+tion accuracy of eye rota-
+tion directions during self-
+body motions. 
+different distances. In total, six scenarios were studied. In each sce-
+nario, participants performed eye rotations for 5 minutes. Fig. 15 
+shows our experimental results. It can be seen that RadEye achieves 
+a high estimation accuracy when the target person is located at 0◦ , 
+15◦ , and 30◦ . Overall, the estimation accuracy remains above 82% 
+in all cases. This indicates that RadEye has at least 60◦ field of view. 
+Impact of Moving Objects. Since static objects can easily be
+filtered out in the received signal, we further evaluated RadEye’s 
+resilience to interference caused by nearby walking individuals. 
+In the experiments, another person was asked to walk around the 
+user in close proximity, as depicted in Fig. 16(a). We measured the 
+accuracy in three scenarios where the distance between the user 
+and the walking person was 1 m, 2 m, and 3 m. In each scenario, 
+five participants performed eye rotations for 5 minutes. Fig. 17 
+shows the results. The presence of a walking person causes a slight 
+decrease in RadEye’s estimation accuracy. Overall, RadEye achieves 
+accuracies of 84%, 88%, and 89% when the walking person is 1 m, 
+2 m, and 3 m away from the participant, respectively. We note that 
+all these experiments were conducted in normal scenarios. The 
+participants were only instructed to keep their heads still when 
+performing eye rotations. No other restrictions were made to avoid 
+interference from multipath effects or other normal physiological 
+activities of the participants. 
+Impact of Self-Body Motions. Besides nearby moving objects,
+the participant’s own body movements may also affect RadEye’s 
+performance. To evaluate RadEye’s usability in practical scenarios, 
+we studied the cases where the participant was speaking, shaking 
+head, or engaging in leg or hand motions. A participant was asked 
+to perform these three activities separately while executing eye ro-
+tations. In each scenario, the participant performed eye rotations for 
+five minutes at a distance of 3 m. Fig. 18 presents our measurement 
+results. It can be seen that RadEye’s accuracy remains at 82% when 
+the participant performed leg or hand motions. However, RadEye’s 
+accuracy decreases to 34% when he was shaking his head and to 
+45% when he was speaking. This reduction could be attributed to 
+Figure 19: Wi-Fi interference test: experimental setup (left) 
+and experimental results (right). 
+the limited resolution of RadEye. Since the legs and hands are more 
+than 14 cm away from the eyes, their movements have minimal 
+impact on RadEye’s detection accuracy. However, head and mouth 
+movements interfere with the eye rotation signal, leading to a lower 
+detection accuracy. 
+Impact of Wi-Fi signals. As RadEye operates at 5 GHz, overlap-
+ping with part of the Wi-Fi spectrum, we conducted experiments to 
+evaluate the impact of Wi-Fi signal interference on RadEye. A Wi-Fi 
+interferer was set up using the USRP and placed next to RadEye, 
+as shown in Fig. 19, continuously transmitting Wi-Fi packets. The 
+Wi-Fi signals were generated at two frequencies, 5.5 GHz and 5.825 
+GHz, with a bandwidth of 20 MHz. The experiments were con-
+ducted in a static environment. We compared the IF signals from 
+RadEye with and without Wi-Fi interference, and the results are 
+shown in Fig. 19. We observed that the IF signals remain nearly 
+identical, regardless of the presence of Wi-Fi signals. 
+RadEye appears to be resilient to Wi-Fi interference due to two 
+key factors. First, RadEye operates with a broad bandwidth of 1.1 
+GHz, whereas Wi-Fi signals occupy only 20 MHz. Second, RadEye 
+employs FMCW modulation, which contrasts with Wi-Fi’s OFDM 
+modulation. OFDM signals exhibit pseudo-noise characteristics, 
+and when they are correlated with FMCW signals over time, the 
+resulting correlation is close to zero. This theoretical outcome ex-
+plains why RadEye can effectively resist interference from nearby 
+Wi-Fi devices. 
+5.7 Zero-Shot Performance 
+Since RadEye has a DNN component for eye rotation detection, it 
+is critical to evaluate its zero-shot performance against new users 
+and new scenarios. 
+New Users. The generality of the trained model is crucial as
+it allows for easy extension to new users with minimal effort. To 
+evaluate this, we conducted a cross-user test for RadEye. Specifically, 
+four new users who were not involved in the training data collection 
+were invited to perform eye rotations at a distance of 5 m. Among 
+these users, participants B and C wore glasses. Each participant 
+contributed 5 minutes of data. Fig. 20 reports RadEye’s estimation 
+accuracy for these four different users. The highest accuracy is 
+86% for user A, and the lowest accuracy is 77% for user D. Notably, 
+wearing glasses does not seem to affect the results much. RadEye 
+achieves an average accuracy higher than 80% for new users. This 
+demonstrates the generalizability of RadEye to new users. 
+New Environments. In addition to evaluating RadEye’s gen-
+eralizability to new users, we also assessed its zero-shot perfor-
+mance in unseen scenarios. Four new participants performed eye
+RadEye: Tracking Eye Motion Using FMCW Radar CHI ’25, April 26–May 01, 2025, Yokohama, Japan 
+User A User B User C User D 
+0% 
+20% 
+40% 
+60% 
+80% 
+100% 
+Accuracy 
+0.86 0.81 0.82 0.77 
+Figure 20: The accuracy for 
+users not in the training set. 
+Lab Conf. room Hallway 
+0% 
+20% 
+40% 
+60% 
+80% 
+100% 
+Accuracy 
+0.84 0.83 0.84 
+Figure 21: The accuracy in 
+the different environments. 
+rotations at a distance of 5 m in both a conference room and a 
+hallway. Fig. 16(b)-(c) illustrates our experimental settings, where 
+participants faced RadEye at an angle of 0◦ . Fig. 21 presents the 
+measurement results. RadEye achieves accuracies of 83% and 84% 
+in the conference room and hallway, respectively. These results 
+demonstrate RadEye’s ability to generalize to unseen environments 
+as well. 
+6 Related Work 
+6.1
+ Eye Motion Recognition 
+Acoustic-based Detection. As speakers and microphones are now 
+commonplace on mobile devices, acoustic signals have become 
+widely utilized for recognizing human daily activities. BlinkListener 
+[22] can detect eye blink motions using acoustic signals, modeling 
+variations caused by eye blinks and interference. By leveraging 
+interference, they identify an optimal position to maximize the 
+variation induced by eye blinks. TwinkleTwinkle [5] addresses a 
+similar objective using a different approach. They employ a phase 
+difference-based method to detect potential blink motions, followed 
+by a model-based approach to distinguish subtle motions. Addi-
+tionally, they establish a language input system based on ASCII 
+code and Morse code. While RadEye is capable of recognizing eye 
+motions, the mentioned works focus solely on detecting eye blinks 
+at limited distances. 
+RF-based Detection. In the study by Zhang et al. [47], an off-the-
+shelf mmWave FMCW radar is employed to detect eye blinks. They 
+introduce an Adaptive Variational Mode Decomposition (AVMD) al-
+gorithm to extract the blink signal, achieving an effective detection 
+distance of up to 1.2 meters. Several other studies [3, 24, 39] have 
+taken a similar approach with mmWave FMCW radar. In addition to 
+the mmWave signal, BlinkRadar [13] employs UWB radar to detect 
+eye blinks in a driving scenario. They implemented a customized 
+impulse-radio ultra-wideband (IR-UWB) radar. By analyzing signal 
+features in the complex domain, the system can isolate eye blinks 
+without interference from other motions. 
+Camera-based Detection. Due to the ubiquity of web cameras 
+and smartphone cameras, significant progress has been made in 
+using cameras to track eye motion. In the computer vision research 
+domain, deep learning networks have been effectively employed to 
+predict gaze direction [16, 30, 49, 51]. Furthermore, in the security 
+domain, studies have shown that the camera on a mobile phone 
+can even track the gaze trace, raising concerns about potential 
+password leakage [4, 38]. Additionally, there are commercial eye-
+trackers available on the market [10, 33] that support high-accuracy 
+eye-tracking at an affordable price. However, it’s worth noting that 
+all camera-based eye-tracking solutions may raise privacy concerns 
+and may not function effectively in low-light scenarios. 
+Wearable-based Detection. With the prevalence of VR de-
+vices, smart glasses offer another solution for eye motion detection. 
+Google Glass [14] and Jins MEME pair of eyeglasses [6] demon-
+strated the potential to detect eye motions several years ago. Build-
+ing on existing approaches, Liu et al. [23] attached a copper elec-
+trode to the glass frame to sense eye blinks by utilizing the ca-
+pacitance variation between the electrode and eyelid. However, 
+wearable devices like these require users to keep the glasses on 
+their heads, which may be inconvenient for daily use. 
+6.2 Fine-grained HAR 
+MmWave-based Recognition. MmWave FMCW radar has reached 
+great performance these years due to its fine-grained detection abil-
+ity and affordable cost. They are extensively used in human activity 
+recognition and vital sign detection [11, 21, 41, 42, 48, 50]. Thanks 
+to their substantial bandwidth and diminutive wavelength, they 
+attain millimeter-level accuracy in detecting object movements. 
+Wi-Fi-based Recognition. Channel State Information (CSI) in 
+Wi-Fi networks has been applied across various sensing applica-
+tions, including gesture recognition [9, 19, 45], vital sign detection 
+[37], and radio imaging [15, 20, 29, 36]. Nevertheless, Wi-Fi, charac-
+terized as a non-coherent system due to the physical separation of 
+its transmitter and receiver, faces limitations in detection accuracy 
+stemming from timing, frequency, and phase misalignments. 
+7 Limitations and Discussions 
+In this section, we point out the limitations of RadEye and discuss 
+potential solutions to address them. 
+• Interference caused by head and mouth movements. While 
+RadEye is resilient to interference from surrounding environ-
+ments, it requires the users to keep their heads still during use. 
+Movements such as head shaking, speaking, or other facial ex-
+pressions can obscure the eye rotation signals, resulting in un-
+successful detection. To address this issue, one approach is to 
+increase the bandwidth of RadEye. When the bandwidth is suffi-
+ciently large, RadEye can differentiate eyes from mouth in the 
+frequency domain, thereby eliminating the interference from 
+head and mouth movements for eye motion detection. 
+• RadEye versus mmWave radar. MmWave radar is capable of 
+detecting subtle movements, such as eye motion, and is commer-
+cially available on the market. However, its detection range is 
+relatively short due to the rapid signal attenuation of mmWave 
+propagation. In contrast, RadEye offers a significantly larger 
+range for eye motion detection but requires a wide spectrum 
+bandwidth at lower frequencies. Therefore, both mmWave radar 
+and RadEye have distinct advantages and limitations. MmWave 
+radar is better suited for short-range eye tracking, while RadEye 
+is more appropriate for long-range use cases. 
+• Physical size of RadEye. Our current prototype of RadEye is 
+not compact enough for certain applications, such as installation 
+on wheelchairs. This limitation arises because our prototype has 
+not yet been optimized. In fact, the current design has signifi-
+cant potential for size reduction through various optimizations, 
+including using smaller packages (e.g., SMD) for electronic com-
+ponents, more efficient power management chips, improved
+CHI ’25, April 26–May 01, 2025, Yokohama, Japan Shichen Zhang, Qijun Wang, Kunzhe Song, Qiben Yan, and Huacheng Zeng 
+patch antenna designs, and shorter cables. Moreover, integrat-
+ing the patch antennas directly into the PCB could significantly 
+reduce the system’s physical size, making it more suitable for 
+space-constrained applications. 
+• User fatigue. RadEye currently recognizes eye rotations in only 
+four directions, requiring users to rotate their eyes multiple times 
+to input a word. This tends to cause eye fatigue. Future work will 
+focus on developing a system capable of continuously tracking 
+eye rotation directions with high accuracy, rather than limiting 
+recognition to four discrete directions. This improvement would 
+enhance input efficiency and significantly reduce user fatigue. 
+8 Conclusion 
+Remote eye tracking has many potential applications ranging from 
+HCI-based input to eye disease detection. While camera has been 
+widely studied for eye tracking, its application in practice may raise 
+privacy concerns in some scenarios. In this paper, we presented 
+RadEye, an RF sensing system capable of recognizing fine-grained 
+human eye movement from a long distance. The challenge in the de-
+sign of RadEye is to detect tiny eyeball movements in the presence 
+of interference from other moving objects. RadEye addresses this 
+challenge through a joint hardware and software design. For hard-
+ware, RadEye custom-designed a sub-6GHz FMCW radar for fea-
+ture extraction and interference mitigation. For software, a camera-
+guided DNN model has been crafted to improve RadEye’s detection 
+accuracy. Extensive experiments show that RadEye achieves 90% 
+accuracy when detecting people’s eye rotation directions (up, down, 
+left, and right) in various scenarios. 
+Acknowledgments 
+We sincerely thank the anonymous reviewers for their insightful 
+comments. This project was supported in part by NSF Grant ECCS-
+2225337. 
+References 
+[1] ALS news today. 2024. ALS Facts and Statistics. https://tinyurl.com/bs8rmh3w. 
+[Online; accessed 11-September-2024]. 
+[2] Amy Yee. 2024. Why Do Eye Muscles Function in ALS as Other Muscles Waste 
+Away? https://tinyurl.com/37tk2rm4. [Online; accessed 11-September-2024]. 
+[3] Emanuele Cardillo, Gaia Sapienza, Changzhi Li, and Alina Caddemi. 2021. Head 
+motion and eyes blinking detection: A mm-wave radar for assisting people with 
+neurodegenerative disorders. In 2020 50th European Microwave Conference (EuMC). 
+IEEE, Piscataway, NJ, USA, 925–928. doi:10.23919/EuMC48046.2021.9338116 
+[4] Yimin Chen, Tao Li, Rui Zhang, Yanchao Zhang, and Terri Hedgpeth. 2018. Eyetell: 
+Video-assisted touchscreen keystroke inference from eye movements. In 2018 
+IEEE Symposium on Security and Privacy (SP). IEEE, Piscataway, NJ, USA, 144–160. 
+doi:10.1109/SP.2018.00010 
+[5] Haiming Cheng, Wei Lou, Yanni Yang, Yi-pu Chen, and Xinyu Zhang. 2023. 
+TwinkleTwinkle: Interacting with Your Smart Devices by Eye Blink. Proceedings 
+of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 7, 2 (2023), 
+1–30. doi:10.1145/3596238 
+[6] Murtaza Dhuliawala, Juyoung Lee, Junichi Shimizu, Andreas Bulling, Kai Kunze, 
+Thad Starner, and Woontack Woo. 2016. Smooth eye movement interaction 
+using EOG glasses. In Proceedings of the 18th ACM International Conference on 
+Multimodal Interaction. Association for Computing Machinery, New York, NY, 
+USA, 307–311. doi:10.1145/2993148.2993181 
+[7] Yuda Feng, Yaxiong Xie, Deepak Ganesan, and Jie Xiong. 2021. LTE-based 
+pervasive sensing across indoor and outdoor. In Proceedings of the 19th ACM 
+Conference on Embedded Networked Sensor Systems. Association for Computing 
+Machinery, New York, NY, USA, 138–151. doi:10.1145/3485730.3485943 
+[8] Andrew Fitzgibbon, Maurizio Pilu, and Robert B Fisher. 1999. Direct least square 
+fitting of ellipses. IEEE Transactions on pattern analysis and machine intelligence 
+21, 5 (1999), 476–480. doi:10.1109/34.765658 
+[9] Zhangjie Fu, Jiashuang Xu, Zhuangdi Zhu, Alex X Liu, and Xingming Sun. 2018. 
+Writing in the air with WiFi signals for virtual reality devices. IEEE Transactions 
+on Mobile Computing 18, 2 (2018), 473–484. doi:10.1109/TMC.2018.2831709 
+[10] GazeRecorder. 2024. Online Eye Tracking Software. https://gazerecorder.com/. 
+[Online; accessed 6-September-2024]. 
+[11] Unsoo Ha, Salah Assana, and Fadel Adib. 2020. Contactless seismocardiography 
+via deep learning radars. In Proceedings of the 26th annual international conference 
+on mobile computing and networking. Association for Computing Machinery, New 
+York, NY, USA, 1–14. doi:10.1145/3372224.3419982 
+[12] Sepp Hochreiter and Jürgen Schmidhuber. 1997. Long short-term memory. Neural 
+computation 9, 8 (1997), 1735–1780. 
+[13] Jingyang Hu, Hongbo Jiang, Daibo Liu, Zhu Xiao, Schahram Dustdar, Jiangchuan 
+Liu, and Geyong Min. 2022. BlinkRadar: non-intrusive driver eye-blink de-
+tection with UWB radar. In 2022 IEEE 42nd International Conference on Dis-
+tributed Computing Systems (ICDCS). IEEE, Piscataway, NJ, USA, 1040–1050. 
+doi:10.1109/ICDCS54860.2022.00104 
+[14] Shoya Ishimaru, Kai Kunze, Koichi Kise, Jens Weppner, Andreas Dengel, Paul 
+Lukowicz, and Andreas Bulling. 2014. In the blink of an eye: combining head 
+motion and eye blink frequency for activity recognition with google glass. In 
+Proceedings of the 5th augmented human international conference. Association for 
+Computing Machinery, New York, NY, USA, 1–4. doi:10.1145/2582051.2582066 
+[15] Wenjun Jiang, Hongfei Xue, Chenglin Miao, Shiyang Wang, Sen Lin, Chong Tian, 
+Srinivasan Murali, Haochen Hu, Zhi Sun, and Lu Su. 2020. Towards 3D human 
+pose construction using WiFi. In Proceedings of the 26th Annual International 
+Conference on Mobile Computing and Networking. Association for Computing 
+Machinery, New York, NY, USA, 1–14. doi:10.1145/3372224.3380900 
+[16] Kyle Krafka, Aditya Khosla, Petr Kellnhofer, Harini Kannan, Suchendra Bhan-
+darkar, Wojciech Matusik, and Antonio Torralba. 2016. Eye tracking for everyone. 
+In Proceedings of the IEEE conference on computer vision and pattern recognition. 
+IEEE, Piscataway, NJ, USA, 2176–2184. doi:10.1109/CVPR.2016.239 
+[17] Antoinelame Antoine Lamé. 2024. Gaze Tracking. https://github.com/ 
+antoinelame/GazeTracking. [Online; accessed 11-September-2024]. 
+[18] Kyoung-Min Lee, Annie P Lai, James Brodale, and Arthur Jampolsky. 2007. 
+Sideslip of the medial rectus muscle during vertical eye rotation. Investigative 
+ophthalmology & visual science 48, 10 (2007), 4527–4533. 
+[19] Chenning Li, Manni Liu, and Zhichao Cao. 2020. WiHF: Enable user identi-
+fied gesture recognition with WiFi. In IEEE INFOCOM 2020-IEEE Conference on 
+Computer Communications. IEEE, Piscataway, NJ, USA, 586–595. doi:10.1109/ 
+INFOCOM41043.2020.9155539 
+[20] Chenning Li, Zheng Liu, Yuguang Yao, Zhichao Cao, Mi Zhang, and Yunhao Liu. 
+2020. Wi-fi see it all: generative adversarial network-augmented versatile wi-fi 
+imaging. In Proceedings of the 18th Conference on Embedded Networked Sensor 
+Systems. Association for Computing Machinery, New York, NY, USA, 436–448. 
+doi:10.1145/3384419.3430725 
+[21] Zhengxiong Li, Fenglong Ma, Aditya Singh Rathore, Zhuolin Yang, Baicheng 
+Chen, Lu Su, and Wenyao Xu. 2020. Wavespy: Remote and through-wall screen 
+attack via mmwave sensing. In 2020 IEEE Symposium on Security and Privacy (SP). 
+IEEE, Piscataway, NJ, USA, 217–232. doi:10.1109/SP40000.2020.00004 
+[22] Jialin Liu, Dong Li, Lei Wang, and Jie Xiong. 2021. BlinkListener: " Listen" to Your 
+Eye Blink Using Your Smartphone. Proceedings of the ACM on Interactive, Mobile, 
+Wearable and Ubiquitous Technologies 5, 2 (2021), 1–27. doi:10.1145/3463521 
+[23] Mengxi Liu, Sizhen Bian, and Paul Lukowicz. 2022. Non-contact, real-time 
+eye blink detection with capacitive sensing. In Proceedings of the 2022 ACM 
+International Symposium on Wearable Computers. Association for Computing 
+Machinery, New York, NY, USA, 49–53. doi:10.1145/3544794.3558462 
+[24] Lina Ma, Yangtao Ye, Changzhan Gu, and Junfa Mao. 2022. High-Accuracy 
+Contactless Detection of Eyes’ Activities based on Short-Range Radar Sensing. In 
+2022 IEEE MTT-S International Microwave Biomedical Conference (IMBioC). IEEE, 
+Piscataway, NJ, USA, 266–268. doi:10.1109/IMBioC52515.2022.9790181 
+[25] Rima-Maria Rahal and Susann Fiedler. 2019. Understanding cognitive and affec-
+tive mechanisms in social psychology through eye-tracking. Journal of Experi-
+mental Social Psychology 85 (2019), 103842. 
+[26] David E Rumelhart, Geoffrey E Hinton, Ronald J Williams, et al. 1985. Learning 
+internal representations by error propagation. 
+[27] Cian Ryan, Brian O’Sullivan, Amr Elrasad, Aisling Cahill, Joe Lemley, Paul Kielty, 
+Christoph Posch, and Etienne Perot. 2021. Real-time face & eye tracking and 
+blink detection using event cameras. Neural Networks 141 (2021), 87–97. 
+[28] Science Daily. 2024. Eye muscles are resilient to ALS. https://tinyurl.com/ 
+cy4kxhv2. [Online; accessed 11-September-2024]. 
+[29] Kunzhe Song, Qijun Wang, Shichen Zhang, and Huacheng Zeng. 2024. SiWiS: 
+Fine-grained Human Detection Using Single WiFi Device. In Proceedings of 
+the 30th Annual International Conference on Mobile Computing and Network-
+ing. Association for Computing Machinery, New York, NY, USA, 1439–1454. 
+doi:10.1145/3636534.3690703 
+[30] Yusuke Sugano, Yasuyuki Matsushita, and Yoichi Sato. 2014. Learning-by-
+synthesis for appearance-based 3d gaze estimation. In Proceedings of the IEEE 
+conference on computer vision and pattern recognition. IEEE, Piscataway, NJ, USA, 
+1821–1828. doi:10.1109/CVPR.2014.235 
+[31] Koh Tadokoro, Toru Yamashita, Yusuke Fukui, Emi Nomura, Yasuyuki Ohta, 
+Setsuko Ueno, Saya Nishina, Keiichiro Tsunoda, Yosuke Wakutani, Yoshiki Takao,
+RadEye: Tracking Eye Motion Using FMCW Radar CHI ’25, April 26–May 01, 2025, Yokohama, Japan 
+et al. 2021. Early detection of cognitive decline in mild cognitive impairment and 
+Alzheimer’s disease with a novel eye tracking test. Journal of the neurological 
+sciences 427 (2021), 117529. 
+[32] Texas Instruments. 2024. TI AWR6843. https://www.ti.com/tool/AWR6843ISK. 
+[Online; accessed 11-September-2024]. 
+[33] Tobill. 2024. TOBII PRO SPECTRUM. https://www.tobii.com. [Online; accessed 
+11-September-2024]. 
+[34] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, 
+Aidan N. Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017. Attention is all 
+you need. In NIPS’17 (Long Beach, California, USA). Curran Associates Inc., Red 
+Hook, NY, USA, 6000–6010. 
+[35] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai 
+Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via 
+RFID by capturing sub-mm level vibration. Proceedings of the ACM on Interactive, 
+Mobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–25. doi:10.1145/ 
+3494975 
+[36] Fei Wang, Sanping Zhou, Stanislav Panev, Jinsong Han, and Dong Huang. 2019. 
+Person-in-WiFi: Fine-grained person perception using WiFi. In Proceedings of 
+the IEEE/CVF International Conference on Computer Vision. IEEE, Piscataway, NJ, 
+USA, 5452–5461. doi:10.1109/ICCV.2019.00555 
+[37] Xuyu Wang, Chao Yang, and Shiwen Mao. 2017. PhaseBeat: Exploiting CSI 
+phase data for vital sign monitoring with commodity WiFi devices. In 2017 IEEE 
+37th International Conference on Distributed Computing Systems (ICDCS). IEEE, 
+Piscataway, NJ, USA, 1230–1239. doi:10.1109/ICDCS.2017.206 
+[38] Yao Wang, Wandong Cai, Tao Gu, and Wei Shao. 2019. Your eyes reveal your 
+secrets: An eye movement based password inference on smartphone. IEEE 
+transactions on mobile computing 19, 11 (2019), 2714–2730. 
+[39] Yong Wang, Yuhong Shu, and Mu Zhou. 2021. A Novel Eye Blink Detection 
+Method using Frequency Modulated Continuous Wave Radar. In 2021 IEEE In-
+ternational Workshop on Electromagnetics: Applications and Student Innovation 
+Competition (iWEM). IEEE, Piscataway, NJ, USA, 1–3. doi:10.1109/iWEM53379. 
+2021.9790529 
+[40] Zhiqing Wei, Yuan Wang, Liang Ma, Shaoshi Yang, Zhiyong Feng, Chengkang 
+Pan, Qixun Zhang, Yajuan Wang, Huici Wu, and Ping Zhang. 2022. 5G PRS-based 
+sensing: A sensing reference signal approach for joint sensing and communication 
+system. IEEE Transactions on Vehicular Technology 72, 3 (2022), 3250–3263. 
+[41] Jiahong Xie, Hao Kong, Jiadi Yu, Yingying Chen, Linghe Kong, Yanmin Zhu, and 
+Feilong Tang. 2023. mm3DFace: Nonintrusive 3D Facial Reconstruction Leverag-
+ing mmWave Signals. In Proceedings of the 21st Annual International Conference on 
+Mobile Systems, Applications and Services. Association for Computing Machinery, 
+New York, NY, USA, 462–474. doi:10.1145/3581791.3596839 
+[42] Hongfei Xue, Yan Ju, Chenglin Miao, Yijiang Wang, Shiyang Wang, Aidong 
+Zhang, and Lu Su. 2021. mmMesh: Towards 3D real-time dynamic human 
+mesh construction using millimeter-wave. In Proceedings of the 19th Annual 
+International Conference on Mobile Systems, Applications, and Services. Association 
+for Computing Machinery, New York, NY, USA, 269–282. doi:10.1145/3458864. 
+3467679 
+[43] Lei Yang, Qiongzheng Lin, Xiangyang Li, Tianci Liu, and Yunhao Liu. 2015. See 
+through walls with COTS RFID system!. In Proceedings of the 21st Annual Inter-
+national Conference on Mobile Computing and Networking. Association for Com-
+puting Machinery, New York, NY, USA, 487–499. doi:10.1145/2789168.2790100 
+[44] H Zamani, A Abas, and MKM Amin. 2016. Eye tracking application on emotion 
+analysis for marketing strategy. Journal of Telecommunication, Electronic and 
+Computer Engineering (JTEC) 8, 11 (2016), 87–91. 
+[45] Shichen Zhang, Pedram Kheirkhah Sangdeh, Hossein Pirayesh, Huacheng Zeng, 
+Qiben Yan, and Kai Zeng. 2022. Authiot: A transferable wireless authentication 
+scheme for iot devices without input interface. IEEE Internet of Things Journal 9, 
+22 (2022), 23072–23085. 
+[46] Tianfang Zhang, Zhengkun Ye, Ahmed Tanvir Mahdad, Md Mojibur Rahman Re-
+doy Akanda, Cong Shi, Yan Wang, Nitesh Saxena, and Yingying Chen. 2023. 
+FaceReader: Unobtrusively Mining Vital Signs and Vital Sign Embedded Sensitive 
+Info via AR/VR Motion Sensors. In Proceedings of the 2023 ACM SIGSAC Con-
+ference on Computer and Communications Security. Association for Computing 
+Machinery, New York, NY, USA, 446–459. doi:10.1145/3576915.3623102 
+[47] Xinze Zhang, Walid Brahim, Mingyang Fan, Jianhua Ma, Muxin Ma, and Alex Qi. 
+2023. Radar-Based Eyeblink Detection Under Various Conditions. In Proceedings 
+of the 2023 12th International Conference on Software and Computer Applications. 
+Association for Computing Machinery, New York, NY, USA, 177–183. doi:10. 
+1145/3587828.3587855 
+[48] Xiaotong Zhang, Zhenjiang Li, and Jin Zhang. 2022. Synthesized Millimeter-
+Waves for Human Motion Sensing. In Proceedings of the 20th ACM Conference 
+on Embedded Networked Sensor Systems. Association for Computing Machinery, 
+New York, NY, USA, 377–390. doi:10.1145/3560905.3568542 
+[49] Xucong Zhang, Yusuke Sugano, Mario Fritz, and Andreas Bulling. 2015. 
+Appearance-based gaze estimation in the wild. In Proceedings of the IEEE con-
+ference on computer vision and pattern recognition. IEEE, Piscataway, NJ, USA, 
+4511–4520. doi:10.1109/CVPR.2015.7299081 
+[50] Xi Zhang, Yu Zhang, Zhenguo Shi, and Tao Gu. 2023. mmFER: Millimetre-wave 
+Radar based Facial Expression Recognition for Multimedia IoT Applications. In 
+Proceedings of the 29th Annual International Conference on Mobile Computing and 
+Networking. Association for Computing Machinery, New York, NY, USA, 1–15. 
+doi:10.1145/3570361.3592515 
+[51] Wangjiang Zhu and Haoping Deng. 2017. Monocular free-head 3d gaze tracking 
+with deep learning and geometry constraints. In Proceedings of the IEEE Inter-
+national Conference on Computer Vision. IEEE, Piscataway, NJ, USA, 3143–3152. 
+doi:10.1109/ICCV.2017.341

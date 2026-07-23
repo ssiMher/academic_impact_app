@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% from "components/stat_card.html" import stat_card %}
+{% from "components/diagnostics_panel.html" import diagnostics_panel %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}学者证据{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">正式证据阅读</div>
+      <h1>学者证据</h1>
+      <p>{% if mode == "debug" %}调试 / 高级审核视图{% else %}以正式报告格式阅读引用证据、原文上下文和评价依据{% endif %}</p>
+    </div>
+    <nav class="quick-links">
+      <a href="/scholar-sessions/{{ session_id }}/queue">返回队列</a>
+      <a href="/scholar-sessions/{{ session_id }}/analysis-debug">分析调试</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards">高亮卡片</a>
+      <a href="/scholar-sessions/{{ session_id }}">学者详情</a>
+    </nav>
+  </header>
+
+  <nav class="filter-buttons evidence-mode-switch" aria-label="证据页面模式">
+    <a class="{% if mode == 'formal' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view={{ view }}&mode=formal">正式证据视图</a>
+    <a class="{% if mode == 'debug' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view={{ view }}&mode=debug">展开调试信息</a>
+    <a href="/scholar-sessions/{{ session_id }}/evidence?view=unreviewed&mode=debug">批量审核 / 高级审核</a>
+  </nav>
+
+  {% if mode == "debug" %}
+    <h2 class="sr-only">证据质量概览</h2>
+    <section class="stat-grid" aria-label="Evidence quality summary">
+      {{ stat_card("证据总数", summary.total_evidence_count) }}
+      {{ stat_card("已接受", summary.accepted_count) }}
+      {{ stat_card("已拒绝", summary.rejected_count) }}
+      {{ stat_card("重要证据", summary.important_count) }}
+      {{ stat_card("误报", summary.false_positive_count) }}
+      {{ stat_card("第三方证据", summary.third_party_evidence_count) }}
+      {{ stat_card("自引证据", summary.self_citation_evidence_count) }}
+      {{ stat_card("高强度", summary.high_strength_count) }}
+      {{ stat_card("中强度", summary.medium_strength_count) }}
+      {{ stat_card("低强度", summary.low_strength_count) }}
+    </section>
+    <span class="sr-only">
+      total_evidence_count accepted_count rejected_count important_count false_positive_count
+      third_party_evidence_count self_citation_evidence_count high_strength_count
+      medium_strength_count low_strength_count
+    </span>
+
+    <nav class="filter-buttons" aria-label="evidence filters">
+      <a class="{% if view == 'all' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=all&mode=debug">全部</a>
+      <a class="{% if view == 'important' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=important&mode=debug">重要</a>
+      <a class="{% if view == 'accepted' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=accepted&mode=debug">已接受</a>
+      <a class="{% if view == 'unreviewed' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=unreviewed&mode=debug">未复核</a>
+      <a class="{% if view == 'false_positive' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=false_positive&mode=debug">误报</a>
+      <a class="{% if view == 'positive' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=positive&mode=debug">正向</a>
+      <a class="{% if view == 'high_strength' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=high_strength&mode=debug">高强度</a>
+      <a class="{% if view == 'third_party_only' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=third_party_only&mode=debug">仅第三方</a>
+      <a class="{% if view == 'exclude_self_citation' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/evidence?view=exclude_self_citation&mode=debug">排除自引</a>
+    </nav>
+  {% endif %}
+
+  {% if evidence_items %}
+    {% if mode == "formal" %}
+      {% for section in formal_evidence_view.sections %}
+        <section class="formal-report-section evidence-formal-section">
+          <h2>{{ section.title }}</h2>
+          {% for item in section["items"] %}
+            {% set formal_item = item %}
+            {% set evidence_page = true %}
+            {% include "components/formal_evidence_card.html" %}
+          {% endfor %}
+        </section>
+      {% endfor %}
+    {% else %}
+      {% for row in evidence_items %}
+        {% set evidence = row.evidence %}
+        {% set item = row.item %}
+        {% set template_matches = row.template_matches %}
+        {% set notable_annotations = row.notable_annotations %}
+        {% set context_preview = row.context_preview %}
+        {% set judgment_basis = row.judgment_basis %}
+        {% include "components/evidence_item.html" %}
+      {% endfor %}
+    {% endif %}
+  {% else %}
+    <section class="empty-state">
+      <h2>暂无强证据。</h2>
+      {% if pdf_summary.total_queue_items and pdf_summary.ready_count == 0 %}
+        <p>没有引用论文 PDF 已就绪。请先上传引用论文 PDF。</p>
+        <p class="sr-only">No citing paper PDF is ready. Please upload the citing paper PDF.</p>
+      {% elif not analysis_diagnostics %}
+        {% if pdf_summary.ready_count > 0 %}
+          <p>已有可分析条目，但尚未运行全文分析。</p>
+        {% else %}
+          <p>尚未运行全文分析。</p>
+        {% endif %}
+        <p class="sr-only">No fulltext analysis has been run.</p>
+      {% elif analysis_diagnostics and analysis_diagnostics[0].schema_error %}
+        <p>LLM 输出格式不符合 schema，请查看 raw response 和 schema error。</p>
+        <p class="sr-only">The LLM returned output that did not match the expected schema.</p>
+      {% elif analysis_diagnostics and analysis_diagnostics[0].llm_findings_count > 0 and analysis_diagnostics[0].generated_strong_evidence_count == 0 %}
+        <p>LLM 找到了可能相关的引用发现，但没有任何一条通过强证据过滤。请查看下方过滤原因。</p>
+        <p class="sr-only">The LLM found possible citation-related findings, but none passed the strong evidence filters. Check filter reasons below.</p>
+      {% elif analysis_diagnostics and analysis_diagnostics[0].llm_findings_count == 0 %}
+        <p>全文已分析，但模型没有发现可保存的正文强证据。</p>
+        <p class="sr-only">The full text was analyzed, but no strong evidence was found.</p>
+      {% endif %}
+      <a class="button button-primary" href="/scholar-sessions/{{ session_id }}/queue">返回队列</a>
+    </section>
+    {% if mode == "debug" %}
+      {{ diagnostics_panel(analysis_diagnostics) }}
+      <p class="muted">fulltext_result_count: {{ analysis_diagnostics|length }}</p>
+    {% else %}
+      <a class="button button-secondary" href="/scholar-sessions/{{ session_id }}/evidence?view={{ view }}&mode=debug">展开调试信息</a>
+    {% endif %}
+  {% endif %}
+{% endblock %}

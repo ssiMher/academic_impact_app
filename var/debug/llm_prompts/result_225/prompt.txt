@@ -1,0 +1,1694 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Evaluate ACTIVE_EVIDENCE_TEMPLATES for every finding. Include matched_template_ids, template_match_reason, template_satisfied, and template_failure_reason. If a template is relevant but not satisfied, explain why.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true,
+      "matched_template_ids": [1],
+      "template_match_reason": "why this quote satisfies an active template",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [97]
+TARGET_REFERENCE_ENTRY: [97] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai
+Zhang, and Sanglu Lu. 2021. Thru-the-wall Eavesdropping on Loudspeakers
+via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–25.
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=EC 4: Since we are interested in the impact of generative models; context_type=formula_nearby; contains_formula=True
+e/study
+papers [67, 76] were excluded.
+EC 3: We chose papers that use or study neural network-based
+generative models such as GAN, VAE, LSTM, GPT-3, and
+DALL-E. For instance, the use of conventional generative
+models like Gaussian mixture models was excluded.
+EC 4: Since we are interested in the impact of generative models
+to humans, excluded are the technical papers which adopted
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+generative models for data augmentation [49, 59], synthesiz-
+ing [37], and complement [97].
+EC 5: We excluded doctoral dissertation, survey paper, book, book
+chapter, and demo papers.
+EC 6: Lastly, we excluded the paper published by the same au-
+thor(s) where the content is not different significantly.
+3.1.4 Round 1—4. Our strategy to perform the literature review
+was to collect papers broadly and then narrow down the scope
+for careful examination [22]. Therefore, in round 1, we collected
+a total of 1,494 papers from the 6 venues (i.e., CHI, UIST, IUI, DIS,
+CSCW, C&C) using the search terms (i.e., generate, generation,
+generative, and generating) on a popular academic database, ACM
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+Large-scale Text-to-Image Generation Models for Visual Artists’
+Creative Works
+Hyung-Kwon Ko
+KAIST
+Republic of Korea
+hyungkwonko@gmail.com
+Gwanmo Park
+Seoul National University
+Republic of Korea
+parkgw95@gmail.com
+Hyeon Jeon
+Seoul National University
+Republic of Korea
+hj@hcil.snu.ac.kr
+Jaemin Jo
+Sungkyunkwan University
+Republic of Korea
+jmjo@skku.edu
+Juho Kim
+KAIST
+Republic of Korea
+juhokim@kaist.ac.kr
+Jinwook Seo∗
+Seoul National University
+Republic of Korea
+jseo@snu.ac.kr
+ABSTRACT
+Large-scale Text-to-image Generation Models (LTGMs) (e.g., DALL-
+E), self-supervised deep learning models trained on a huge dataset,
+have demonstrated the capacity for generating high-quality open-
+domain images from multi-modal input. Although they can even
+produce anthropomorphized versions of objects and animals, com-
+bine irrelevant concepts in reasonable ways, and give variation to
+any user-provided images, we witnessed such rapid technological
+advancement left many visual artists disoriented in leveraging LT-
+GMs more actively in their creative works. Our goal in this work is
+to understand how visual artists would adopt LTGMs to support
+their creative works. To this end, we conducted an interview study
+as well as a systematic literature review of 72 system/application
+papers for a thorough examination. A total of 28 visual artists cover-
+ing 35 distinct visual art domains acknowledged LTGMs’ versatile
+roles with high usability to support creative works in automating
+the creation process (i.e., automation), expanding their ideas (i.e.,
+exploration), and facilitating or arbitrating in communication (i.e.,
+mediation). We conclude by providing four design guidelines that
+future researchers can refer to in making intelligent user interfaces
+using LTGMs.
+CCS CONCEPTS
+• Human-centered computing →Empirical studies in HCI ; •
+Computing methodologies →Artificial intelligence.
+KEYWORDS
+Large-scale text-to-image generation model; DALL-E; visual artists;
+literature review; interview study
+∗Corresponding author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than ACM
+must be honored. Abstracting with credit is permitted. To copy otherwise, or republish,
+to post on servers or to redistribute to lists, requires prior specific permission and/or a
+fee. Request permissions from permissions@acm.org.
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+© 2023 Association for Computing Machinery.
+ACM ISBN 979-8-4007-0106-1/23/03. . . $15.00
+https://doi.org/10.1145/3581641.3584078
+ACM Reference Format:
+Hyung-Kwon Ko, Gwanmo Park, Hyeon Jeon, Jaemin Jo, Juho Kim, and Jin-
+wook Seo. 2023. Large-scale Text-to-Image Generation Models for Visual
+Artists’ Creative Works. In 28th International Conference on Intelligent User
+Interfaces (IUI ’23), March 27–31, 2023, Sydney, NSW, Australia. ACM, New
+York, NY, USA, 15 pages. https://doi.org/10.1145/3581641.3584078
+1 INTRODUCTION
+Large-scale Text-to-image Generation Models (LTGM) (e.g., DALL-
+E [73, 74]) are AI models trained at scale (e.g., 250 million text-
+images pairs for DALL-E) that show generalizable performance at
+several downstream tasks such as image captioning and object de-
+tection [9]. Compared to previous AI models, the biggest advantage
+of LTGMs is that they can take multi-modal input, such as text or
+image, to produce high-quality images in a zero-shot fashion [74].
+For example, DALL-E even achieved high generation quality when
+tested on MS-COCO dataset [51], although it was not contained
+in the training labels [74]. Thanks to the advancement of LTGMs,
+there exists multiple software to make artworks [36, 61, 64] called
+AI art generator, which has drawn huge attention from various
+visual art domains [42, 50, 58].
+In the visual art domain, AI art generators have gained popularity
+and found versatile usage. More and more visual artists expressed
+their interests toward them on social media platforms. For example,
+John Maeda, a former president at Rhode Island School of Design,
+said LTGMs can become a tool to change the working paradigm
+of visual artists by taking initiatives in producing art, even per-
+forming better than humans [58]. However, we observed that rapid
+technological improvements have left many visual artists perplexed
+and disoriented to ponder on how to adopt LTGM actively to their
+creative works. Moreover, while prior work has highlighted LT-
+GMs’ technical properties such as prompt engineering [54, 72], yet
+little research has explored the applicability of LTGMs in assisting
+visual artists broadly. In this work, we seek to answer the following
+research questions: 1) which subgroups of visual artists would be
+more willing to use LTGMs? 2) what types of tasks would they
+utilize LTGMs on? 3) what would the LTGM’s role be in those
+cases?
+We conducted a systematic literature review of 72 system and
+application papers as well as a semi-structured interview with 28
+visual artists in varying domains (e.g., fine art and applied art) to
+find answers to the research questions. The interview study was
+grounded in three meaningful themes (i.e., user, task, and role)
+arXiv:2210.08477v3  [cs.HC]  16 Feb 2023
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia Ko et al.
+Figure 1: Example images of LTGM with DALL-E’s three functionalities. (A) A generated image by DALL-E from a text prompt
+"A cat watching a CRT monitor that displays a histogram". (B) A variation of the generated image. (C) Providing both an image
+with brushed region and text can synthesize a new image that matches with given inputs. In this case, we erased the cat and
+changed it to Darth Vader.
+found in the literature review, and they were used to examine
+the findings afterward. The study results showed that LTGMs can
+perform diverse roles including 1) automating the creation process
+(i.e., automation), 2) expanding their ideas (i.e., exploration), and
+3) facilitating or arbitrating in communication (i.e., mediation).
+However, we also found that visual artists found it hard to actually
+incorporate LTGMs into their creative works in its current form.
+Based on the results of our interview study, we suggest four
+design guidelines for researchers and practitioners interested in
+making intelligent user interfaces using LTGMs. To elicit LTGMs’
+potential usability to the maximum, we propose to 1) support vari-
+ability level specification for different types of visual art, 2) provide
+model customization grounded in domain-specific understanding,
+3) add more controllability using multi-modal input, and 4) help
+prompt engineering for the ease of writing text input.
+The main contributions of our work are summarized as follows:
+•We conducted a systematic literature review of 72 system
+and application papers that used generative models to un-
+derstand the context (e.g., user, task, and role) of how they
+have been used in the HCI domain;
+•We conducted an interview study of 28 visual artists with
+varying occupations to investigate how visual artists would
+adopt LTGMs in their domain to support their creative works;
+•We provide design guidelines that future researchers can
+refer to in building intelligent user interfaces using LTGM.
+2 BACKGROUND AND RELATED WORK
+In this section, we first introduce the large-scale text-to-image
+generation models (LTGMs) and their democratization. Then, we
+present how AI models have been understood as a tool to support
+visual artists’ creative works in the HCI domain.
+Figure 2: The overall study and analysis procedure. First,
+we build themes and codes based on a systematic literature
+review of 72 publications (Section 3). Then we analyze the
+data of interviews with 28 visual artists based on both the
+deductive and inductive coding process (Section 4 and Sec-
+tion 5). Finally, we propose four design guidelines for future
+researchers (Section 6).
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+2.1 LTGMs and the Impact of Their
+Democratization
+In 2021, OpenAI presented DALL-E [74], and since then more than
+109k people joined Reddit community 1 to post, share and have
+a discussion on DALL-E-generated images. DALL-E consists of
+12 billion parameters, which is approximately 632 times larger
+than the preceding text-to-image generation model [ 88]. While
+previous models could only generate images dependent on training
+datasets such as MS-COCO [51] or CUB [94], DALL-E has shown
+a generalizable image generation performance even on unseen
+datasets in terms of both quality metrics and human evaluators.
+Moreover, it also offers some other useful functions such as image
+variation and image synthesis (Figure 1). A year after, OpenAI
+introduced a highly improved model called DALL-E2 [73] which
+can generate realistic images and artworks with four times higher
+resolution (1024 * 1024 pixels) than the previous one (256 * 256
+pixels). The performance of the DALL-E series was so powerful that
+it affected many other companies to accelerate the development
+of LTGMs. Some of them are NÜWA series [ 102, 103], made by
+Microsoft, Parti [105] developed by Google, and Make-A-Scene [24]
+released by Meta. In most cases, the model weights and training
+source codes were not open to the public, which makes it hard
+for the researchers to reproduce the image generation and editing
+process on their own.
+However, LTGMs become more accessible to the public as many
+people have put a lot of effort into democratizing it. Some LTGMs,
+such as Latent Diffusion Models [75] was trained on open source
+datasets [79, 80] and the authors uploaded it on the web so gen-
+eral public or researchers can access them freely, e.g., for further
+research [26]. Based on such advancement that datasets, source
+codes and model weights become easily accessible, a huge number
+of web applications using LTGMs are now flooded to the public. For
+example, since LTGMs accept text prompt, there is a prompt mar-
+ketplace [70] to buy and sell a pertinent text prompt. Also, a search
+engine [46] exists to find more than 5 million LTGM-generated
+images, which is similar to previous reference search tools like
+Pinterest2. Recently, NovelAI presented an anime character gen-
+eration model with simple brushing interaction, which can ease
+the burden of character designers [66]. In light of this concentrated
+attention toward LTGMs, it is reasonable to say that LTGMs will
+have a massive impact to visual artists who deal with visual source
+as main component of their work.
+2.2 AI models to Support Visual Artists’
+Creative Works
+So far, AI has been a useful tool to help visual artists’ work [ 83].
+There are a lot of AI applications and systems to help experts in dif-
+ferent visual art domains such as graphic design [89], UI design [96],
+webtoon [43], digital art [108], new media art [72], and so on. Some
+of their goals were to enhance the expressivity of 3D faces’ facial
+expressions [1], or to automate generating wireframes of chosen UI
+design patterns [25]. Considering a guideline for creation tools that
+the researchers should keep a proper moderation between human
+control and computer automation [ 82], some actively adopted a
+1https://www.reddit.com/r/dalle2
+2https://www.pinterest.com
+Table 1: A summary of the reviewed papers. After multiple
+iterations of scrutinizing, 72 papers were chosen for the fi-
+nal analysis.
+Round 1 Round 2 Round 3 Round 4
+CHI 778 728 25 26
+UIST 182 178 4 7
+IUI 267 256 18 19
+DIS 147 147 4 4
+CSCW 48 48 1 2
+C&C 72 72 12 13
+Etc. (e.g., CGF) 0 0 0 1
+SUM 1,494 1,429 64 72
+human-in-the-loop approach to facilitate human-AI collaboration.
+In detail, they tried to support augmenting creativity by providing
+an embodied experience in VR environment [90], and a controllable
+interface to balance between exploration and exploitation [111]. In
+most cases, the collaboration was recognized as a positive proxy
+by helping design ideation [40] and generating variety of sets of
+outputs efficiently [55].
+On the other hand, there are many papers studied artist’s overall
+circumstance or several implications these AI models can bring up.
+Chung et al. researched an artist’s support network to interpret a
+complex relationship between artists needed for an art-making [15].
+Through this analysis, they tried to inform the design of creativity
+support tools in connection with the network. Similarly, Li et al.
+explored the software’s role in visual art production to inform
+end-user programming and creativity support tools [47]. Also, HCI
+researchers have discussed the challenges and opportunities that
+AI models have brought as they become a part of creation tools [9].
+Examples are challenges concerning ethical issues such as abuse and
+legality. For example, Deepfake has exacerbated a social problem
+of generating deception, propaganda, and disinformation [27, 87],
+which is not even decided in our society that who has the legal
+responsibility for such fake media [2].
+Although the aforementioned research has discussed specific ap-
+plications and their diverse implications to support creative works,
+little has been done regarding the LTGMs’ potential to change the
+way future visual artists work [9]. Only a few branches of papers
+has delved into suggesting technical guidelines on how to write a
+proper text prompt [54, 72], and how to evaluate the LTGMs so that
+the researcher can better understand their reasoning process and
+social biases [13]. Rather than focusing on the technical character-
+istics of the LTGMs, we concentrate on comprehending how do the
+people in the visual art domain leverage the LTGMs to help their
+creative works. To this end, our goal is to examine what impact it
+can bring to the way future visual artists work.
+3 SYSTEMATIC LITERATURE REVIEW
+To understand how LTGMs have been leveraged in previous re-
+search, we conducted a systematic literature review. For this aim,
+we scrutinized a total of 72 system and application papers from
+several prominent HCI venues.
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia Ko et al.
+Table 2: A summary of themes and codes extracted from the systematic literature review. Examples or definition, counts ( N),
+and percentages (%) of codes in each theme extracted from an iterative analysis of 72 papers. ‘User’ is the target group of the
+research. ‘Task’ is a type of supported work discussed in each paper. ‘Role’ explains the reasons for adopting the generative
+model in each paper. In case of ‘User’ and ‘Task’, we assigned a single code to one paper. However, we allocated multiple codes
+of ‘Role’ to a single paper in some cases, since it was often vague to divide them into a single category.
+Themes Codes Examples/Definition N %
+User
+Artists Digital artists [108]; Computational artists [98]; 3D modelers [1]; Webtoon authors [43] 5 6.9
+Children/Students 6- to 10-year old children [109]; Undergraduate students [39] 3 4.2
+Designers UI/UX designers [3, 25, 53, 65, 96]; GUI designers [48]; Fashion designers [69] 13 18.1
+Engineers Software engineers [100, 101] 2 2.8
+General public/Unspecified General public/Unspecified [17, 34, 44, 45, 52, 63, 95] 33 45.8
+Disabled Blind or low vision people [32] 1 1.4
+Researchers Researchers [71, 110]; Graduate students [29] 6 8.3
+Writers Novelists [16]; Amateur writers [106]; Poets [28] 7 9.7
+Etc. Domain experts (gesture generation [104], image restoration [99]) 2 2.8
+Task
+Composition Human-AI music co-creation [57]; Music for video generation [23]; Drum beat creation [93] 9 12.5
+Design Furniture design [90]; 3D object design [60]; Graphic design [89] 13 18.1
+Drawing Illustration [55]; Computational drawing [98]; Human-AI co-drawing [21, 41, 68] 10 13.9
+Education Teaching programming [39, 86] 2 2.8
+Everyday-work Podcast listening [44]; Video captioning [107]; Conversation [35] 11 15.3
+Programming Code generation [38]; Code translation [100, 101] 3 4.2
+Writing Story writing [8, 106]; Email writing [12, 56]; Fictional character writing [78] 13 18.1
+Etc. Facial expression generation [1]; Gesture generation [104]; Image restoration [99] 11 15.3
+Role
+(multi-label)
+Automation The generative model is used to automate a task without any user interface. 29 40.3
+Co-work The generative model is integrated into an interactive system to help user perform
+a specific task. 30 41.7
+Exploration The generative model is used to help user’s ideation process. 32 44.4
+Mediation The generative model is used to facilitate or arbitrate in communication between
+the persons concerned. 10 13.9
+Representation The generative model is used to embed information in a latent space for downstream tasks. 9 12.5
+3.1 Identification
+3.1.1 Venue. We examined six primary sources known for qual-
+ity HCI research: the ACM CHI Conference on Human Factors
+in Computing Systems (CHI); the ACM Symposium on User In-
+terface Software and Technology (UIST); the ACM Conference
+on Intelligent User Interfaces (IUI); the ACM SIGCHI Conference
+on Designing Interactive Systems (DIS); the ACM Conference on
+Computer-Supported Cooperative Work and Social Computing
+(CSCW); the ACM Conference on Creativity & Cognition (C&C). AI
+venues were excluded since we wanted to focus on the human-side
+understanding of the research. Particularly, we wanted to under-
+stand how humans can utilize technology to support their work,
+rather than quantitative evaluation or advancement of state-of-the-
+art AI technologies. We constrained the publication period to the
+past five years (i.e., from 2018 to 2022) to reflect recent trend of the
+research [85].
+3.1.2 Search Keyword. Since it has been just a year since DALL-
+E was released, there exists only a handful of HCI research that
+focused on LTGMs directly. Instead, we investigated papers on
+generative models, considering that LTGM is another type of gener-
+ative model trained at scale [9]. For a thorough inspection of all the
+relevant publications in the above venues, we tried to be inclusive
+as much as possible. Namely, rather than finding papers that con-
+tained the exact term ‘generative model’, we tried to embrace all
+existing papers which include extended forms of search keywords
+such as ‘generate’, ‘generation’, ‘generative’, and ‘generating’ in
+their title or abstract.
+3.1.3 Exclusion Criteria. After running an exhaustive search, we
+set 6 exclusion criteria, referencing previous notions [ 5, 81], to
+eliminate papers that do not align with the goal of this research.
+EC 1: The common use of the term ‘generate’, ‘generation’, ‘gen-
+erative’, and ‘generating’ do not align with our research
+direction. For example, we removed if the term ‘generative’
+was used as a general adjective, not used to mean generative
+models. This criteria was required as we gathered papers
+inclusively in round 1.
+EC 2: We chose system/application papers that used generative
+models to support their tasks. In this regard, qualitative/study
+papers [67, 76] were excluded.
+EC 3: We chose papers that use or study neural network-based
+generative models such as GAN, VAE, LSTM, GPT-3, and
+DALL-E. For instance, the use of conventional generative
+models like Gaussian mixture models was excluded.
+EC 4: Since we are interested in the impact of generative models
+to humans, excluded are the technical papers which adopted
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+generative models for data augmentation [49, 59], synthesiz-
+ing [37], and complement [97].
+EC 5: We excluded doctoral dissertation, survey paper, book, book
+chapter, and demo papers.
+EC 6: Lastly, we excluded the paper published by the same au-
+thor(s) where the content is not different significantly.
+3.1.4 Round 1—4. Our strategy to perform the literature review
+was to collect papers broadly and then narrow down the scope
+for careful examination [22]. Therefore, in round 1, we collected
+a total of 1,494 papers from the 6 venues (i.e., CHI, UIST, IUI, DIS,
+CSCW, C&C) using the search terms (i.e., generate, generation,
+generative, and generating) on a popular academic database, ACM
+Digital Library3. In round 2, papers with the exact same title and
+content were removed (i.e., EC 6), which left 1,429 papers. In round
+3, we read the title and abstract of the remained ones, and checked
+EC 1—5 to exclude papers that do not fit in the goal of our research.
+Lastly, in round 4, we read all the articles that passed all the previous
+rounds (i.e., 64 papers), and additionally added in 8 papers that
+were not found during the above process. Thus, we finalized our
+collection as a set of 72 papers. Table 1 shows the precise number
+of papers in each round.
+3.2 Analysis Procedure
+Grounded on previous survey papers [6, 19, 22], we built a question
+rubric to investigate each paper on a deeper level. We tried to
+answer the following questions while reading the selected papers:
+1) What are the roles of the generative model in the research? 2)
+What are the research questions? If they are not explicitly stated,
+what are the main contributions of the research? 3) Who are the
+target users of the system/application? What are the tasks given
+to them in evaluating their system/application? 4) What are the
+target users’ opinions about the system/application? 5) What are
+the discussions and takeaway messages of the research?
+For the analysis of the identified publications, we performed
+an open coding on the usage of generative models. To start with,
+the first author answered the question rubric on each paper. Based
+on the answers, two authors read it multiple times to be familiar
+with the data to generate the initial low-level codes, independently.
+Afterwards, they revised the codes collaboratively, iterating three
+times until the final high-level codes were determined. Next, four
+authors clustered related codes and searched for the themes that
+could embrace the overall literature. Finally, they decided the names
+of each theme that represented its codes well.
+3.3 Results
+We identified three themes of the publications: user (i.e., the target
+group of the research) containing 9 codes, task (i.e., the main task
+suggested in the research) including 8 codes, and role (i.e., the
+purpose generative model is used in the research) with 5 codes. The
+detailed information is denoted in Table 2.
+3.3.1 User. We noticed that generative models were used to help
+diverse types of users. In total, we found 9 codes: artists, chil-
+dren/students, designers, engineers, general public/unspecified,
+the disabled, researchers, writers, and etc. The vast majority of
+3https://dl.acm.org
+the publications targeted general public or they simply unspecified
+the user (45.8%, 33 publications). Next, 13 publications (18.1%)
+targeted designer as their user. Different types of designers were
+included throughout the papers including fashion designers [69],
+graphic designers [89], poster designers [31], and so on. We found
+7 publications (9.7%) which targeted writers like novelists [ 16],
+amateur writers [106], and poets [28]. There were 6 publications
+(8.3%) that targeted researchers such as AI researchers, UX re-
+searchers, and graduate students. We identified 5 publications
+(6.9%) which targeted artists like digital artists [108], 3D modelers
+[1], and webtoon authors [43]. There were 3, 2, and 1 publications
+(4.2%, 2.8%, and 1.4%) for children/students, engineers, and the dis-
+abled, respectively. Lastly, 2 publications (2.8%) were classified as
+etc. which includes domain experts in gesture generation [104] and
+image restoration [99].
+3.3.2 Task. A total of 8 codes were identified in the review pro-
+cess. Specifically, writing was the main task in 13 publications
+(18.1%). This includes different writing scenarios such as story
+writing [8, 106], email writing [12, 56], and scientific writing [29].
+Everyday-work was the target in 11 publications (15.3%) such as
+podcast listening [44], video captioning [ 107], and conversation
+[35] which can be encountered in our everyday life. There were
+13 publications (18.1%) targeting design, which captured vari-
+ous sub-domains such as fashion design [69], furniture design [90],
+UI/UX design [3, 25, 53, 65, 96], and graphic design [89]. We identi-
+fied 10 publications (13.9%) which targeted drawing including il-
+lustration [55], computational drawing [98], human-AI co-drawing
+[21, 41, 68], and webtoon drawing [ 43]. There were 9 (12.5%), 3
+(4.2%), and 2 (2.8%) publications in composition, programming, and
+education, respectively. Lastly, 11 publications were grouped as etc.
+(15.3%) which contained tasks like tactile map generation [32] and
+choosing photo-realistic images [110].
+3.3.3 Role. We recognized five codes as the role of the generative
+models, which are automation, co-work, exploration, mediation,
+and representation. Unlike other themes, multiple codes were allo-
+cated to a single publication if needed, since we found it inefficient
+to build the structure to become mutually exclusive and exhaustive
+at the same time. However, no more than two codes were simulta-
+neously assigned to a single paper. Our codes came out differently
+from a previous work that delved into creativity support tools [14],
+likely because we focused only on papers with generative models.
+The automation means that the generative model was used to
+automate or replace human efforts to perform a specific task with-
+out any user interface (40.3%, 29 publications). For example, Singh
+et al. [63] introduced a prototype to create a personalized emoji
+from a rough drawing where the user’s level of intervention was ex-
+tremely restricted. The co-work indicates that the generative model
+was integrated into an interactive system to help perform a task
+in a human-in-the-loop or a mixed-initiative approach (41.7%, 30
+publications). For example, Calliope [10] provided a user interface
+containing several levels of granularity to manipulate parameters
+(e.g., tempo) in generating MIDI files. Although both automation
+and co-work support the users in doing their tasks, the main dif-
+ference lies in whether there exists any user interface with which
+humans can interfere.
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia Ko et al.
+The exploration signifies that the generative model was used to
+help users’ creative thinking process so they could get inspired to
+produce novel ideas (44.4%, 32 publications). For instance, Fede et
+al. presented The Idea Machine [18] using large language models to
+empower user’s idea generation in writing. The mediation means
+that the generative model was used to facilitate or arbitrating in
+communication between the concerned parties (13.9%, 10 publica-
+tions). EmoBalloon [4] used generative models to make emotional
+speech balloons to decrease the gap of emotional arousal between
+the sender and receiver of a text message. Lastly, the representation
+means that the generative model was used to embed information in
+a latent space for downstream tasks (12.5%, 9 publications). For ex-
+ample, Screen2Vec [48] showed semantic embeddings of GUI screens
+and components.
+4 VISUAL ARTIST INTERVIEWS
+Based on the findings of the systematic literature review, we per-
+formed interviews with 28 professional visual artists with various
+occupations to answer the following research questions:
+•RQ1. Which subgroups of visual artists would be more will-
+ing to use LTGMs?
+•RQ2. What types of tasks would they utilize LTGMs on?
+•RQ3. What would the LTGMs’ role be in those cases?
+4.1 Participants
+We defined the visual art asthe art expressed by visual elements , and
+define visual artist as those who work in visual art domains. Follow-
+ing the definition, visual art includes extensive fields like painting,
+sculpture, ceramics, photography, film, multimedia, design, and
+craft. Thus, we tried to contain various occupations in recruiting
+them. As shown in Table 3, a total of 28 visual artists participated in
+the interview. The interview participants were recruited via diverse
+mediums such as professional networking and career development
+apps (e.g., Linkedin4), social networking services to share photos
+and videos (e.g., Instagram5), and platforms for visual artists’ self-
+promotion to showcase their artworks (e.g., Artstation6). We also
+used the snowball sampling approach for additional recruitment
+[30].
+The participants covered 35 unique visual art domains as some
+participants possessed expertise in multiple fields. We did not fil-
+ter out the interview participants in advance except for two con-
+straints that 1) they have work experiences of at least a year in
+their fields, and 2) they have never experienced LTGMs before the
+interview to prevent any preconception [ 106]. The participants’
+average work experience was 6.1 years, but the years of experience
+in their fields was higher as most of them received higher education
+in the relevant fields. Each participant was provided 20,000 KRW
+as a compensation.
+4.2 Interview Protocol
+We proceeded with semi-structured interviews on a remote con-
+dition which lasted 67 minutes on average with a minimum of 52
+minutes to a maximum of 88 minutes. Both the video and audio
+4https://linkedin.com
+5https://www.instagram.com
+6https://artstation.com
+were recorded with consent and transcribed into text for a thor-
+ough analysis. The interview consisted of three parts: 1) asking
+questions about the participants’ demographics and their domain,
+2) experiencing LTGMs, and 3) eliciting participants’ thoughts on
+how to use LTGMs for their creative works. In the second part,
+we used a specific LTGM (i.e., DALL-E). However, we induced the
+participants to focus on its potential functionalities, rather than
+what it can and cannot do at the moment, as we did not want to
+confine the study result under the current limitations of DALL-E.
+After the participants signed the consent forms, we asked several
+questions regarding their domains to understand their working
+process in detail. The questions are listed below:
+•Could you describe your job?
+•What are the typical tasks you perform?
+•Are there specific tasks that are unnecessarily repetitive or
+that require a lot of creativity?
+•Where do you get inspirations, if any?
+•Do you use any references for work? How do you use them?
+•How much communication and collaboration do you en-
+counter at work? What are the difficulties with them?
+In addition, we asked 7-point Likert scale questions about their
+familiarity (1=not at all familiar, 7=extremely familiar) and per-
+sonal attitude toward AI (1=very negative, 7=very positive) to take
+account of previous notions on participants’ behavior based on
+preconception [33, 62]. To introduce DALL-E’s image generation
+performance over varying fields, we showed them a lot of text
+prompts and corresponding image samples generated by DALL-E
+in several domains (e.g., architecture, fashion, fine art, industrial
+design, UI/UX, etc). After the demonstration, participants were
+given sufficient time to use DALL-E’s three functionalities: image
+generation, variation, and synthesis. We requested them to follow a
+think-aloud procedure [92]. The interview was finished by asking
+final interview questions:
+•How would you adopt LTGMs for creative works in your
+domain?
+•What are the differences between LTGMs and previous tools?
+•What would be the works that cannot be supported by LT-
+GMs?
+•Are there any additional functionalities you want?
+•How would LTGMs change the working paradigm in your
+domain?
+4.3 Analysis Method
+For the analysis of the transcribed data, we firstly deployed a de-
+ductive coding framework with the themes (e.g., User, Task, and
+Role) drawn in Section 3.3. Afterwards, we performed an inductive
+coding [11] to investigate additional codes, which were iteratively
+refined through discussions until consensus was reached. In the
+overall procedure, we used a qualitative data analysis tool, namely
+Dovetail [20], to organize and aggregate relevant data. Specifically,
+the first and the second authors read all the transcriptions, and la-
+beled sentences with existing codes, independently, which resulted
+in an initial codebook regarding the pre-built themes. Since previ-
+ous themes and codes were developed upon the use of generative
+models and all types of users, we re-examined the codebook induc-
+tively to generate an updated one specific to our research question
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+Table 3: Detailed background information of 28 interview participants. A total of 28 professional visual artists with varying
+occupations were recruited via multiple mediums. They covered 35 domains as some have expertise in multiple fields. Their
+years of experience ranged from 1 to 19 years.
+Current Occupation Experience Major Examples of Created Artifacts
+P1 Webtoon author 10 years Metal craft design Cartoons published on the web
+P2 Video editor 3 years Mass communication & journalism YouTube videos
+P3 Web/UI/UX designer 6 years Visual communication design UI/UX design of a medical app
+P4 Motion graphic designer 3 years Visual communication design 2D and 3D motion graphics
+P5 Product designer (Mobility app) 4 years Service and design engineering Product design of a mobility app
+P6 Illustrator 4 years Painting Album covers; Concept art
+Picture book writer 2 years Picture books for young children
+P7 Artist (Ceramics) 4 years Sculpture Ceramic art for exhibitions
+P8 Product designer (Medical app) 7 years Visual communication design, painting UI/UX design of a medical app
+P9 Jewelry designer 4 years Metal craft design Commissioned jewelry design
+P10 Artist (Abstract art) 6 years Fine arts Abstract painting for exhibitions
+Web/UI/UX designer 1 years UI/UX design of a medical appP11 Spatial designer 2 years Interior architecture design Visual merchandising
+P12 Artist (Video, painting, sculpture) 5 years Fine arts Metalworking, painting, and filming
+for exhibitions
+P13 3D character modeler (Game) 4 years Game media 3D character modelling
+P14 Product designer (Character animation) 8 years Animation design Product design of toys for children
+Amateur cartoonist 1 years Cartoons published on Instagram
+Graphic designer 1 years Motion graphics for lectures
+Art instructor 3 years Art class for elementary school studentsP15
+Webtoon author 3 years
+Oriental painting, fine arts
+Cartoons published on the web
+P16 Concept artist (Movie, game) 12 years Digital animation Concept art for movies and games
+P17 Artist (Video, painting) 2 years Fine arts Painting and filming for exhibitions
+P18 Fashion designer 4 years Fashion design Fashion design for jackets, shirts, and pants
+Artist (Movie, photography) 6 years Photography and filming for exhibitionsP19 Photographer 2 years Fine arts Photos for art brochure
+P20 Industrial designer 3 years Industrial design Design for furniture and electronic devices
+P21 Artist (Sculpture) 7 years Sculpture Sculpture for exhibitions
+P22 Editorial designer 5 years Character design Commissioned poster design
+Logo designer 2 years Commissioned signboard design
+Art instructor 5 years Art class for adults and children
+Art program director 3 years Art program planningP23
+Artist (Contemporary art) 5 years
+Korean painting
+Painting for exhibitions
+P24 Projection designer 6 years Film (minor in Multimedia) Projection design for theatrical plays
+P25 VFX artist (Game) 4 years Media content Casual game effects
+P26 Artist (Painting, video) 19 years Painting Painting and filming for exhibitions
+P27 Architect 5 years Architecture Building design
+P28 3D animator 12 years Digital content 3D movie animation
+(i.e., visual artist and LTGMs). We iterated the revision by merging
+and dividing the codes multiple times until we unanimously agreed
+to achieve a theoretical saturation [77]. Since all interviews were
+conducted in Korean, we created codes in the same language to
+prevent possible change of nuance and loss of certain meanings in
+translation [91].
+5 FINDINGS
+We introduce the potential and limitations of LTGMs. To report
+possible use cases, we categorized our interview findings based on
+three themes. Since our research focused mainly on visual artists,
+we had to modify our codebook. In the literature review, we only
+had two codes in ‘User’ (i.e., artist and designer) and two codes in
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia Ko et al.
+‘Task’ (i.e., drawing and design) related to the visual art domain,
+but we subdivided them into more detailed characteristics. We also
+present four limitations that LTGMs cannot properly support the
+visual artists in their work flows.
+5.1 Potential of LTGMs
+5.1.1 Image Reference Search Tool. Among 28 interviewees, 12 ac-
+knowledged that LTGMs can be a new image reference search tool.
+They pointed out that referencing visual materials (e.g., images and
+videos) is a crucial part of their creative work. They mainly use
+references to 1) learn by observing what and how others create
+and 2) get inspirations for new ideas. In general, it helps to realize
+their imagination into the world. However, there were some excep-
+tions as well. For instance, P21 (sculptor) uses references to check
+that the work she plans to make does not yet exist. References
+that are irrelevant to their field of domain are also utilized by 7
+visual artists, suggesting that they help eliciting novel ideas. P20
+(industrial designer) said:
+P20, Industrial designer:If I were to design a speaker,
+I do not just find a bunch of speaker images. Rather, I
+find various images ranging from fine arts to architec-
+ture, and gather them all together as a collection. Next,
+the images are classified into several themes following
+the client’s design requirements to make several design
+prototypes.
+All the reference seekers complimented that LTGMs are fast,
+convenient, and can make a large number of high-quality images
+that are unique and different from one another. Specifically, P9
+(jewelry designer) acknowledged that LTGMs seem to be useful in
+the early stages like planning where a huge amount of images are
+needed for ideation. Also, P23 (contemporary art artist) argued that
+she felt more passive when using Google, but felt more active with
+LTGMs since they gave more curated samples using functionalities
+that require more human engagement (e.g., selecting regions with
+brushing). Despite all the aforementioned advantages and distinct
+features, 10 of the 12 reference seekers said LTGMs would not
+become a tool to shift their working paradigm, rather just another
+option for reference searching. P25 (VFX artist) stated:
+P25, VFX artist:The advantage (of LTGMs) is that it
+can generate any images with several detailed condi-
+tions. Although Google is big, it cannot provide if the
+image is not contained in its database... Frankly speak-
+ing, I think people will use LTGMs, but there would not
+be a huge difference. Currently, if there are 100 people,
+around 90 use Pinterest. However, in the future, some of
+them will say ‘I use LTGMs’. That is all.
+The detailed codes of User, Task, and Role are the following:
+•User: Visual reference seeker
+•Task: Ideation
+•Role: Exploration
+5.1.2 Enabling Fast Real-time Visual Communication. Through the
+interviews, we confirmed that 20 visual artists acknowledged LT-
+GMs would be beneficial in real-time visual communication for
+those who 1) work in a company adopting a top-down decision-
+making procedure, 2) commission to provide professional services
+to clients, and 3) interact with varying artists in different fields.
+Specifically, 11 visual artists who communicate with their boss
+back and forth in verifying and improving their work wanted to
+leverage LTGMs for a fast prototyping. They mentioned that the
+concept of art delivered from their boss is often vague, which re-
+quires several exploration in varying directions, especially in early
+stages. Therefore, they have to make many drafts as alternatives for
+confirmation before finalizing the concept, with most of the drafts
+ending up abandoned. The visual artists want to save their time and
+energy by taking advantage of LTGMs for such dissipated work.
+For example, P1 (webtoon author) stated that using LTGMs could
+decrease the time consumed in communication between her and
+her manager by performing a real-time revision of the high-level
+concepts. Specifically, she said she wants to make several images
+and let the manager make the concept as an ensemble by extract-
+ing and combing parts from the generated images. Similarly, P16
+(concept artist) pointed out that LTGMs could guide the working
+direction in a case where the boss does not have a concrete goal in
+mind. P16 said:
+P16, Concept artist (movie, game):While some art
+directors indicate a specific direction, others do not have
+one, but just want me to give some ideas. In this case, I
+have to show them many drafts to see their reaction and
+decide what to focus on and what not to... We usually
+work as a group of concept artists, and the director
+want us to draw the concept art with the same topic,
+respectively. If one is picked, then it is branched out
+further. We could use LTGMs to generate starting pieces
+for conversation in the initial discussion we can work
+based upon.
+Moreover, 14 visual artists mentioned that LTGMs would help
+facilitate communication between the visual artists and their clients.
+Many visual artists commission artworks, offering professional
+services. In doing so, they have to meet the client’s requirements,
+which can often be ambiguous and even paradoxical at times. P8
+(product designer) mentioned that once a client wanted a design
+that has both a ‘cold’ and ‘warm’ mood at the same time. She said
+the best way to communicate with the clients is often using visual
+materials where LTGMs can be a viable means. Similarly, P4 (motion
+graphic designer) stated that LTGMs would make it much easier
+to persuade clients as it enables fast prototyping. She added that
+communication often requires an iterative process, but she would
+be able to create a bunch of rough images in a short time using
+LTGMs. Moreover, when collaborating with many coworkers, it is
+essential to narrow down the gap between their thoughts on the
+final artifact. P14 (product designer) said LTGMs could decrease
+the time needed to reach a consensus:
+P14, Product designer (character animation):Our
+work requires communication (between workers) as
+mandatory, as the design of a product can be pleas-
+ing only to me (but not to others). By taking others’
+feedback, we calibrate the direction on how to revise
+it. Thus, we try to take comments as much as we can
+before embarking on real work. LTGMs can decrease
+the time for the overall communication process.
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+Lastly, 2 visual artists mentioned that LTGMs could be useful for
+those who interact with people across multiple domains. In detail,
+P24 (projection designer) pointed out that the communications
+with dancers and musicians are different as it requires a domain-
+specific understanding. He ascribed the fundamental reason to the
+inconsistent connection between text and visual materials:
+P24, Projection designer:The language used by dancers,
+projection designers, and musicians is all very different.
+For example, dancers express abstract words, such as
+‘joy’ through their work, but projection designers often
+find it hard to do the same with videos (as they do not
+have a logical connection). Therefore, we communicate
+via a bunch of images and ask them which one is visu-
+ally close to your thoughts on ‘joy’, for example. LTGMs
+can be of use in such cases to narrow down (the search
+space) and reach an agreement.
+The detailed codes of User, Task, and Role are the following:
+•User: Visual communicator; Client/Contractor in visual art
+work
+•Task: Real-time visual communication
+•Role: Mediation
+5.1.3 Rectifying Human’s Biased Creation. In the study, 14 visual
+artists said that LTGMs could help them try unconventional things
+and think out of the box. Interestingly, 8 visual artists directly
+mentioned that humans have a bias in creating art, but LTGMs do
+not seem to have one. This is a finding that contradicts a previous
+research which revealed that people have a preconception on AI
+that it generates biased artifact [7]. The visual artists pointed out
+that humans have preferences, which can lead them to certain
+directions in performing creative works. They wanted to use LTGMs
+for attempting what they have never tried, deviated from their
+comfort zones. P17 (artist) said:
+P17, Artist (video, painting):The advantage of LT-
+GMs is that they do not have a bias (in generating art).
+Thus, it can generate any combination I make in a to-
+tally unexpected way. My personal knowledge and skills
+will be reflected to the work in previous approach, for
+example, the working style I stick to so far. However, the
+output of LTGMs is random, which is good in that it
+can recommend a new style of work.
+Aside from personal preferences, 3 out of 8 visual artists men-
+tioned that there are more practical reasons that prevents visual
+artists from taking unusual approaches. They said that it necessi-
+tates a lot of time and energy but often results in an unsatisfac-
+tory outcome. However, they praised that LTGMs encourage visual
+artists to take adventurous approaches, as it shows what they have
+in mind in a very small amount of time. P6 (illustrator and picture
+book artist) said:
+P6, Illustrator and picture book artist:Although I
+desire to draw a night sky with purple color and a yellow
+house (as I think they look good overall), in reality, they
+might not harmonize with each other. Also, I need to
+think about the size of house and all the other details...
+Until the best one is picked, it takes a lot of time. Along
+with such a long procedure, I cannot find most of what
+I wanted at the first place from the final result. LTGMs
+can be a viable solution to make my imagination to real
+in short time.
+The detailed codes of User, Task, and Role are the following:
+•User: Unconventional visual artist
+•Task: Unbiased prototyping
+•Role: Automation
+5.1.4 Low-fidelity Prototyping for Novice Visual Artists. A total of
+9 visual artists pointed out that it would be helpful for those 1)
+who have low expertise in handling domain-specific art creation
+tools, and 2) who have little knowledge in related art fields, because
+LTGMs can help them generate low-fidelity prototypes. Since new
+software comes out every year, visual artists need to learn new skills
+constantly to not fall behind. However, the novices have difficulties
+in knowledge acquisition because it takes huge amount of time.
+For example, P7 (artist) did not use any software but performed
+manually for making a blueprint of artwork because she was too
+busy during working hours, although she knew it was inefficient.
+She wanted to leverage LTGMs in her work, as they can handle time-
+consuming tasks like image synthesis using simple interactions (e.g.,
+brushing) and text prompts. Also, they said working in the visual
+art domain often requires knowledge and competencies across
+multiple fields. For example, since the company which P4 (motion
+graphic designer) works for only had two designers, she had to
+undertake all design-related tasks, although she only had experience
+in 2D motion graphics. P4 stated that LTGMs can help visual artists
+to embrace tasks beyond their capacity. Although the quality of
+created prototypes would be low, it would be of great help, when
+the outcome is needed urgently.
+The detailed codes of User, Task, and Role are the following:
+•User: Novice visual artist
+•Task: Low-fidelity prototyping
+•Role: Automation
+5.1.5 Justification Tool for "a New Era of AI Art". We found that
+LTGMs could be a tool to create artworks as well as justification
+for them in the fine art domains. Specifically, P12 (artist) wanted to
+use LTGMs in creating his painting because it is more credible once
+AI guarantees the generated results on a subjective concepts. Also,
+he mentioned artists prefer to take advantage of new technologies,
+so there can arise a new artistic paradigm called "an era of AI art"
+that is a complete prosperity of AI-generated contents:
+P12, Artist (video, painting, sculpture):As my topic
+of art is ugly people, I would like to generate 100 couples
+of men and women using LTGMs. Then, I would synthe-
+size each pair to generate 50 pairs as their descendants.
+Through iterations, there would be the final one who is
+the epitome of an ugly person.
+Interviewer: We can do that using Google. What is
+different from using LTGMs in doing that work?
+P12, Artist (video, painting, sculpture):It is hard
+to find many different images for a certain text prompt
+in Google. Moreover, if I find images of ugly person on
+Google, others might disagree as it is based on subjec-
+tive perception. However, I can justify my claim on the
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia Ko et al.
+artwork if the generated images are made by AI. Who
+would argue with that if AI says so?
+The detailed codes of User, Task, and Role are the following:
+•User: Unconventional artist
+•Task: Creating and justifying generated artworks
+•Role: Automation
+5.2 Limitations of LTGMs
+5.2.1 LTGMs only generate predictable images. A total of 5 visual
+artists said LTGMs are logical machines that can only create pre-
+dictable images, when what they wanted were random explorations.
+Because getting inspiration comes from unexpected events, they
+wanted to find images that do not exactly match with their input
+text prompt. P22 (editorial designer and logo designer) mentioned
+that there exists a logical connection between the images generated
+by LTGMs and the input text prompt, making it impossible to elicit
+any novel ideas further. Moreover, P11 (spatial designer) mentioned
+that it is important to add such randomness in work, as it looks
+tedious and outdated if the concept is used directly. P11 said:
+P11, Spatial designer:We work based on the concept
+and clothing to display. Then, we plan how to decorate
+the place considering the fabric and the atmosphere of
+the season... Although our concept is a flower road, for
+example, we cannot just display a flower road; that feels
+old-fashioned... That is why we find references from
+diverse sources.
+Moreover, they pointed out that LTGMs cannot create images
+that embody philosophical meanings, storytelling, or sophisticated
+interpretation. For instance, P8 (product designer), who studied both
+fine arts (painting) and design, mentioned that the images generated
+by LTGMs are not interesting from the painter’s perspective. She
+was even able to predict what the outcome image of LTGMs would
+be in advance. In specific, she said LTGMs would create an ordinary
+red apple when she type in ‘why is an apple red?’, and the outcome
+was the same as her expectation (Figure 3-A). However, what she
+wanted was an image conceptualizing the philosophical reasoning
+that people can take to a further contemplation.
+5.2.2 LTGMs Do Not Support Personalization. A total of 11 visual
+artists doubted whether LTGMs could generate images that require
+domain-specific understanding. For example, visual artists thought
+LTGMs are hard to reflect user experience and practicality. For
+example, P3 (Web/UI/UX designer) was surprised to see the gener-
+ated image of mobile UI screen, but was uncertain about LTGMs’
+capabilities to consider the user flow. He worried that it will just
+visualize the given conditions without considering the user experi-
+ence (Figure 3-B). P18 (fashion designer) and P27 (architect) gave
+similar opinions. They acknowledged that LTGMs can generate
+rough sketches of artifacts (i.e., clothing and building), but it can-
+not handle all the detailed requirements of the design. Specifically,
+P27 mentioned that architects have to consider practical issues like
+whether it can actually be constructed by humans while designing
+the architectural layout. However, she thought LTGMs would not
+include realistic considerations in the layouts (Figure 3-C).
+Moreover, the visual artists wanted to incorporate their identi-
+ties into the artifacts. For example, P10 (artist) stated how visual
+artists would not be able to add their own identity to the artifact
+if LTGMs managed all the work. Similarly, P17 (artist) wished for
+customization of the generated images to reflect her own style since
+she worried that they would contain some sort of characteristics
+of LTGMs, so that they do not seem something special, but stale
+artwork.
+5.2.3 Text Prompting Restrains Creativity. A total of 9 visual artists
+pointed out that LTGMs cannot generate novel images due to their
+dependence on text prompting. We found two main reasons for this.
+First, since LTGMs use text prompts, they needed to have a word
+or phrase to describe what users want to create. However, when
+creating something that is entirely new, there would be no word
+for it yet, which results in a paradoxical situation. For example,
+P8 (product designer) who designs a medical app tried to generate
+images using the text prompt ‘Mohei’, which is a provisional brand
+name for her own product. The original meaning of Mohei was an
+abbreviation of ‘sunshine on the corner’, but the output image was
+a totally random image such as a dumpling (Figure 3-D). Similarly,
+P10 (artist) who draws abstract art mentioned that it is impossible to
+find pertinent text prompt for realizing his thought. This is because
+he prefers to seek a possibility that comes from consecutive random
+brush strokes, which is an artistic technique called impasto. His art
+becomes completed through a ceaseless interaction with the canvas.
+Therefore, he found it is hard to describe the overall art-making
+process in texts. P10 stated:
+P10, Artist (abstract art):I worry about the funda-
+mental limitation of text prompting. In the planning, I
+do not use text, but find what I want via painting. For
+instance, a word ‘dark’ can represent several imagery
+with varying levels and combinations of darkness. There
+can be subtle differences between them, and I love to
+focus on the gap from which I can discover such repre-
+sentation.
+Interviewer: What is the problem of describing it into
+a text?
+P10, Artist (abstract art):The delicate feeling will
+volatilize while translating it. As I need to take time
+to choose which one is a right word, the first imagery
+came to my mind will go away.
+Second, P27 (architect) mentioned that it would be really con-
+venient if all the existing styles are trained on the LTGMs so they
+can create any of them using a simple text prompt. However, she
+also admitted that it would limit the styles of generated images
+within the boundary of trained samples. Thus, LTGMs would rather
+operate as something confining the visual artists’ imagination. P27
+said:
+P27, Architect:It would be really convenient if all ex-
+isting floor plans are trained on the LTGMs, and they
+can generate whatever I want... However, if that is possi-
+ble, I believe they can rather confine the human’s imag-
+ination. This is because images that can be generated
+by LTGMs will be considered as a set of templates of all
+existing floor plans that we can invent, although it is
+not true.
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+Figure 3: Limitations of LTGMs. (A) Although P8 wanted an image that enables philosophical reasoning, the output was an
+image of a red apple. (B) P3 thought the UI screen does not reflect the user experience, thus the design is not practically useful.
+(C) P27 noticed that the layout does not consider practicality so it cannot be built by humans. (D) P8 tried to type in her brand
+name, ‘Mohei’ which means the sunshine on the corner, but the output was a totally irrelevant image.
+5.2.4 LTGMs are Inefficient and Become a Burden. A total of 6
+visual artists left worrisome comments that learning how to use
+LTGMs can become a burden. In the study, LTGMs often generated
+images somewhat differently from the visual artists’ intention, so
+they could hardly build the mental model of LTGMs in a short time.
+After a few trials of LTGMs, P11 (spatial designer) pointed out with
+a disappointed tone that some visual artists would prefer to draw
+by themselves or use familiar softwares. Moreover, as suggested
+by previous work, it is often hard to find a proper text prompt
+because of the open-ended nature [54]. For example, P9 (Jewelry
+designer) and P15 (art instructor) did not know what to type in and
+contemplated for several minutes to write down the text prompt.
+A total of 10 visual artists regarded LTGMs as inefficient in the
+situations where they already had a specific goal and requirements
+in their mind. P18 (fashion designer) said if she wants to make
+pants with several design specifications, using LTGMs would be an
+inefficient use of time, as it needs a lot of additional time to describe
+them in sentences, although it cannot guarantee a satisfactory
+output that exists vividly in her mind. Similarly, P4 (motion graphic
+designer) said it is often difficult to come up with a precise word
+(e.g., Baroque architecture) for what she wants, although she has the
+image (e.g., architectural style lavishly decorated with ornament)
+in her mind. Last but not least, P28 (animator) mentioned that it
+is sometimes close to impossible to describe the imagery in words.
+He said it is important to reflect what cannot be seen in the visual.
+P28 stated:
+P28, Animator:Imagine that I make a girl who is ten
+years old and grown up as an orphan. Then we may
+come up with a certain mood of the girl. She might wear
+a shirt with a low chroma and always carry a cuddly
+toy around her, which are the things we can infer from
+her background information... As you know, these kinds
+of characters are created and developed over a hundred
+lines of stories. I can hardly think of making a new
+character with just a few sentences.
+6 DESIGN GUIDELINES
+As Shneiderman said, a well-designed user interface can ease the
+burden of people’s lives [ 84]. While having the interviews with
+28 visual artists, we found that current forms of LTGMs such as
+DALL-E remain powerful but limited tools because of the lack of an
+intelligent user interface that can boost its performance. Therefore,
+we suggest four design guidelines that future HCI researchers can
+refer to in building interactive systems leveraging LTGMs. We pre-
+pared the guidelines to cover the limitations mentioned Section 5.2.
+6.1 Variability Level Specification for Different
+Types of Visual Art
+We propose that the variability level should be adjusted based on
+the visual artists’ motivation. This is because the type of images
+they want can highly vary depending on their objectives. Some
+visual artists may want to find reference images that look totally
+irrelevant to the given text input, while others may want to see
+the ones most related to the given text. We suggest three levels of
+specifications—Lookup, Inspiration, and Reinterpretation—based
+on their motivation and objectives for doing creative works. First,
+Lookup is providing the most relevant images to a given text input.
+This is what current LTGMs do. Next, Inspiration is offering related
+and unrelated images at the same time. Last, Reinterpretation is
+constructed with images that require a long time to comprehend
+their hidden connections to the text prompt.
+Although it does not fit to all cases, in general, we recommend
+Lookup for those who work in applied art domains (e.g., design).
+This is because visual artists in applied art domains have a higher
+chance to communicate with other people (e.g., client, collaborator,
+and boss), which necessitates a logical connection between the
+image and the text. On the other hand, we propose Reinterpretation
+for the visual artists in fine art domain as it is more important for
+them to ponder upon the inside of themselves than communicate
+with other people, which results in such logical connection less
+important. Thus it would be useful to have unexpected images as
+they can be the source for contemplation on the subject.
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia Ko et al.
+6.2 Model Customization Grounded in
+Domain-specific Understanding
+We propose that there should be model customization to satisfy
+visual artists in varying domains. Depending on the domain, each
+participant would have different priorities and preferences in the
+generated images. For example, to generate images containing philo-
+sophical meanings, we can use a dataset of contemporary art im-
+ages to fine-tune the model. As LTGMs have scalable computational
+power to adapt to downstream tasks [9], it can be expected to gen-
+erate the new context of images with relative ease. By doing so,
+visual artists who want to leverage LTGMs for their own purpose
+would use them to get inspired. Furthermore, visual artists should
+be able to incorporate their identities into the generated images.
+To this end, the interface could contain a place to upload the visual
+artists’ portfolios and be customized with their own styles.
+6.3 More Controllability Using Multi-modal
+Input
+We found one of the fundamental limitations of LTGMs lies in the
+text prompting. For example, some situations cannot be generated
+with just a few sentences. To solve this, we suggest that it is impor-
+tant to give more controllability to users when generating images.
+This also aligns with a previous finding that people want to lead
+the creation process [68]. We found in the analysis that the visual
+artists think the interaction process between the artifact and them-
+selves very seriously. By having more interaction, we expect that
+users would have higher satisfaction when using LTGMs.
+Moreover, as it is often impossible to express feelings through
+just texts, we need to provide multi-modal input such as hand ges-
+tures and voice, for example. Currently, it is inefficient for both
+cases where the imagery in the visual artist’s mind is vivid or ab-
+stract. When the imagery is vivid, translating the image into words
+can be inefficient additional work. In this case, the interface may
+have to accept a rough drawing, and convert it to a more complete
+and sophisticated one. On the other hand, when the imagery is
+abstract, other input would be of help in describing what the visual
+artists want to express. For example, a tone of voice can be consid-
+ered in describing the visual artists’ feelings. Through this process,
+they would feel that they are taking the initiative in the creative
+work.
+6.4 Prompt Engineering for the Ease of
+Writing Text Input
+We found that not every visual artists are familiar with describing
+what they want to create through texts. Sometimes they cannot
+come up with a proper expression for a certain image. Moreover,
+LTGMs may not operate at the visual artists’ intentions, the gen-
+erated images not meeting their expectations. Structuring the text
+prompt into forms decipherable to the machine can leave the visual
+artists exhausted. Therefore, it is highly recommended to have a
+text prompt engineering tool that can recommend and revise the
+structure of text input. Moreover, styles that can be generated by
+LTGMs can be listed on the side so that the users can choose an
+appropriate one, if they do not have a specific goal.
+7 LIMITATIONS AND FUTURE WORK
+Our study contains several limitations. First, we recruited most of
+the interview participants who are in their 20s and 30s. We think
+that they are relatively young and open to new technologies like AI.
+If we recruited more senior visual artists, e.g., having experiences
+in the domain for longer than 30 years, we might have extracted
+more practical shortcomings of LTGMs to be adopted in real-world
+scenarios of the working environment. Second, we did not deal
+with the social impacts of LTGMs that has not yet been carefully
+examined. For example, LTGMs are trained on a massive dataset
+which might include artworks that did not gain permission from
+the corresponding authors. We think this is an important topic to
+be addressed in the future, similar to how Deepfake was addressed
+in the HCI community. In addition, we found that those who were
+in the blind spot have concerns about the fast technological ad-
+vancement. For example, some of them expressed a serious fear of
+losing their jobs. In the future, we plan to study the effect of the
+polarization in adopting new technologies and its solutions that
+the HCI community can provide for those who need support.
+8 CONCLUSION
+Our paper researched how visual artists would adopt LTGMs to
+support their creative works. A systematic literature review of 72
+papers on generative models was performed to comprehend the
+context in which they have been used in the HCI domain. Based on
+the analysis, we conducted an interview study with 28 visual artists
+who cover 35 unique visual art domains to seek answers to our
+research questions. The results showed that LTGMs can perform
+diverse roles including automating the creation process, helping the
+ideation process, and facilitating or arbitrating in communication.
+We further discussed four design guidelines that future researchers
+can refer to in building intelligent user interfaces using LTGMs.
+ACKNOWLEDGEMENTS
+This work was partly supported by Institute of Information & com-
+munications Technology Planning & Evaluation(IITP) grant funded
+by the Korea government(MSIT) (No.2019-0-00421, AI Graduate
+School Support Program(Sungkyunkwan University)), partly by
+Institute of Information & communications Technology Planning
+& Evaluation (IITP) grant funded by the Korea government(MSIT)
+(No.2019-0-00075, Artificial Intelligence Graduate School Progra
+m(KAIST)), and partly by the National Research Foundation of
+Korea(NRF) grant funded by the Korea government(MSIT) (No. NR
+F-2019R1A2C2089062 and No. NRF-2019R1A2C1088900).
+REFERENCES
+[1] Rinat Abdrashitov, Fanny Chevalier, and Karan Singh. 2020. Interactive Ex-
+ploration and Refinement of Facial Expression Using Manifold Learning. In
+Proceedings of the 33rd Annual ACM Symposium on User Interface Software and
+Technology (Virtual Event, USA) (UIST ’20) . Association for Computing Machin-
+ery, New York, NY, USA, 778–790. https://doi.org/10.1145/3379337.3415877
+[2] Safinah Ali, Daniella DiPaola, Irene Lee, Jenna Hong, and Cynthia Breazeal.
+2021. Exploring Generative Models with Middle School Students. In Proceedings
+of the 2021 CHI Conference on Human Factors in Computing Systems (Yokohama,
+Japan) (CHI ’21) . Association for Computing Machinery, New York, NY, USA,
+Article 678, 13 pages. https://doi.org/10.1145/3411764.3445226
+[3] Gary Ang and Ee Peng Lim. 2021. Learning Network-Based Multi-Modal Mobile
+User Interface Embeddings. In 26th International Conference on Intelligent User
+Interfaces (College Station, TX, USA) (IUI ’21) . Association for Computing Ma-
+chinery, New York, NY, USA, 366–376. https://doi.org/10.1145/3397481.3450693
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+[4] Toshiki Aoki, Rintaro Chujo, Katsufumi Matsui, Saemi Choi, and Ari Hautasaari.
+2022. EmoBalloon-Conveying Emotional Arousal in Text Chats with Speech
+Balloons. In CHI Conference on Human Factors in Computing Systems . 1–16.
+[5] Gökçe Elif Baykal, Maarten Van Mechelen, and Eva Eriksson. 2020. Collaborative
+technologies for children with special needs: A systematic literature review. In
+Proceedings of the 2020 CHI conference on human factors in computing systems .
+1–13.
+[6] Mehmet Aydin Baytas, Damla Çay, Yuchong Zhang, Mohammad Obaid,
+Asim Evren Yantaç, and Morten Fjeld. 2019. The design of social drones: A re-
+view of studies on autonomous flyers in inhabited environments. In Proceedings
+of the 2019 CHI Conference on Human Factors in Computing Systems . 1–13.
+[7] Cynthia L Bennett, Cole Gleason, Morgan Klaus Scheuerman, Jeffrey P Bigham,
+Anhong Guo, and Alexandra To. 2021. “It’s Complicated”: Negotiating Ac-
+cessibility and (Mis) Representation in Image Descriptions of Race, Gender,
+and Disability. In Proceedings of the 2021 CHI Conference on Human Factors in
+Computing Systems . 1–19.
+[8] Oloff C. Biermann, Ning F. Ma, and Dongwook Yoon. 2022. From Tool to
+Companion: Storywriters Want AI Writers to Respect Their Personal Values
+and Writing Strategies. In Designing Interactive Systems Conference (Virtual
+Event, Australia) (DIS ’22) . Association for Computing Machinery, New York,
+NY, USA, 1209–1227. https://doi.org/10.1145/3532106.3533506
+[9] Rishi Bommasani, Drew A Hudson, Ehsan Adeli, Russ Altman, Simran Arora,
+Sydney von Arx, Michael S Bernstein, Jeannette Bohg, Antoine Bosselut, Emma
+Brunskill, et al. 2021. On the opportunities and risks of foundation models.
+arXiv preprint arXiv:2108.07258 (2021).
+[10] Renaud Bougueng Tchemeube, Jeffrey John Ens, and Philippe Pasquier. 2022.
+Calliope: A Co-creative Interface for Multi-Track Music Generation. InCreativity
+and Cognition . 608–611.
+[11] Virginia Braun and Victoria Clarke. 2006. Using thematic analysis in psychology.
+Qualitative research in psychology 3, 2 (2006), 77–101.
+[12] Daniel Buschek, Martin Zürn, and Malin Eiband. 2021. The impact of multiple
+parallel phrase suggestions on email input and composition behaviour of native
+and non-native english writers. In Proceedings of the 2021 CHI Conference on
+Human Factors in Computing Systems . 1–13.
+[13] Jaemin Cho, Abhay Zala, and Mohit Bansal. 2022. DALL-Eval: Probing the
+Reasoning Skills and Social Biases of Text-to-Image Generative Transformers.
+arXiv preprint arXiv:2202.04053 (2022).
+[14] John Joon Young Chung, Shiqing He, and Eytan Adar. 2021. The intersection
+of users, roles, interactions, and technologies in creativity support tools. In
+Designing Interactive Systems Conference 2021 . 1817–1833.
+[15] John Joon Young Chung, Shiqing He, and Eytan Adar. 2022. Artist Sup-
+port Networks: Implications for Future Creativity Support Tools. In Design-
+ing Interactive Systems Conference (Virtual Event, Australia) (DIS ’22) . As-
+sociation for Computing Machinery, New York, NY, USA, 232–246. https:
+//doi.org/10.1145/3532106.3533505
+[16] John Joon Young Chung, Wooseok Kim, Kang Min Yoo, Hwaran Lee, Eytan
+Adar, and Minsuk Chang. 2022. TaleBrush: Sketching Stories with Generative
+Pretrained Language Models. InProceedings of the 2022 CHI Conference on Human
+Factors in Computing Systems (New Orleans, LA, USA) (CHI ’22) . Association
+for Computing Machinery, New York, NY, USA, Article 209, 19 pages. https:
+//doi.org/10.1145/3491102.3501819
+[17] Felipe Costa, Sixun Ouyang, Peter Dolog, and Aonghus Lawlor. 2018. Auto-
+matic generation of natural language explanations. In Proceedings of the 23rd
+international conference on intelligent user interfaces companion . 1–2.
+[18] Giulia Di Fede, Davide Rocchesso, Steven P Dow, and Salvatore Andolina. 2022.
+The Idea Machine: LLM-based Expansion, Rewriting, Combination, and Sugges-
+tion of Ideas. In Creativity and Cognition . 623–627.
+[19] Carl DiSalvo, Phoebe Sengers, and Hrönn Brynjarsdóttir. 2010. Mapping the
+landscape of sustainable HCI. In Proceedings of the SIGCHI conference on human
+factors in computing systems . 1975–1984.
+[20] Dovetail. 2022. Dovetail. Retrieved October 5, 2022 from https://dovetailapp.com
+[21] Judith E Fan, Monica Dinculescu, and David Ha. 2019. Collabdraw: an environ-
+ment for collaborative sketching with an artificial agent. In Proceedings of the
+2019 on Creativity and Cognition . 556–561.
+[22] Jonas Frich, Lindsay MacDonald Vermeulen, Christian Remy, Michael Mose
+Biskjaer, and Peter Dalsgaard. 2019.Mapping the Landscape of Creativity Support
+Tools in HCI . Association for Computing Machinery, New York, NY, USA, 1–18.
+https://doi.org/10.1145/3290605.3300619
+[23] Emma Frid, Celso Gomes, and Zeyu Jin. 2020. Music creation by example. In
+Proceedings of the 2020 CHI conference on human factors in computing systems .
+1–13.
+[24] Oran Gafni, Adam Polyak, Oron Ashual, Shelly Sheynin, Devi Parikh, and
+Yaniv Taigman. 2022. Make-a-scene: Scene-based text-to-image generation with
+human priors. arXiv preprint arXiv:2203.13131 (2022).
+[25] Nishit Gajjar, Vinoth Pandian Sermuga Pandian, Sarah Suleri, and Matthias
+Jarke. 2021. Akin: Generating ui wireframes from ui design patterns using
+deep learning. In 26th International Conference on Intelligent User Interfaces-
+Companion. 40–42.
+[26] Rinon Gal, Yuval Alaluf, Yuval Atzmon, Or Patashnik, Amit H. Bermano,
+Gal Chechik, and Daniel Cohen-Or. 2022. An Image is Worth One Word:
+Personalizing Text-to-Image Generation using Textual Inversion. https:
+//doi.org/10.48550/ARXIV.2208.01618
+[27] Dilrukshi Gamage, Piyush Ghasiya, Vamshi Bonagiri, Mark E Whiting, and
+Kazutoshi Sasahara. 2022. Are Deepfakes Concerning? Analyzing Conversations
+of Deepfakes on Reddit and Exploring Societal Implications. In CHI Conference
+on Human Factors in Computing Systems . 1–19.
+[28] Katy Ilonka Gero and Lydia B. Chilton. 2019. Metaphoria: An Algorithmic
+Companion for Metaphor Creation . Association for Computing Machinery, New
+York, NY, USA, 1–12. https://doi.org/10.1145/3290605.3300526
+[29] Katy Ilonka Gero, Vivian Liu, and Lydia Chilton. 2022. Sparks: Inspiration
+for science writing using language models. In Designing Interactive Systems
+Conference. 1002–1019.
+[30] Leo A Goodman. 1961. Snowball sampling. The annals of mathematical statistics
+(1961), 148–170.
+[31] Shunan Guo, Zhuochen Jin, Fuling Sun, Jingwen Li, Zhaorui Li, Yang Shi, and
+Nan Cao. 2021. Vinci: an intelligent graphic design system for generating
+advertising posters. In Proceedings of the 2021 CHI Conference on Human Factors
+in Computing Systems . 1–17.
+[32] Megan Hofmann, Kelly Mack, Jessica Birchfield, Jerry Cao, Autumn G Hughes,
+Shriya Kurpad, Kathryn J Lum, Emily Warnock, Anat Caspi, Scott E Hudson,
+et al. 2022. Maptimizer: Using Optimization to Tailor Tactile Maps to Users
+Needs. In CHI Conference on Human Factors in Computing Systems . 1–15.
+[33] Silas Hsu, Tiffany Wenting Li, Zhilin Zhang, Max Fowler, Craig Zilles, and
+Karrie Karahalios. 2021. Attitudes surrounding an imperfect AI autograder. In
+Proceedings of the 2021 CHI Conference on Human Factors in Computing Systems .
+1–15.
+[34] Tianran Hu, Anbang Xu, Zhe Liu, Quanzeng You, Yufan Guo, Vibha Sinha, Jiebo
+Luo, and Rama Akkiraju. 2018. Touch your heart: A tone-aware chatbot for
+customer care on social media. In Proceedings of the 2018 CHI conference on
+human factors in computing systems . 1–12.
+[35] Bernd Huber, Daniel McDuff, Chris Brockett, Michel Galley, and Bill Dolan.
+2018. Emotional dialogue generation using image-grounded language models. In
+Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems .
+1–12.
+[36] WOMBO Inc. 2022. Dream by WOMBO . Retrieved October 5, 2022 from
+https://www.wombo.art
+[37] Ishani Janveja, Akshay Nambi, Shruthi Bannur, Sanchit Gupta, and Venkat
+Padmanabhan. 2020. Insight: monitoring the state of the driver in low-light
+using smartphones. Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies 4, 3 (2020), 1–29.
+[38] Ellen Jiang, Edwin Toh, Alejandra Molina, Kristen Olson, Claire Kayacik, Aaron
+Donsbach, Carrie J Cai, and Michael Terry. 2022. Discovering the Syntax and
+Strategies of Natural Language Programming with Generative Language Models.
+In CHI Conference on Human Factors in Computing Systems . 1–19.
+[39] Martin Jonsson and Jakob Tholander. 2022. Cracking the code: Co-coding with
+AI in creative programming education. In Creativity and Cognition . 5–14.
+[40] Pegah Karimi, Jeba Rezwana, Safat Siddiqui, Mary Lou Maher, and Nasrin
+Dehbozorgi. 2020. Creative sketching partner: an analysis of human-AI co-
+creativity. In Proceedings of the 25th International Conference on Intelligent User
+Interfaces. 221–230.
+[41] Pegah Karimi, Jeba Rezwana, Safat Siddiqui, Mary Lou Maher, and Nasrin
+Dehbozorgi. 2020. Creative Sketching Partner: An Analysis of Human-AI Co-
+Creativity. In Proceedings of the 25th International Conference on Intelligent User
+Interfaces (Cagliari, Italy) (IUI ’20) . Association for Computing Machinery, New
+York, NY, USA, 221–230. https://doi.org/10.1145/3377325.3377522
+[42] Mario Klingemann. 2022. Tweet. Retrieved October 5, 2022 from https://twitter.
+com/quasimondo/status/1512769106717593610
+[43] Hyung-Kwon Ko, Subin An, Gwanmo Park, Seung Kwon Kim, Daesik Kim,
+Bohyoung Kim, Jaemin Jo, and Jinwook Seo. 2022. We-toon: A Communication
+Support System between Writers and Artists in Collaborative Webtoon Sketch
+Revision. In The 35th Annual ACM Symposium on User Interface Software and
+Technology. 1–14.
+[44] Philippe Laban, Elicia Ye, Srujay Korlakunta, John Canny, and Marti Hearst.
+2022. NewsPod: Automatic and Interactive News Podcasts. In 27th International
+Conference on Intelligent User Interfaces . 691–706.
+[45] SeungHun Lee, KangHee Lee, and Hyun-chul Kim. 2018. Content-based success
+prediction of crowdfunding campaigns: A deep learning approach. InCompanion
+of the 2018 ACM conference on computer supported cooperative work and social
+computing. 193–196.
+[46] Lexica. 2022. Lexica. Retrieved October 5, 2022 from https://lexica.art
+[47] Jingyi Li, Sonia Hashim, and Jennifer Jacobs. 2021. What We Can Learn From
+Visual Artists About Software Development. In Proceedings of the 2021 CHI
+Conference on Human Factors in Computing Systems . 1–14.
+[48] Toby Jia-Jun Li, Lindsay Popowski, Tom Mitchell, and Brad A Myers. 2021.
+Screen2vec: Semantic embedding of gui screens and gui components. In Pro-
+ceedings of the 2021 CHI Conference on Human Factors in Computing Systems .
+IUI ’23, March 27–31, 2023, Sydney, NSW, Australia Ko et al.
+1–15.
+[49] Xinyi Li, Liqiong Chang, Fangfang Song, Ju Wang, Xiaojiang Chen, Zhanyong
+Tang, and Zheng Wang. 2021. Crossgr: accurate and low-cost cross-target
+gesture recognition using Wi-Fi. Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies 5, 1 (2021), 1–23.
+[50] Zach Lieberman. 2022. Tweet. Retrieved October 5, 2022 from https://twitter.
+com/zachlieberman/status/1512579367968423941
+[51] Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva
+Ramanan, Piotr Dollár, and C Lawrence Zitnick. 2014. Microsoft coco: Common
+objects in context. InEuropean conference on computer vision . Springer, 740–755.
+[52] Ruibo Liu, Chenyan Jia, and Soroush Vosoughi. 2021. A transformer-based
+framework for neutralizing and reversing the political polarity of news articles.
+Proceedings of the ACM on Human-Computer Interaction 5, CSCW1 (2021), 1–26.
+[53] Thomas F Liu, Mark Craft, Jason Situ, Ersin Yumer, Radomir Mech, and Ranjitha
+Kumar. 2018. Learning design semantics for mobile apps. In Proceedings of
+the 31st Annual ACM Symposium on User Interface Software and Technology .
+569–579.
+[54] Vivian Liu and Lydia B Chilton. 2022. Design Guidelines for Prompt Engineer-
+ing Text-to-Image Generative Models. In CHI Conference on Human Factors in
+Computing Systems . 1–23.
+[55] Vivian Liu, Han Qiao, and Lydia Chilton. 2022. Opal: Multimodal Image Genera-
+tion for News Illustration. In The 35th Annual ACM Symposium on User Interface
+Software and Technology . 1–17.
+[56] Yihe Liu, Anushk Mittal, Diyi Yang, and Amy Bruckman. 2022. Will AI Console
+Me when I Lose my Pet? Understanding Perceptions of AI-Mediated Email
+Writing. In CHI Conference on Human Factors in Computing Systems . 1–13.
+[57] Ryan Louie, Andy Coenen, Cheng Zhi Huang, Michael Terry, and Carrie J Cai.
+2020. Novice-AI music co-creation via AI-steering tools for deep generative
+models. InProceedings of the 2020 CHI Conference on Human Factors in Computing
+Systems. 1–13.
+[58] John Maeda. 2022. Tweet. Retrieved October 5, 2022 from https://twitter.com/
+johnmaeda/status/1513197684735328272
+[59] Mehran Maghoumi, Eugene Matthew Taranta, and Joseph LaViola. 2021. Deep-
+NAG: Deep non-adversarial gesture generation. In 26th International Conference
+on Intelligent User Interfaces . 213–223.
+[60] Justin Matejka, Michael Glueck, Erin Bradner, Ali Hashemi, Tovi Grossman,
+and George Fitzmaurice. 2018. Dream lens: Exploration and visualization of
+large-scale generative design datasets. In Proceedings of the 2018 CHI conference
+on human factors in computing systems . 1–12.
+[61] Midjourney. 2022. Midjourney. Retrieved October 5, 2022 from https://www.
+midjourney.com
+[62] Kristina Milanovic and Jeremy Pitt. 2021. Misattribution of error origination: The
+impact of preconceived expectations in co-operative online games. In Designing
+Interactive Systems Conference 2021 . 707–717.
+[63] Paritosh Mittal, Kunal Aggarwal, Pragya Paramita Sahu, Vishal Vatsalya,
+Soumyajit Mitra, Vikrant Singh, Viswanath Veera, and Shankar M Venkate-
+san. 2020. Photo-realistic emoticon generation using multi-modal input. In
+Proceedings of the 25th International Conference on Intelligent User Interfaces .
+254–258.
+[64] Studio Morphogen. 2022. Artbreeder. Retrieved October 5, 2022 from https:
+//www.artbreeder.com/
+[65] Mohammad Amin Mozaffari, Xinyuan Zhang, Jinghui Cheng, and Jin LC Guo.
+2022. GANSpiration: Balancing Targeted and Serendipitous Inspiration in User
+Interface Design with Style-Based Generative Adversarial Network. In CHI
+Conference on Human Factors in Computing Systems . 1–15.
+[66] NovelAI. 2022. Anlatan. Retrieved October 5, 2022 from https://novelai.net
+[67] Changhoon Oh, Jinhan Choi, Sungwoo Lee, SoHyun Park, Daeryong Kim, Jung-
+woo Song, Dongwhan Kim, Joonhwan Lee, and Bongwon Suh. 2020. Under-
+standing user perception of automated news generation system. In Proceedings
+of the 2020 CHI Conference on Human Factors in Computing Systems . 1–13.
+[68] Changhoon Oh, Jungwoo Song, Jinhan Choi, Seonghyeon Kim, Sungwoo Lee,
+and Bongwon Suh. 2018. I lead, you help but only with enough details: Under-
+standing user experience of co-creation with artificial intelligence. InProceedings
+of the 2018 CHI Conference on Human Factors in Computing Systems . 1–13.
+[69] Aadarsh Padiyath and Brian Magerko. 2021. desAIner: Exploring the Use of”
+Bad” Generative Adversarial Networks in the Ideation Process of Fashion Design.
+In Creativity and Cognition . 1–3.
+[70] PromptBase. 2022. PromptBase. Retrieved October 5, 2022 from https:
+//promptbase.com
+[71] Felix Putze, Mazen Salous, and Tanja Schultz. 2018. Detecting memory-based
+interaction obstacles with a recurrent neural model of user behavior. In 23rd
+International Conference on Intelligent User Interfaces . 205–209.
+[72] Han Qiao, Vivian Liu, and Lydia Chilton. 2022. Initial Images: Using Image
+Prompts to Improve Subject Representation in Multimodal AI Generated Art. In
+Creativity and Cognition (Venice, Italy) (C&C ’22) . Association for Computing
+Machinery, New York, NY, USA, 15–28. https://doi.org/10.1145/3527927.3532792
+[73] Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen.
+2022. Hierarchical text-conditional image generation with clip latents. arXiv
+preprint arXiv:2204.06125 (2022).
+[74] Aditya Ramesh, Mikhail Pavlov, Gabriel Goh, Scott Gray, Chelsea Voss, Alec Rad-
+ford, Mark Chen, and Ilya Sutskever. 2021. Zero-shot text-to-image generation.
+In International Conference on Machine Learning . PMLR, 8821–8831.
+[75] Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn
+Ommer. 2021. High-Resolution Image Synthesis with Latent Diffusion Models.
+arXiv:2112.10752 [cs.CV]
+[76] Andrew Ross, Nina Chen, Elisa Zhao Hang, Elena L Glassman, and Finale Doshi-
+Velez. 2021. Evaluating the interpretability of generative models by interactive
+reconstruction. In Proceedings of the 2021 CHI Conference on Human Factors in
+Computing Systems . 1–15.
+[77] Margarete Sandelowski. 1995. Sample size in qualitative research. Research in
+nursing & health 18, 2 (1995), 179–183.
+[78] Oliver Schmitt and Daniel Buschek. 2021. Characterchat: Supporting the creation
+of fictional characters through conversation and progressive manifestation with
+a chatbot. In Creativity and Cognition . 1–10.
+[79] Christoph Schuhmann, Romain Beaumont, Cade W Gordon, Ross Wightman,
+Theo Coombes, Aarush Katta, Clayton Mullis, Patrick Schramowski, Srivatsa R
+Kundurthy, Katherine Crowson, et al. 2022. LAION-5B: An open large-scale
+dataset for training next generation image-text models. (2022).
+[80] Christoph Schuhmann, Richard Vencu, Romain Beaumont, Robert Kaczmarczyk,
+Clayton Mullis, Aarush Katta, Theo Coombes, Jenia Jitsev, and Aran Komat-
+suzaki. 2021. Laion-400m: Open dataset of clip-filtered 400 million image-text
+pairs. arXiv preprint arXiv:2111.02114 (2021).
+[81] Sabrina Scuri, Marta Ferreira, Nuno Jardim Nunes, Valentina Nisi, and Cathy
+Mulligan. 2022. Hitting the Triple Bottom Line: Widening the HCI Approach
+to Sustainability. In CHI Conference on Human Factors in Computing Systems .
+1–19.
+[82] Ben Shneiderman. 2020. Human-centered artificial intelligence: Reliable, safe &
+trustworthy. International Journal of Human–Computer Interaction 36, 6 (2020),
+495–504.
+[83] Ben Shneiderman. 2022. Human-Centered AI . Oxford University Press.
+[84] Ben Shneiderman and Catherine Plaisant. 2010. Designing the user interface:
+Strategies for effective human-computer interaction . Pearson Education India.
+[85] Maximilian Speicher, Brian D Hall, and Michael Nebeling. 2019. What is mixed
+reality?. In Proceedings of the 2019 CHI conference on human factors in computing
+systems. 1–15.
+[86] Sangho Suh and Pengcheng An. 2022. Leveraging Generative Conversational
+AI to Develop a Creative Learning Environment for Computational Thinking.
+In 27th International Conference on Intelligent User Interfaces . 73–76.
+[87] Rashid Tahir, Brishna Batool, Hira Jamshed, Mahnoor Jameel, Mubashir Anwar,
+Faizan Ahmed, Muhammad Adeel Zaffar, and Muhammad Fareed Zaffar. 2021.
+Seeing is believing: Exploring perceptual differences in deepfake videos. In
+Proceedings of the 2021 CHI Conference on Human Factors in Computing Systems .
+1–16.
+[88] Ming Tao, Hao Tang, Fei Wu, Xiao-Yuan Jing, Bing-Kun Bao, and Changsheng
+Xu. 2022. DF-GAN: A Simple and Effective Baseline for Text-to-Image Synthe-
+sis. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition. 16515–16525.
+[89] Michihiko Ueno and Shin’ichi Satoh. 2021. Continuous and Gradual Style
+Changes of Graphic Designs with Generative Model. In 26th International Con-
+ference on Intelligent User Interfaces . 280–289.
+[90] Josh Urban Davis, Fraser Anderson, Merten Stroetzel, Tovi Grossman, and
+George Fitzmaurice. 2021. Designing co-creative ai for virtual environments. In
+Creativity and Cognition . 1–11.
+[91] Fenna Van Nes, Tineke Abma, Hans Jonsson, and Dorly Deeg. 2010. Language
+differences in qualitative research: is meaning lost in translation? European
+journal of ageing 7, 4 (2010), 313–316.
+[92] Maarten Van Someren, Yvonne F Barnard, and J Sandberg. 1994. The think aloud
+method: a practical approach to modelling cognitive. London: AcademicPress 11
+(1994).
+[93] Richard Vogl, Hamid Eghbal-Zadeh, and Peter Knees. 2019. An automatic drum
+machine with touch UI based on a generative neural network. In Proceedings
+of the 24th International Conference on Intelligent User Interfaces: Companion .
+91–92.
+[94] Catherine Wah, Steve Branson, Peter Welinder, Pietro Perona, and Serge Be-
+longie. 2011. The caltech-ucsd birds-200-2011 dataset. (2011).
+[95] Benedikte Wallace, Charles P Martin, Jim Tørresen, and Kristian Nymoen. 2021.
+Learning Embodied Sound-Motion Mappings: Evaluating AI-Generated Dance
+Improvisation. In Creativity and Cognition . 1–9.
+[96] Bryan Wang, Gang Li, Xin Zhou, Zhourong Chen, Tovi Grossman, and Yang
+Li. 2021. Screen2words: Automatic mobile UI summarization with multimodal
+learning. In The 34th Annual ACM Symposium on User Interface Software and
+Technology. 498–510.
+[97] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai
+Zhang, and Sanglu Lu. 2021. Thru-the-wall Eavesdropping on Loudspeakers
+via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technologies 5, 4 (2021), 1–25.
+Large-scale Text-to-Image Generation Models for Visual Artists’ Creative Works IUI ’23, March 27–31, 2023, Sydney, NSW, Australia
+[98] Jiewen Wang, Olivia Hsieh, Jack Gale, Sienna Xin Sun, and Sang-won Leigh.
+2020. Latent Sheep Dreaming: Machine for Extrapolated Visual Inception. In
+Companion Publication of the 2020 ACM Designing Interactive Systems Conference .
+481–484.
+[99] Thomas Weber, Heinrich Hußmann, Zhiwei Han, Stefan Matthes, and Yuant-
+ing Liu. 2020. Draw with me: Human-in-the-loop for image restoration. In
+Proceedings of the 25th International Conference on Intelligent User Interfaces .
+243–253.
+[100] Justin D Weisz, Michael Muller, Stephanie Houde, John Richards, Steven I Ross,
+Fernando Martinez, Mayank Agarwal, and Kartik Talamadupula. 2021. Perfec-
+tion not required? Human-AI partnerships in code translation. In 26th Interna-
+tional Conference on Intelligent User Interfaces . 402–412.
+[101] Justin D Weisz, Michael Muller, Steven I Ross, Fernando Martinez, Stephanie
+Houde, Mayank Agarwal, Kartik Talamadupula, and John T Richards. 2022. Bet-
+ter together? an evaluation of ai-supported code translation. In27th International
+Conference on Intelligent User Interfaces . 369–391.
+[102] Chenfei Wu, Jian Liang, Xiaowei Hu, Zhe Gan, Jianfeng Wang, Lijuan Wang,
+Zicheng Liu, Yuejian Fang, and Nan Duan. 2022. NUWA-Infinity: Autoregressive
+over Autoregressive Generation for Infinite Visual Synthesis. arXiv preprint
+arXiv:2207.09814 (2022).
+[103] Chenfei Wu, Jian Liang, Lei Ji, Fan Yang, Yuejian Fang, Daxin Jiang, and Nan
+Duan. 2021. N \" uwa: Visual synthesis pre-training for neural visual world
+creation. arXiv preprint arXiv:2111.12417 (2021).
+[104] Youngwoo Yoon, Keunwoo Park, Minsu Jang, Jaehong Kim, and Geehyuk Lee.
+2021. Sgtoolkit: An interactive gesture authoring toolkit for embodied conver-
+sational agents. In The 34th Annual ACM Symposium on User Interface Software
+and Technology. 826–840.
+[105] Jiahui Yu, Yuanzhong Xu, Jing Yu Koh, Thang Luong, Gunjan Baid, Zirui Wang,
+Vijay Vasudevan, Alexander Ku, Yinfei Yang, Burcu Karagol Ayan, et al. 2022.
+Scaling autoregressive models for content-rich text-to-image generation. arXiv
+preprint arXiv:2206.10789 (2022).
+[106] Ann Yuan, Andy Coenen, Emily Reif, and Daphne Ippolito. 2022. Wordcraft:
+Story Writing With Large Language Models. In 27th International Conference on
+Intelligent User Interfaces . 841–852.
+[107] Beste F Yuksel, Pooyan Fazli, Umang Mathur, Vaishali Bisht, Soo Jung Kim,
+Joshua Junhee Lee, Seung Jung Jin, Yue-Ting Siu, Joshua A Miele, and Ilmi Yoon.
+2020. Human-in-the-Loop Machine Learning to Increase Video Accessibility for
+Visually Impaired and Blind Users. In Proceedings of the 2020 ACM Designing
+Interactive Systems Conference . 47–60.
+[108] Paulina Yurman and Anuradha Venugopal Reddy. 2022. Drawing Conversations
+Mediated by AI. In Creativity and Cognition . 56–70.
+[109] Chao Zhang, Cheng Yao, Jiayi Wu, Weijia Lin, Lijuan Liu, Ge Yan, and Fangtian
+Ying. 2022. StoryDrawer: A Child–AI Collaborative Drawing System to Support
+Children’s Creative Visual Storytelling. In CHI Conference on Human Factors in
+Computing Systems . 1–15.
+[110] Enhao Zhang and Nikola Banovic. 2021. Method for Exploring Generative
+Adversarial Networks (GANs) via Automatically Generated Image Galleries. In
+Proceedings of the 2021 CHI Conference on Human Factors in Computing Systems .
+1–15.
+[111] Yijun Zhou, Yuki Koyama, Masataka Goto, and Takeo Igarashi. 2021. Interactive
+Exploration-Exploitation Balancing for Generative Melody Composition. In26th
+International Conference on Intelligent User Interfaces (College Station, TX, USA)
+(IUI ’21) . Association for Computing Machinery, New York, NY, USA, 43–47.
+https://doi.org/10.1145/3397481.3450663

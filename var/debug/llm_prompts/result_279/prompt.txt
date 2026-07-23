@@ -1,0 +1,1512 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | method_use | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: RFNOID: Protecting RFID Motion Privacy via Metasurface
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+RFNOID: Protecting RFID Motion Privacy via Metasurface
+Yanni Yang∗, Zheng Shi ∗, Zhenlin An †, Runyu Pan ∗, Yanling Bu‡, Guoming Zhang ∗, Pengfei Hu ∗, Jiannong Cao §
+∗Shandong University, †University of Pittsburgh, ‡Nanjing University of Aeronautics and Astronautics,
+§The Hong Kong Polytechnic University
+Abstract—RFID tags have become prevailing human motion
+sensors in applications, like smart homes and health monitor-
+ing. However, RFID’s powerful through-wall sensing capabilities
+raise significant privacy concerns about leaking human motion
+information, which the RFID sensing community has overlooked.
+To fill this gap, we propose RF NOID, the first system that
+can protect human motion privacy against adversarial through-
+wall RFID sensing. The key enabler is our design of an RFID
+metasurface consisting of multiple 1-bit phase shifters that can
+obfuscate motion information. As a pioneering work, we perform
+theoretical modeling and exploratory studies of the metasurface
+effect on RFID signals in temporal and spectral domains. Based
+on the preliminary analysis, we find it is non-trivial to achieve
+effective signal obfuscation in both domains due to the trade-off
+in simultaneously increasing temporal signal chaos and masking
+the human motion spectrum. To tackle this issue, we judiciously
+devise a metasurface controlling strategy by jointly optimizing
+the signal entropy, variance, and spectrum distribution to balance
+the temporal and spectral motion obfuscation. Extensive experi-
+ments demonstrate that RF NOID can significantly decrease the
+adversarial through-wall motion detection rate to less than 6%
+and increase the respiration estimation error by over 3 ×.
+Index Terms—RFID sensing, metasurface, wireless security
+I. I NTRODUCTION
+Today RFID-based human sensing systems have surged in
+popularity, revolutionizing various aspects of our lives, such
+as intrusion detection [1–3], localization and tracking [4–
+6], health monitoring [7–9], and activity recognition [10–12].
+However, the widespread adoption of low-cost RFID tags and
+the richness of their sensing capabilities, particularly their
+through-wall sensing ability, render non-negligible privacy
+concerns [13–15]. Numerous studies have shown successful
+attempts in through-wall human motion [3–5] and speech
+eavesdropping [15–18] via RFID tags for adversarial uses.
+Besides, the physiological and behavioral features [9, 19] cap-
+tured by RFID signals for human authentication can be easily
+intercepted via malicious sniffing. Therefore, it is imperative
+to protect RFID-based human motion sensing systems from
+unauthorized access and malicious attacks.
+However, existing literature lacks an efficient way to safe-
+guard RFID motion sensing. Current defenses to communi-
+cation eavesdropping, such as channel randomization [20],
+require customized RFID readers, making them incompati-
+ble with existing systems. Furthermore, recent solutions for
+protecting other wireless sensing systems, including FMCW
+radar [21] and WiFi [22, 23], cannot be directly applied to
+RFID due to essential differences in protocols and sensing
+models. In short, we desire a new method to defend against
+privacy intrusions in RFID-based motion sensing systems.
+*Runyu Pan is the corresponding author.
+Reader
+Metasurface
+RFID 
+tags
+Reader
+RFID 
+tags
+Metasurface
+walk
+phase
+time
+No RFnoID
+ With RFnoID
+phase
+time
+phase
+time
+No RFnoID
+phase
+time
+With RFnoID
+(a) (b) (c) (d)
+breathe
+Fig. 1. Protecting through-wall RFID human motion privacy with RF NOID.
+Our metasurface can successfully obfuscate walking and breathing patterns.
+Thus, we present RFNOID, the first system to protect human
+motion privacy from adversarial through-wall RFID sensing.
+The key idea is to design a programmable metasurface for ob-
+fuscating the adversary’s RFID channel. Different from active
+signal jamming methods [20], the metasurface only passively
+reflects RFID signals, thereby reducing system complexity. We
+also employ a low-cost metasurface design with the simple
+yet effective 1-bit phase shifter (i.e., 0 or π) unit, in which a
+PIN-diode is switched on or off to control the signal phase.
+The devised metasurface is configured to be compatible with
+current RFID systems for seamless integration. By deploying
+and controlling the metasurface in the sensing area, part of
+the RFID signals will be reflected by the metasurface units
+with different on/off states and superimpose with the signal
+reflected by the human body. In other words, the metasur-
+face acts as an irregularly moving reflector to disrupt the
+adversarial channel. Thus, with signal variations caused by the
+metasurface stronger than those from the human body, we can
+hide the human motion pattern from leakage. As depicted in
+Fig. 1, by applying RF NOID, no matter whether the adversary
+snoops on the RFID tags outside or inside the target room, the
+original walking and respiration motion signals are obfuscated.
+Note that the metasurface facing the wall does not affect the
+legitimate RFID sensing inside the room.
+To achieve the desired spoofing against the adversary, sig-
+nificant challenges in signaling mechanism and obfuscation
+strategy must be overcome. Regarding signaling mechanism ,
+as a pioneer work, the unclear mechanism of how the meta-
+surface reflected signal affects the through-wall RFID human
+motion sensing signals must be unraveled to achieve effective
+signal obfuscation. This includes (1) the metasurface effect on
+the RFID sensing model and received signal indicator (i.e.,
+amplitude and phase) and (2) the metasurface’s superimposi-
+tion outcome with the human reflected signal.
+In terms of obfuscation strategy, the adversary can snoop
+on human motions from different views, including temporal
+IEEE INFOCOM 2025 - IEEE Conference on Computer Communications | 979-8-3315-4305-1/25/$31.00 ©2025 IEEE | DOI: 10.1109/INFOCOM55648.2025.11044530
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+and spectral domains. Thus, the obfuscated RFID signal by
+the metasurface should overwhelm the human reflected signal
+in both domains. However, existing obfuscation strategies
+via metasurface [22, 23] only focus on the temporal signal
+amplitude but ignore spectral features; besides their strategies
+that manipulate amplitude cannot be naively transferred to
+RFID sensing which mainly employs the signal phase. To this
+end, simultaneously signal phase obfuscation in temporal and
+spectral domains entails intricate control of the metasurface,
+which yet lacks a systematic approach.
+To tackle the signaling mechanism challenge, we first model
+the effect of the metasurface on the RFID channel and signal
+propagation indicators to understand the metasurface influence
+on through-wall RFID motion sensing. Our modeling out-
+comes reveal that different combinations of the metasurface
+units’ on/off states can incur distinctive phase shifts over
+the metasurface reflected signal, which superimposes with the
+human motion signal into an obfuscated version. Then, we
+systematically analyze the effect of unit states on the RFID
+signal from both temporal and spectral perspectives, which
+provides us with key observations for successful RFID signal
+obfuscation during human motions.
+To address the obfuscation strategy challenge, we draw
+on the qualitative and quantitative analysis of the metasur-
+face effect and summarize the key goals of the metasurface
+controlling strategy for achieving strong signal phase obfus-
+cation in both temporal and spectral domains. That is: the
+metasurface-affected signal phase should simultaneously have
+(1) a high signal entropy, (2) a high temporal variance, and
+(3) dominant frequencies around the human motion frequency
+band. However, a trade-off exists among these three targets.
+Thus, we strive to devise a compound metasurface controlling
+strategy to strike a balance among the above three objectives
+via theoretical analysis and real-world observations.
+In sum, our contributions are listed as follows:
+• In this paper, we propose the RF NOID, the first-of-its-kind
+system for protecting human motion privacy from adversar-
+ial through-wall RFID sensing via an efficient metasurface.
+• We theoretically model the metasurface effect on the human-
+reflected RFID signal in temporal and spectral domains. We
+design a novel metasurface controlling strategy to balance
+effective temporal and spectral domain obfuscation.
+• Extensive experiments show that RF NOID can significantly
+hamper adversarial RFID motion sensing using representa-
+tive sensing methods. Typically, the human walking motion
+detection rate is lower to 6% or less, and the respiration rate
+estimate error is enlarged by 3 ×.
+II. P RIMER ON THROUGH -WALL RFID M OTION SENSING
+The RFID signals at the 860 MHz −960 MHz UHF band
+have a strong ability to penetrate through walls due to their
+relatively low attenuation. Thereby, extensive studies have ex-
+ploited RFID signals for through-wall human motion sensing,
+and they can be roughly divided into two categories. One
+is through-wall human motion detection without tags in the
+room [3–5], which follows the signal model as shown in
+Ant
+tag
+wall
+𝒅𝒍 𝒅𝒉(𝒕)
+𝒅s
+(a) tag outside the room  
+Ant
+tag
+wall
+𝒅𝒍
+𝒅𝒉(𝒕)
+(b) tag inside the room  
+body
+𝒅s
+Fig. 2. Signal model of through-wall RFID human motion sensing.
+Fig. 2(a). The adversary deploys the RFID antenna (Ant) and
+tags outside the target room. When the person walks around,
+the received signal R(t) from the tag can be expressed as:
+R(t) =αle−j 2dl
+λ + αse−j ds+dl
+λ + αh(t)e−j dh(t)+dl
+λ , (1)
+where αl, αs, and αh(t) denote the attenuation factor of
+the line-of-sight (LoS) path signal (in grey) and multipath
+signals from the surrounding stationary object (in yellow)
+and the human body (in blue). Accordingly, dl, ds, and
+dh(t) refer to the length of each signal propagation path.
+λ is the RFID signal wavelength. Since the RFID tags and
+stationary objects are static, only the moving human body
+with a varying dh(t) changes R(t). Note that the RFID
+signal amplitude is significantly weakened by the wall. Thus,
+researchers mainly utilize the phase changes incurred by the
+body motion: ∆ϕh(t) = dh(t)
+λ mod 2π to infer the through-
+wall motion pattern. As shown in Fig. 1(a), when a person
+walks around inside the room, it can cause salient phase
+changes of the tag deployed by the adversary behind the wall,
+indicating the person’s presence inside the room.
+The other common through-wall RFID sensing scenario is
+that RFID tags are already deployed inside the room for certain
+uses [8, 10, 24]. Under this setup, the adversary is still able
+to capture the multipath signal reflected by the person (i.e.,
+the signal path Ant-body-tag-Ant), as shown in Fig. 2(b). In
+Fig. 1(c), we depicted the adversary received phase of the
+tag placed indoors, which exhibits a periodic pattern of the
+person’s respiration inside the room.
+III. T HREAT MODEL
+RFNOID aims at protecting human motion privacy leaked
+by adversarial through-wall RFID sensing. Details of the threat
+model are described as follows.
+Adversary setup : The adversary aims to covertly monitor
+the victim’s motions within an enclosed room, such as an
+office or home. Nonetheless, the adversary fails to access the
+area neither physically nor visibly, but manages to place the
+easily obtainable commodity RFID reader and antenna near the
+target room instead, deploying them in a nearby room close
+to high-risk areas such as wooden doors or glass walls, where
+RFID signals are more likely to penetrate, while avoiding
+locations shielded by dense materials, like thick concrete
+walls, where signals would be blocked. To obtain the human
+motion-affected RFID signal, the adversary may (1) place
+several RFID tags behind the wall, as shown in Fig. 2(a), if no
+tag is inside the target room, or (2) directly receive the signal
+from the tag positioned in the room without deploying extra
+tags, as depicted in Fig. 2(b). In this work, we exemplify two
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+Substrate
+Patch ant.
+PIN
+Control voltage C(t)
+Controller
+100.2mm
+16mm
+D
+LED Rl
+Cd
+Rb
+VCC GND
+Substrate
++ -Rb
+CdD
+Fig. 3. Fabrication of RFID metasurface unit.
+typical adversarial sensing tasks: large-scale walking motion
+detection and small-scale respiration rate monitoring.
+Adversary sensing algorithms : The adversary owns the
+domain knowledge of the widely used RFID signal processing
+methods (e.g., phase unwrapping and smoothing methods) and
+sensing algorithms. For walking motion detection, two typical
+algorithms are used: (1) the variance-based approach [2, 3]:
+It is reasonable to assume the target room is static most
+of the time. Thus, the adversary can pre-collect a long-
+term signal phase, calculate its variance, and determine a
+threshold above which denotes motion is detected. (2) the
+learning-based approach [9, 19, 25]: Hand-crafted features
+(e.g., statistical features) or neural network latent vector (e.g.,
+auto-encoder) are extracted from the pre-collected signal phase
+in temporal and spectral domains and fed into a one-class
+classifier (e.g., support vector machine) for motion detection.
+For respiration monitoring, the adversary performs the Fast
+Fourier Transformation (FFT) and bandpass filtering within the
+human respiration band on the signal phase and looks for the
+strongest frequency component as the respiration rate [8, 26].
+IV. RFID M ETASURFACE DESIGN AND MODELING
+A. Fabrication of the Reflective Metasurface
+In RF NOID, we fabricate a low-cost metasurface with N
+uniformly placed units, as depicted in Fig. 14(a). The detailed
+composition of each unit is shown in Fig. 3. On the top of the
+unit is a patch antenna that reflects the UHF RFID signal. In
+the middle is a substrate followed by the ground plane at the
+bottom. The key component in the unit is the PIN dioxide D
+whose on/off states change the reflection coefficient. Accord-
+ingly, when the controller output C(t) switches between low
+and high voltages, the unit will demonstrate a 180◦ phase shift,
+i.e. 1-bit phase shifter between 0 and π, over the incident RFID
+signal. In our implementation, we optimize the patch antenna
+size and substrate thickness in the CST studio to ensure an
+effective 180◦ phase shift over the UHF frequency band. We
+also add a biasing resistor Rb and a decoupling capacitor Cd
+to stabilize the circuit. The LED and a current limit resistor Rl
+are used to monitor the controller output voltage. We employ
+Arduino Mega 2560 with 54 output pins as the controller,
+which can support up to 7 ×7 sized metasurface. The total
+metasurface fabrication cost for a 4 ×4 metasurface is around
+$90 USD, which is comparable with the expense of one RFID
+antenna. Once fabricated, the metasurface is placed in high-
+risk indoor areas, i.e., behind wooden doors or glass walls.
+B. Modeling Metasurface Effect on Human Motion Sensing
+To fulfill the objective of obfuscating human motion signals
+using the devised metasurface, we first model the metasurface
+𝒅𝒍
+𝒅𝒉(𝒕)
+(a) signal path by metasurface 
+𝒅𝒍
+𝒅𝒉(𝒕)
+(b) I-Q signal vector
+metasurface
+𝒅𝒎𝒊 (𝒕)
+metasurface
+𝒅𝒎𝒊 (𝒕)
+Q
+I
+𝑣𝒉
+𝒗𝒎𝒊
+𝟏
+𝒗𝒎𝒊
+𝟎
+𝝅
+𝒗𝑹
+𝟏
+𝒗𝑹
+𝟎
+𝝋𝑹𝒊
+𝟏𝝋𝑹𝒊
+𝟎
+𝑣𝑙 𝑣𝒔+ 
+Fig. 4. Effect of metasurface on the received signal phase.
+effect to answer two questions: 1) How does the metasurface
+affect the original RFID sensing signal model? 2) Can the
+metasurface with only 1-bit phase shifters obfuscate the mo-
+tion signal phase in various ways?
+As depicted in Fig. 4(a), after deploying the metasurface in-
+side the target room, the ith reflective unit, i.e., Ui, introduces
+a new signal propagation path between the RFID antenna and
+tag with the attenuation factor of αmi(t) and length of dmi(t).
+Then, the received tag signal becomes:
+R(t) = αle−j 2dl
+λ + αse−j ds+dl
+λ + αh(t)e−j dh(t)+dl
+λ
++
+NX
+i=1
+αmi(t)e−j
+dmi(t)+dl
+λ . (2)
+In Eq. (2), although the path length dmi(t) does not change
+physically, it is virtually controlled by the applied voltage
+to the unit. To understand this effect, we look into the
+signal vectors in the in-phase and quadrature (I-Q) domain.
+The received signal vector v0/1
+R at low or high voltage is a
+combination of the LoS tag signal ( vl), human-reflected signal
+(vh), and metasurface-reflected signal ( v0/1
+mi ) as below:
+v0/1
+R = vl + vs + vh +
+NX
+i=1
+v0/1
+mi (3)
+To interpret Eq. (3), we first look at one unit, e.g., the Ui’s
+signal vector. Due to the π phase difference between v0
+mi
+and v1
+mi, the received signal phase will change between two
+results: ϕ0
+Ri or ϕ1
+Ri. Then, if all N units function together,
+there can be 2N different phase results between 0 and 2 π.
+For instance, when N = 16, the signal phase can theoretically
+exhibit 216 = 65536 unique values within [0, 2 π]. However,
+due to the superposition of static signal vector vl, vs, and dy-
+namic vector vh from human motions, the actual phase would
+vary in a smaller range than [0, 2 π]. Thus, the combination of
+multiple 1-bit phase shifters can incur abundant phase changes
+to obfuscate those caused by human motions.
+C. Preliminary Studies and Observations
+Apart from the above theoretical modeling, we conduct
+experiments to measure real-world metasurface impact on the
+human motion signal. To succeed in through-wall motion
+sensing, the adversary would make full use of the received
+RFID signal from both temporal and spectral domains. Thus,
+we conduct preliminary studies to investigate the metasurface
+effect from both temporal and spectral perspectives.
+1) Temporal perspective: The temporal phase change in-
+curred by the metasurface is desired to have high variances
+considering the commonly used variance-based approach to
+detect human motions. From Eq. (3), we conjecture that flip-
+ping more units on/off could introduce a larger phase variation.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+15 55 95 
+percentage (%)
+0.05
+0.10
+0.15phase deviation (rad) 
+-0.1
+0
+0.1
+0 4 9 13 18 22 27 
+phase (rad) 
+w. motion phi w/o motion phi
+w. motion std w/o motion std
+time (s) time (s)
+0 4 9 13 18 22 27 
+-0.12
+0
+0.12phase (rad) 
+5 10 15 
+frequency (Hz)
+0
+w. motion 
+w/o motion
+2
+4
+6
+10 *
+-3 
+magnitude 
+(a) phase deviation of increasing units (b) phase change withou t metasurface (c) phase change with metasurface (d) spectrum with metasu rface 
+w. motion phi w/o motion phi
+w. motion std w/o motion std
+25% 
+75% 
+0 35 75 
+Fig. 5. Temporal perspective: (a) phase deviation for flipping different numbers of units, (b) no metasurface: phase and standard deviation with/without human
+motions, (c) control metasurface between min- and max-set: phase and standard deviation with/without human motions, (d) spectrum of phase in (c).
+To validate this, we increase the percentage of units switched
+on and off for various sizes of metasurfaces ( N = 9, 16, 25)
+to examine the effect on the phase variation. For a certain unit
+number, we randomly traverse different combinations of units.
+The unit flipping rate is set at 20 Hz to cover human motion
+frequencies and below the common RFID signal sampling rate
+at 30 Hz-50 Hz. The measured average phase deviation of
+the received tag signal for different percentages of units is
+shown in Fig. 5(a). It shows that the phase deviation gradually
+increases with more flipped units, verifying our hypothesis and
+embodying our first observation as follows.
+Observation 1: The phase variation is positively correlated
+to the number of units flipped.
+As such, we may control the metasurface by intuitively
+switching on/off the maximum number of units to attain a
+high variance. However, such a strategy would result in a
+periodic temporal pattern, which can be easily filtered in the
+spectral domain. We tackle this problem by constructing a
+min-set (0-15% units) and a max-set (85%-100% units), and
+reciprocally switching on the units between two sets. The units
+in each set are arbitrarily selected from all units to introduce
+certain phase randomness. Then, we test this strategy with
+and without human walking motions and show the signal
+phase and its deviation in Fig. 5(c). For comparison, the phase
+change without metasurface is depicted in Fig. 5(b). Without
+metasurface, the average phase deviation is only 0.006 rad
+in static environments. While this deviation can be lifted to
+0.023 rad (4 ×) using the metasurface. Most importantly, the
+running metasurface makes it difficult to distinguish the phase
+change and its deviation under human motions from those in
+static environments, as shown in Fig. 5(c). Thus, this strategy
+can obfuscate the motion signal in the temporal domain.
+However, when the phase in Fig. 5(c) is transformed into
+the spectral domain, as depicted in Fig. 5(d), we can easily
+differentiate the spectrum with and without motions from the
+low-frequency band below 3 Hz, which indeed is the human
+torso and limb movement frequency band during walking [27].
+This is because the way we control metasurface still bears a
+regular pattern, e.g., a single strong component at 10 Hz as
+a result of the 20 Hz flipping rate, with less entropy at other
+frequency bands. Besides, the human respiration rate also lies
+in a similar low-frequency band within 1 Hz. Note that simply
+decreasing the unit flipping rate for stronger low-frequency
+components is inadequate because this fails to mask the high-
+frequency harmonics of human motions. Therefore, using the
+current metasurface configuration, we face the following issue.
+5 10 15 
+frequency (Hz) 
+0
+10 *
+-3 
+8
+6
+4
+2
+0 magnitude 
+5 10 15 
+frequency (Hz) 
+0 5 10 15 
+frequency (Hz) 
+0
+(a) 25% units (b) 50% units (c) 75% units
+Fig. 6. Phase spectrum of randomly flipping different numbers of units.
+5 10 15 
+frequency (Hz)
+0
+4
+8
+12 magnitude 
+10 *
+-3 
+0
+w. motion 
+w/o motion
+-0.2
+-0.1
+0.1phase (rad) 
+0.2
+0 4 9 14 18 23 28 
+time (s)
+(a) flip 25% units  phase spectrum (b) flip 25% units  phase and std 
+w. motion phi w/o motion phi 
+w. motion std w/o motion std
+Fig. 7. Randomly flipping 25% units with and without human motions: (a)
+phase spectrum, (b) raw phase and standard deviation.
+Issue 1: High phase variance alone fails to obfuscate the
+motion signal in the spectral domain due to low phase entropy
+in the human motion frequency band.
+Therefore, we also need to consider the human motion pat-
+tern in the spectral domain when controlling the metasurface.
+2) Spectral perspective: Since human motions primarily
+occur in low frequencies, the metasurface is expected to
+strengthen the low-frequency components of the affected sig-
+nal phase. To this end, we analyze the phase spectrum when
+different numbers of units are flipped. With a 20 Hz unit
+flipping rate, the maximum frequency of phase variation, i.e.,
+10 Hz, is achieved by repetitively switching on/off all units. As
+such, we postulate that if fewer units are randomly selected
+and flipped each time, lower frequencies ( < 10 Hz) could
+be obtained. To verify this hypothesis, we randomly select
+and repetitively switch on/off 25%, 50%, and 75% units,
+respectively, and depict their phase spectrum in Fig. 6. It shows
+that high-frequency components increase with more units
+flipped, validating our hypothesis as the second observation.
+Observation 2: The phase component frequency is posi-
+tively correlated to the number of units flipped.
+We interpret the observation as follows: When flipping
+fewer units, the gently varying phase demonstrates a slow gen-
+eral change, thus producing more low-frequency components.
+Next, we leverage this observation to enhance spectral ob-
+fuscation. Fig. 6(a) shows that stronger frequency components
+below 3 Hz can be attained by using 25% units. Thus, we
+control the metasurface by randomly flipping 25% units every
+time and illustrate the corresponding phase spectrum with and
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+without human walking motions in Fig. 7(a). Now, the two
+spectra are mixed where the metasurface signal masks the
+human motion. However, since only 25% units are flipped
+each time, this strategy leads to insufficient phase variations
+in the temporal domain. As shown in Fig. 7(b), the phase vari-
+ations without motions are smaller than those under walking.
+Thus, the adversary may still detect human motions from the
+temporal phase, leading to another issue as below.
+Issue 2: Centering the frequency components around human
+motion frequencies by flipping fewer units alone leads to
+insufficient signal obfuscation in the temporal domain.
+Respecting Observation 1 & 2 , we conclude that the units
+flipped play an important role in obfuscating the RFID signal
+phase. However, asIssue 1 & 2 demonstrates, a trade-off exists
+between temporal and spectral domain obfuscation: temporal
+domain obfuscation requires a large number of flipped units,
+while spectral domain obfuscation requires just the opposite.
+Therefore, a novel approach is required to control the meta-
+surface and strike a proper balance between them.
+V. M ETASURFACE CONTROLLING STRATEGY FOR MOTION
+SIGNAL OBFUSCATION
+Based on the preliminary analysis, a well-designed metasur-
+face controlling strategy is required to successfully obfuscate
+human motion patterns from both temporal and spectral per-
+spectives and defend against adversary sensing algorithms. To
+achieve this, we first summarize three goals for the desired
+metasurface controlling strategy as below:
+Goal 1: Attain a high phase entropy. The adversary sensing
+algorithms are designed to extract assured and relevant motion
+information from the RFID signal phase. To obfuscate motion
+signals, the metasurface incurred phase ought to attain a high
+entropy with greater unpredictability and complexity.
+Goal 2: Attain a high temporal phase variance . The large-
+scale human motions can cause significant temporal phase
+changes. The metasurface should be controlled to attain drastic
+phase variation to overwhelm the motion phase changes.
+Goal 3: Attain strong spectral components at human motion
+frequencies. Human motions are dominant in low frequencies.
+Thus, the metasurface phase spectrum shall attain stronger
+low-frequency components to mask the motion spectrum.
+We then devise and implement a new metasurface control-
+ling strategy to fulfill these goals.
+A. Goal 1: Achieving High Phase Entropy
+In information theory, entropy is a measure of the signal
+uncertainty. To confuse the adversary, we should maximize the
+entropy of the RFID signal phase reflected by the metasurface.
+As Eq. (3) indicates, the on/off state of each metasurface unit
+determines the phase change. Therefore, the goal of maximiz-
+ing the phase entropy can be transformed into maximizing
+the entropy in selecting the unit state. As such, given a N-
+sized metasurface, the selection of the unit state entails two
+subsequent steps: (1) How many units to flip? and (2) Which
+units to flip? Since the two steps are orthogonal, the maximum
+entropy is attained by maximizing the entropy of each step.
+The above two questions in steps (1) and (2) can solved by
+formulating them into a mathematical problem. Specifically,
+2 6 10 0 4 8
+4
+8
+12 magnitude 
+10 *
+-3 
+0
+w. motion 
+w/o motion 
+frequency (Hz)
+Fig. 8. Phase spectrum when using
+the Base strategy
+0 5 10 15 20 25 30 
+Base phi Base+refine1 phi
+-0.2 
+0.0 
+0.2 phase (rad) 
+Base std Base+refine1 std
+time (s)
+Fig. 9. Compare temporal phase using
+Base strategy and Base + refinement 1
+step (1) is to select an integer Xn in [0, N], and step (2) is to
+select a set of units Xs from CXn
+N unit combinations. They are
+actually the same problem: Given a finite discrete range, what
+is the maximum entropy distribution? Based on the Principle
+of Maximum Entropy [28], the answer is uniform distribution.
+Thus, the number of units Xn to flip in step (1) and the
+set of units Xs, where Xs = {Ui, ...} and |Xs| = Xn,
+selected from the N-sized metasurface in step (2) should all
+follow the uniform distribution. To this end,Xn and Xs should
+be randomly picked with equal probability. Accordingly, we
+shape a base controlling strategy as follows:
+Base strategy : When controlling the metasurface, we
+first randomly select the number of units Xn to flip from
+{0, 1, 2, ..., N}, then flip a random combination of Xn units
+among all units.
+To generate random numbers with real-world entropy, we
+utilize the Arduino free-running timer tr as the seed to gener-
+ate pseudorandom numbers for Xn and Xs. Then, we apply
+this strategy to control metasurface units and compare the
+affected phase spectrum with and without human motions. The
+orange spectrum in Fig. 8 shows that with maximized entropy,
+the spectrum without human motions is dispersed among a
+relatively wide frequency band with no outstanding frequency
+component. In contrast to the orange spectrum with a strong
+10 Hz component in Fig. 5(d), the flattened spectrum can
+inhibit the adversary from eliminating the metasurface effect
+using certain filters. However, enhancing the entropy alone
+with randomly flipped units results in mediocre obfuscation
+performance in both temporal and spectral domains. The
+phase variance requires further enlargement, and the phase
+spectrum demands stronger components around human motion
+frequencies. Thus, two additional refinements of the Base
+strategy are introduced in the following sections.
+B. Goal 2: Achieving High Phase Variance
+As indicated by Observation 1 and Fig. 5(a), larger phase
+variations are obtained when more units flip their states. Thus,
+we can attach a higher probability to the simultaneous flipping
+of a greater number of units in the Base strategy. Specifically,
+we add one condition that inspects the number of switched-
+on states non among all units at the current timestamp. If
+the current non is small (e.g., 0, 1, and 2) and we switch on
+all units at the next timestamp, the number of flipped units
+becomes larger. Similarly, if the current non is large (e.g.,
+N −1 and N), we can switch off all units to make more units
+change their states. In this way, the possibility of flipping a
+large number of units is increased compared with the Base
+strategy. Meanwhile, random unit flipping is still maintained.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+2
+4
+6
+10 *
+-3 
+magnitude 
+0
+0 2 4 6 8 10 12 14 
+8 15% units 25% units 30% units 
+45% units 60% units 75% units 
+frequency (Hz)
+Fig. 10. Comparison of the spectrum for different numbers of flipped units.
+To avoid cyclic switch on/off of all units which destroys
+randomness, we further set a flag to cut continuous switching.
+We summarize the above metasurface configurations to refine
+the Base strategy as below.
+Strategy refinement 1 : If a random flip resulted in a non
+less than σs ×N or more than σl ×N (σs < σl), we switch on
+or off all units at the next timestamp respectively. Otherwise,
+we flip units randomly according to the Base strategy.
+In the mechanism above, two thresholds σs and σl are yet to
+be assigned, where σs is used to find the timestamp when non
+is smaller than σs × N, and σl is for detecting the timestamp
+when non is larger than σl × N. To determine σs and σl, we
+draw on the phase deviation curve along different percentages
+of flipped units in Fig. 5(a), where two turning points are
+detected, i.e., 25% and 75% of all units on the metasurface.
+The phase deviations below 25% and above 75% units endure
+prominent decline and incline, respectively. Therefore, by
+setting σs and σl to 25% and 75%, we can acquire more
+significant phase variation in the temporal domain.
+We combine the Base strategy and refinement 1 to show
+the metasurface affected phase and its standard deviation in
+Fig. 9. Compared with the phase change of the Base strategy,
+integrating refinement 1 introduces larger phase variances,
+which are beneficial for obfuscating temporal motion signals.
+C. Goal 3: Achieving Strong Spectral Components around the
+Human Motion Frequency Band
+Recall that the entropy enhancement in the Base strategy
+falls short of obfuscating the spectral human motion pattern
+in low frequencies. Thus, the third goal is to refine the
+metasurface controlling strategy so that frequency components
+can be dominant around the human motion frequency band.
+To fulfill this goal, the first step is to elucidate which
+frequency band the human-reflected RFID signal phase is
+located. For the large-scale walking motion, the moving torso
+and limbs have different effects on the RFID signal phase.
+Suppose the torso moves with a speed of v m/s. Then, it will
+introduce ∼ 2v change of the path length dh per second. Once
+the dh changes over one wavelength of the RFID signal, the
+phase will fluctuate over 2 π; thus the phase changes with
+a frequency of 2v/λ. Since the household walking speed
+is mostly within 0.4 m/s [29], the corresponding frequency
+band is below 2.5 Hz. At the same time, the limb movement
+swinging at 1 Hz-2 Hz directly reflects the phase frequency. In
+terms of small-scale breathing activity, the human respiration
+rate is mostly around 0.2 Hz-0.5 Hz [30]. In a word, the
+interested human motions mainly move within 0.2 Hz-2.5 Hz.
+Next, we employ Observation 2, which states that flipping
+fewer units can produce stronger low-frequency components.
+w/o motion phi w. motion phi 
+-0.2
+0.0
+0.2
+-0.1
+0.1
+w/o motion std w. motion std 
+0 5 10 15 20 25 
+time (s)
+phase (rad) 
+threshold
+(a) temporal phase and its deviation 
+5
+10 
+15 magnitude 
+*
+-3 
+0
+10 
+2 6 10 0 4 8
+frequency (Hz)
+w. motion 
+w/o motion 
+(b) spectrum of phase in (a) 
+Fig. 11. Applying the whole strategy with and without human motions: (a)
+temporal phase and its standard deviation, (b) spectrum of phase in (a).
+Algorithm 1 Metasurface Controlling Strategy in RF NOID
+Require: N, tr, σs, σl, w, σf , all units off
+srand(tr); flipSet = [ ]; keepSet = [U1, ..., UN ]; flag = RAND
+while True do
+if non < σs × N and flag= FLIP then ▷ Refine 2
+writeToPins (allpins, ON); flag = RAND;
+else if non > σl × N and flag= FLIP then;
+writeToPins (allpins, OFF); flag = RAND;
+else
+randomNum = getRandom(0, 1);
+if randomNum < wthen ▷ Refine 1
+percentage = getRandom(0, σf ); ▷ Base
+else
+percentage = getRandom(σf , 1);
+end if
+switchNum = percentage × N
+for i = 0, i < switchNum, i + +do ▷ Base
+ind = getRandom(0, 1) % (length(keepSet));
+flipSet.append (Uind); keepSet.delete(Uind);
+end for
+writeToPins (flipSet, FLIP); flag = FLIP ;
+end if
+end while
+Thereby, we can boost the chances of flipping a smaller
+number of units with the following strategy refinement:
+Strategy refinement 2 : We attach a higher likelihood w to
+choosing a number less than σf × N as the number of units
+to flip Xn in the Base strategy.
+To determine σf , we carefully compare the spectrum dis-
+tribution for different percentages of randomly flipped units
+on various sizes of metasurface from plentiful field data in
+Fig. 10. We locate the boundary of the dominant frequency
+components (above average) highlighted by dashed lines.
+The boundary gradually grows to larger frequencies with an
+increasing number of units, again confirming our hypothesis in
+Observation 2. Since the closest boundary to the human motion
+frequency band is the red dashed one near 2.5 Hz, we set σf
+to 25%. To decide the weight w, we calculate the spectrum
+similarity with and without human motions using different w
+within (0.25, 1), and w is set to 0.6 with the highest similarity.
+Metasurface Controlling Strategy as a Whole: We com-
+bine the Base strategy with its two refinements into a com-
+pound final strategy, as shown in Algorithm 1. The temporal
+phase and spectrum with and without human walking motions
+using this strategy are depicted in Fig. 11. It can be observed
+that: (1) The temporal phase without motions exhibits as sig-
+nificant variations as those under motions in Fig. 11(a); (2) The
+metasurface-affected phase without motions also successfully
+overwhelms the phase spectrum with motions in Fig. 11(b).
+We further show the effectiveness of our devised strategy
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+-0.5 0.5-1.0 0.0 1.0
+1st dimension
+-0.2
+0.0
+0.2
+-0.1
+0.12nd dimension 
+-0.5 0.5-1.0 0.0 1.0
+1st dimension
+-0.2
+0.0
+0.2
+-0.1
+0.12nd dimension 
+(a) t-SNE on temporal features (b) t-SNE on spectral features 
+w. motion 
+w/o motion
+w. motion 
+w/o motion
+Fig. 12. t-SNE results on statistical features with and without human motions:
+(a) temporal features, (b) spectral features.
+w. metasurf. w/o metasurf.
+0 5 10 15 20 25 30 
+0.0
+-0.1
+0.1phase (rad) 
+0 0.08 0.16 0.24 0.32 0.40
+time (s) frequency (Hz)
+w. metasurf. 
+w/o metasurf.
+(a) signal phase under respiration (b) respiration rate from FFT resu lt 
+0.0
+0.2
+0.4
+0.6
+0.8magnitude 
+Fig. 13. Respiration monitoring with and without the running metasurface:
+(a) temporal phase, (b) FFT result of the phase in (a).
+using the through-wall motion sensing algorithms mentioned
+in Section III, including variance-based and learning-based
+methods. In terms of the large-scale walking motion, we pre-
+collect a 30 min signal to extract a variance threshold for hu-
+man motion detection using the method in [3], i.e., the dashed
+purple line in Fig. 11(a). With RF NOID, the phase variances
+under human motions are still below the threshold, which
+makes it difficult for the adversary to detect the inner human
+motion. We also extract statistical features from the temporal
+phase and its spectrum and show the feature distribution after
+dimension reduction via t-SNE in Fig. 12. The features with
+and without human motions are fully intertwined, which makes
+it hard to detect the motion by learning-based methods as well.
+In terms of the small-scale respiration activity, we compare
+the signal phase after a band-pass filter at 0.2 Hz-0.5 Hz band
+and the FFT result with and without the running metasurface
+in Fig. 13. The metasurface obfuscates the original periodic
+respiration signal with more irregular fluctuations and a large
+error in respiration rate estimation of 0.15 Hz.
+VI. E VALUATION
+A. Evaluation Setup
+1) Hardware: The fabricated RFID metasurface is shown
+in Fig. 14(a). The model of the substrate and PIN dioxide
+are ZYF255DA and SMP1302-079LF, respectively. To avoid
+oxidation, we lube all units’ patch antennas. The Impinj
+R420 RFID reader and a 12 dBi antenna are utilized as the
+adversary’s attacking devices. To balance the trade-off between
+the number of used tags and the sampling rate of each tag,
+we employ six tags into a 3 ×2 matrix for acquiring sufficient
+signals to sense human motions. The sampling rate of each tag
+is around 30 Hz. Different tag models, including ALN-9762
+and ImpinJ H47, are selected in our experiments.
+2) Evaluation environments: We evaluate the RFNOID per-
+formance in three different environments, including (1) one
+office with a gypsum wall, (2) one meeting room with a
+wooden wall, and (3) one lab with a glass wall, as shown in
+Fig. 14(b-c). The deployment of the adversary’s RFID antenna,
+tag matrix, and metasurface for walking motion detection and
+ϲϬĐŵ
+ϱϮĐŵ
+ϰΎϰŵĞƚĂƐƵƌĨĂĐĞ
+ƌĚƵŝŶŽ
+ĂĚǀĞƌƐĂƌǇ
+ĂŶƚĞŶŶĂ
+ƚĂŐ
+ŵĂƚƌŝǆ
+ŐůĂƐƐǁĂůů
+ŵĞƚĂƐƵƌĨĂĐĞ
+ŵĞƚĂƐƵƌĨĂĐĞ ƚĂŐ
+ŵĂƚƌŝǆ
+ůĞŐŝƚŝŵĂƚĞĂŶƚĞŶŶĂ
+(a) metasurface sketup (b) through glass wall (c) through gypsum wall
+ŐǇƉƐƵŵǁĂůů
+ĂŶƚĞŶŶĂ ƚĂŐŵĂƚƌŝǆ ŵĞƚĂƐƵĨĂĐĞ
+(d) the layouts of experimental environments
+ĂĚǀĞƌƐĂƌǇĂŶƚĞŶŶĂŝƐďĞŚŝŶĚǁĂůů
+Fig. 14. Experimental setup and scenarios to evaluate RF NOID.
+respiration monitoring is marked in Fig. 14(d). V olunteers are
+asked to walk freely or breathe as usual. RFID tags displayed
+outside the room are used to detect walking motions, and the
+tags inside the room are for respiration detection.
+3) Adversary sensing algorithm details: For motion detec-
+tion, the variance-based method in [3] is adopted, which sets
+the threshold as the sum of phase variance mean and 7×std.
+In the learning-based method, handcrafted features from both
+temporal and spectral domains listed in [31, 32] are extracted.
+In addition, we employ the auto-encoder network to extract a
+latent vector from phase changes. Then, the one-class SVM is
+used to train the motion detection model. For variance-based
+and learning-based methods, we collect 30 min signals in
+advance to extract the threshold and train the detection model.
+For respiration detection, the FFT method is mostly used to
+estimate the respiration rate [8, 26].
+4) Baselines: We compare the RF NOID performance with
+three baseline metasurface controlling methods: (1) Base strat-
+egy, (2) Base strategy + refinement 1, and (3) the strategy
+in [22], a countermeasure against adversarial WiFi motion
+detection using a 16 ×16 WiFi metasurface. Note that [22]
+only considers the temporal domain signal obfuscation.
+5) Evaluation Metrics: We adopt two metrics to evaluate
+walking motion detection, i.e., true positive (TP) and false pos-
+itive (FP). TP represents the probability of correctly detecting
+motions when they are present. FP denotes the probability of
+erroneously detecting the motion when it does not appear. For
+respiration rate estimation, we employ the mean absolute error
+(MAE) between the real and measured rate as the metric. The
+average performance of all tags is recorded as the final result.
+B. Evaluation Results
+1) Overall performance: We show the RF NOID perfor-
+mance in different environments. First, the TP and FP results
+in walking motion detection with and without our designed
+metasurface are listed in Table I. The adversary is expected
+to have a higher TP for accurate motion detection. Indeed,
+without the metasurface effect, the TP results of both variance-
+based and learning-based methods are near 1. However, when
+the metasurface runs, the TP dramatically decreases below
+0.1. Particularly, the average TP in different environments and
+sensing methods is lowered to 0.06 , which means that the
+adversary fails to detect the walking motion. Meanwhile, the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+TABLE I
+WALKING MOTION DETECTION PERFORMANCE WITH AND WITHOUT RFNOID IN DIFFERENT ENVIRONMENTS
+Method
+Environment (1) Environment (2) Environment (3)
+w/o metasurface w. metasurface w/o metasurface w. metasurface w/o metasurface w. metasurface
+TP FP TP FP TP FP TP FP TP FP TP FP
+Variance threshold 1.00 0.00 0.00 0.00 1.00 0.00 0.013 0.00 1.00 0.00 0.00 0.00
+Handcrafted features 1.00 0.02 0.028 0.032 0.98 0.056 0.08 0.007 0.89 0.047 0.09 0.02
+Auto-encoder 1.00 0.089 0.039 0.008 1.00 0.028 0.003 0.007 1.00 0.015 0.08 0.00
+TABLE II
+RESPIRATION RATE ESTIMATION WITH AND WITHOUT RFNOID
+Environment (1) Environment (2) Environment (3)
+w/o MS w. MS w/o MS w. MS w/o MS w. MS
+MAE 0.026 0.087 0.022 0.081 0.019 0.085
+0.004 
+B(1) B(2) B(3)
+FP 
+RFnoID
+TP 0.006 
+0.002 
+0.000 
+B(1) B(2) B(3) RFnoID
+FP 
+TP 
+0.25 
+0.20 
+0.15 
+0.10 
+0.05 
+0.00 
+(a) variance-based method (b) learning-based method
+Fig. 15. Comparison with baselines for walking motion detection.
+metasurface does not affect the FP results which stay at a low
+level of around 0. In short, RF NOID can effectively protect
+the motion presence against the adversary eavesdropping.
+The respiration rate estimation results are given in Table II
+(MS represents metasurface). Without the metasurface, the
+original MAE of respiration rate in the three environments
+is 0.022 Hz on average. However, the mean error inclines to
+0.084 Hz on average due to the signal obfuscation by the meta-
+surface. In other words, the respiration rate estimation error
+is enlarged by around 3 times , indicating that RF NOID can
+perturb the respiration signal received by the adversary.
+2) Comparison with baseline metasurface controlling meth-
+ods: In this experiment, we compare the performance of
+RFNOID with three baseline metasurface controlling methods
+mentioned in Section VI-A4. For walking motion detection,
+the results using variance-based and learning-based methods
+are illustrated in Fig. 15. Apart from the B(1) method which
+only involves the Base strategy, other methods achieve a
+low TP and FP in the variance-based method, as shown
+in Fig. 15(a). This is because the Base strategy merely
+enhances the phase entropy but ignores the requirement of
+high phase variance. In the learning-based method, the B(2)
+with refinement 1 and the B(3) for obfuscating temporal WiFi
+amplitude render higher TPs and FPs than RF NOID, because
+they overlook the spectral obfuscation of the motion frequency
+band. Thus, the combination of all parts of the strategy is the
+most effective, especially overwhelming the existing work [22]
+that only considers the temporal signal obfuscation.
+The MAEs of respiration rate estimation using different
+methods are depicted in Fig. 16. Similarly, B(1) bears the
+worst signal obfuscation performance with the least estimation
+error. B(2) outperforms B(3) due to the enhanced entropy.
+RFNOID achieves the largest error, verifying the effectiveness
+of RF NOID in perturbing the regular periodic motion.
+B(1) B(2) B(3) RFnoID
+0.08 
+0.06 
+0.04 
+0.02 
+0.00 MAE (Hz) 
+Fig. 16. Comparison with baselines for
+respiration detection
+3*3 4*4 5*5
+0.04
+0.03
+0.02
+0.01
+0.085
+0.083
+0.081
+0.079
+Size 
+TP 
+FP 
+MAE
+Fig. 17. Impact of metasurface
+size on RF NOID performance
+1m 2m 3m 4m 
+TP 
+FP 0.008 
+0.006 
+0.004 
+0.002 
+0.000 
+0.08 
+0.06 
+0.04 
+0.02 
+0.00 
+0.5m 1m 1.5m 2m 
+MAE (Hz) 
+(a) walking motion detection 
+distance distance
+(b) respiration rate estimation 
+Fig. 18. Impact of the distance between the metasurface and human on
+RFNOID performance.
+3) Impact of metasurface size: In this experiment, we inves-
+tigate the effect of different metasurface sizes, including 3 ×3,
+4×4, and 5 ×5. We show the walking motion and respiration
+detection results in Fig. 17. The TP and FP results for walking
+detection are already below 0.05 when using the small 3 ×3
+metasurface, and the respiration rate error is enlarged to over
+0.077 Hz. The 4 ×4 metasurface can further improve the per-
+formance. But the result exhibits only slight enhancement for
+the 5×5 size. Thus, we use the 4 ×4 metasurface considering
+both the fabrication cost and obfuscation performance.
+4) Impact of distance between human and metasurface: In
+this experiment, we investigate RF NOID performance under
+different distances between the human and metasurface. Intu-
+itively, the farther the human body is from the metasurface,
+the less body-reflected RFID signal may be affected by the
+metasurface. However, the human body is also farther from
+the adversary antenna which also receives a weaker signal
+from the body. Thus, we conduct experiments to explore how
+the distance affects the motion detection result. As shown
+in Fig. 18(a), both TP and FP decrease with the increasing
+distance. This result indicates that even though the metasurface
+has less influence on the signal reflected by the body at a
+farther distance, the signal experiences more attenuation to the
+adversary antenna. In addition, a closer metasurface-human
+distance also means the body is near the adversary. While
+RFNOID can still achieve less than 0.009 TP within 1 m.
+In terms of respiration detection, the respiration rate MAE
+in Fig. 18(b) exhibits a slight decline with the increasing
+metasurface-human distance. This result shows that the far-
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+TP 
+FP 
+1 2 3 4
+0.02
+0.01
+0.00
+number of persons
+Fig. 19. Impact of the number of
+moving persons on RF NOID.
+2
+0
+-2 phase (rad) 
+0 5 10 15 20 25 30 
+1
+0
+1phase (rad) 
+time (s)
+legitimate antenna
+adversary antenna
+*10
+-2 
+*10
+-1 
+Fig. 20. Respiration phase from legitimate
+and adversary antennas.
+ther metasurface incurs less obfuscation effect on the body-
+reflected respiration signal. Nevertheless, the respiration es-
+timation error is still above 0.08 Hz when the metasurface-
+human distance is over 2 m. Thus, the metasurface is effective
+at different distances to the human body.
+5) Impact of the number of persons on motion detection:
+In practice, multiple persons may move simultaneously inside
+the room, causing larger signal phase changes. Accordingly,
+the metasurface ought to mask the multi-person motion signal.
+In this experiment, we investigate RF NOID performance with
+different numbers of moving persons. The TP and FP results
+for walking motion detection of different numbers of persons
+are depicted in Fig. 19. The TP and FP illustrate an incline
+trend with more moving persons because more RFID signals
+are reflected. While such an incline is not noticeable. The TP
+and FP are still below 0.02. Thus, RF NOID can effectively
+obfuscate the motion signals from multiple persons.
+6) Impact of metasurface on legitimate RFID sensing:
+A key question using RF NOID for privacy-preserving RFID
+sensing is whether the metasurface will affect the legitimate
+RFID sensing function inside the room. As shown in Fig. 2(b),
+the RFID tags inside the room are utilized to monitor the
+elderly person’s respiration. The metasurface should not affect
+the original RFID sensing task.
+Thus, we investigate the impact of metasurface on legitimate
+RFID sensing. Specifically, we deploy the legitimate RFID
+antenna beside the person, as depicted in Fig. 14(c). Then, we
+simultaneously measure the RFID signal from the legitimate
+and adversary antennas with the metasurface running. As
+shown in Fig. 20, the phase from the legitimate antenna
+exhibits a clear and periodic respiration pattern, while the
+adversary one is obfuscated. Thus, the metasurface does not
+affect legitimate RFID sensing. This is because the metasur-
+face facing the wall does not reflect the signal transmitted from
+the legitimate antenna thanks to its directivity.
+VII. R ELATED WORKS
+This section introduces the related works in studying privacy
+issues of RFID and RF human sensing.
+A. Privacy-concerned RFID Human Motion Sensing
+RFID-based human motion sensing has raised significant
+privacy concerns, especially due to its through-wall sens-
+ing capability [13]. RFID signals mainly expose three types
+of private information, i.e., human presence and location,
+living habits, and biometrics [33]. For example, Tadar [4]
+and RF-HMS [3] manage to detect and track the walking
+motion through the wall. TASA [34] and FEMO [12] realize
+contactless human daily activity monitoring by deploying
+RFID tags in the environment. Many physiological features,
+e.g., respiration [9] and facial dynamics [35], and behavioral
+features, e.g., gait [36] and handshake [37], can be captured
+by RFID signals for human authentication and identification.
+In addition, researchers have demonstrated the feasibility of
+using commodity RFID devices for through-wall eavesdrop-
+ping [15, 17]. Thus, it is crucial to implement privacy measures
+to secure RFID sensing systems. However, existing studies
+mainly focus on securing RFID communication [20, 38] but
+overlook the privacy issues in RFID-based motion sensing. In
+this work, we fill this gap by proposing RF NOID to protect
+human motion privacy efficiently.
+B. Privacy-preserving RF Human Sensing
+Apart from RFID signals, other wireless signals, like WiFi
+and FMCW radar, also face privacy leakage issues. Re-
+searchers are intensively investigating potential attacks on
+existing RF sensing systems. On the one hand, WiFi and
+radar signals are exploited as adversarial sensors to directly
+detect through-wall human presence [39, 40], habitual be-
+haviors [41], and posture tracking [42]. On the other hand,
+physical adversarial attacks are conducted to destroy the
+original sensing functions by jamming the RF signal [43, 44].
+Thereby, countermeasures are developed to safeguard RF-
+based human sensing systems. Secur-Fi [45] actively controls
+the WiFi transmitting antenna to jam the signal perceived by
+the adversary. IRShield [22] and RIStealth [23] employ the
+metasurface to passively overwhelm or hide the human motion
+WiFi signal in the temporal domain. RF-Protect [21] designs
+a radar signal reflector to generate fake motion patterns.
+However, existing WiFi and radar solutions [21–23] that are
+designed for obfuscating WiFi signal amplitude and radar fre-
+quency cannot be directly borrowed by RFID sensing systems
+in which the sensitive signal phase is mostly employed for
+motion sensing. Besides, the metasurface strategies in [22, 23]
+merely focus on masking the temporal human signal pattern.
+Instead, RF NOID develops a dedicated signal phase obfusca-
+tion strategy for both temporal and spectral domains.
+VIII. C ONCLUSION
+In this paper, we introduce RF NOID, the first system
+designed to protect human motion privacy from adversarial
+through-wall RFID sensing. Central to our solution is using
+the metasurface to obfuscate the channel to protect the motion
+information. We envision that RF NOID will raise the bar for
+privacy protection against through-wall sensing systems and
+anticipate its integration into future smart surfaces to safeguard
+privacy across various RF sensing modalities.
+IX. A CKNOWLEDGEMENT
+This work is supported by the National Natural Sci-
+ence Foundation of China (No. 62302274, 62402291,
+62402217, 62422208, 62232010, 62202276, 62202274),
+Shandong Provincial Natural Science Foundation (No.
+ZR2023QF113, 2023TSGC0105, ZR2022ZD02), Shandong
+Science Fund for Excellent Young Scholars (No. 2024HWYO-
+021, 2022HWYQ-038), JiangSu Natural Science Foundation
+under Grant No. BK20241377, and the Research Institute for
+AIoT at The Hong Kong Polytechnic University.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.
+REFERENCES
+[1] C. Wang, J. Liu, Y . Chen, L. Xie, H. B. Liu, and S. Lu, “Rf-kinect:
+A wearable rfid-based approach towards 3d body movement tracking,”
+Proc. of ACM IMWUT , 2018.
+[2] X. Liang, Z. Huang, S. Yang, and L. Qiu, “Device-free motion & tra-
+jectory detection via rfid,” ACM Transactions on Embedded Computing
+Systems, vol. 17, no. 4, pp. 1–27, 2018.
+[3] Z. Wang, F. Xiao, N. Ye, R. Wang, and P. Yang, “A see-through-wall
+system for device-free human motion sensing based on battery-free rfid,”
+ACM Transactions on Embedded Computing Systems, vol. 17, no. 1, pp.
+1–21, 2017.
+[4] L. Yang, Q. Lin, X. Li, T. Liu, and Y . Liu, “See through walls with cots
+rfid system!” in Proc. of ACM MobiCom , 2015.
+[5] C. Qi, F. Amato, B. Kihei, and G. D. Durgin, “Fine-scale through-wall
+positioning using tunneling rfid tags,” in Proc. of RFID , 2020.
+[6] Z. Chen, P. Yang, J. Xiong, Y . Feng, and X.-Y . Li, “Tagray: Contactless
+sensing and tracking of mobile objects using cots rfid devices,” in Proc.
+of IEEE INFOCOM , 2020.
+[7] Y . Wang and Y . Zheng, “Tagbreathe: Monitor breathing with commodity
+rfid systems,” IEEE Transactions on Mobile Computing , vol. 19, no. 4,
+pp. 969–981, 2019.
+[8] R. Zhao, D. Wang, Q. Zhang, H. Chen, and A. Huang, “Crh: A
+contactless respiration and heartbeat monitoring system with cots rfid
+tags,” in Proc. of IEEE SECON , 2018.
+[9] J. Ning, L. Xie, C. Wang, Y . Bu, F. Xu, D.-W. Zhou, S. Lu, and B. Ye,
+“Rf-badge: Vital sign-based authentication via rfid tag array on badges,”
+IEEE Transactions on Mobile Computing , 2021.
+[10] Y . Wang and Y . Zheng, “Modeling rfid signal reflection for contact-free
+activity recognition,” Proc. of ACM IMWUT , 2018.
+[11] M. Buettner, R. Prasad, M. Philipose, and D. Wetherall, “Recognizing
+daily activities with rfid-based sensors,” in Proc. of ACM UbiComp ,
+2009.
+[12] H. Ding, L. Shangguan, Z. Yang, J. Han, Z. Zhou, P. Yang, W. Xi, and
+J. Zhao, “Femo: A platform for free-weight exercise monitoring with
+rfids,” in Proc. of ACM SenSys , 2015, pp. 141–154.
+[13] Y . Yang, P. Hu, J. Shen, H. Cheng, Z. An, and X. Liu, “Privacy-
+preserving human activity sensing: A survey,” High-Confidence Com-
+puting, p. 100204, 2024.
+[14] L. P. Rachakonda, M. Siddula, and V . Sathya, “A comprehensive study
+on iot privacy and security challenges with focus on spectrum sharing in
+next-generation networks (5g/6g/beyond),” High-Confidence Computing,
+p. 100220, 2024.
+[15] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-
+mm level vibration,” Proc. of ACM IMWUT , 2021.
+[16] Y . Chen, W. Li, X. Cheng, and P. Hu, “A survey of acoustic eaves-
+dropping attacks: Principle, methods, and progress,” High-Confidence
+Computing, p. 100241, 2024.
+[17] Y . Chen, J. Yu, L. Kong, H. Kong, Y . Zhu, and Y .-C. Chen, “Rf-mic:
+Live voice eavesdropping via capturing subtle facial speech dynamics
+leveraging rfid,” Proc. of ACM IMWUT , 2023.
+[18] Y . Chen, J. Yu, Y . Chen, L. Kong, Y . Zhu, and Y .-C. Chen, “Rfspy:
+Eavesdropping on online conversations with out-of-vocabulary words
+by sensing metal coil vibration of headsets leveraging rfid,” in Proc. of
+ACM MobiSys, 2024.
+[19] A. Huang, D. Wang, R. Zhao, and Q. Zhang, “Au-id: Automatic user
+identification and authentication through the motions captured from
+sequential human activities using rfid,” Proc. of ACM IMWUT , 2019.
+[20] H. Hassanieh, J. Wang, D. Katabi, and T. Kohno, “Securing rfids by
+randomizing the modulation and channel,” in Proc. of USENIX NSDI ,
+2015.
+[21] J. Shenoy, Z. Liu, B. Tao, Z. Kabelac, and D. Vasisht, “Rf-protect: pri-
+vacy against device-free human tracking,” in Proc. of ACM SIGCOMM,
+2022.
+[22] P. Staat, S. Mulzer, S. Roth, V . Moonsamy, M. Heinrichs, R. Kronberger,
+A. Sezgin, and C. Paar, “Irshield: A countermeasure against adversarial
+physical-layer wireless sensing,” in IEEE Symposium on Security and
+Privacy (SP), 2022, pp. 1705–1721.
+[23] Y . Zhou, C. Li, H. Chen, and Q. Zhang, “Ristealth: Practical and
+covert physical-layer attack against wifi-based intrusion detection via
+reconfigurable intelligent surface,” in Proc. of ACM Sensys , 2023.
+[24] L. Chen, J. Xiong, X. Chen, S. I. Lee, D. Zhang, T. Yan, and
+D. Fang, “Lungtrack: Towards contactless and zero dead-zone respiration
+monitoring with commodity rfids,” Proc. of ACM IMWUT , 2019.
+[25] H. Ding, J. Han, A. X. Liu, W. Xi, J. Zhao, P. Yang, and Z. Jiang,
+“Counting human objects using backscattered radio frequency signals,”
+IEEE Transactions on Mobile Computing, vol. 18, no. 5, pp. 1054–1067,
+2018.
+[26] Y . Yang, J. Cao, and X. Liu, “Er-rhythm: Coupling exercise and
+respiration rhythm using lightweight cots rfid,” Proc. of ACM IMWUT ,
+2019.
+[27] T. Ji and A. Pachi, “Frequency and velocity of people walking,” Struct.
+Eng, vol. 84, no. 3, pp. 36–40, 2005.
+[28] S. Guiasu and A. Shenitzer, “The principle of maximum entropy,” The
+mathematical intelligencer, vol. 7, pp. 42–48, 1985.
+[29] G. D. Fulk, Y . He, P. Boyne, and K. Dunning, “Predicting home and
+community walking activity poststroke,” Stroke, vol. 48, no. 2, pp. 406–
+411, 2017.
+[30] E. Lockett and K. Nunez, “Normal respiratory rate for adults and
+children,” Healthline Media, 2022.
+[31] S. Jiang, J. Jiang, S. Wang, Y . Zhang, Y . Feng, Z. Cao, and Y . Liu,
+“Rf-gait: Gait-based person identification with cots rfid,” Wireless Com-
+munications and Mobile Computing, vol. 2022, no. 1, p. 3638436, 2022.
+[32] D. Zanetti, B. Danev, and S. Capkun, “Physical-layer identification of
+uhf rfid tags,” in Proceedings of the sixteenth annual international
+conference on Mobile computing and networking , 2010, pp. 353–364.
+[33] W. Sun, T. Chen, and N. Gong, “Sok: Secure human-centered wireless
+sensing,” Proceedings on Privacy Enhancing Technologies , 2024.
+[34] D. Zhang, J. Zhou, M. Guo, J. Cao, and T. Li, “Tasa: Tag-free activity
+sensing using rfid tag arrays,” IEEE Transactions on Parallel and
+Distributed Systems, vol. 22, no. 4, pp. 558–570, 2010.
+[35] C. Luo, Z. Yang, X. Feng, J. Zhang, H. Jia, J. Li, J. Wu, and W. Hu,
+“Rfaceid: Towards rfid-based facial recognition,”Proc. of ACM IMWUT,
+2021.
+[36] C. Feng, J. Xiong, L. Chang, F. Wang, J. Wang, and D. Fang, “Rf-
+identity: Non-intrusive person identification based on commodity rfid
+devices,” Proc. of ACM IMWUT , 2021.
+[37] J. Liu, X. Zou, F. Lin, J. Han, X. Xu, and K. Ren, “Hand-key: Leveraging
+multiple hand biometrics for attack-resilient user authentication using
+cots rfid,” in Proc. of IEEE ICDCS , 2021.
+[38] B.-Q. Zhao, H.-M. Wang, and P. Liu, “Safeguarding rfid wireless com-
+munication against proactive eavesdropping,” IEEE Internet of Things
+Journal, vol. 7, no. 12, pp. 11 587–11 600, 2020.
+[39] Y . Zhu, Z. Xiao, Y . Chen, Z. Li, M. Liu, B. Y . Zhao, and H. Zheng,
+“Et tu alexa? when commodity wifi devices turn into adversarial motion
+sensors,” Proc. of NDSS , 2018.
+[40] Y . Gu, J. Chen, K. He, C. Wu, Z. Zhao, and R. Du, “Wifileaks:
+Exposing stationary human presence through a wall with commodity
+mobile devices,” IEEE Transactions on Mobile Computing , 2023.
+[41] Q. Zou, Q. Li, R. Li, Y . Huang, G. Tyson, J. Xiao, and Y . Jiang,
+“Iotbeholder: A privacy snooping attack on user habitual behaviors from
+smart home wi-fi traffic,” Proc. of ACM IMWUT , 2023.
+[42] F. Adib, C.-Y . Hsu, H. Mao, D. Katabi, and F. Durand, “Capturing the
+human figure through a wall,” ACM Transactions on Graphics (TOG) ,
+vol. 34, no. 6, pp. 1–13, 2015.
+[43] J. Liu, Y . He, C. Xiao, J. Han, L. Cheng, and K. Ren, “Physical-
+world attack towards wifi-based behavior recognition,” in Proc. of IEEE
+INFOCOM, 2022.
+[44] Y . Zhou, H. Chen, C. Huang, and Q. Zhang, “Wiadv: Practical and
+robust adversarial attack against wifi-based gesture recognition system,”
+Proc. of ACM IMWUT , 2022.
+[45] X. Meng, J. Zhou, X. Liu, X. Tong, W. Qu, and J. Wang, “Secur-fi: A
+secure wireless sensing system based on commercial wi-fi devices,” in
+Proc. of IEEE INFOCOM , 2023.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:03:34 UTC from IEEE Xplore.  Restrictions apply.

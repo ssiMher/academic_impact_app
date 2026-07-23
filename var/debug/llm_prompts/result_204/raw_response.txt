@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19], WiFi[20]) is limited.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citation text groups RFID[19] with WiFi[20] as examples of longer wavelength RF signals whose accuracy is limited in micron mechanical vibration scenarios. The target reference marker [19] is present. The context does not specify the target paper's sub-mm capability; it only mentions limited accuracy. Therefore, this is a grouped citation that positions the target work as an example of less accurate technology, but does not provide detailed evaluation. Attribution uncertainty exists because multiple works are grouped together.",
+      "highlight_keywords": ["accuracy", "limited", "RFID", "WiFi"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The citation text mentions 'RFID' in a vibration sensing context, which is a positive keyword. However, the evidence does not explicitly confirm sub-mm/millimeter-level capability; it only mentions limited accuracy. The required patterns 'sub-mm RFID' or 'RFID vibration sensing' with explicit precision claim are not met. The mention is treated as grouped citation, which under strict rules is only ordinary_citation or representative_work with attribution risk.",
+      "template_satisfied": false,
+      "template_failure_reason": "The citation does not contain explicit wording of sub-mm or millimeter-level precision for the target work. It only groups RFID as an example of limited accuracy in micron vibration scenarios. Required patterns not present; evidence does not support precision_claim or capability_recognition. Template strict rules require body evidence explicitly supporting sub-mm capability, which is absent."
+    }
+  ]
+}

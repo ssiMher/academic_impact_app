@@ -1,0 +1,607 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | method_use | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: FAN-RFID: Exfiltrating Data from Air-Gapped Systems Via Fan-Induced RFID Modulation
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+FAN-RFID: EXFILTRATING DATA FROM AIR-GAPPED SYSTEMS
+VIA FAN-INDUCED RFID MODULATION
+Guangxuan Bai*†, Di Gao§, Siye Wang*†¶, Yue Cui‡, Min Li*†, Jing Li*†∗
+*Institute of Information Engineering, Chinese Academy of Sciences, Beijing, China
+†School of Cyber Security, University of Chinese Academy of Sciences, Beijing, China
+‡Beijing Research Institute of Telemetry, Beijing, China
+§School of Intelligent Science and Technology, Hangzhou Institute for Advanced Study,
+University of Chinese Academy of Sciences, Hangzhou, China
+{baiguangxuan, wangsiye, limin, lijing1995}@iie.ac.cn,
+gaodi@ucas.ac.cn, cycloneprus@outlook.com, ¶Corresponding author
+ABSTRACT
+Air-gapping is widely regarded as a robust defense for safe-
+guarding sensitive systems. Yet, recent advances in covert
+channel research reveal that even physically isolated ma-
+chines remain susceptible to sophisticated data exfiltration.
+We present FAN-RFID, a novel covert channel that exploits
+existing or implanted passive RFID tags as controllable RF
+signal sources. By modulating an RFID tag through precise
+control of a cooling fan’s rotation speed, we encode sensi-
+tive information into variations of RFID backscatter induced
+by the fan blades. These modulated signals can be reliably
+captured at distances exceeding 3.5 m using a COTS RFID
+reader, even through non-metallic barriers. We detail the at-
+tack model, encoding scheme, and frame structure, and report
+experimental results demonstrating that FAN-RFID surpasses
+prior vibration-based and acoustic-based covert channels in
+both transmission range and obstacle penetration. Finally, we
+outline practical countermeasures to mitigate such threats in
+air-apped environments.
+Index Terms— Air-gap, Covert channels, Vibrations,
+RFID, Network security
+1. INTRODUCTION
+Protecting sensitive information (e.g., state secrets, intellec-
+tual property, and personal data) is a cornerstone of cyberse-
+curity. A widely adopted solution to prevent data breaches
+is the use of air-gapped systems, which are physically iso-
+lated from external networks such as the Internet. However,
+these systems can still be breached by advanced persistent
+threats[1] (APTs) that leverage physical media or insider as-
+sistance instead of a network connection. A well-known ex-
+ample is the 2010 Stuxnet[1] incident, in which malware on
+infected USB drives infiltrated Iran’s nuclear facilities. This
+∗This work was supported by the project E3V14811G1.
+event demonstrated that even highly secure, isolated systems
+can be compromised when attackers gain physical access or
+exploit insiders. Once malware resides on an air-gapped sys-
+tem, it can commandeer existing hardware components[2, 3,
+4, 5] to establish covert channels[6] for data exfiltration.
+Among these components, the cooling fan[7, 8] is a par-
+ticularly attractive target for attackers. Fan speed can be
+controlled by either varying CPU workload to adjust thermal
+conditions or by applying pulse-width modulation (PWM)
+signals[7, 8]. Previous research has explored two fan-based
+exfiltration approaches: an acoustic method[7] that encodes
+data in fan-generated sound at audible frequencies and a
+vibration-based method[8] that transmits information via
+chassis resonance. However, these techniques suffer from
+significant limitations: they offer only a limited transmis-
+sion range, are highly susceptible to environmental interfer-
+ence, and require direct physical contact. Consequently, their
+practical effectiveness in real-world deployments is severely
+constrained.
+Radio-frequency identification[9] (RFID) technology is
+increasingly prevalent for asset management in secure facil-
+ities. It typically consists of a reader, an antenna, and tags.
+The reader emits electromagnetic fields, and the tags respond
+by backscattering signals that carry identifying information.
+It enables automated inventory tracking and access control
+without physical contact. Recent studies demonstrate that
+RFID systems can also detect minute environmental vibra-
+tions, including acoustic waves[10, 11, 12] and mechanical
+oscillations[13, 14, 15], by monitoring subtle changes in
+backscattered signals. This capability suggests that otherwise
+trusted RFID infrastructure could be repurposed to detect
+maliciously induced vibrations, such as those generated by a
+manipulated cooling fan.
+In this paper, we present FAN-RFID, a covert commu-
+nication method that combines fan manipulation with RFID
+sensing to exfiltrate data from air-gapped systems. The core
+13822979-8-3315-6701-9/26/$31.00 ©2026 IEEE ICASSP 2026
+ICASSP 2026 - 2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) | 979-8-3315-6701-9/26/$31.00 ©2026 IEEE | DOI: 10.1109/ICASSP55912.2026.11461842
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:20:15 UTC from IEEE Xplore.  Restrictions apply.
+mechanism exploits rotating fan blades as dynamic occlud-
+ing and reflecting elements that cyclically modulate the radio
+frequency propagation path. By encoding sensitive informa-
+tion into specific fan speed variations, the resulting vibrational
+patterns become embedded in the tag’s backscattered signal.
+Thus, a nearby RFID tag inadvertently acts as a transducer,
+while an adversary with a RFID reader or software defined ra-
+dio device can intercept and decode the signal from a remote
+location. Compared to existing acoustic or vibration-based
+exfiltration techniques, FAN-RFID delivers greater transmis-
+sion distance, improved obstacle penetration, and enhanced
+operational stealth.
+The main contributions of this work are:
+• We identify and characterize a new threat vector that
+combines fan control mechanisms with RFID sensing
+capabilities to breach air-gapped systems.
+• We design and implement a functional prototype that
+demonstrates end-to-end data exfiltration using this
+method.
+• We conduct comprehensive experimental evaluations to
+assess the method’s performance under varying condi-
+tions, including transmission distance, obstacle pene-
+tration, and stealthiness.
+• We propose practical defensive measures to mitigate
+this emerging threat.
+2. METHODOLOGY
+2.1. Attack Model
+The adversarial attack model considers an attacker with APTs
+capabilities whose objective is to exfiltrate data from an air-
+gapped system by exploiting its cooling fan. We assume that
+the attacker has already implanted malware on the target com-
+puter through social engineering, supply-chain compromise,
+or insider assistance. The malware can control the cooling fan
+either by varying CPU workload to adjust thermal conditions
+or by using PWM signals. The attacker may place an RFID
+tag near the target system’s cooling fan through an insider or
+by leveraging existing RFID tags. The malware collects and
+encodes sensitive information, such as encryption keys or cre-
+dentials, into a sequence of fan-speed changes. These varia-
+tions, caused by fan rotation, modulate the backscatter signal
+of the RFID tag and embed the data into the RF signal. The
+attacker does not need to enter the secured room. Instead, a
+commercial RFID reader or a software-defined radio (for ex-
+ample, USRP) can be placed in an adjacent room or corridor
+to receive, demodulate, and decode the covert signal.
+2.2. Frames
+The data is structured in discrete frames, each comprising
+three fundamental components (as shown in Figure. 1): a
+preamble, a payload, and a Parity bit.
+Preamble
+Payload
+Parity
+Fig. 1: Structure of a data transmission frame.
+• Preamble: Each frame begins with a predefined
+preamble composed of four alternating bits (‘1010’).
+This sequence assists the receiver in identifying the
+start of a transmission and supports symbol synchro-
+nization.
+• Payload: The payload carries the actual data intended
+for transmission. In our design, each payload contains
+8 bits, representing one ASCII character of sensitive
+information.
+• Parity bit: A single odd parity bit is appended at the
+end of each frame to facilitate basic error detection.
+Upon receiving a frame, the receiver computes the par-
+ity of the payload and compares it with the received
+parity bit. A mismatch indicates a transmission error.
+2.3. Control and Encoding Mechanisms
+A Raspberry Pi 3B+ is used to regulate the fan speed in the
+FAN-RFID setup. Its GPIO pins generate programmable
+PWM signals, providing direct fan speed control independent
+of the operating system’s thermal management.
+As shown in Figure 2, the fan’s PWM control wire con-
+nects to GPIO 12 (BCM18) to set the target speed, while the
+tachometer (TACH) wire connects to GPIO 16 (BCM23) to
+monitor current speed. The fan is powered by an external
+12V DC supply, with the Raspberry Pi, fan, and power source
+sharing a common ground for signal stability.
+Malware modulates the PWM duty cycle to switch the
+fan speed between two target values: RPM0 and RPM1.
+Sensitive data such as keys or passwords is segmented into
+bytes and encoded into frames containing a preamble, pay-
+load, and parity bit. Binary Frequency-Shift Keying (BFSK)
+maps logical ’0’ to RPM0 and ’1’ to RPM1. Both speeds
+lie within the fan’s normal operating range, with a sufficient
+difference ∆RPM = |RPM1 - RPM0| to ensure receiver dis-
+crimination while avoiding noticeable speed changes. Details
+are provided in Algorithm 1.
+13823
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:20:15 UTC from IEEE Xplore.  Restrictions apply.
++12V
+GND
+GND
+BCM 18
+BCM 23
+1
+GND
+2
++12V
+3
+TACH
+4
+PWM
+Fig. 2: Connection Layout for Fan Control.
+Algorithm 1Fan Speed Modulation for Data Exfiltration
+Require: Target data D, target speeds RPM0, RPM1
+Ensure: Encoded vibration signal via fan speed modulation
+1: frames ← SegmentAndFrameData(D)
+2: for each frame in frames do
+3: for each bit in frame do
+4: if bit = 0 then
+5: SetFanRPM(RPM0)
+6: else
+7: SetFanRPM(RPM1)
+8: end if
+9: end for
+10: Delay(Tinter-frame)
+11: end for
+2.4. Signal Reception and Decoding
+The attacker uses a commercial RFID reader or a software-
+defined radio (e.g., USRP) placed outside the air-gapped area
+as a receiver. Decoding follows two primary stages (see Al-
+gorithm 2):
+• Signal Preprocessing: The RF signal is captured and
+demodulated to obtain baseband phase data. Differ-
+ential processing removes the DC component and en-
+hances signal variations. The signal is resampled at
+1000 Hz via linear interpolation to form a uniform
+time series. Short-Time Fourier Transform (STFT) is
+then applied to generate a time-frequency representa-
+tion. Peaks in the averaged spectrum are identified to
+determine two dominant frequencies, f0 and f1, corre-
+sponding to logical ’0’ and ’1’ based on fan speeds.
+• Decoding: For each time segment, the signal energy
+at f0 and f1 is compared. The frequency with higher
+energy is decoded as the logical ’0’ or ’1’, producing
+a binary stream. The stream is searched for the pream-
+ble ’1010’ to synchronize frames. Subsequent bits are
+parsed according to a frame structure of 8 data bits and
+an odd parity bit. Only frames passing the parity check
+are accepted, and the payload is reconstructed into the
+original data.
+Algorithm 2Signal Reception and Decoding
+Require: Captured RF signal
+Ensure: Decoded sensitive data D
+1: baseband ← Demodulate(signal)
+2: processed ← DifferentialProcessing(baseband)
+3: uniform ← InterpolateTo1000Hz(processed)
+4: spectrogram ← STFT(uniform)
+5: f0, f1 ← FindDominantFrequencies(spectrogram)
+6: bitstream ← ∅
+7: for each time segment in spectrogram do
+8: energy0 ← CalculateEnergy(f0)
+9: energy1 ← CalculateEnergy(f1)
+10: if energy0 > energy1 then
+11: bitstream ← bitstream ∥ 0
+12: else
+13: bitstream ← bitstream ∥ 1
+14: end if
+15: end for
+16: synced ← FindPreamble(bitstream,′ 1010′)
+17: while frame data available in synced do
+18: frame ← ExtractFrame(synced)
+19: if CheckParity(frame) then
+20: D ← D ∥ ParsePayload(frame)
+21: end if
+22: end while
+23: return D
+3. EXPERIMENTAL EV ALUATION
+We selected a semi-anechoic chamber (electromagnetic) and
+a semi-anechoic room (acoustic) as the baseline experimen-
+tal environments, as shown in Figure. 3. When compared
+with existing fan-based covert communication methods[7, 8],
+FAN-RFID demonstrates a longer transmission range, greater
+stability, and enhanced stealthiness.
+(a)
+ (b)
+Fig. 3: Basic Experiment Environment. (a) Semi-anechoic
+chamber. (b) Semi-anechoic room.
+13824
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:20:15 UTC from IEEE Xplore.  Restrictions apply.
+3.1. Setup and Metrics
+A passive H47 RFID tag was affixed 1 cm in front of the cool-
+ing fan, with its speed regulated by a Raspberry Pi 3B+. A
+COTS RFID reader (Impinj Speedway R420) served as the
+receiver. All experiments were repeated 10 times to ensure
+statistical significance. The transmitted word was “confiden-
+tial”. The bit error rate (BER), defined as the ratio of incor-
+rectly received bits to the total number of transmitted bits,
+was employed as the performance metric. Lower BER values
+indicate higher communication reliability.
+3.2. Transmission Range
+Transmission distance tests were conducted in a semi-anechoic
+chamber. The data transmission rate was fixed at 0.2 bps, with
+the distance increased by 0.5 m each time. As shown in Table.
+1, FAN-RFID achieved reliable communication with a BER
+of 0 at distances of up to 3.5 meters. When the range was
+increased to 4 meters, the BER began to rise due to signal
+path loss, showing an increasing trend with greater range.
+Table. 2 provides a comparison between FAN-RFID and
+two typical fan-based covert communication techniques. The
+results demonstrate that FAN-RFID surpasses both vibration-
+based (1.6 m) and acoustic-based (3 m) methods in transmis-
+sion distance, non-line-of-sight, and stealthy data exfiltration.
+Table 1: Performance of FAN-RFID at different distances
+Range(m) 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+BER(%) 0 0 0 0 0 3.5 32.5
+Table 2: Performance comparison of advanced methods.
+Method Medium Range Penetration stealth
+AiR-ViBeR[8] Vibration 1.6 no low
+Fansmitter[7] Acoustics 3.0 no low
+FAN-RFID Radio 3.5 yes high
+3.3. Penetration
+To evaluate the performance of FAN-RFID in non-line-of-
+sight (NLOS) scenarios, we selected two different materials
+(wood, 1.5 cm thick, and glass, 3.5 cm thick) and placed them
+within the transmission path between the transmitter and the
+receiver. The transmitter was positioned 10 cm from the ob-
+stacle, and the receiver was placed 50 cm from the transmit-
+ter, simulating a scenario where the attacker is in the corridor.
+Experimental results demonstrate that we can successfully re-
+cover “confidential” with 0 BER under these conditions.
+3.4. Stealthiness
+The stealthiness of FAN-RFID was evaluated from two as-
+pects:
+• RF Stealthiness:The carrier signal may originate from
+a legitimate RFID tag already present in the air-gapped
+zone. As a result, the attack activity is indistinguishable
+from normal inventory operations, making it difficult to
+detect using conventional monitoring systems.
+• Acoustic Stealthiness:We used a BK sound level me-
+ter in a semi-anechoic room to record the sound pres-
+sure level (SPL) and calculated SNR at different speeds
+(Figure. 4). The results show that lower rotational
+speeds exhibit stronger acoustic stealth, making the at-
+tack easier to implement. When the sound pressure
+level difference between the two chosen speeds is be-
+low 3 dB(A)[16], which is under the human perception
+threshold, no abnormal whistling or noticeable acoustic
+change occurs.
+0 20 40 60 80 10016
+18
+20
+22
+24
+26
+28  SPL SNR
+PWM (%)
+SPL (dB)
+10
+12
+14
+16
+18
+20
+22
+ SNR (dB)
+Fig. 4: SPL versus Fan Speed.
+4. COUNTERMEASURES
+Although the FAN-RFID attack is highly stealthy, a multi-
+layered defense framework can effectively detect and mitigate
+such threats.
+Physical Layer:Embed metal shielding in secure zones
+to block RF leakage and reception; Locate RFID tags at a
+safe distance from fans and CPUs to prevent malicious mod-
+ulation.
+Over-the-Air Layer: Continuously scan assigned fre-
+quency bands with an RF monitoring system; Flag unusual
+polling rates or reader activity outside normal hours.
+System Layer:Introduce driver- or firmware-level checks
+for periodic fan-speed changes that do not match thermal re-
+quirements.
+5. CONCLUSION
+This study presents FAN-RFID, a covert channel that exfil-
+trates data from air-gapped systems by modulating cooling
+fan speeds to alter passive RFID tag backscatter. Experi-
+ments confirm its feasibility under realistic conditions, and
+multi-layered countermeasures are proposed to mitigate such
+threats.
+13825
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:20:15 UTC from IEEE Xplore.  Restrictions apply.
+6. REFERENCES
+[1] Adel Alshamrani, Sowmya Myneni, Ankur Chowdhary,
+and Dijiang Huang, “A survey on advanced persistent
+threats: Techniques, solutions, challenges, and research
+opportunities,” IEEE Communications Surveys & Tuto-
+rials, vol. 21, no. 2, pp. 1851–1877, 2019.
+[2] Mordechai Guri, Dima Bykhovsky, and Yuval Elovici,
+“Brightness: Leaking sensitive data from air-gapped
+workstations via screen brightness,” in 2019 12th CMI
+Conference on Cybersecurity and Privacy (CMI). IEEE,
+2019, pp. 1–6.
+[3] Mordechai Guri, Boris Zadov, Dima Bykhovsky, and
+Yuval Elovici, “Powerhammer: Exfiltrating data from
+air-gapped computers through power lines,” IEEE
+Transactions on Information Forensics and Security,
+vol. 15, pp. 1879–1890, 2019.
+[4] Mordechai Guri, Boris Zadov, Dima Bykhovsky, and
+Yuval Elovici, “Ctrl-alt-led: Leaking data from air-
+gapped computers via keyboard leds,” in 2019 IEEE
+43rd Annual Computer Software and Applications Con-
+ference (COMPSAC). IEEE, 2019, vol. 1, pp. 801–810.
+[5] Mordechai Guri, “Power-supplay: Leaking sensitive
+data from air-gapped, audio-gapped systems by turning
+the power supplies into speakers,” IEEE Transactions
+on Dependable and Secure Computing, vol. 20, no. 1,
+pp. 313–330, 2021.
+[6] Brent Carrara, Air-gap covert channels, Ph.D. thesis,
+Universit´e d’Ottawa/University of Ottawa, 2016.
+[7] Mordechai Guri, Yosef Solewicz, and Yuval Elovici,
+“Fansmitter: Acoustic data exfiltration from air-gapped
+computers via fans noise,” Computers & Security, vol.
+91, pp. 101721, 2020.
+[8] Mordechai Guri, “Exfiltrating data from air-gapped
+computers via vibrations,”Future Generation Computer
+Systems, vol. 122, pp. 69–81, 2021.
+[9] Omar A. Al-Shatri, Ahmed A. Al-Hejji, Safran A.
+Safran, and Waleed A. Saglab, “Digital transforma-
+tion in it asset management process,” International
+Journal of Innovative Science and Research Technology
+(IJISRT), vol. 9, pp. 1232–1239, 2024.
+[10] Yin Li, Chunhui Duan, Xuan Ding, and Cihang Liu,
+“Tagmic: Listening through rfid signals,” in 2020 IEEE
+40th International Conference on Distributed Comput-
+ing Systems (ICDCS). IEEE, 2020, pp. 1187–1188.
+[11] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingy-
+ing Chen, Yanling Bu, Kai Zhang, and Sanglu Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rfid
+by capturing sub-mm level vibration,” Proceedings of
+the ACM on Interactive, Mobile, Wearable and Ubiqui-
+tous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+[12] Yunzhong Chen, Jiadi Yu, Linghe Kong, Hao Kong,
+Yanmin Zhu, and Yi-Chao Chen, “Rf-mic: Live voice
+eavesdropping via capturing subtle facial speech dy-
+namics leveraging rfid,” Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technolo-
+gies, vol. 7, no. 2, pp. 1–25, 2023.
+[13] Lei Yang, Yao Li, Qiongzheng Lin, Huanyu Jia, Xiang-
+Yang Li, and Yunhao Liu, “Tagbeat: Sensing mechani-
+cal vibration period with cots rfid systems,” IEEE/ACM
+transactions on networking, vol. 25, no. 6, pp. 3823–
+3835, 2017.
+[14] Yuan He, Yilun Zheng, Meng Jin, Songzhen Yang, Xi-
+aolong Zheng, and Yunhao Liu, “Red: Rfid-based ec-
+centricity detection for high-speed rotating machinery,”
+IEEE Transactions on Mobile Computing, vol. 20, no.
+4, pp. 1590–1601, 2019.
+[15] Yuanhao Feng, Youwei Zhang, Panlong Yang, Hao
+Zhou, Haohua Du, and Xiang-Yang Li, “Rf-ear +: A
+mechanical identification and troubleshooting system
+based on contactless vibration sensing,” IEEE Transac-
+tions on Mobile Computing, vol. 22, no. 12, pp. 7310–
+7326, 2022.
+[16] A Scharine, K Cave, and T Letowski, “Auditory per-
+ception and cognitive performance,” Helmet-mounted
+displays: Sensation, perception, and cognition issues,
+pp. 391–489, 2009.
+13826
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:20:15 UTC from IEEE Xplore.  Restrictions apply.

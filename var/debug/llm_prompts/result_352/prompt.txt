@@ -1,0 +1,1602 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: Vib2audio: Robust Sound Recovery With Micro Vibration Sensing Via mmWave Radar
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025 28845
+Vib2audio: Robust Sound Recovery With
+Microvibration Sensing via mmWave Radar
+Yingxiao Wu
+ , Member, IEEE, Changlin Mao
+ , Zhihua Jian
+ , and Jianping Han
+Abstract—The popularity of smartphones presents a
+potential risk to personal privacy, particularly through covert
+eavesdropping by external nonacoustic sensors (e.g., high-
+speed camera and radio frequency (RF) sensor), where
+RF-based voice perception technology shows great potential
+due to its insensitivity to the environment and its ability to
+traverse occlusions. In this article, we introduce Vib2audio,
+a high-quality audio recovery system that uses RF signals
+to recover audio from the tiny vibration of sound source.
+We discover that the extracted phase spectrum lacks compo-
+nents in the high-frequency band. Therefore, we investigate
+the frequency detectable range of mmWave radar used in our scenario and develop an improved spectrum reconstruction
+network based on the pix2pix structure to accurately recover the time–frequency spectrum of audio from the limited
+frequency band of the vibration signal. In addition, we synthesize the audio waveform of voice from the time–frequency
+spectrum using a Griffin–Lim vocoder. Our extensive experiments indicate that Vib2audio can robustly recover tiny
+sound source vibration to recognizable high-quality human voice audio from tiny vibration. In our overall objective and
+subjective performance evaluation, the reconstructed audio by Vib2audio had a mean absolute error (MAE) of 3.6% in
+the non-intrusive speech quality assessment (NISQA) and achieved a subjective identifiability assessment score of 3.48.
+Furthermore, the quantitative evaluation results show that Vib2audio is effective and robust to background noise and
+multisource interference.
+Index Terms— Generative adversarial network (GAN), microvibration sensing, mmWave, sound recovery.
+I. I NTRODUCTION
+T
+HE smartphone industry has been steadily developing
+and growing since 2008, both in market size and in
+number of models and vendors. According to Statista’s report
+[1], the number of smartphone mobile network subscriptions
+worldwide reached almost seven billion in 2023, and is
+forecast to exceed 7.7 billion by 2028. It is obvious that smart-
+phones and people’s lives have become inseparable. While
+smartphone enriches people’s lives, it also brings the risk of
+personal privacy leakage. Some smartphone users discovered
+that some apps on their smartphones are gaining access to
+the microphone without being used, which has raised suspi-
+cions. Nowadays, people pay more attention to the privacy,
+Received 25 April 2025; revised 7 June 2025; accepted 8 June 2025.
+Date of publication 18 June 2025; date of current version 1 August 2025.
+This work was supported by the General Scientific Research Projects of
+Zhejiang Provincial Department of Education under Grant Y202249767.
+The associate editor coordinating the review of this article and approving
+it for publication was Prof. Danilo Orlando. (Corresponding author:
+Yingxiao Wu.)
+Yingxiao Wu, Changlin Mao, and Jianping Han are with the College
+of Computer Science and Technology, Hangzhou Dianzi University,
+Hangzhou, Zhejiang 310018, China (e-mail: wuyingxiao@hdu.edu.cn;
+maocl@hdu.edu.cn; hanjp@hdu.edu.cn).
+Zhihua Jian is with the College of Communication Engineering,
+Hangzhou Dianzi University, Hangzhou, Zhejiang 310018, China
+(e-mail: jianzh@hdu.edu.cn).
+Digital Object Identifier 10.1109/JSEN.2025.3578648
+and security of smartphones and the security performance
+of smartphones continues to improve. Permissions on smart-
+phones involving sensitive information such as microphone,
+camera, and storage have been strictly managed. However,
+some academic studies have shown that built-in sensors in
+smartphones (e.g., vibration motor [2] and gyroscope [3]) can
+function as microphone to capture audio data. These sensors
+are often overlooked because they are not intuitively related
+to privacy information. Acquiring audio data by utilizing
+internal components (e.g., camera, microphone, sensors, etc.)
+in smartphones requires implanting an application program,
+which will leave traces. A more covert way of eavesdropping
+on privacy is through external nonacoustic sensors, such as
+high-speed camera [4] and radio frequency (RF) sensor (light
+detection and ranging (LIDAR) [5], mmWave radar [6], Wi-
+Fi [7], impulse radio ultra-wideband (IR-UWB) radar [8]).
+Those nonacoustic sensors were shown to recover the audio
+signal from the loudspeaker by detecting its vibration while
+playing audio. Sami et al. [5] used a LIDAR sensor to sense
+the vibration of the object surface caused by sound pressure
+to achieve remote eavesdropping, which requires high reflec-
+tivity and a flat object surface and does not allow occlusion
+between the sensor and the object. High-speed camera [4] can
+extract local pixel micromotion caused by sound pressure to
+capture sound signal. This passive visual perception method
+1558-1748 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artificial intelligence
+and similar technologies. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28846 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Fig. 1. Vib2audio reconstructs the acoustic waveform of the sound
+source by mmWave and subsequently applies it to downstream tasks.
+requires processing a large amount of video data and is also
+severely limited by video image quality and ambient light
+intensity. RF-based voice perception technology is a potential
+to effectively solve all these problems because RF signal is
+insensitive to ambient noise, light conditions, and can traverse
+occlusions [9]. Zhao et al. [6], Wei et al. [7], and Wang
+et al. [8] recover audio by sensing the vibration of external
+loudspeaker (e.g, a stereo) by RF signal and work effectively
+even under poor lighting conditions and occlusion.
+RF-based voice perception technology is a noncontact voice
+perception technology that uses RF signals to sensing the
+vibration of sound sources. The technology performs the same
+tasks as traditional speech recognition, such as voice enhance-
+ment [10] and security authentication [11], by detecting small
+deformation caused by vibration of the sound source. The
+most common sound sources in daily life are external speakers
+(e.g, a stereo) and built-in tiny speaker (e.g, a phone speaker).
+External speakers usually have large sound-generation units
+and an exposed diaphragm, which create better conditions for
+vibration sensing of RF signal [6], [7], [8]. However, in the
+case of built-in tiny speaker, vibration sensing based on RF
+signal encounters a number of challenges as follows.
+1) Microvibration Acquisition: The area of phone speaker
+is usually only 20 × 14 mm, the vibration amplitude
+is extremely weak (≈7 µm). Moreover, the speaker is
+assembled inside the phone, the RF reflection signal of
+vibration will be further attenuated under the cover of
+the phone case. Such weak vibration is susceptible to
+external disturbances of uncertain noise. How to extract
+the weak vibration signal from the complex environment
+is a challenging technical task.
+2) Audio Reconstruction: The detectable frequency range
+of RF sensing is narrower than the voice frequency
+band. According to our experiment in Section III-C, the
+detectable frequency range of mmWave radar is about
+[0, 1300] Hz. Therefore, the high-frequency band of the
+vibration signal by RF sensing will be missing, which
+directly impacts the quality of audio recovery. It is
+a big challenge to reconstruct accurate high-frequency
+information based on low-frequency information.
+In this article, we propose Vib2audio, an mmWave-based
+sound sensing system as shown in Fig. 1. Vib2audio extracts
+the microvibration features of a microspeaker from the raw RF
+data collected by mmWave radar and reconstructs the vibra-
+tion signal into a readable audio signal through a proposed
+spectrum reconstruction network and a vocoder. The extensive
+evaluation results show that the Vib2audio reconstructed audio
+has high similarity with the original audio. Our contributions
+can be summarized as follows.
+1) We propose a robust mmWave-based sound recovery
+system with microvibration sensing, named Vib2audio,
+which utilizes an off-the-shelf mmWave frequency
+modulated continuous wave (FMCW) radar to accu-
+rately extract microvibration feature of sound source
+and reconstruct the tiny vibration to recognizable
+high-quality human voice audio.
+2) We develop a preprocessing model to locate the sound
+source, optimize and augment the received radar signal
+by data resampling for compensating the dc offset and
+alleviating the noise.
+3) A new spectrum reconstruction network is proposed to
+recreate high-quality audio spectrum from sound source
+vibration feature. Our proposed spectrum reconstruction
+network not only enhances these features but can also
+effectively learn the contextual relationship between
+the detected low-frequency vibration features and the
+missing high-frequency features by an improved sam-
+pling block based on a multihead self-attention (MSA)
+mechanism.
+4) We establish an mmWave radar-based microspeaker
+vibration acquisition system. We collected approxi-
+mately 20 000 pairs of data, each pair containing a
+radar vibration data and a corresponding audio data.
+Additionally, we conducted a comprehensive evalua-
+tion of Vib2audio under various scenarios, including
+different distances and orientations between speaker
+and radar, ambient noise intensity, and multisource
+environments. The objective and subjective evaluations
+demonstrated the excellent voice reconstruction perfor-
+mance of Vib2audio with tiny vibration sensing.
+The rest of this article is organized as follows. Section II
+provides the excellent related work. Our vibration extraction
+method and pix2pix structure are presented in Section III. The
+system overview of Vib2audio is shown in Section IV, and
+its more detailed implementation is described in Section V.
+We evaluate the performance of Vib2audio in Section VI.
+We then discuss the limitations and future work of Vib2audio
+in Section VII. Finally, we summarize the work of this article
+in Section VIII.
+II. R ELATED WORK
+In this section, we review and categorize related work
+focusing on RF-based audio sensing. We classify RF-based
+audio sensing into two categories: active sensing and passive
+sensing.
+A. Passive Sensing
+The vibration of a sound source travels through the
+air as sound waves, causing vibrations in the surrounding
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+WU et al.: Vib2audio: ROBUST SOUND RECOVERY WITH MICROVIBRATION SENSING VIA mmWAVE RADAR 28847
+objects. The method of indirect voice recovery by sensing
+the vibrations of surrounding objects can be seen as passive
+sensing. For instance, Wang et al. [12] utilized radio-frequency
+identification (RFID) to receive the speaker’s vibration signal
+in the environment. This approach requires a preinstalled
+tag in the victim’s room. Li et al. [13] proposed mmphone,
+an mmWave radar-based vibration sensing system that senses
+the environmental object’s (e.g., plastic bags) vibration
+caused by the sound pressure of a speaker to recover sound
+signals. Wang et al. [14] replaced the detected target with
+a piezoelectric film. The film is charging/discharging under
+the sound pressure, which changes the phase of the reflected
+mmWave signal. The sound signal within the environment
+can be sensing indirectly by extracting the phase of the signal
+from the piezoelectric film.
+The passive sensing method will be easily interfered with
+by multiple sound sources in the environment, which makes
+it more difficult to recover the sound from the surrounding
+environment.
+B. Active Sensing
+Active sensing method directly measures the microvibration
+of vibration sources. Izzo et al. [15] used 24 GHz continu-
+ous wave radar to analyze the micro-Doppler signatures of
+speaker and demonstrated that the radar vibration detection
+results were highly similar to the real speaker’s vibration.
+But the system still suffers from multiple vibration sources
+interference. To address multiple vibration sources interference
+issue, Wang et al. [8] proposed an IR-UWB radar system
+operating at 10 GHz that can recover and separate sound
+from multiple sources simultaneously. The system utilizes the
+ranging capability of IR-UWB to distinguish multiple vibra-
+tion sources. Due to the limitation of its operating frequency
+(3.1–10.6 GHz), IR-UWB is not sensitive to weak vibration
+amplitudes (micrometer-level). mmWave is RFs in the range of
+30–300 GHz, with corresponding wavelengths between 1 and
+10 mm. The characteristic of high-frequency and short wave-
+length makes mmWave technology have the ability to capture
+fainter vibrations [16], [17]. Hu et al. [18] presented MIL-
+LIEAR, an mmWave-based acoustic eavesdropping system
+that utilized the high-resolution ranging capability of mmWave
+FMCW radar to extract speaker’s vibration and reconstruct
+the audio using a generative machine learning model. The
+experiment showed the feasibility of mmWave-based vibration
+sensing technology in reconstructing audio. mmWave radar not
+only performs excellently in vibration detection, but also in
+the distinguishment of multiple vibration sources. Xiong et al.
+[19] proposed a full-field phase evolution tracking algorithm
+based on MIMO FMCW mmWave radar system, the system
+was capable of measuring and tracking the tiny motions of
+all targets within the radar field of view simultaneously. This
+algorithm has demonstrated significant performance in multi-
+target scenarios, including noncontact vital sign monitoring of
+multiple people, full-field mechanical vibration measurement,
+and multiple sound source localization and reconstruction.
+The previously mentioned loudspeakers are external loud-
+speakers of the equipment (such as stereos), which have a
+larger sound generator and vibration amplitude. Can mmWave
+measure even weaker vibration? Researchers focused the
+investigation on two micrometer-level vibration situations,
+namely vocal fold vibration and smartphone speaker vibration.
+Ozturk et al. [10] successfully used mmWave radar to measure
+vocal fold vibration, and adopted multimodal deep learning
+techniques to fuse the vocal fold vibration with audio signals
+to improve voice enhancement and voice separation. This
+demonstrated that the vibration of the vocal fold extracted
+by the mmWave radar is highly correlated with the acoustic
+signal. Wang et al. [9] and Zahid Ozturk et al. [20] further
+extracted human vocal fold vibration in a soundproof sce-
+nario and recovered voice contents. Basak and Gowda [21]
+exploited mmWave radar to reconstruct and recover words on
+predefined vocabularies by detecting the vibration of the phone
+earpiece.
+In our work, the detection target is the built-in microspeaker
+of a smartphone. The microspeaker operates at the micrometer
+level of vibration, which makes our work more challenging
+than research in external speakers (see [18], [19]). The most
+relevant to our work is [21] and [22], which have many
+similarities to our work in terms of application scenarios and
+audio data source. However, our work still has significant
+differences. mmspy [21] used artificially synthesized radar
+spectrum data to guide the training process of the machine
+learning model, with only 5% real radar samples in the training
+dataset. The dataset used by mmEve [22] is synthetic data,
+with its training samples generated by superimposing radar
+noise on the audio. Only 100 real radar data were collected
+during the testing phase. In contrast, our work meticulously
+collected 20 000 real radar audio samples as the training
+foundation for machine learning model, which will further
+improve the quality of the reconstructed audio. In regard to
+the evaluation of audio quality, Basak and Gowda [21] used
+the mean square error (mse) of the spectrum as the primary
+metric, which is not a mainstream method in audio quality
+evaluation. In order to verify the quality of reconstructed audio
+more comprehensively, we use a variety of objective metrics
+as well as subjective evaluation methods, all of which are
+designed specifically for speech quality evaluation.
+III. P RELIMINARIES
+In this section, we introduce the mmWave sensing related
+technical background. First, we expound the principle of
+speaker vibration and the vibration sensing based on FMCW
+radar. Furthermore, we introduce an azimuth analysis method
+of reflected objects based on a direction-of-arrival (DOA)
+estimation algorithm. Finally, a new spectrum reconstruc-
+tion model based on pix2pix network structure is proposed
+to transform the radar spectrum into a high-quality audio
+spectrum.
+A. Loudspeaker Vibration
+A loudspeaker is an electroacoustic transducer. The loud-
+speaker first converts the electrical signal into mechanical
+vibration, and then further into sound pressure waves. The
+sound pressure waves reach our eardrums and cause them to
+vibrate. The vibration of the eardrum is transmitted as an
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28848 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Fig. 2. Cross-sectional sketch of a typical dynamic loudspeaker driver.
+It is divided into three parts: magnetic system (red), vibrational system
+(blue), and radiating system (yellow).
+electrical signal to our brain, which is then interpreted as
+sound. As shown in Fig. 2, a typical dynamic loudspeaker
+driver consists of three main components: magnetic system,
+vibrational system, and radiating system.
+The magnetic system generates a fixed magnetic field.
+According to Faraday’s law, the voice coil produces an
+alternating magnetic field in response to the input of audio
+electrical signal. This alternating magnetic field interacts with
+the fixed magnetic field produced by the magnetic sys-
+tem (attraction or repulsion). So the voice coil becomes an
+electromagnet and moves back-and-forth depending on the
+orientation of the poles, converting the electrical signal into
+mechanical vibration. The radiation system displaces the air
+molecules at its surface under the mechanical vibration to
+generate sound pressure waves and output them. The back-
+and-forth movement of the voice coil under the changing
+magnetic field drives the displacement of the diaphragm,
+resulting in the loudspeaker vibration. Therefore, the vibration
+of the loudspeaker can be sensed by detecting the back-and-
+forth displacement of the diaphragm.
+A microspeaker is a small-sized loudspeaker commonly
+used in portable devices such as smartphones, tablets, laptops,
+and personal audio devices. The sound-generation principle of
+the microspeaker is the same as the loudspeaker. Compared
+with the loudspeaker, the vibration amplitude of the micros-
+peaker is much smaller, generally ranging between a few
+micrometers and tens of micrometers. The operation frequency
+range of the microspeaker is between 20 Hz and 20 kHz which
+is the full human hearing frequency. There are many types of
+microspeakers, among which the dynamic microspeaker (also
+known as moving coil microspeaker) is the most widely used
+type of smartphone speaker due to its simple structure, low
+cost, low power consumption, and high sensitivity, as well as
+reasonably good sound quality. Therefore, we use the moving
+coil microspeaker as the sensing object in this article.
+B. Vibration Sensing Model Based on FMCW Radar
+FMCW radar extracts vibration information by analyzing
+the signal reflected from the surface of tested object. The
+tested object’s surface will produce small deformations when
+it vibrates, and these deformations will slightly change the
+phase of the reflected signal. By analyzing the phase change,
+Fig. 3. Schematic of the principle of FMCW-based radar vibra-
+tion detection. (a) Frequency domain schematic of the radar transmit
+chirp and received signal. (b) Radar IF signal and sampling process.
+(c) Extraction of phase at different distances by FFT. (d) Continuous
+phase extraction of the signal for objects at different distances.
+we can derive the vibration parameters of the tested object,
+such as vibration amplitude and frequency. The principle of
+FMCW-based vibration detection is described in Fig. 3.
+The radar transmits FMCW chirps and receives multiple
+reflected chirps in the environment. As shown in Fig. 3(a),
+the transmitted chirp is a signal whose frequency is linearly
+increasing from f0 to f0 + B in a time period T and the
+received chirps are a time-shifted version of transmitted chirps.
+The transmitted and received chirps can be expressed as
+follows:
+T (t) = cos
+(
+2π f0t + π B
+T t2
+)
+(1)
+R(t) = cos
+(
+2π f0(t − td ) + π B
+T (t − td )2
+)
+(2)
+where f0 denotes the starting frequency of the chirp, B means
+the bandwidth of the chirp, and T is the duration of the chirp.
+In addition, td is the time difference between the transmitted
+and received chirp, defined as td = 2((d + d(t))/c), where
+d is the distance between the reflected object and the radar,
+d(t) denotes the object’s microdisplacement, and c is the
+speed of radio wave propagation in the air. Then a mixer is
+used to eliminate the carrier wave in the received signal and
+generate the so-called intermediate frequency (IF) signal IF(t )
+as follows:
+IF(t) ≈ cos
+
+2π 2Bd
+cT
+f
+t + 4π(d + d(t))
+λ  
+ψ(t )
+
+
+= cos(2π f t + ψ(t )) (3)
+where f is the frequency of the IF signal which is related
+to the range between the radar and the target, λ is the signal
+wavelength, and ψ(t ) denotes the phase of the IF signal which
+is related to the microdisplacement of the object. As shown
+in Fig. 3(b), the IF signal has two frequency components
+(i.e., f = {f1, f2}) due to the two reflected signals (i.e.,
+d = {d1, d2}) received by the radar. In order to extract the
+desired signal from the IF signal, fast Fourier transform (FFT)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+WU et al.: Vib2audio: ROBUST SOUND RECOVERY WITH MICROVIBRATION SENSING VIA mmWAVE RADAR 28849
+operation is performed on the IF signal. As we can see in
+Fig. 3(c), FFT separates different f and ψ(t ) from IF signals
+in pairs.
+When the position of the target d is fixed, (4πd/λ) is
+constant. The relative phase ψ(t ) change over slow time can
+be described as follows:
+ψ(t ) = 4πd(t)
+λ + 4πd
+λ ∝ 4πd(t)
+λ . (4)
+Therefore, we can detect a continuous target’s microdis-
+placement in the time domain by continuously extracting the
+phase of the target from the IF signal as depicted in Fig. 3(d).
+A radar chirp can be considered as a single sampling of
+the vibration. According to the Nyquist sampling theorem, the
+maximum detectable frequency is (1/2T ) Hz if the duration
+of the chirp is T . For instance, if T = 100 µs, the maximum
+detectable frequency is 5 kHz. The (1/2T ) is the theoretical
+maximum detectable frequency, which will be affected by
+many factors in practice, such as the limitations of the radar’s
+hardware and the amplitude response of the detected object.
+These factors resulted in the frequency band missing in the
+vibration detection of tiny smartphone speaker.
+C. Detectable Frequency Range
+The issue of frequency band missing of the vibration
+signal arises due to the commercial mmWave radar utilized in
+this study, which was not designed specifically for vibration
+sensing. The main reasons for the missing frequency band are
+the limitation of the hardware and microdisplacement sensing
+capability of the mmWave radar.
+Section III-B outlines the operation and vibration sensing
+method of a standard commercial FMCW radar, such as the
+TI IWR1843 used in this article. To sense the full frequency
+range of a loudspeaker from 20 Hz to 20 kHz, the chirp
+duration T should be less than 22 µs. However, this setup is
+not supported by the commercial radar hardware (e.g., analog
+to digital converter (ADC) sampling rate and FM slope).
+As a result, IWR1843 is considered unable to detect the full
+frequency range of the loudspeaker. The frequency detection
+range of the IWR1843 is also limited by its displacement
+sensing capability.
+What is the detectable frequency range of an IWR1843
+radar? Hu et al. [18] employed the TI IWR1642, which
+has close hardware specifications to the IWR1843, to detect
+the vibration of a loudspeaker (Philips SPA33) at a distance
+of 1 m. The results indicate that the maximum detectable
+frequency is about 2000 Hz. However, our detection target is
+a tiny smartphone speaker with lower amplitude. Therefore,
+we believe that the maximum detectable frequency of the
+IWR1843 in our scenario is lower.
+To measure and estimate the maximum effective frequency
+for the IWR1843 in our scenario, we utilized a smartphone
+(HUAWEI MATE 30) to play the test audio [as shown in
+Fig. 4(a)] while the IWR1843 is placed in front of the speaker
+at a 1 m distance without any blockage. The frequency of the
+test audio is from 100 Hz to 2 kHz to measure the IWR1843’s
+frequency response. The radar detection spectrum is shown
+in Fig. 4(b), we observe that radar suffers from white noise
+Fig. 4. (a) Frequency spectrum of test audio, which starts at 100 Hz
+and increases in steps of 100 Hz per second up to 2 kHz. (b) Radar
+detected vibration spectrum of a smartphone speaker.
+over the whole spectrum, and frequencies above 1300 Hz are
+particularly vulnerable to white noise interference. Therefore,
+we conclude that the frequency detection range of IWR1843
+for tiny smartphone speaker in our scenario is [0, 1300] Hz.
+D. Azimuth Analysis
+To identify multiple reflected objects in a complex environ-
+ment, it is necessary to analyze the azimuth of the reflected
+objects. Vib2audio exploits Capon beamformer [23] to locate
+the position of the received signal among multiple signal
+sources and enhance the target signal.
+Suppose the radar received signals from the N horizontal
+angle of φ = {φ1, . . . , φN }. The received signal of a uniform
+linear array with T antennas can be represented as follows:
+X (n)T ×1 = AT ×N SN×1
+= [a(φ1), . . . ,a(φN )]T ×N
+[
+Sφ1 (n), . . . ,SφN (n)
+]T
+1×N
+(5)
+where Sφi (n) denotes the signal from horizontal angle φi
+and a(φi ) is the corresponding antenna gain. The purpose of
+beamforming is to enhance the desired signal received from
+a specific direction while suppressing noise and interference
+received from other directions. Capon beamformer weights the
+received signals by calculating the optimal weight vector to
+maximize the expected signal from a specific direction. The
+weighted output signal is
+y(n) = wH X (n) (6)
+where (∗)H represents the Hermitian transpose operation.
+Therefore, the output power of the weighted signal Ry can
+be formulated as follows:
+Ry = E
+{
+|y(n)|2}
+= wH E
+{
+x(n)x H (n)
+}
+w
+= wH Rx w (7)
+where E{∗} represents the expectation operation, and RX is
+the covariance matrix of the received signal.
+The Capon algorithm calculates the optimal weight vector
+by solving the following optimization problem
+wcapon(θ) = arg min
+w
+wH Rx w, s.t. wH a(θ) = 1. (8)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28850 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Fig. 5. Spatial spectrum when θ scans in the spatial range [−60◦, 60◦].
+Equation (8) can be described as follows: for signal direc-
+tion θ, minimize the output power while maintaining the
+unit gain in its direction. It can be solved using Lagrange
+multipliers and the solution is
+wcapon(θ) = R−1a(θ)
+aH (θ) R−1a(θ) . (9)
+So the power spectral of weighted signal is
+Pcapon(θ) = wH Rw = 1
+aH (θ) R−1a(θ) . (10)
+We can search for the DOA of the radar echo by calculating
+the spatial spectrum Pcapon over the whole spatial range of
+θ. Fig. 5 shows the spatial spectrum Pcapon when objects are
+placed at −10◦ and 10◦. We can clearly observe that the radar
+receives echoes from −13◦ and 11 ◦, which is close to the
+ground truth.
+E. Reconstruction Network
+Since the detectable frequency range of RF sensing is
+narrower than the voice frequency band, the radar vibration
+spectrum is mainly correlated with the low-frequency band of
+the real audio spectrum, while the high-frequency component
+of the sound is missed by the limitation of RF sensing,
+as shown in Fig. 4. The sampling frequency of the radar
+is 14 kHz in this article, so the theoretically recognizable
+vibration frequency is around 7 kHz, and the higher audio
+frequencies cannot be captured under limited radar resolution.
+So the spectrum reconstruction method should have the ability
+to predict the missing high-frequency components from the
+limited-band radar vibration spectrum. The key to spectrum
+reconstruction is establishing the correlation between low and
+high frequencies in the audio spectrum.
+Deep generative models, such as variational autoencoder
+(V AE), generative adversarial networks (GANs), and diffusion
+model [24], have been widely utilized in mmWave-related
+research work. The V AE [21], [25] and GAN [6], [18], [22]
+have shown excellent ability to reconstruct the high-frequency
+bands that are missing due to limited frequency sensing range
+and low sampling rate. These models are popularly developed
+for the generation of high-fidelity images, including human
+faces and landscapes. The distinction between these models
+lies in the quality and time-consuming nature of the generated
+images. The images generated by the GAN are typically
+superior to those generated by the V AE in terms of detail. The
+diffusion model is comparable to the GAN in the details of the
+generated images. However, it requires multiple iterations dur-
+ing the generation process, resulting in larger time-consuming
+costs. In a comprehensive comparison, this article employs
+the GAN structure, which generates high-quality samples
+efficiently.
+In this article, we propose an improved spectrum reconstruc-
+tion network based on pix2pix network structure [26] to solve
+the transformation issue. The pix2pix network structure is a
+GAN variant, and the network structure is illustrated in Fig. 6.
+The discriminator uses a full convolutional neural network.
+The generator consists of four downsampling blocks, a middle
+block, and four upsampling blocks. These blocks all have the
+same network structure. To improve the readability of restored
+audio, we further consider that the frequency components of
+the spectrum are correlated on the time axis. We interpret
+this correlation as the contextual relationship of frequencies
+on the time axis and learn it through a feature extraction
+block. Fig. 7 is the internal structure of the proposed feature
+extraction block. The feature extraction block is characterized
+by its residual structure and MSA. The MSA [27] allows the
+model to consider the relationship between input elements in
+different perspectives, thereby extracting effective information
+about the contextual relationship. In addition, the residual
+structure is helpful to avoid gradient disappearance or gra-
+dient explosion. The structure learns the temporal correlations
+between low-frequency and high-frequency components, and
+we substantiate the effectiveness of this structure on an audio
+reconstruction task in ablation experiments. We use the feature
+extraction block as the base structure for the upsampling
+block, the middle block, and the downsampling block. When
+the feature extraction block turns into the upsampling block,
+the upsampling layer uses the nearest interpolation algorithm
+to expand the input features ( h, w− →2h, 2w). When the
+feature extraction block turns into the downsampling block,
+the downsampling layer is the average pooling layer to shrink
+the input features ( h, w− →(h/2), (w/2)). And when the
+feature extraction block becomes the middle block, the upsam-
+pling/downsampling layer is not used.
+1) Network Structure: The generator uses U-Net as the
+network structure [see Fig. 6(a)]. First, a convolutional layer
+is used to extend the input data channel to 64, then the
+high-dimensional features are extracted and reconstructed by
+four upsampling blocks, one middle block, and four down-
+sampling blocks, and finally the high-dimensional features
+are compressed to a single channel by a convolutional layer
+as the output of the reconstructed spectrum. The generator
+predicts the high-frequency components, enhances the low-
+frequency components, and outputs the complete and clean
+audio spectrum. The upsampling block, the middle block, and
+the downsampling block are composed of feature extraction
+blocks, with the difference lying in the variation of network
+layer parameters. The discriminator follows the design of
+PatchGAN [see Fig. 6(b)], which is a fully convolutional
+network with a kernel size of 4 × 4 and a stride size of
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+WU et al.: Vib2audio: ROBUST SOUND RECOVERY WITH MICROVIBRATION SENSING VIA mmWAVE RADAR 28851
+Fig. 6. Our proposed spectrum reconstruction network structure for sound recovery. (a) Generator. (b) Discriminator.
+Fig. 7. Our proposed feature extraction block structure of spectrum
+reconstruction network.
+2 × 2 for each convolutional layer. The discriminator extracts
+features by running five convolutions on the spectrogram.
+2) Optimization Objective: The loss function of our recon-
+struction network consists of two parts: L1 loss and adversarial
+loss.
+The L1 loss measures the pixel-level differences between
+the generated image and the target image. It helps the generator
+produce realistic images that preserve the structure and details
+of the original image, making them as similar as possible to the
+target image. The adversarial loss measures the difference in
+distribution between the generated image and the real image.
+The generator generates realistic images by minimizing adver-
+sarial loss, while the discriminator maximizes adversarial loss
+to correctly distinguish between real and generated images.
+L1 loss and adversarial loss can be expressed as follows:
+L1 = 1
+N
+N∑
+i=1
+⏐⏐yi − ˜yi
+⏐
+⏐ (11)
+Ladv = 1
+2Ex,z
+[
+D(x, z)2]
++ 1
+2Ex,z
+[
+(D(G(x, z)) − 1)2]
+(12)
+where we choose the mean squared error loss function
+(MSELoss) as the adversarial loss function. The ultimate
+optimization objective is
+L = Ladv + λ · LL1 (13)
+where λ is a weight factor that balances the adversarial loss
+and L1 loss.
+IV. S YSTEM OVERVIEW
+Fig. 8 depicts the workflow of Vib2audio. First, the raw
+RF data reflected by the sound source object is collected by
+using mmWave radar. We locate the position of the sound
+source through raw data analysis, and the data resampling
+algorithm is used to optimize the distribution of raw sample
+data for dc offset compensation. Subsequently, the vibration
+signal is extracted from the resampled data, and we further
+correct the dc offset of the vibration signal. Based on the
+extraction of vibration signal, we convert the vibration features
+to time–frequency spectrum and recover the audio spectrum
+by utilizing a spectrum reconstruction network as illustrated
+in Section III-E. Finally, the audio waveform is restored
+from the audio spectrogram using Griffin–Lim vocoder
+(GLV) [28].
+A. Radar Raw Data
+As depicted in Fig. 3(a) and (b), the radar mixes the
+transmitted chirp signal with the received reflected signal and
+outputs an IF signal, which is then sampled by an ADC.
+We use a four-dimensional matrix to represent the radar raw
+data as follows:
+R[F, T, N, M]
+where F denotes the amount of data frames (frame dimension),
+T means the number of radar receiving antennas (antenna
+dimension), N represents the number of chirp signals emitted
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28852 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Fig. 8. Workflow of Vib2audio algorithm: the core modules including raw data collection, sound source localization, data resampling, vibration
+extraction, spectrum reconstruction, and audio waveform synthesis.
+in a frame (chirp dimension), and M is the number of sampling
+points per chirp (sample dimension). So each frame of radar
+raw data can be represented as R[T, N, M].
+The radar raw data contains the position and vibration infor-
+mation of all objects in the environment, as well as various
+interference noises such as static clutter and environmental
+noise. Vib2audio aims to accurately locate the position of the
+sound source and extract the tiny vibration signal of the source
+from the radar raw data disturbed by noises.
+B. Sound Source Localization
+To localize the sound source, FFT algorithm is performed
+in the sample dimension to estimate the range of the reflected
+object as introduced in Section III-B. The FFT calculation
+process is represented as follows:
+R[T, N, M]
+FFT
+− − − − − − − − − − →R[T, N,r]
+where r is the range index. The range index corresponding to
+the reflecting objects will observe a larger power compared
+with that without reflecting objects [shown in Fig. 9(a)].
+We further use Capon beamformer [see (9) and (10)] in
+each range index to analyze objects from different azimuth
+angles. The calculation process of Capon beamforming can
+be portrayed as follows:
+R[T, N,r]
+Capon
+− − − − − − − − − − →
+beamforming
+P[θ, r], W [T, θ,r]
+where P is the weighted signal power spectrum (range-
+angle power map) and W is the optimal weight vector. The
+range-angle power map is shown in Fig. 9(b).
+The range-angle power map depicts reflected power at
+different locations. The significant power on the range-angle
+power map can be considered as the presence of reflecting
+objects at that location. In Vib2audio, we utilize the constant
+false alarm rate (CFAR) detector [29] to locate reflecting
+objects. We estimate the noise level by convolving the CFAR
+Fig. 9. Paradigm of sound source localization. The ground truth is
+two smartphones placed at 0.3 m away from the radar, with azimuth
+angles of 10 ◦ and −10◦, respectively. And there is a wall at 0.8 m.
+(a) Power spectral of FFT. (b) Range-angle power map after Capon
+beamforming. (c) Result of the CFAR detector. (d) Clustering results of
+reflected objects. (e) Phase signal of static object. (f) Periodicity check
+of ACF .
+window with the range-angle power map, and the location bins
+with reflecting objects are those whose power is above the
+noise level. The CFAR detection result is shown in Fig. 9(c),
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+WU et al.: Vib2audio: ROBUST SOUND RECOVERY WITH MICROVIBRATION SENSING VIA mmWAVE RADAR 28853
+Fig. 10. (a) Schematic of the static component. (b) Fitting results for
+the four subchirps using the geometry-based circle fitting method.
+where three reflecting objects within the environment can be
+clearly recognized.
+Due to the volume of a reflected object, as illustrated in
+Fig. 9(c), there will be more than one bin corresponding to a
+reflected subject. To confirm the number of targets, Vib2audio
+utilizes density-based spatial clustering of applications with
+noise (DBSCAN) algorithm [30] to cluster the candidate bins
+(minpts = 2 and ϵ = 2), and chooses the highest power
+value in each cluster as the core bin. The clustering result
+is shown in Fig. 9(d). At this point, the detected reflected
+objects not only include the smartphone object but also static
+objects in the environment. So we distinguish the sound source
+from the reflected objects, which we are interested in. When
+mmWave is reflected by the smartphone, the phase shows
+strong periodicity due to the modulation of the smartphone’s
+speaker vibration. For bins corresponding to the static objects
+(e.g., table and wall), there is no periodicity in the phase
+dimension, as shown in Fig. 9(e). We check the periodicity of
+the phase signals by calculating their autocorrelation function
+(ACF) [31]. In Fig. 9(f), we can observe that the ACF curve of
+the sound source object exhibits prominent peaks, unlike the
+ACF curve of the static object which appears scattered and
+chaotic. By tallying the number of peaks in the ACF curve
+with a peak width exceeding 20, we ascertain an object to be
+a sound source if the count of peaks is over 5 as illustrated in
+Fig. 9(f). Under the setting that the sound source is relatively
+stationary, the sound source localization process is calculated
+once for each data sampling.
+C. Data Resampling for Data Augmentation
+In practice, the detected vibration signal may suffer from dc
+offset, which makes the center of the circle deviate from the
+coordinate origin. As shown in Fig. 10(a), an ideal vibration
+signal in the in-phase and quadrature (IQ) domain is an arc
+with the origin as the center of the circle, and the central angles
+of the arc are proportional to their amplitudes.
+The dc offset distorts the true phase change θ into θ′.
+A widely used method for correcting dc offset is to transform
+the dc offset estimation problem as a circle fitting problem,
+where a geometry-based circle fitting algorithm is first applied
+to estimate the center of the circular arc, and then translating
+the center to the origin of the coordinates. However, the
+accuracy of this simple circle fitting method correlated with
+the distribution of the samples. The fitting accuracy is higher
+with the more discrete distribution of samples.
+The smartphone body will generate a tiny resonance (about
+7 µm) under the vibration of the speaker, and the vibration
+signal is a small arc (samples are highly concentrated) in
+the IQ domain. In this case, the estimation results of the
+geometry-based circle fitting method are unstable and inac-
+curate. Similar to mmVib [16], a data resampling method is
+exploited to augment the data by multiple observations of
+the simultaneous vibration for robust dc offset compensation.
+As shown in Fig. 10(b), a fixed size window is sliding over the
+radar raw data for new sampling mode, and each resampled
+result is a subchirp. Suppose the size of the sliding window
+is L, the step size is S, and G is sliding time. In light of the
+above, the resampled data is depicted as follows:
+R[T, N, M]
+Sample
+− − − − − − − − − − →
+Resampling
+R[T, G, N, M].
+After data resampling, we reorganize frame data
+R[T, N, M] into G subframes R[T, G, N, M]. Note that we
+zero-pad the sample dimension back to its original size. The
+method optimizes the distribution of raw sample data of a
+chirp into G subchirps, and the vibration signals of these
+subchirps are G-segment concentric arcs in the IQ domain.
+The G-segment arc makes the circle fitting results more
+stable and reliable (the raw data are more dispersed).
+D. Vibration Extraction Based on Data Resampling
+The phase information of the vibration displacement is
+extracted for voice recovery.
+1) Phase Extraction:To accurately extract the phase of the
+signal, the phase at different ranges is separated by FFT
+algorithm, as described in Section III-B. The FFT processing
+can be shown as follows:
+R[T, G, N, M]
+FFT
+− − − − − − − − − − →R[T, G, N,r]
+where r is the range index.
+Suppose we have the location of sound source at (θ 1,r1).
+Based on the location information, the optimal weight vector
+(W [T, θ1,r1]) is used as factors to adjust the phase of signal
+separated by FFT ( R[T, G, N,r1]) on the antenna dimension.
+The phase signal extraction process is as follows:
+R[G, N] =W [T, θ1,r1] ·R[T, G, N,r1].
+2) DC Offset Correction:After raw data resampling, a chirp
+is divided into G subchirps. Each subchirp is an arc in the IQ
+domain and these arcs are concentric, as shown in Fig. 11(a).
+In order to fit the G-segment arcs into a circle, the center
+direction of each segment of the arc is estimated based on the
+projection-based center direction metric [32]. The arc is shifted
+to make the center direction point to the origin. Thereafter, the
+Levenberg–Marquardt algorithm [33] is used to optimize the
+following equation [34] to estimate the center of the circle for
+all concentric arcs:
+argmin =
+G∑
+i=1
+[
+(xi − x0)2 + (yi − y0)2]
+. (14)
+When the center of the circle is estimated, the dc offset
+is eliminated by translating the center of the circle to the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28854 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Fig. 11. (a) Eight subchirps in the IQ domain are eight concentric arcs.
+The arrows point toward the direction of the center of the circle. (b) DC
+offset correction results of 8 concentric arcs.
+Fig. 12. (a) Vibration spectrum under 60 Hz harmonic interference (red
+box). (b) Vibration spectrum after harmonic filtering.
+Fig. 13. Step change at the junction of every two successive frames.
+origin of the coordinates. Since the G subchirps represent
+the same vibration, we choose one of them as the corrected
+result. According to the aforementioned analysis, the dc offset
+correction result is expressed as follows:
+R[G, N]
+dc offset
+− − − − − − − − − − →
+Correction
+R[N].
+3) Harmonic Filtering: In our experiments, we find that
+the extracted vibration signals were interfered by 60 Hz
+harmonic noise which was caused by the phase shift of the
+mmWave sensor [22], as shown in Fig. 12(a). Due to the
+unavoidable phase shift of the mmWave sensor, there is a step
+change at the joining of two consecutive frames, as shown
+in Fig. 13. These harmonic noises overlap with the vibration
+bands of the smartphone and therefore cannot be resolved by
+a bandpass filter. Therefore, we apply a detrending method
+based on polynomial regression (degree = 2) [35]. Fig. 12(b)
+shows the effectiveness of this method. We can observe that
+Fig. 14. Radar experiment scenario setup.
+the 60 Hz harmonics are completely filtered out while the
+phone vibration frequency is well preserved.
+Overall, we extract the vibration signal R[N] from each
+frame of the radar raw data R[T, N, M] and concatenate the
+vibration signal from each frame in the time dimension. So the
+vibration signal of all frames R[F ∗ N] is detected from
+the radar raw data R[F, T, N, M]
+R[F, T, N, M]
+Vibration Signal
+− − − − − − − − − − →
+Extraction
+R[F ∗ N].
+E. Spectrum Reconstruction
+The missing frequency information on the radar vibra-
+tion signal is needed to be compensated to reconstruct the
+readable audio signal. We convert the radar vibration sig-
+nal to the Mel-spectrogram (denoted as Mel), and exploit
+our proposed generator network to reconstruct human voice
+Mel-spectrogram (denoted as RMal) with complete frequency
+components. Mel-spectrogram [36] converts the linear fre-
+quency scale of the short-time Fourier transform (STFT) into
+a mel scale to mimic the perception of human ear and capture
+the characteristics of the voice signal preferably. The spectrum
+reconstruction is illustrated below
+R[F ∗ N] − − − →Mel
+Spectrum
+− − − − − − − − − − →
+Reconstruction
+RMal.
+F . Audio Waveform Synthesis
+When we get a high-quality human voice Mel-spectrogram,
+we need to recover recognizable human voice (denoted as
+Raudio). Vib2audio exploits GLV to restore the signal’s time-
+domain waveform from the signal’s amplitude spectrogram by
+iteratively improving the estimate of the signal’s phase using
+the inverse STFT
+RMal
+Audio Waveform
+− − − − − − − − − − − − →
+Synthesis
+Raudio.
+V. S YSTEM IMPLEMENTATION
+A. Implementation and Experiment Setup
+Radar Setup: The Vib2audio system setup is shown
+in Fig. 14. We use the commercial off-the-shelf (COTS)
+mmWave radar IWR1843BOOST[37] in our experiments. The
+IWR1843 integrates an antenna array with two transmitters
+(Txs) and four receivers (Rxs) antennas at a working frequency
+range of 76–81 GHz. We set Tx1 send the FMCW signal with
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+WU et al.: Vib2audio: ROBUST SOUND RECOVERY WITH MICROVIBRATION SENSING VIA mmWAVE RADAR 28855
+TABLE I
+RADAR CONFIGURATION
+Algorithm 1 Training Process of Spectrum Reconstruction
+Network
+Input: N paired training data:
+{(x1, y1),(x2, y2),. . . ,(xN , yN )}
+Output: θD, θG
+1: for each epoch do
+2: for each iteration do
+3: Sample m paired samples from training data: {( x1,
+y1),(x2, y2),. . . ,(xm , ym )}
+4: Sample m noise samples from standard normal dis-
+tribution: {z1, z2,. . . ,zm }
+5: Generate data: { ˜y1, ˜y2,. . . ,˜ym } ˜yi = G(zi , xi )
+6: Update discriminator parameter θD to maximize
+˜L = 1
+2
+∑m
+i=1 Ey,z[D(yi , zi )2]
++1
+2
+∑m
+i=1 Exi ,zi [(D(G(xi , z1)) − 1)2]
+θD ← θD + η∇ ˜L
+7: Sample m noise samples from standard normal dis-
+tribution: {z1, z2,. . . ,zm }
+8: Update generator parameter θG to maximize
+˜L = 1
+N
+∑N
+i=1 |G(zi , xi ) − yi |
++1
+2
+∑m
+i=1 Ey,z[D(yi , zi )2]
++1
+2
+∑m
+i=1 Exi ,zi [(D(G(xi , z1)) − 1)2]
+θG ← θG + η∇ ˜L
+9: end for
+10: end for
+3.6 GHz bandwidth, and Rx1−Rx4 receive the reflected signal.
+The raw sampling rate (fast-time samples) is around 7 MHz
+and the chirp sampling rate (slow-time samples) is 14 kHz.
+A more detailed configuration of the radar parameters is
+provided in Table I. The raw fast-time samples are captured
+by a TI DCA1000EVM [38] data capture evaluation module.
+The preprocessing of the raw data is done on a PC with an
+Intel I7 CPU and 64 GB of memory.
+B. Data Collection
+Digits in speech contain a large amount of private informa-
+tion, such as phone numbers and voice authentication codes.
+To verify the feasibility of Vib2audio for eavesdropping on
+digital information, we use the AudioMNIST as the audio
+data source. The AudioMNIST [39] consists of 30 000 audio
+samples of English digits (0–9) from 60 different speakers.
+Each speaker provides 50 audio clips in different tones of
+voice. The samples from AudioMNIST dataset were played
+on a smartphone, and the reflected signals from the sound
+source were captured by an mmWave radar. We collected
+approximately 20 000 pairs of data. Each pair of data contains
+a sound source reflected radar data and a corresponding audio
+data from human voice.
+C. Training
+1) Data Augmentation: During the model training,
+we employed the noise suppression method and random
+horizontal shift to augment the data. We use a noise
+suppression method called spectral gating [40], [41] to
+alleviate radar noise, which works by calculating the
+spectrogram of a signal (reference noise) and estimating a
+noise threshold for each frequency band. This noise threshold
+is used to gate noise below the frequency-varying threshold.
+The random horizontal shift augments the diversity of the
+data and makes the model insensitive to positional variations.
+2) Training Details: The training process of the spectrum
+reconstruction network is shown in Algorithm 1. We use
+the Adam algorithm [42] to optimize the generator and the
+discriminator, both with a learning rate of 0.0002. We set batch
+size to 1 and trained 150 epochs on a server with a NVIDIA
+RTX 3080. We utilize cosine annealing schedule during the
+network training, where the learning rate decays to 0.0001 in
+150 epochs.
+VI. E VALUATION SETUP AND PERFORMANCE
+EVALUATION
+In this section, we analyze the results of our experiments in
+two parts: 1) the overall audio reconstruction performance of
+Vib2audio and 2) the robustness of Vib2audio under different
+scenarios and settings.
+A. Overall Audio Reconstruction Performance
+We evaluate the overall audio reconstruction performance of
+Vib2audio through both objective and subjective assessment.
+For the objective evaluation, we use traditional
+reference-based metrics and unreferenced deep learning
+techniques. We use the following traditional reference-based
+mathematical metrics: cepstrum distance (CD), weighted
+spectral slope (WSS), short-time objective intelligibility
+(STOI, from 0 to 1), frequency-weighted SNR segmental,
+frequency-weighted SNR segmental (fwSNRseg), Mel-cepstral
+distortion (MCD) [43], and log-spectral distance (LSD). All
+metrics indicate better performance with lower values except
+fwSNRseg and STOI. In addition, we further evaluate the
+performance of Vib2audio using a deep learning-based
+automatic voice quality evaluation method (non-intrusive
+speech quality assessment (NISQA) [44]). NISQA is an
+unreferenced multidimensional voice quality prediction
+model that evaluates voice quality through five metrics,
+i.e., overall quality, noisiness, coloration, discontinuity, and
+loudness.
+Fig. 15(a) shows our traditional reference-based metrics
+evaluation of the overall audio reconstruction performance.
+Where the average MCD score is 7.31 (less than 8 1),
+it can be considered that the reconstructed audio can be
+1Typically, the two voices are considered to be acceptable to voice recog-
+nition systems if their MCD values are smaller than 8 [45].
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28856 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Fig. 15. Objective evaluation results of overall audio reconstruction. (a) Traditional reference-based metrics evaluation of the overall audio
+reconstruction performance of Vib2audio. (b) NISQA evaluation of the audio reconstruction performance of Vib2audio. (c) Audio reconstruction
+performance of Vib2audio with different digits. (d) Vib2audio robustness test with different distances and orientations, where the labeled text is
+the STOI score, and 0 means that no vibration can be detected. (e) Audio reconstruction performance of Vib2audio under different decibels of
+background noise. (f) Performance evaluation of Vib2audio in multisource scenarios.
+recognized by the voice recognition system. In addition,
+the average STOI score is 0.72, which shows that the
+reconstructed audio has a good level of voice intelligibility.
+Fig. 15(b) shows that the mean absolute error (MAE) of
+NISQA between the reconstructed audio and the original
+audio is 3.6%, which implies that the quality of recon-
+structed audio is very close to the original audio. In order
+to demonstrate the reconstruction performance more intu-
+itively, we show the reconstruction spectrogram samples
+in Fig. 16. It can be clearly seen that our reconstruc-
+tion results have a high similarity to the original audio
+spectrogram.
+For the subjective evaluation, we randomly selected ten
+different speakers from the reconstructed audio, where
+100 samples are arbitrarily sampled from each speaker and
+the distribution of digits in each speaker’s sample is uni-
+form. We invite ten volunteers to subjectively evaluate the
+samples of ten speakers, respectively. These volunteers will
+classify the samples and score the identifiability of the recon-
+structed audio. The quality evaluation criteria are shown
+in Table II. As the results of the subjective evaluation are
+shown in Fig. 17, our reconstructed audio achieves an average
+identifiability score of 3.48, which indicates that Vib2audio
+has the capability to reconstruct clearly recognizable human
+voice.
+In conclusion, Vib2audio has achieved excellent perfor-
+mance in both objective and subjective evaluation.
+TABLE II
+AUDIO IDENTIFIABILITY EVALUATION
+CRITERIA
+B. Impact of Distance and Orientation
+The mmWave sensors have different perception capabilities
+for vibrations at different distances and orientations. Therefore,
+we evaluate the robustness of Vib2audio by changing the
+ranges and orientations. We set up the distance between
+the mmWave sensor and the smartphone from 0.5 to 1.5 m
+and our angle between the smartphone and the radar from
+−60◦ to 60 ◦. Fig. 15(d) shows the STOI score at the test
+distance and angle. We observe that the fluctuation is minor
+in the STOI scores on the distance dimension. However, the
+fluctuation is not significant. From the angle dimension, it can
+be observed that the angle has a greater effect on the quality of
+reconstructed audio than the distance. It is due to the limited
+angle resolution of the mmWave radar with limited antennas
+for capturing the vibration signal (i.e., reciprocating motion of
+the speaker surface) at a larger angle. In our experiment, the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+WU et al.: Vib2audio: ROBUST SOUND RECOVERY WITH MICROVIBRATION SENSING VIA mmWAVE RADAR 28857
+Fig. 16. Ten pairs of reconstructed spectrogram samples of the English digits from “Zero” to “Nine,” with the reconstructed and original
+Mel-spectrogram in left-to-right order for each pair.
+Fig. 17. Identifiability evaluation of reconstructed audio.
+Fig. 18. Smartphone1 and Smartphone2 are placed 0.8 m away from
+the radar, and their azimuths are 30◦ and −30◦, respectively.
+angle applicable range of Vib2audio is 60 ◦ at distances from
+0 to 1.5 m to ensure the integrity of data extraction by radar for
+recovering recognizable audio signals. The above experiments
+show that Vib2audio can restore high-quality audio even at
+different distances and orientations.
+C. Impact of Different Sound Intensity of Background
+Noise
+In real-world scenarios, sound sources are usually sur-
+rounded by background noise. To simulate more realistic
+scenarios, we investigate the influence of the sound intensity
+of the speaker on the audio reconstruction. We place the
+smartphone at 0.8 m from the radar and set the noise intensity
+from 50 to 90 dB. Fig. 15(e) shows that the STOI and
+fwSNRseg performance do not change significantly under
+different intensity of background noises. This is explained by
+the fact that Vib2audio reconstructs the audio by extracting
+the vibrations from the sound source. Therefore, Vib2audio
+has strong robustness to background noise.
+D. Multiple Sound Sources Reconstruction
+In this experiment, we investigate the ability of Vib2audio
+for multisource audio reconstruction. We set up two smart-
+phones in the field of view of the mmWave sensor and play
+different audios, as shown in Fig. 18. The angle between each
+smartphone is greater than the angle resolution of the radar
+in order to prevent the signal overlap. As shown in Fig. 15(f),
+Vib2audio can effectively separate multiple sound sources and
+reconstruct recognizable audio from them.
+E. Ablation Experiment
+In our spectrum reconstruction network, we propose an
+improved feature extraction block using MSA. The block
+aims to learn the temporal correlation between low and
+high-frequency components of audio signal. To verify the
+effectiveness of the improved feature extraction block, we train
+the spectrum reconstruction network of Vib2audio without
+the MSA under the same training parameters. As shown in
+Fig. 19, our Vib2audio achieved better evaluation scores on
+all metrics, with an average improvement of 6%. The recon-
+structed spectrogram by Vib2audio exhibits high similarity
+with the spectrogram of the original audio, especially the high-
+frequency components, as shown in Fig. 20(b)–(d). To sum
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28858 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Fig. 19. Performance on spectrum reconstruction comparison between
+Vib2audio and the version without the MSA.
+Fig. 20. Spectrogram comparison of (a) radar-detected spectrogram,
+(b) original audio spectrogram, (c) audio spectrogram reconstructed
+by Vib2audio, and (d) audio spectrogram reconstructed by Vib2audio
+without MSA.
+up, our proposed feature extraction block can effectively learn
+the correlation between low-frequency and high-frequency
+components.
+VII. D ISCUSSION
+A. Performance Discussion
+The overall performance evaluation in Section VI-A demon-
+strates that Vib2audio has the outstanding ability to reconstruct
+recognizable human audio from microvibration by mmWave
+sensing, not only under the evaluation of reference-based
+traditional metrics but also unreferenced deep learning tech-
+niques. However, there are differences in the performance
+of these two Vib2audio objective evaluation methods. The
+quality evaluation results of the recovered sound under NISQA
+model outperform the evaluation of referenced-based tradi-
+tional metrics (e.g., the MAE of NISQA is 3.6%, MCD score
+is 7.6, still within the recognizable and acceptable range of
+metrics). There are two main explanations to this phenomenon:
+1) the reconstructed audio is the same digit content but maybe
+different speakers or tone with origin and 2) reference-based
+traditional metrics focus on assessing the similarity between
+the reference and test signals, whereas unreferenced speech
+quality evaluation models concentrate only on the quality of
+the test signal. Therefore, two different speakers or tones
+of audio have close evaluation values on an unreferenced
+speech quality evaluation model like NISQA and more
+mediocre evaluation values on traditional reference-based
+metrics.
+B. Performance Improvement
+In our Vib2audio system, we focus the experiment on
+the reconstruction of English digital audio. Since our final
+goal is to build a voice-aware system using mmWave radar
+and GAN technologies, we will extend the database to a
+wider vocabulary in our future work. Nonetheless, Vib2audio’s
+reconstruction results for digital audio have achieved exciting
+overall performance, strongly supporting that the Vib2audio
+system of sound recovery with microvibration sensing via
+mmWave radar is efficient.
+C. Hardware Limitations
+While Vib2audio system demonstrates promising perfor-
+mance in audio reconstruction, its effectiveness is inherently
+constrained by the limitations of commercial mmWave radar
+hardware, which was not specifically designed for audio vibra-
+tion sensing. The system’s upper frequency detection limit
+is about 1300 Hz, which is far below the human auditory
+range of 20 Hz to 20 kHz. This results in a loss of the high-
+frequency component of the radar detected vibration spectrum,
+which directly affects the fidelity of the reconstructed audio.
+Applications requiring full-bandwidth recovery (e.g., emotion
+recognition) may thus face quality degradation. Besides, the
+limited number of radar antennas has a detrimental effect
+on the system’s ability to detect targets at extreme angles.
+Despite the hardware limitations, the success of Vib2audio on
+constrained hardware demonstrates the enormous potential of
+mmWave radar in cross-domain applications. In the future, the
+range of application scenarios can be expanded further through
+customized hardware design and lightweight deployment of
+Vib2audio system.
+VIII. C ONCLUSION
+In this work, we propose a robust mmWave-based sound
+sensing system that combines the mmWave-based vibration
+sensing technique and deep generative models to reconstruct
+the vibration signal to human audio. Due to limited microdis-
+placement sensing capability and radar hardware constraints,
+we encounter a significant frequency band missing ([1300 Hz,
+20 kHz]) in audio reconstruction. To settle the audio recon-
+struction issue, we deploy a proposed feature extraction block
+structure to learn the contextual relationships of frequencies in
+the time dimension. Our ablation experiment shows that this
+feature extraction block structure improves the audio recon-
+struction performance by 6%. Our objective and subjective
+evaluation of extensive experimental results shows that the
+reconstructed audio by Vib2audio had an MAE of 3.6% in the
+NISQA and achieved a subjective identifiability assessment
+score of 3.48. We also perform the robustness of Vib2audio
+with the impact of source localization, background noise, and
+multisource. All the experiments demonstrate that Vib2audio
+can robustly reconstruct recognizable human voice audio from
+microvibration. In light of the continued expansion of the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+WU et al.: Vib2audio: ROBUST SOUND RECOVERY WITH MICROVIBRATION SENSING VIA mmWAVE RADAR 28859
+smartphone users and the rising popularity of off-the-shelf
+mmWave devices, this article demonstrates the feasibility of
+attacks based on mmWave sound sensing techniques and
+highlights the current threat of attacks.
+REFERENCES
+[1] P. Taylor. (2016). Number of Smartphone Mobile Network Subscriptions
+Worldwide From 2016 to 2023, With Forecasts From 2023 To 2028.
+[Online]. Available: https://www.statista.com/statistics/330695/number-
+of-smartphone-users-worldwide/
+[2] N. Roy and R. Roy Choudhury, “Listening through a vibration motor,”
+in Proc. 14th Annu. Int. Conf. Mobile Syst., Appl., Services, Jun. 2016,
+pp. 57–69.
+[3] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recogniz-
+ing speech from gyroscope signals,” in Proc. 23rd USENIX Secur.
+Symp. (USENIX Secur.), Jul. 2014, pp. 1053–1067.
+[4] A. Davis et al., “The visual microphone: Passiverecovery of sound from
+video,” ACM Trans. Graph., vol. 331, no. 4, pp. 1–10, Jul. 2014.
+[5] S. Sami, Y . Dai, S. R. X. Tan, N. Roy, and J. Han, “Spying with
+your robot vacuum cleaner: Eavesdropping via LiDAR sensors,” in
+Proc. 18th Conf. Embedded Networked Sensor Syst., Aug. 2020,
+pp. 354–367.
+[6] R. Zhao, J. Yu, T. Li, H. Zhao, and E. C. H. Ngai, “Radio2Speech:
+High quality speech recovery from radio frequency signals,” 2022,
+arXiv:2206.11066.
+[7] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” in Proc. 21st Annu. Int. Conf. Mobile
+Comput. Netw., Sep. 2015, pp. 130–141.
+[8] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava,
+“UWHear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” in Proc. 18th Conf. Embedded Netw. Sens. Syst.,
+Aug. 2020, pp. 1–14.
+[9] C. Wang, F. Lin, Z. Ba, F. Zhang, W. Xu, and K. Ren, “Wavesdropper:
+Through-wall word detection of human speech via commercial mmWave
+devices,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol.,
+vol. 6, no. 2, pp. 1–26, 2022.
+[10] M. Z. Ozturk, C. Wu, B. Wang, and K. J. R. Liu, “Toward
+mmWave-based sound enhancement and separation,” in Proc. IEEE
+Int. Conf. Acoust., Speech Signal Process. (ICASSP), May 2022,
+pp. 6852–6856.
+[11] Y . Dong and Y .-D. Yao, “Secure mmWave-radar-based speaker verifi-
+cation for IoT smart home,” IEEE Internet Things J., vol. 8, no. 5,
+pp. 3500–3511, Mar. 2021.
+[12] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via
+RFID by capturing sub-mm level vibration,” Proc. ACM Interact.,
+Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25,
+Dec. 2021.
+[13] S. Li, Y . Xiong, P. Zhou, Z. Ren, and Z. Peng, “MmPhone: Sound
+recovery using millimeter-wave radios with adaptive fusion enhanced
+vibration sensing,” IEEE Trans. Microw. Theory Techn., vol. 70, no. 8,
+pp. 4045–4055, Aug. 2022.
+[14] C. Wang et al., “MmPhone: Acoustic eavesdropping on loudspeakers via
+mmWave-characterized piezoelectric effect,” in Proc. IEEE INFOCOM
+Conf. Comput. Commun., Sep. 2022, pp. 820–829.
+[15] A. Izzo, L. Ausiello, C. Clemente, and J. J. Soraghan, “Loudspeaker
+analysis: A radar based approach,” IEEE Sensors J., vol. 20, no. 3,
+pp. 1223–1237, Feb. 2020.
+[16] C. Jiang, J. Guo, Y . He, M. Jin, S. Li, and Y . Liu, “MmVib: Micrometer-
+level vibration measurement with mmWave radar,” in Proc. 26th Annu.
+Int. Conf. Mobile Comput. Netw., Jun. 2020, pp. 1–13.
+[17] Y . Li, Z. Shao, X. Zhang, and J. Jiang, “Vibrations monitoring for
+highway bridge using mm-wave radar,” in Proc. IEEE Asia Pacific Conf.
+Antennas Propag. (APCAP), Aug. 2018, pp. 501–502.
+[18] P. Hu et al., “Towards unconstrained vocabulary eavesdropping with
+mmWave radar using GAN,” IEEE Trans. Mobile Comput., vol. 23,
+no. 1, pp. 941–954, Jan. 2022.
+[19] Y . Xiong, S. Li, C. Gu, G. Meng, and Z. Peng, “Millimeter-wave bat for
+mapping and quantifying micromotions in full field of view,” Research,
+vol. 2021, Jan. 2021, Art. no. 9787484.
+[20] M. Zahid Ozturk, C. Wu, B. Wang, and K. J. Ray Liu, “RadioMic:
+Sound sensing via mmWave signals,” 2021, arXiv:2108.03164.
+[21] S. Basak and M. Gowda, “MmSpy: Spying phone calls using mmWave
+radars,” in Proc. IEEE Symp. Security Privacy (SP), Aug. 2022,
+pp. 1211–1228.
+[22] C. Wang et al., “MmEve: Eavesdropping on smartphone’s earpiece via
+COTS mmWave device,” in Proc. 28th Annu. Int. Conf. Mobile Comput.
+Netw., 2022, pp. 338–351.
+[23] J. Li, P. Stoica, and Z. Wang, “On robust Capon beamforming and diago-
+nal loading,” IEEE Trans. Signal Process., vol. 51, no. 7, pp. 1702–1715,
+Jul. 2003.
+[24] J. Wu et al., “Diffradar: High-quality mmWave radar perception with
+diffusion probabilistic model,” in Proc. IEEE Int. Conf. Acoust., Speech
+Signal Process. (ICASSP), Apr. 2024, pp. 8291–8295.
+[25] Y . Feng, K. Zhang, C. Wang, L. Xie, J. Ning, and S. Chen, “MmEaves-
+dropper: Signal augmentation-based directional eavesdropping with
+mmWave radar,” in Proc. IEEE Conf. Comput. Commun. (IEEE INFO-
+COM), May 2023, pp. 1–10.
+[26] P. Isola, J.-Y . Zhu, T. Zhou, and A. A. Efros, “Image-to-image translation
+with conditional adversarial networks,” inProc. IEEE Conf. Comput. Vis.
+Pattern Recognit., Jul. 2017, pp. 1125–1134.
+[27] A. Vaswani et al., “Attention is all you need,” in Proc. Adv. Neural Inf.
+Process. Syst., vol. 30, Jun. 2017, pp. 5998–6008.
+[28] D. Griffin and J. Lim, “Signal estimation from modified short-time
+Fourier transform,” IEEE Trans. Acoust., Speech, Signal Process.,
+vol. ASSP-32, no. 2, pp. 236–243, Apr. 1984.
+[29] F. Wang, X. Zeng, C. Wu, B. Wang, and K. J. R. Liu, “Driver vital
+signs monitoring using millimeter wave radio,” IEEE Internet Things J.,
+vol. 9, no. 13, pp. 11283–11298, Jul. 2022.
+[30] P. Zhao et al., “MID: Tracking and identifying people with millimeter
+wave radar,” in Proc. 15th Int. Conf. Distrib. Comput. Sensor Syst.
+(DCOSS), Aug. 2019, pp. 33–40.
+[31] F. Wang, F. Zhang, C. Wu, B. Wang, and K. J. R. Liu, “ViMo:
+Multiperson vital sign monitoring using commodity millimeter-wave
+radio,” IEEE Internet Things J., vol. 8, no. 3, pp. 1294–1307,
+Feb. 2021.
+[32] J. Guo, M. Jin, Y . He, W. Wang, and Y . Liu, “Dancing waltz with ghosts:
+Measuring sub-mm-level 2D rotor orbit with a single mmWave radar,”
+in Proc. 20th Int. Conf. Inf. Process. Sensor Netw. (CPS-IoT Week),
+Jul. 2021, pp. 77–92.
+[33] W. Gander, G. H. Golub, and R. Strebel, “Least-squares fitting of
+circles and ellipses,” BIT Numer. Math., vol. 34, no. 4, pp. 558–578,
+Dec. 1994.
+[34] Y . Wang, W. Wang, M. Zhou, A. Ren, and Z. Tian, “Remote monitoring
+of human vital signs based on 77 GHz mm-wave FMCW radar,”Sensors,
+vol. 20, no. 10, p. 2999, May 2020.
+[35] C.-L. Cheng and H. Schneeweiss, “Polynomial regression with errors in
+the variables,” J. Roy. Stat. Soc. Ser. B, Stat. Methodol., vol. 60, no. 1,
+pp. 189–199, Jan. 1998.
+[36] A. A. Abdelhamid et al., “Robust speech emotion recognition using
+CNN+LSTM based on stochastic fractal search optimization algorithm,”
+IEEE Access, vol. 10, pp. 49265–49284, 2022.
+[37] AWR1642 Single-Chip 76-GHz to 81-GHz Automotive Radar Sensor
+Evaluation Module. Accessed: Nov. 15, 2022. [Online]. Available:
+https://www.ti.com/tool/AWR1843BOOST
+[38] DCA1000EVM Real Time Data-Capture Adapter for Radar Sensing
+Evaluation Module. Accessed: Nov. 15, 2022. [Online]. Available:
+http://www.ti.com/tool/DCA1000EVM
+[39] S. Becker, J. Vielhaben, M. Ackermann, K.-R. Müller, S. Lapuschkin,
+and W. Samek, “AudioMNIST: Exploring explainable artificial intel-
+ligence for audio analysis on a simple benchmark,” J. Franklin Inst.,
+vol. 361, no. 1, pp. 418–428, Jan. 2024.
+[40] T. Sainburg, M. Thielk, and T. Q. Gentner, “Finding, visualizing, and
+quantifying latent structure across diverse animal vocal repertoires,”
+PLOS Comput. Biol., vol. 16, no. 10, Oct. 2020, Art. no. e1008228.
+[41] T. Sainburg. Timsainb/Noisereduce: V1.0. Accessed: Jun. 2019. [Online].
+Available: https://github.com/timsainb/noisereduce
+[42] D. P. Kingma and J. Ba, “Adam: A method for stochastic optimization,”
+2014, arXiv:1412.6980.
+[43] J. Kominek, T. Schultz, and A. W. Black, “Synthesizer voice quality of
+new languages calibrated with mean mel cepstral distortion,” in Proc.
+SLTU, Jan. 2008, pp. 63–68.
+[44] G. Mittag, B. Naderi, A. Chehadi, and S. Möller. (2021). NISQA: A
+Deep CNN-Self-Attention Model for Multidimensional Speech Qual-
+ity Prediction with Crowdsourced Datasets. [Online]. Available:
+https://github.com/gabrielmittag/NISQA
+[45] C. Yan, G. Zhang, X. Ji, T. Zhang, T. Zhang, and W. Xu, “The
+feasibility of injecting inaudible voice commands to voice assistants,”
+IEEE Trans. Dependable Secure Comput., vol. 18, no. 3, pp. 1108–1124,
+May 2021.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.
+28860 IEEE SENSORS JOURNAL, VOL. 25, NO. 15, 1 AUGUST 2025
+Yingxiao Wu (Member, IEEE) received the M.S.
+degree in computer applications technology
+from Hangzhou Dianzi University, Hangzhou,
+China, in 2003, and the Ph.D. degree in signal
+and information processing from Nanjing
+University of Posts and Telecommunications,
+Nanjing, China, in 2010.
+From 2010 to 2019, she worked for Huaxin
+Consulting Company Ltd., Hangzhou,
+as a Senior Professoriate Engineer.
+From 2013 to 2014, she was a Visiting
+Scholar with the State University of New Y ork at Buffalo, Buffalo, NY ,
+USA. From 2019 to 2021, she was with Zhejiang Lab, Hangzhou, as a
+Senior Research Specialist. Since 2021, she has been a Research
+Fellow with the Department of Computer Science, Hangzhou Dianzi
+University. Her research interests include wireless sensing, pervasive
+computing, industrial Internet, and deep learning.
+Changlin Mao received the B.S. degree in
+computer science from Wenzhou University of
+Technology, Wenzhou, China, in 2019, and
+the M.S. degree in computer science from
+Hangzhou Dianzi University, Hangzhou, China,
+in 2024.
+His current research interests include deep
+learning, mmWave radar signal processing, and
+applications in smart manufacturing and health
+care.
+Zhihua Jian received the B.Sc. degree in elec-
+trical engineering from Nanchang University,
+Nanchang, China, in 2001, and the M.Sc. and
+Ph.D. degrees in signal and information pro-
+cessing from Nanjing University of Post and
+Telecommunication, Nanjing, China, in 2004 and
+2008, respectively.
+He is currently an Associate Professor with
+the School of Communication Engineering,
+Hangzhou Dianzi University, Hangzhou, China.
+His research interests include speech signal
+processing, voice conversion, speech spoofing detection, speaker
+recognition, and machine learning.
+Jianping Han received the B.S. and M.S.
+degrees from Nanjing University of Aeronautics
+and Astronautics, Nanjing, China, in 1990 and
+1996, respectively, and the Ph.D. degree in
+computer science from Zhejiang University,
+Hangzhou, China, in 2009.
+He is a Professor with the School of Computer
+Science and Technology, Hangzhou Dianzi Uni-
+versity, Hangzhou. His current research interests
+include data intelligence, blockchain, and image
+information fusion.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:22:44 UTC from IEEE Xplore.  Restrictions apply.

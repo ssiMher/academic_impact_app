@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "Some recent works explore using various non-acoustic sensors, such as motion sensors and RF signals, to eavesdrop on speaker-produced sound [1], [2], [3] or human-speaking sound [4], [5].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [3] is cited in a grouped context listing prior works on RF-based sound eavesdropping. No detailed discussion of the target paper's specific contributions is provided.",
+      "highlight_keywords": ["eavesdrop on speaker-produced sound", "[1], [2], [3]"],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "No specific keywords from templates 73 or 74 present.",
+      "template_satisfied": false,
+      "template_failure_reason": "Context does not explicitly mention sub-mm precision or first/pioneering claim."
+    },
+    {
+      "citation_text": "On the other hand, some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The target paper is grouped with other RFID works as examples of using RF signals for vibration sensing. This positions it as a representative example of RFID-based sound sensing.",
+      "highlight_keywords": ["RFID[3]", "capture object vibration", "sensing speaker-produced sound"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Mentions RFID for vibration sensing, but lacks explicit sub-mm capability wording. Template 73 requires explicit sub-mm claim; not satisfied here.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit 'sub-mm', 'millimeter-level', or similar precision term in the context."
+    }
+  ]
+}

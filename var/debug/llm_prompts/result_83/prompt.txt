@@ -1,0 +1,2236 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: MoiréEar: Moiré Can See What You Cannot Hear
+CITED_PAPER_TITLE: MoiréVib: Micron-level Vibration Detection based on Moiré Pattern
+CITED_PAPER_YEAR: 2024
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3636534.3690700
+CITED_PAPER_AUTHORS: Jingyi Ning, Zhihao Yan, Zhaowei Wu, Lei Xie 0004, Chuyu Wang, Yingying Chen 0001, Baoliu Ye, Sanglu Lu
+TARGET_REFERENCE_MARKER: [31]
+TARGET_REFERENCE_ENTRY: [31] Jingyi Ning, Zhihao Yan, Zhaowei Wu, Lei Xie, Chuyu Wang, Yingying Chen,
+Baoliu Ye, and Sanglu Lu. 2024. MoiréVib: Micron-level Vibration Detection based
+on Moiré Pattern. In Proceedings of the 30th Annual International Conference on
+Mobile Computing and Networking . 1393–1407.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=Audio Source; context_type=formula_nearby; contains_formula=True
+core idea lies in leveraging the strong amplification
+capability of moiré patterns to amplify tiny vibrations on everyday
+objects (e.g., a plastic box containing grapes) in our surrounding en-
+vironment. The underlying principle is that when two gratings with
+similar spatial frequencies overlap, small relative displacements are
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+Reference Grating
+Moiré Pattern
+Photodiode
+TargetBarcode
+Audio Source
+Figure 1: System overview of MoiréEar.
+optically amplified into a large, moving moiré pattern. Recent work,
+such as MoiréVib and MoiréPose [30, 31], has showcased the power
+of moiré amplification for motion sensing. Although prior work
+has demonstrated the power of moiré amplification, applying it to
+audio eavesdropping presents fundamentally different challenges.
+•Challenge 1: Previous measurement-oriented applications rely
+on well-designed, dedicated moiré gratings. However, achieving
+practical and stealthy eavesdropping requires leveraging every-
+day objects. For instance, instead of relying on specially designed
+moiré gratings, we aim to use the barcode on a supermarket grape
+box for eavesdropping. This introduces fundamental challen
+
+[Context 2] section_heading=However, with four orientations per stripe, this multi-stripe-type; context_type=formula_nearby; contains_formula=True
+oportions of the
+barcode area, ranging from 10% to 40%. Based on these observations,
+we formulate an objective function to maximize the barcode area
+that can contribute to moiré pattern generation while minimizing
+overlap. Guided by this objective, we retain only two stripe types,
+which allow about 70% of the barcode area to be used for moiré
+pattern generation while keeping the overlap minimal.
+To address the final challenge—the insufficient frame rate of ex-
+isting camera-based solutions—prior work has proposed using two
+cameras to increase the frame rate from 30∼60 fps up to around 300
+fps [31]. However, this improvement is still far from sufficient for
+recovering human voice, which requires a sampling rate of several
+kilohertz. The low frame rate of camera is primarily due to the large
+number of pixels in each image. For example, a typical image has
+12 MP (4000×3000 pixels), and buffering such a large amount of
+information for so many pixels limits the frame rate [27]. However,
+for moiré generation, millions of pixels are unnecessary—actually,
+a single pixel suffices. Based on this critical insight, we propose
+using a photodiode, which is effectively equivalent to one pixel
+of the
+
+[Context 3] section_heading=3 Background; context_type=formula_nearby; contains_formula=True
+itioned behind the reference grating. It captures the temporal
+intensity fluctuations of the moiré patterns, and the resulting in-
+tensity signals are digitized and processed through a lightweight
+pipeline to reconstruct intelligible audio in real time.
+3 Background
+Moiré patterns emerge when two gratings with similar but not iden-
+tical spatial frequencies (i.e., stripe densities) overlap. The overlap
+produces low-frequency moiré patterns that amplify tiny displace-
+ments into large, visible shifts. Based on this characteristic, existing
+works have exploited moiré patterns for motion sensing [30–32, 45].
+To achieve effective amplification, the two gratings should ideally
+have uniform stripe widths, be parallel, and overlap precisely to
+generate clear moiré patterns, as shown in Fig. 2. Formally, gratings
+1 and 2 have nearly identical spatial frequencies, denoted as 𝑓1
+and 𝑓2, respectively. The spatial frequency of the resulting moiré
+pattern is given by 𝑓𝑚 = |𝑓1 −𝑓2|[1, 30, 31]. Assuming that grating
+1 vibrates along the Y-axis by a displacement Δ𝑝𝑣 while grating 2
+remains static, the corresponding displacement of the moiré pattern
+is given by Δ𝑝𝑚 = 𝑓1
+𝑓𝑚
+Δ𝑝𝑣, which is amplified by 𝑓1
+𝑓𝑚
+tim
+
+[Context 4] section_heading=1 and 2 have nearly identical spatial frequencies, denoted as 𝑓1; context_type=formula_nearby; contains_formula=True
+s) overlap. The overlap
+produces low-frequency moiré patterns that amplify tiny displace-
+ments into large, visible shifts. Based on this characteristic, existing
+works have exploited moiré patterns for motion sensing [30–32, 45].
+To achieve effective amplification, the two gratings should ideally
+have uniform stripe widths, be parallel, and overlap precisely to
+generate clear moiré patterns, as shown in Fig. 2. Formally, gratings
+1 and 2 have nearly identical spatial frequencies, denoted as 𝑓1
+and 𝑓2, respectively. The spatial frequency of the resulting moiré
+pattern is given by 𝑓𝑚 = |𝑓1 −𝑓2|[1, 30, 31]. Assuming that grating
+1 vibrates along the Y-axis by a displacement Δ𝑝𝑣 while grating 2
+remains static, the corresponding displacement of the moiré pattern
+is given by Δ𝑝𝑚 = 𝑓1
+𝑓𝑚
+Δ𝑝𝑣, which is amplified by 𝑓1
+𝑓𝑚
+times and also
+along the Y-axis. Intuitively, the closer 𝑓1 and 𝑓2 are, the stronger
+the amplification effect.
+To capture the moiré pattern, existing works typically use com-
+mercial cameras to optically project a customized uniform-width
+grating (grating 1) attached to the object onto the camera’s internal
+color filter array (CFA, grating 2) [30–32, 45]. When the two grat-
+ings are
+
+[Context 5] section_heading=1 vibrates along the Y-axis by a displacement Δ𝑝𝑣 while grating 2; context_type=formula_nearby; contains_formula=True
+ern is given by 𝑓𝑚 = |𝑓1 −𝑓2|[1, 30, 31]. Assuming that grating
+1 vibrates along the Y-axis by a displacement Δ𝑝𝑣 while grating 2
+remains static, the corresponding displacement of the moiré pattern
+is given by Δ𝑝𝑚 = 𝑓1
+𝑓𝑚
+Δ𝑝𝑣, which is amplified by 𝑓1
+𝑓𝑚
+times and also
+along the Y-axis. Intuitively, the closer 𝑓1 and 𝑓2 are, the stronger
+the amplification effect.
+To capture the moiré pattern, existing works typically use com-
+mercial cameras to optically project a customized uniform-width
+grating (grating 1) attached to the object onto the camera’s internal
+color filter array (CFA, grating 2) [30–32, 45]. When the two grat-
+ings are properly aligned and matched, a moiré pattern emerges
+in the image captured by the camera. The motion of the moiré
+pattern can then be extracted from the sequential video frames. For
+a typical camera, the measurement frame rate is limited to tens of
+frames per second [27, 31].
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Garting 1 Garting 2
+Moiré pattern
+Observation point y
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+garting
+Reference 
+garting
+Observation point 𝒓𝒓
+Moiré pattern
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Grating 1 Grating 2
+Moiré pattern Observation area
+by camera
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+
+[Context 6] section_heading=1 vibrates along the Y-axis by a displacement Δ𝑝𝑣 while grating 2; context_type=formula_nearby; contains_formula=True
+er 𝑓1 and 𝑓2 are, the stronger
+the amplification effect.
+To capture the moiré pattern, existing works typically use com-
+mercial cameras to optically project a customized uniform-width
+grating (grating 1) attached to the object onto the camera’s internal
+color filter array (CFA, grating 2) [30–32, 45]. When the two grat-
+ings are properly aligned and matched, a moiré pattern emerges
+in the image captured by the camera. The motion of the moiré
+pattern can then be extracted from the sequential video frames. For
+a typical camera, the measurement frame rate is limited to tens of
+frames per second [27, 31].
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Garting 1 Garting 2
+Moiré pattern
+Observation point y
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+garting
+Reference 
+garting
+Observation point 𝒓𝒓
+Moiré pattern
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Grating 1 Grating 2
+Moiré pattern Observation area
+by camera
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+grating
+Reference 
+grating
+Observation point 𝒓𝒓
+Moiré pattern
+Figure 2: Standard moiré patterns generated by 2 parallel gratings.
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Garting 1 Garting 2
+Moiré pattern
+Observation point y
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+garting
+Reference 
+garting
+Obs
+
+[Context 7] section_heading=4.1 General Moiré Pattern; context_type=formula_nearby; contains_formula=True
+rries the amplification effect.
+4.1 General Moiré Pattern
+Compared to the ideal grating matching case in Fig. 2, practical tar-
+get grating and reference grating are usually not perfectly aligned
+with an angle of 𝜃1 and 𝜃2, respectively (as shown in Fig. 3).
+Target and reference gratings. Considering a target grating
+with a spatial frequency of 𝑓1 (denoting the number of stripes per
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+unit spacing), when it is rotated in-plane by an angle 𝜃1, its com-
+ponents along the X- and Y-axes can be represented as a spatial
+frequency vector ®𝒇1 [1, 30, 31]:
+®𝒇1 =
+𝑓𝑥
+1
+𝑓𝑦
+1
+
+= 𝑓1
+|cos 𝜃1|
+|sin 𝜃1|
+
+. (1)
+Given an observation position ®𝒑𝑚 = [𝑥,𝑦]𝑇 in front of the target
+grating, the normalized instantaneous optical intensity 𝐼1 of the
+grating can be denoted by:
+𝐼1 (®𝒑𝑚,𝑡)= 1
+2 +1
+2 cos 2𝜋 ®𝒇1 ·(®𝒑𝑚 −®𝒑𝑣 (𝑡)), (2)
+where ·indicates dot product and ®𝒑𝑣 (𝑡)= [𝑝𝑥 (𝑡),𝑝𝑦 (𝑡)]𝑇 denotes
+the vibration or movement of the target grating relative to position
+®𝒑𝑚. Similarly, the reference grating has a spatial frequency 𝑓2, an
+orientation angle 𝜃2, and a corresponding frequency vector:
+®𝒇2 =
+𝑓𝑥
+2
+𝑓𝑦
+2
+
+= 𝑓2
+|cos 𝜃2|
+|sin 𝜃2|
+
+, (3)
+and the normalized
+
+[Context 8] section_heading=2 cos 2𝜋 ®𝒇2 ·®𝒑𝑚 +𝜙0; context_type=formula_nearby; contains_formula=True
+the vibration or movement of the target grating relative to position
+®𝒑𝑚. Similarly, the reference grating has a spatial frequency 𝑓2, an
+orientation angle 𝜃2, and a corresponding frequency vector:
+®𝒇2 =
+𝑓𝑥
+2
+𝑓𝑦
+2
+
+= 𝑓2
+|cos 𝜃2|
+|sin 𝜃2|
+
+, (3)
+and the normalized optical intensity of the grating at the observa-
+tion position ®𝒑𝑚 is:
+𝐼2 (®𝒑𝑚)= 1
+2 +1
+2 cos 2𝜋 ®𝒇2 ·®𝒑𝑚 +𝜙0
+, (4)
+where 𝜙0 is the initial phase.
+General moiré pattern. When the two gratings are overlaid as
+shown in Fig. 3, the combined optical intensity at position ®𝒑𝑚 is
+modeled as the product of their individual intensities [1, 30, 31]:
+𝐼(®𝒑𝑚,𝑡)= 𝐼1 (®𝒑𝑚,𝑡)𝐼2 (®𝒑𝑚). (5)
+This multiplication produces both a rapidly oscillating term and
+a slowly varying envelope. By discarding the high-frequency term,
+the remaining low-frequency envelope—the moiré pattern—can be
+expressed as:
+𝐼𝑚 (®𝒑𝑚,𝑡)= 1
+4 +1
+8 cos
+
+2𝜋 ®𝒇𝑚 ·®𝒑𝑚 +2𝜋 ®𝒇1 ·®𝒑𝑣 (𝑡)
+
+, (6)
+where ®𝒇𝑚 is the moiré spatial frequency vector:
+®𝒇𝑚 =
+𝑓𝑥𝑚
+𝑓𝑦
+𝑚
+
+=
+ ®𝒇2 −®𝒇1
+. (7)
+Its spatial frequency 𝑓𝑚 and orientation angle 𝜃𝑚 are, respec-
+tively, as follows:
+𝑓𝑚 =
+√︃
+𝑓2
+1 +𝑓2
+2 −2𝑓1 𝑓2 |cos(𝜃2 −𝜃1)|, (8)
+𝜃𝑚 = arctan
+ 𝑓𝑦
+𝑚
+𝑓𝑥𝑚
+
+. (9)
+Note that the vibration of target grating
+
+[Context 9] section_heading=4.3 Moiré Pattern Detection by Photodiode; context_type=formula_nearby; contains_formula=True
+d objective focal length 𝐹𝑜 . Then the apparent spatial frequency
+𝑓′
+1 of the target grating on the eyepiece can be represented as:
+𝑓′
+1 = 𝑑
+𝑀𝐹𝑜
+𝑓1, (11)
+which is based on the principle of paraxial imaging (i.e., viewing
+angle 𝛼 ≈ 1/𝑓1𝑑 which is small) [ 8, 19]. Then, the subsequent
+analysis proceeds as in Sec.4.1 and is omitted here. Finally, we can
+derive moiré pattern signal 𝐼′𝑚 (®𝒑𝑚,𝑡).
+4.3 Moiré Pattern Detection by Photodiode
+After generating the amplified moiré pattern, we need to capture the
+signal and digitize it for further processing. Prior work has relied
+on analyzing video frames [30–32, 45]; however, such methods are
+limited by low sample rates, which are insufficient for reconstruct-
+ing audio signals at kilohertz frequencies. In contrast, we leverage
+a unique property of moiré patterns: their periodic structure repli-
+cates motion patterns uniformly across the entire grating. This
+allows us to replace video capture with a simple one-dimensional
+photodiode, which samples a single point while retaining com-
+plete motion information. With sampling rates of up to 11 kHz, the
+photodiode enables accurate, real-time audio reconstruction.
+We place a photodiode behind the reference gra
+
+[Context 10] section_heading=Pose, extending the approach to 6-DoF pose estimation in camera-; context_type=formula_nearby; contains_formula=True
+Moiré-based Sensing
+Moiré patterns have recently been explored for high-precision mo-
+tion sensing due to their ability to amplify subtle displacements into
+detectable patterns. Xiao et al. [45] proposed MoiréBoard, which en-
+ables 3-DoF camera translation tracking using a dual-layer passive
+marker. Building on this idea, Ning et al. [ 30] introduced Moiré-
+Pose, extending the approach to 6-DoF pose estimation in camera-
+to-screen interaction scenarios. Qiu et al. [32] further developed
+MoiréTag, achieving accurate angular tracking via a double-sided
+printed marker. More recently, Ning et al. [31] presented MoiréVib,
+enabling high-accuracy vibration sensing in dynamic environments.
+Although these works highlight the strong potential of moiré-based
+sensing, their performance remains constrained by controlled se-
+tups, dedicated gratings, and limited sample rates. Consequently,
+existing moiré-based sensing approaches are not yet suitable for cap-
+turing full-bandwidth speech information. We are the first to lever-
+age moiré patterns for eavesdropping and to address the unique
+challenges involved. We believe the proposed methods can also
+benefit conventional moiré-based motion sensing.
+11
+
+TARGET_ALIAS_CONTEXTS:
+[Context 1] section_heading=Audio Source; context_type=alias_context; contains_formula=True
+terns to amplify tiny vibrations on everyday
+objects (e.g., a plastic box containing grapes) in our surrounding en-
+vironment. The underlying principle is that when two gratings with
+similar spatial frequencies overlap, small relative displacements are
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+Reference Grating
+Moiré Pattern
+Photodiode
+TargetBarcode
+Audio Source
+Figure 1: System overview of MoiréEar.
+optically amplified into a large, moving moiré pattern. Recent work,
+such as MoiréVib and MoiréPose [30, 31], has showcased the power
+of moiré amplification for motion sensing. Although prior work
+has demonstrated the power of moiré amplification, applying it to
+audio eavesdropping presents fundamentally different challenges.
+•Challenge 1: Previous measurement-oriented applications rely
+on well-designed, dedicated moiré gratings. However, achieving
+practical and stealthy eavesdropping requires leveraging every-
+day objects. For instance, instead of relying on specially designed
+
+[Context 2] section_heading=Pose, extending the approach to 6-DoF pose estimation in camera-; context_type=alias_context; contains_formula=True
+lity to amplify subtle displacements into
+detectable patterns. Xiao et al. [45] proposed MoiréBoard, which en-
+ables 3-DoF camera translation tracking using a dual-layer passive
+marker. Building on this idea, Ning et al. [ 30] introduced Moiré-
+Pose, extending the approach to 6-DoF pose estimation in camera-
+to-screen interaction scenarios. Qiu et al. [32] further developed
+MoiréTag, achieving accurate angular tracking via a double-sided
+printed marker. More recently, Ning et al. [31] presented MoiréVib,
+enabling high-accuracy vibration sensing in dynamic environments.
+Although these works highlight the strong potential of moiré-based
+sensing, their performance remains constrained by controlled se-
+tups, dedicated gratings, and limited sample rates. Consequently,
+existing moiré-based sensing approaches are not yet suitable for cap-
+turing full-bandwidth speech information. We are the first to lever-
+age moiré patterns for eavesdropping and to address the unique
+challenges involved. We believe
+
+[Context 3] section_heading=10.2 Moiré-based Sensing; context_type=alias_context; contains_formula=True
+assively captures long-range speech without requiring access
+to the target device or emitting signals, while supporting free-
+vocabulary recovery using low-cost hardware.
+10.2 Moiré-based Sensing
+Moiré patterns have recently been explored for high-precision mo-
+tion sensing due to their ability to amplify subtle displacements into
+detectable patterns. Xiao et al. [45] proposed MoiréBoard, which en-
+ables 3-DoF camera translation tracking using a dual-layer passive
+marker. Building on this idea, Ning et al. [ 30] introduced Moiré-
+Pose, extending the approach to 6-DoF pose estimation in camera-
+to-screen interaction scenarios. Qiu et al. [32] further developed
+MoiréTag, achieving accurate angular tracking via a double-sided
+printed marker. More recently, Ning et al. [31] presented MoiréVib,
+enabling high-accuracy vibration sensing in dynamic environments.
+Although these works highlight the strong potential of moiré-based
+sensing, their performance remains constrained by controlled se-
+tups, dedica
+
+[Context 4] section_heading=Pose, extending the approach to 6-DoF pose estimation in camera-; context_type=alias_context; contains_formula=True
+on sensing due to their ability to amplify subtle displacements into
+detectable patterns. Xiao et al. [45] proposed MoiréBoard, which en-
+ables 3-DoF camera translation tracking using a dual-layer passive
+marker. Building on this idea, Ning et al. [ 30] introduced Moiré-
+Pose, extending the approach to 6-DoF pose estimation in camera-
+to-screen interaction scenarios. Qiu et al. [32] further developed
+MoiréTag, achieving accurate angular tracking via a double-sided
+printed marker. More recently, Ning et al. [31] presented MoiréVib,
+enabling high-accuracy vibration sensing in dynamic environments.
+Although these works highlight the strong potential of moiré-based
+sensing, their performance remains constrained by controlled se-
+tups, dedicated gratings, and limited sample rates. Consequently,
+existing moiré-based sensing approaches are not yet suitable for cap-
+turing full-bandwidth speech information. We are the first to lever-
+age moiré patterns for eavesdropping and to address the unique
+challeng
+
+ACTIVE_EVIDENCE_TEMPLATES:
+
+FULL_EXTRACTED_TEXT:
+MoiréEar: Moiré Can See What You Cannot Hear
+Hongqiang Zhang
+Zhejiang University, Nanyang
+Technological University
+Hangzhou, Zhejiang, China
+hqz@zju.edu.cn
+Lupeng Zhang
+Nanyang Technological University
+Singapore, Singapore
+LUPENG001@e.ntu.edu.sg
+Chengcheng Zhao
+Zhejiang University
+Hangzhou, Zhejiang, China
+chengchengzhao@zju.edu.cn
+Yuanchao Shu
+Zhejiang University
+Hangzhou, Zhejiang, China
+ycshu@zju.edu.cn
+Peng Cheng
+Zhejiang University
+Hangzhou, Zhejiang, China
+lunarheart@zju.edu.cn
+Jiming Chen
+Zhejiang University
+Hangzhou, Zhejiang, China
+cjm@zju.edu.cn
+Jie Xiong
+Nanyang Technological University
+Singapore, Singapore
+jie.xiong@ntu.edu.sg
+Abstract
+Eavesdropping poses a critical threat to the confidentiality and in-
+tegrity of voice communications. In recent years, techniques have
+advanced beyond traditional microphone-based methods toward
+more intelligent approaches, such as leveraging millimeter-wave
+sensing to detect the subtle vibrations induced by speakers and re-
+construct voice information without direct audio capture. Despite
+their technical feasibility, these methods remain constrained by
+limited working ranges—typically only several meters—rendering
+them impractical for real-world stealthy eavesdropping. In this
+work, we propose MoiréEar, the first long-range passive eavesdrop-
+ping system based on moiré patterns. The key idea is to exploit
+the amplification capability of moiré patterns, which amplify the
+minute vibrations induced by acoustic signals by hundreds of times,
+enabling long-range eavesdropping. To make the proposed method
+even more practical and stealthy, we develop new theoretical foun-
+dations that relax the strict requirements for generating moiré pat-
+terns. Specifically, our approach enables the use of irregular stripe
+structures (e.g., commonly seen barcodes) instead of standard moiré
+gratings1 to generate moiré patterns. We implement our design
+using a low-cost photodiode instead of cameras, achieving real-time
+eavesdropping with lightweight signal processing. Comprehensive
+experiments show that the system can extract intelligible audio at
+a distance of up to 90 m, outperforming the state of the art by an
+order of magnitude in range. We believe this new eavesdropping
+modality can inspire a wide range of IoT applications.
+CCS Concepts
+• Security and privacy →Mobile and wireless security .
+1We define a grating as a set of periodic stripes.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+SenSys ’26, Saint Malo, France
+© 2026 Copyright held by the owner/author(s).
+ACM ISBN 979-8-4007-2309-4/26/05
+https://doi.org/10.1145/3774906.3802760
+Keywords
+Acoustic Sensing, Moiré pattern, Eavesdropping
+ACM Reference Format:
+Hongqiang Zhang, Lupeng Zhang, Chengcheng Zhao, Yuanchao Shu, Peng
+Cheng, Jiming Chen, and Jie Xiong. 2026. MoiréEar: Moiré Can See What You
+Cannot Hear. In ACM/IEEE International Conference on Embedded Artificial
+Intelligence and Sensing Systems (SenSys ’26), May 11–14, 2026, Saint Malo,
+France. ACM, New York, NY, USA, 14 pages. https://doi.org/10.1145/3774906.
+3802760
+1 Introduction
+Eavesdropping poses a significant threat to the confidentiality and
+integrity of voice communications. By intercepting private con-
+versations, unauthorized parties can access sensitive information,
+manipulate communication content, and exploit the data for mali-
+cious purposes [6, 35]. As voice communication systems become
+increasingly pervasive in both personal and professional contexts,
+the threat of eavesdropping grows, posing serious risks to privacy,
+security, and trust in the IoT era [ 2–4, 15, 17, 21, 23, 25, 34, 47].
+Earlier optical approaches, such as laser-based eavesdropping, can
+recover speech over long distances, but they rely on active opti-
+cal emissions, making them easily detectable and vulnerable to
+commercial countermeasures [ 26, 29, 42]. In recent years, new
+eavesdropping modalities based on wireless sensing have been
+proposed [5, 18, 38, 43, 44]. The core idea is to use wireless signals,
+such as millimeter waves, to sense minute vibrations caused by a
+speaker and thereby recover the acoustic content. While promising,
+the effective range of these systems remains very limited—typically
+only a few meters—making them impractical for stealthy eaves-
+dropping. Furthermore, these methods require the transmission
+of dedicated signals (e.g., millimeter-wave signals), which are de-
+tectable and therefore vulnerable to countermeasures.
+We propose, for the first time, to employ moiré patterns for eaves-
+dropping. The core idea lies in leveraging the strong amplification
+capability of moiré patterns to amplify tiny vibrations on everyday
+objects (e.g., a plastic box containing grapes) in our surrounding en-
+vironment. The underlying principle is that when two gratings with
+similar spatial frequencies overlap, small relative displacements are
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+Reference Grating
+Moiré Pattern
+Photodiode
+TargetBarcode
+Audio Source
+Figure 1: System overview of MoiréEar.
+optically amplified into a large, moving moiré pattern. Recent work,
+such as MoiréVib and MoiréPose [30, 31], has showcased the power
+of moiré amplification for motion sensing. Although prior work
+has demonstrated the power of moiré amplification, applying it to
+audio eavesdropping presents fundamentally different challenges.
+•Challenge 1: Previous measurement-oriented applications rely
+on well-designed, dedicated moiré gratings. However, achieving
+practical and stealthy eavesdropping requires leveraging every-
+day objects. For instance, instead of relying on specially designed
+moiré gratings, we aim to use the barcode on a supermarket grape
+box for eavesdropping. This introduces fundamental challenges,
+as barcodes differ substantially from moiré gratings, exhibiting
+non-uniform spacing and stripe widths.
+•Challenge 2: A practical challenge is that the target may have
+arbitrary orientations, and moiré effect is sensitive to these varia-
+tions. Since we have no control over the target, achieving reliable
+eavesdropping becomes difficult. Moreover, the target’s apparent
+size depends on its actual size and distance from the eavesdropper,
+which further complicates the eavesdropping process.
+•Challenge 3: Existing moiré-sensing technique is used to monitor
+machine vibrations, typically involving only one or a few frequen-
+cies. In contrast, audio eavesdropping requires reconstructing
+full-spectrum acoustic signals with rich spectral details. This
+demands a sampling rate of at least several kilohertz to capture
+intelligible audio, whereas prior moiré-sensing systems rely on
+cameras that can only provide frame rates in the range of 30∼300
+fps, which is far too low for effective eavesdropping.
+These fundamental differences make existing moiré-sensing
+methods unsuitable for audio eavesdropping. In the following, we
+present our corresponding solutions.
+To address the challenge of orientation diversity, a straightfor-
+ward solution is to design stripes covering all orientations. However,
+this introduces a trade-off: supporting additional orientations re-
+quires superimposing more stripes at the eavesdropper side, which
+increases the stripe area, reduces transparency, and compromises
+the clarity of the captured target barcode. Through theoretical analy-
+sis and experiments, we found that superimposing four orientations
+provides a good balance. With four orientations, for a randomly
+oriented target, the worst-case reduction in moiré amplification
+compared to a fully aligned orientation is theoretically bounded at
+38%, which is sufficient for eavesdropping from several meters.
+While multiple orientations help mitigate the effects of random
+target orientation, they also produce overlapping moiré patterns,
+leading to optical aliasing. To address this, we exploit a key property
+of photodiodes: their output integrates the total light intensity
+across the aperture. Consequently, moiré patterns with spacing
+much smaller than the aperture minimally affect the photodiode
+output, as the aperture integrates over multiple moiré periods,
+keeping the measured result relatively stable. By adjusting the
+aperture to slightly below the largest moiré pattern spacing, we
+can capture the largest moiré pattern for sensing while suppressing
+the rest interfering moiré patterns.
+To address target size diversity, which varies with both the tar-
+get’s actual size and its distance, we propose, for the first time,
+incorporating a telescope into the moiré pattern generation process.
+Compared with traditional solutions using a high-speed camera,
+the telescope-based approach is more cost-effective and efficient.
+This is because cameras rely on a combination of digital zoom and
+optical zoom, of which only the optical zoom contributes to moiré
+amplification. By contrast, telescopes offer exclusively optical zoom.
+While promising, however, when telescope is incorporated into the
+system, the original mathematical relationship governing the am-
+plification of moiré patterns no longer holds. We therefore establish
+a new theoretical model to guide the tuning of telescope for strong
+moiré amplification, enabling stealthy long-range eavesdropping.
+To address the challenge of non-uniform barcode stripes, we
+observed that typical barcodes (e.g., EAN-13 [13, 14]) employ only
+four distinct stripe widths and spacings, which we refer to as stripe
+types. A straightforward approach is to design a reference grat-
+ing containing all four stripe types to match the target barcode.
+However, with four orientations per stripe, this multi-stripe-type
+design would entail 16 unique stripes, resulting in significant stripe
+overlap that compromises sensing capability. To address this issue,
+we smartly leverage two key observations of barcodes: (i) The de-
+gree of overlap between different stripes varies significantly (For
+example, stripe type 1 overlaps with stripe type 2 by 66.7%, whereas
+stripe type 3 overlaps with stripe type 4 by only 28.6%). (ii) The
+four stripe types occupy substantially different proportions of the
+barcode area, ranging from 10% to 40%. Based on these observations,
+we formulate an objective function to maximize the barcode area
+that can contribute to moiré pattern generation while minimizing
+overlap. Guided by this objective, we retain only two stripe types,
+which allow about 70% of the barcode area to be used for moiré
+pattern generation while keeping the overlap minimal.
+To address the final challenge—the insufficient frame rate of ex-
+isting camera-based solutions—prior work has proposed using two
+cameras to increase the frame rate from 30∼60 fps up to around 300
+fps [31]. However, this improvement is still far from sufficient for
+recovering human voice, which requires a sampling rate of several
+kilohertz. The low frame rate of camera is primarily due to the large
+number of pixels in each image. For example, a typical image has
+12 MP (4000×3000 pixels), and buffering such a large amount of
+information for so many pixels limits the frame rate [27]. However,
+for moiré generation, millions of pixels are unnecessary—actually,
+a single pixel suffices. Based on this critical insight, we propose
+using a photodiode, which is effectively equivalent to one pixel
+of the camera. It is cheaper and can achieve a significantly higher
+sampling rate (up to 11 kHz), which is sufficient for voice recov-
+ery. Moreover, using a single-pixel signal makes the processing
+lightweight and capable of real-time operation.
+The main contributions of the paper are as follows:
+•For the first time, we propose using moiré patterns for eaves-
+dropping. We reveal a covert threat that transforms everyday
+MoiréEar: Moiré Can See What You Cannot Hear SenSys ’26, May 11–14, 2026, Saint Malo, France
+gratings—such as the barcode on a plastic box and window
+sunshades—into unexpected acoustic leakage channels.
+•We address the challenges of using barcodes—drastically dif-
+ferent from dedicated moiré gratings due to their unequal
+stripe widths and spacings—for moiré sensing. We further
+introduce a telescope and a photodiode to replace the conven-
+tional camera for moiré pattern capture. This design extends
+the sensing range from a few meters to tens of meters and
+increases the frequency capture range from tens of hertz to
+several kilohertz, enabling human-voice recovery. We be-
+lieve that the achieved long-range and high sampling rate
+can benefit a wide range of other applications.
+•We prototype MoiréEar and validate it using a variety of
+audio, including words, sentences, and music. We demon-
+strate the effectiveness of eavesdropping through everyday
+objects such as barcodes and window sunshades. Experi-
+ments show intelligible audio recovery at distances up to 90
+meters without physical contact or active emissions.
+2 System Components
+The basic principle of MoiréEar is shown in Fig. 1. The important
+system components are introduced below:
+•Target Barcode. We utilize an actual barcode for eavesdropping.
+For example, a supermarket grape box with a barcode is placed
+on a desk, with a nearby speaker.
+•Reference grating. At the eavesdropper side, a plate with a
+reference grating is positioned in front of the telescope. Sub-
+tle vibrations of the target barcode are optically amplified into
+pronounced moiré pattern motions, observable at the receiver.
+•Telescope. A telescope, priced at tens of dollars, typically pro-
+vides an optical zoom of up to 200×. It amplifies the distant target
+barcode onto the reference grating to generate the moiré pattern.
+The optical zoom can be adjusted for targets at different distances
+and of varying sizes, enabling long-distance eavesdropping.
+•Photodiode. A one-dimensional high-speed photodiode is po-
+sitioned behind the reference grating. It captures the temporal
+intensity fluctuations of the moiré patterns, and the resulting in-
+tensity signals are digitized and processed through a lightweight
+pipeline to reconstruct intelligible audio in real time.
+3 Background
+Moiré patterns emerge when two gratings with similar but not iden-
+tical spatial frequencies (i.e., stripe densities) overlap. The overlap
+produces low-frequency moiré patterns that amplify tiny displace-
+ments into large, visible shifts. Based on this characteristic, existing
+works have exploited moiré patterns for motion sensing [30–32, 45].
+To achieve effective amplification, the two gratings should ideally
+have uniform stripe widths, be parallel, and overlap precisely to
+generate clear moiré patterns, as shown in Fig. 2. Formally, gratings
+1 and 2 have nearly identical spatial frequencies, denoted as 𝑓1
+and 𝑓2, respectively. The spatial frequency of the resulting moiré
+pattern is given by 𝑓𝑚 = |𝑓1 −𝑓2|[1, 30, 31]. Assuming that grating
+1 vibrates along the Y-axis by a displacement Δ𝑝𝑣 while grating 2
+remains static, the corresponding displacement of the moiré pattern
+is given by Δ𝑝𝑚 = 𝑓1
+𝑓𝑚
+Δ𝑝𝑣, which is amplified by 𝑓1
+𝑓𝑚
+times and also
+along the Y-axis. Intuitively, the closer 𝑓1 and 𝑓2 are, the stronger
+the amplification effect.
+To capture the moiré pattern, existing works typically use com-
+mercial cameras to optically project a customized uniform-width
+grating (grating 1) attached to the object onto the camera’s internal
+color filter array (CFA, grating 2) [30–32, 45]. When the two grat-
+ings are properly aligned and matched, a moiré pattern emerges
+in the image captured by the camera. The motion of the moiré
+pattern can then be extracted from the sequential video frames. For
+a typical camera, the measurement frame rate is limited to tens of
+frames per second [27, 31].
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Garting 1 Garting 2
+Moiré pattern
+Observation point y
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+garting
+Reference 
+garting
+Observation point 𝒓𝒓
+Moiré pattern
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Grating 1 Grating 2
+Moiré pattern Observation area
+by camera
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+grating
+Reference 
+grating
+Observation point 𝒓𝒓
+Moiré pattern
+Figure 2: Standard moiré patterns generated by 2 parallel gratings.
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Garting 1 Garting 2
+Moiré pattern
+Observation point y
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+garting
+Reference 
+garting
+Observation point 𝒓𝒓
+Moiré pattern
+𝑓𝑓1
+𝑓𝑓𝑚𝑚 = 𝑓𝑓1 −𝑓𝑓2
+Y
+𝑓𝑓2
+Grating 1 Grating 2
+Moiré pattern Observation area
+by camera
+𝒇𝒇1
+𝒇𝒇𝑚𝑚 = 𝒇𝒇1 −𝒇𝒇2
+X
+Y
+𝜃𝜃2
+𝜃𝜃1
+𝒇𝒇2
+Target
+grating
+Reference 
+grating
+Observation point 𝒓𝒓
+Moiré pattern
+Figure 3: General moiré patterns generated by target and reference
+gratings.
+4 Theoretical Model
+In practical eavesdropping, target gratings may rotate and are rarely
+perfectly aligned (i.e., parallel) with the reference grating, which
+diminishes the amplification effect. Therefore, we first present a
+generalized moiré model that characterizes the amplification effect
+under angular mismatch. We then extend this model by incorporat-
+ing telescope parameters, enabling it for long-range sensing. Finally,
+we model the moiré pattern as an optical signal captured by the
+photodiode, which carries the amplification effect.
+4.1 General Moiré Pattern
+Compared to the ideal grating matching case in Fig. 2, practical tar-
+get grating and reference grating are usually not perfectly aligned
+with an angle of 𝜃1 and 𝜃2, respectively (as shown in Fig. 3).
+Target and reference gratings. Considering a target grating
+with a spatial frequency of 𝑓1 (denoting the number of stripes per
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+unit spacing), when it is rotated in-plane by an angle 𝜃1, its com-
+ponents along the X- and Y-axes can be represented as a spatial
+frequency vector ®𝒇1 [1, 30, 31]:
+®𝒇1 =
+𝑓𝑥
+1
+𝑓𝑦
+1
+
+= 𝑓1
+|cos 𝜃1|
+|sin 𝜃1|
+
+. (1)
+Given an observation position ®𝒑𝑚 = [𝑥,𝑦]𝑇 in front of the target
+grating, the normalized instantaneous optical intensity 𝐼1 of the
+grating can be denoted by:
+𝐼1 (®𝒑𝑚,𝑡)= 1
+2 +1
+2 cos 2𝜋 ®𝒇1 ·(®𝒑𝑚 −®𝒑𝑣 (𝑡)), (2)
+where ·indicates dot product and ®𝒑𝑣 (𝑡)= [𝑝𝑥 (𝑡),𝑝𝑦 (𝑡)]𝑇 denotes
+the vibration or movement of the target grating relative to position
+®𝒑𝑚. Similarly, the reference grating has a spatial frequency 𝑓2, an
+orientation angle 𝜃2, and a corresponding frequency vector:
+®𝒇2 =
+𝑓𝑥
+2
+𝑓𝑦
+2
+
+= 𝑓2
+|cos 𝜃2|
+|sin 𝜃2|
+
+, (3)
+and the normalized optical intensity of the grating at the observa-
+tion position ®𝒑𝑚 is:
+𝐼2 (®𝒑𝑚)= 1
+2 +1
+2 cos 2𝜋 ®𝒇2 ·®𝒑𝑚 +𝜙0
+, (4)
+where 𝜙0 is the initial phase.
+General moiré pattern. When the two gratings are overlaid as
+shown in Fig. 3, the combined optical intensity at position ®𝒑𝑚 is
+modeled as the product of their individual intensities [1, 30, 31]:
+𝐼(®𝒑𝑚,𝑡)= 𝐼1 (®𝒑𝑚,𝑡)𝐼2 (®𝒑𝑚). (5)
+This multiplication produces both a rapidly oscillating term and
+a slowly varying envelope. By discarding the high-frequency term,
+the remaining low-frequency envelope—the moiré pattern—can be
+expressed as:
+𝐼𝑚 (®𝒑𝑚,𝑡)= 1
+4 +1
+8 cos
+
+2𝜋 ®𝒇𝑚 ·®𝒑𝑚 +2𝜋 ®𝒇1 ·®𝒑𝑣 (𝑡)
+
+, (6)
+where ®𝒇𝑚 is the moiré spatial frequency vector:
+®𝒇𝑚 =
+𝑓𝑥𝑚
+𝑓𝑦
+𝑚
+
+=
+ ®𝒇2 −®𝒇1
+. (7)
+Its spatial frequency 𝑓𝑚 and orientation angle 𝜃𝑚 are, respec-
+tively, as follows:
+𝑓𝑚 =
+√︃
+𝑓2
+1 +𝑓2
+2 −2𝑓1 𝑓2 |cos(𝜃2 −𝜃1)|, (8)
+𝜃𝑚 = arctan
+ 𝑓𝑦
+𝑚
+𝑓𝑥𝑚
+
+. (9)
+Note that the vibration of target grating ®𝒑𝑣 (𝑡)appears in Eq. (6)
+as the time-varying phase term 2𝜋 ®𝒇1·®𝒑𝑣 (𝑡). That is to say, the tiny
+vibration ®𝒑𝑣 (𝑡)of the target grating is directly embedded into the
+changing intensity 𝐼𝑚 (®𝒑𝑚,𝑡)of moiré patterns.
+Amplification by moiré pattern. In Eq. (6), the intensity of
+moiré pattern depends not only on the observation position ®𝒑𝑚,
+but also on the displacement ®𝒑𝑣 (𝑡)of the target grating. A small
+displacement Δ®𝒑𝑣 of the target grating introduces an additional
+phase shift Δ𝜙 in the moiré pattern, denoted by: Δ𝜙 = 2𝜋 ®𝒇1 ·Δ®𝒑𝑣.
+The induced phase variation is also equivalent to the moiré pattern
+shifts: Δ𝜙 = 2𝜋 ®𝒇𝑚 ·Δ®𝒑𝑚. By substituting and simplifying, we have:
+Δ𝑝′
+𝑚 = 𝑓1
+𝑓𝑚
+(Δ®𝒑𝑣 ·
+®𝒇1
+𝑓1
+), (10)
+where Δ𝑝′𝑚 represents the moiré pattern displacement along the di-
+rection of ®𝒇𝑚 (i.e., the direction perpendicular to the moiré stripes).
+Eq. (10) shows that a small displacement Δ®𝒑𝑣 of the target grating
+manifests as a large moiré pattern shift Δ𝑝′𝑚. Here, the ratio 𝑓1/𝑓𝑚
+acts as an amplification factor. Intuitively, when the two gratings
+have nearly identical spatial frequencies (so that 𝑓𝑚 is small, ac-
+cording to Eq. (7)), tiny relative displacements Δ®𝒑𝑣 between them
+are amplified in the apparent moiré patterns Δ𝑝′𝑚. However, am-
+plification is also related to the direction of Δ®𝒑𝑣 (representing the
+displacement of target grating) and ®𝒇1 (representing the spatial
+frequency of target grating, influenced by orientation 𝜃1 in Eq. (1)).
+Only the component of displacement Δ®𝒑𝑣 that is parallel to ®𝒇1 can
+be amplified. If the displacement Δ®𝒑𝑣 is completely perpendicular
+to ®𝒇1, the moiré pattern stays still and the displacement is not am-
+plified. Eq. (10) represents the core principle of moiré amplification
+in practical settings.
+4.2 Moiré Pattern in the Presence of Telescope
+From the analysis of general moiré generation, the target and
+reference gratings must have nearly identical spatial frequencies.
+However, this condition is difficult to satisfy in practical eaves-
+dropping scenarios. For instance, target grating spacing can vary
+widely—from 0.33 mm (e.g., EAN-13 barcodes [ 13, 14]) to 2 mm
+(e.g., sunshades). Moreover, variations in eavesdropping distance
+further exacerbate the mismatch. For instance, a 0.33 mm stripe
+spacing at 90 meters appears equivalent to about 0.0037 mm at a
+1-meter viewing distance. Directly matching this with reference
+gratings would require extremely fine stripe spacing, far beyond
+the capability of standard printers (typically limited to 0.0212 mm,
+or 1200 dots per inch (DPI)).
+We thus involve a zoomable telescope and revise the model
+of general moiré pattern in Sec. 4.1. This design enables optimal
+amplification without the need to replace the reference grating and
+a single 0.5 mm-spacing reference grating supports target grating
+spacings from 0.33 to 2 mm over distances ranging from 20 to 90 m.
+Target grating, 𝒇𝒇1 Reference grating, 𝒇𝒇2
+× 𝑀𝑀 = 𝐹𝐹𝑜𝑜
+𝐹𝐹𝑒𝑒
+Distance 𝑑𝑑
+Objective lens,
+focal length 𝐹𝐹o
+Eyepiece,
+focal length 𝐹𝐹e
+Moiré 
+Pattern
+Target grating, 𝒇𝒇1 Reference grating, 𝒇𝒇2
+× 𝑀𝑀 = 𝐹𝐹𝑜𝑜
+𝐹𝐹𝑒𝑒
+Distance 𝑑𝑑
+Objective lens,
+focal length 𝐹𝐹o
+Eyepiece,
+focal length 𝐹𝐹e
+Moiré 
+Pattern
+Figure 4: Moiré pattern generation via telescope: target grating mag-
+nified by a telescope and overlaid with a reference grating.
+Zoomed target and reference gratings. As shown in Fig. 4,
+the target grating is located at a distance 𝑑 from the reference
+MoiréEar: Moiré Can See What You Cannot Hear SenSys ’26, May 11–14, 2026, Saint Malo, France
+Number of  Reference Grating Orientations
+Angle 𝜃𝜃1 of Target Grating Orientation
+5∘ 10∘ 45∘ 90∘
+124
+0∘
+(a) (b) (c) (d) (e) (f)
+(g) (h) (i) (j) (k) (l)
+(m) (n) (o) (p) (q) (r)
+Figure 5: Effects of target grating orientation on moiré spacing. Number of reference grating orientations: one for (a) ∼(f); two for (g) ∼(l); and
+four for (m) ∼(r).
+grating, and we observe it using a telescope with amplification 𝑀
+and objective focal length 𝐹𝑜 . Then the apparent spatial frequency
+𝑓′
+1 of the target grating on the eyepiece can be represented as:
+𝑓′
+1 = 𝑑
+𝑀𝐹𝑜
+𝑓1, (11)
+which is based on the principle of paraxial imaging (i.e., viewing
+angle 𝛼 ≈ 1/𝑓1𝑑 which is small) [ 8, 19]. Then, the subsequent
+analysis proceeds as in Sec.4.1 and is omitted here. Finally, we can
+derive moiré pattern signal 𝐼′𝑚 (®𝒑𝑚,𝑡).
+4.3 Moiré Pattern Detection by Photodiode
+After generating the amplified moiré pattern, we need to capture the
+signal and digitize it for further processing. Prior work has relied
+on analyzing video frames [30–32, 45]; however, such methods are
+limited by low sample rates, which are insufficient for reconstruct-
+ing audio signals at kilohertz frequencies. In contrast, we leverage
+a unique property of moiré patterns: their periodic structure repli-
+cates motion patterns uniformly across the entire grating. This
+allows us to replace video capture with a simple one-dimensional
+photodiode, which samples a single point while retaining com-
+plete motion information. With sampling rates of up to 11 kHz, the
+photodiode enables accurate, real-time audio reconstruction.
+We place a photodiode behind the reference gratings, converting
+the optical signal 𝐼′𝑚 (®𝒑𝑚,𝑡)into a voltage signal 𝑈(𝑡):
+𝑈(𝑡)= 𝛼𝐼 ′
+𝑚 (®𝒑𝑚,𝑡)+𝜂(𝑡), (12)
+where the coefficient 𝛼 > 0 represents the linear gain of the pho-
+todiode, and the term 𝜂(𝑡)is a zero–mean noise that accounts for
+thermal noise and ambient fluctuations.
+During acoustic eavesdropping, based on Eq. (6), the audio-
+induced displacement ®𝒑𝑣 (𝑡)of the target grating is embedded and
+amplified in the time-varying phase of 𝐼′𝑚 (®𝒑𝑚,𝑡). The audio infor-
+mation is then captured by the photodiode (𝑈(𝑡)), enabling subse-
+quent audio recovery.
+5 Moiré Pattern in the Wild
+Our theoretical model lays the foundation for long-distance moiré
+generation and eavesdropping. To make the attack even more prac-
+tical, we aim to use stripes from everyday objects (i.e., barcodes)
+as target gratings. In this setting, two factors introduce additional
+challenges: the uncontrolled orientation of everyday objects and
+the non-uniformity of stripes in real-world barcodes.
+5.1 Handle Random Target Orientations
+Degradation due to unaligned orientations. When the orienta-
+tions of the target and reference gratings are not perfectly aligned,
+the resulting moiré pattern becomes narrower and less discernible.
+Theoretically, the amplification effect decreases as the orientation
+difference |𝜃2 −𝜃1|increases. Experiments confirm this trend. In
+Fig. 5, we fix the reference grating and change the target grating
+orientation in the plane. Fig. 5 (c) ∼(e) illustrate that orientation
+angles of 5◦, 10◦, and 45◦progressively narrow the moiré patterns
+compared with the perfectly aligned case ( 0◦). At 90◦, the moiré
+patterns disappear entirely, consistent with the prediction of Eq.(8).
+Beyond narrowing the moiré patterns, orientation differences
+also affect the amplification of dynamic displacements. As shown in
+Eq. (10), moiré amplification is highly anisotropic, strongest when
+displacement direction is aligned with the grating direction and
+weakest when orthogonal. Experimental results in Fig. 6 confirm
+this effect. First, the target grating in (a) moves downward by1/2𝑓1
+(half grating spacing), producing moiré shifts by 1/2𝑓𝑚 (half moiré
+spacing) in (b). Although the shift of target grating is very small and
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+almost invisible, it induces a significant change in the moiré pattern,
+turning from light to dark (Fig. 6 (c)), i.e., motion amplification.
+While in Fig. 6 (d), the target grating moves rightward, and the
+moiré shift is still 1/2𝑓1, yet no motion amplification is observed.
+The moiré pattern hardly shifts (Fig. 6 (e)), and its intensity remains
+nearly constant (Fig. 6 (f)).
+Reference Grating
+Target Grating
+Target grating moves 
+downward by 1/2𝑓𝑓1
+Target grating moves 
+rightward by 1/2𝑓𝑓1
+Moving Distance of Target Grating
+Observed
+Moire Intensity
+1/4𝑓𝑓1
+′ 1/2𝑓𝑓1
+′0
+0.5
+1
+0
+Observed
+Moire Intensity
+1/4𝑓𝑓1
+′ 1/2𝑓𝑓1
+′0
+0.5
+1
+0
+Observation point
+Moving Distance of Target Grating
+(a) (b) (c)
+(d) (e)
+(f)
+Figure 6: Effects of target grating moving direction on moiré am-
+plification. (a) and (b): illustrations of moiré pattern when target
+gratings move parallel and orthogonal to the reference grating di-
+rection, respectively; (c) and (d): the corresponding changes of moiré
+pattern intensity.
+Multi-orientation reference gratings. To counteract the degra-
+dation caused by uncontrolled target orientations, we design the
+reference grating by superimposing gratings of multiple orienta-
+tions, as shown in Fig. 5 (g) and (m). Specifically, we consider 𝑁𝜃
+reference grating orientations, indexed by 𝑛𝜃 ∈{1,2,...,𝑁 𝜃 }. For
+the 𝑛𝜃 -th orientation, the corresponding spatial frequency vector
+can be extended from ®𝒇2 (Eq. (3)) as follows:
+®𝒇2,𝑛𝜃 = 𝑓2
+|cos 𝜃2,𝑛𝜃 |
+|sin 𝜃2,𝑛𝜃 |
+
+, 𝑛 𝜃 ∈{1,2,...,𝑁 𝜃 }, (13)
+where 𝜃2,𝑛𝜃 = (𝑛𝜃 −1)𝜋
+𝑁𝜃
+is the orientation angle of the reference
+grating in the 𝑛𝜃 -th orientation.
+As shown in Fig. 5 (g)∼(r), multiple reference grating orientations
+improve the grating matching, enabling moiré generation under
+various target orientations. With two reference grating orientations,
+Fig. 5 (g)∼(l) shows that slight orientation changes can still generate
+moiré patterns, but degradation appears near 45◦. With four orien-
+tations, as shown in Fig. 5 (m)∼(r), wide and stable moiré patterns
+are generated since at least one orientation remains nearly aligned
+with the target. Adding more orientations could further improve
+alignment but would reduce transparency, thereby blurring the
+moiré pattern. To balance this trade-off, we adopt four orientations.
+This design preserves sufficient transparency (as shown in Fig. 5
+(m) ∼(r)) while ensuring proper alignment. Even in the worst case
+where none of the orientations exactly aligns with the target, the
+reduction of moiré amplification is theoretically bounded at 38%,
+which still allows reliable eavesdropping from tens of meters away.
+Capturing useful moiré pattern. While multi-orientation ref-
+erence gratings mitigate the effects of random target orientation,
+they introduce a new challenge: multiple moiré patterns are gener-
+ated with spatial frequency vectors:
+®𝒇𝑚,𝑛𝜃 =
+𝑓𝑥𝑚,𝑛𝜃
+𝑓𝑦
+𝑚,𝑛𝜃
+
+=
+ ®𝒇2,𝑛𝜃 −®𝒇1
+, 𝑛 𝜃 ∈{1,...,𝑁 𝜃 }. (14)
+In moiré sensing, the widest moiré pattern with the greatest am-
+plification is sufficient, while overlapping moiré patterns lead to
+optical aliasing. To mitigate this, we leverage a key property of
+photodiodes: their output integrates the total light intensity across
+the aperture. When the aperture is much larger than the moiré
+pattern spacing (Fig. 7 (a)), the average intensity over the aperture
+remains constant even if the moiré pattern vibrates. As a result,
+the photodiode readout remains unchanged (Fig. 7 (c)). Thus, by
+reducing the aperture with electrical tape to slightly below the
+largest moiré pattern spacing, we capture only the dominant moiré
+pattern.
+(c)(a) (b)
+Reduced ApertureOriginal Aperture Time (s)
+Reduced ApertureOriginal Aperture
+Time (s)
+1
+0.5
+0 1 2 3 4 5
+Moiré Intensity
+Original Aperture
+Reduced Aperture(a) (b)
+(c)
+Figure 7: Effect of photodiode aperture: (a) original aperture, (b)
+reduced aperture, (c) measurement result showing that the reduced
+aperture preserves useful moiré variations.
+5.2 Handle Non-uniform Spacing and
+Perspective Distortion
+For more realistic eavesdropping, we relax the requirement for
+a carefully-designed target grating and instead utilize everyday
+stripes (e.g., barcodes2). However, this introduces two challenges:
+non-uniform spacing and oblique viewing.
+Performance degradation with barcodes. As shown in Fig. 8,
+the spatial frequency of the barcode stripes is non-uniform. Typ-
+ically, an EAN-13 barcode [13, 14] consists of four stripe widths
+and spacings, ranging from 1𝑤𝑏 to 4𝑤𝑏 as shown in Fig. 8. And
+the corresponding frequencies are 1/2𝑤𝑏,1/4𝑤𝑏,1/6𝑤𝑏 and 1/8𝑤𝑏,
+respectively. This non-uniformity violates the uniform-frequency
+matching condition for moiré generation (Eq. (7)). As shown in
+Fig. 9 (a)∼(d), using the four corresponding single-frequency refer-
+ence gratings produces locally fragmented moiré patterns, leading
+to a lack of amplification in some regions.
+(a) (b) (c) (d)
+(a) (b) (c) (d)
+(b)(a) (c) (d) (e)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+Figure 8: Structure of a non-uniform barcode. (a) illustration of an
+EAN-13 barcode; (b) ∼(e) four stripe widths.
+Performance degradation under oblique viewing. A target
+barcode at arbitrary orientations causes perspective distortion from
+2Hereafter, we use target barcode as shorthand for real-world striped gratings.
+MoiréEar: Moiré Can See What You Cannot Hear SenSys ’26, May 11–14, 2026, Saint Malo, France
+(b)(a) (c) (d) (e)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+(a) (b) (c) (d)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+(a) (b) (c) (d)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+Figure 9: Effects of non-uniform barcode on moiré generation. (a) ∼(d)
+show the moiré patterns generated using four different reference
+grating spacings.
+oblique viewing, further changing its apparent frequencies (Fig. 10
+(a)∼(d), leading to fragmented moiré segments and preventing the
+formation of stable moiré patterns.
+(b)(a) (c) (d) (e)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+(a) (b) (c) (d)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+(a) (b) (c) (d)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+Figure 10: Effects of oblique viewing on moiré generation. (a) ∼(d)
+show the moiré patterns generated using four different reference
+grating spacings.
+Solution with multi-frequency reference grating. To ad-
+dress the two issues—non-uniform stripe spacing and oblique view-
+ing—a straightforward solution is to extend the multi-orientation
+reference grating scheme from Sec. 5.1 by incorporating multi-
+ple spatial frequencies within each orientation. Formally, for the
+reference grating component in the 𝑛𝜃 -th orientation, we embed
+𝑁𝑓 frequencies (indexed by 𝑛𝑓 ∈ {1,2,...,𝑁 𝑓 }), whose spatial
+frequency vector is:
+®𝒇2,𝑛𝜃 ,𝑛𝑓 = 𝑓2,𝑛𝑓
+|cos 𝜃2,𝑛𝜃 |
+|sin 𝜃2,𝑛𝜃 |
+
+, 𝑛 𝑓 ∈{1,2,...,𝑁 𝑓 }. (15)
+For the EAN-13 barcode with four distinct stripe spacings [13, 14],
+we superimpose four four-orientation reference gratings, each cor-
+responding to one stripe spacing (Fig. 11 (a)∼(d). The resulting ref-
+erence grating is shown in Fig. 11 (e). However, the heavy overlap
+of stripes renders the four frequencies indistinguishable, severely
+hindering frequency matching for moiré generation.
+To address the stripe-overlapping issue while preserving strong
+amplification, we smartly leverage two key observations of bar-
+codes: (i) the degree of overlap between different-frequency stripes
+varies significantly (e.g., overlap between1/2𝑤𝑏- and1/4𝑤𝑏-frequency
+stripes is severe since one is an integer multiple of the other, whereas
+overlap between 1/4𝑤𝑏 and 1/6𝑤𝑏 is less pronounced), and (ii) the
+four stripe types occupy different proportions of the barcode area
+(e.g., the2𝑤𝑏-width stripe covers 40%, whereas the4𝑤𝑏-width stripe
+covers only 10%). Based on these observations, we formulate an
+objective function to maximize the barcode area that can contribute
+to moiré pattern generation while minimizing overlap. Guided by
+this objective, we retain only two stripe types, which allow about
+70% of the barcode area to be utilized for moiré pattern generation
+while keeping the overlap minimal.
+The resulting final reference grating is illustrated in Fig. 11 (f).
+By incorporating multiple frequencies into the multi-orientation
+reference grating, clear moiré patterns can be generated even for
+non-uniform or tilted barcodes (Fig. 12).
+final reference grating
+(a)
+(b)
+(c)
+(d)
+(e)
+(f)
+Figure 11: Multi-frequency and multi-orientation reference grating.
+(a)∼(d) show multi-orientation reference gratings with stripe spacing
+of 1𝑤𝑏, 2𝑤𝑏, 3𝑤𝑏 and 4𝑤𝑏 respectively; (e) shows reference grating
+superposed of (a) ∼(d); and (f) shows reference grating superposed of
+(b) and (c).
+(b)(a) (c) (d) (e)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+(a) (b) (c) (d)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+(a) (b) (c) (d)
+1𝑤𝑤𝑏𝑏 2𝑤𝑤𝑏𝑏 3𝑤𝑤𝑏𝑏 4𝑤𝑤𝑏𝑏
+Figure 12: Moiré pattern generated by multi-frequency and multi-
+orientation reference grating with (a) non-uniform barcode and (b)
+oblique-viewing barcode.
+6 Signal Processing Pipeline
+Although moiré amplification makes subtle vibrations visible, the
+extracted optical signals are highly susceptible to environmental
+noise and interference. Thus, we design a two-stage signal process-
+ing pipeline: (i) suppression of dominant noise components and (ii)
+enhancement of audio-relevant spectral features, shown in Fig. 13.
+6.1 Noise Suppression
+We identify two dominant types of noise and interference and
+suppress each using tailored strategies:
+•Reference grating vibrations. Ambient sound near the
+reference grating induces unintended micro-vibrations, pro-
+ducing spurious moiré patterns. To suppress this effect, a
+microphone is placed near the reference grating to record the
+ambient sound, and its spectral components are subtracted
+from the measured moiré signals. Note that the reference
+grating is located on the attacker’s side, and no device needs
+to be placed near the target.
+•Low-frequency background noise. Mechanical vibrations
+of the telescope and airflow introduce low-frequency noise,
+which can obscure the spectrum of the measured audio sig-
+nals. To address this, a high-pass filter with a 300 Hz cutoff is
+applied to remove the low-frequency noise while preserving
+the band containing most audio information [22].
+6.2 Spectral Enhancement
+Although noise suppression removes dominant interference, it also
+attenuates other frequency components (Fig. 13 (c)), limiting audio
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+Ground-truth Raw moiré intensity signal Noise suppression Enhancement
+Ground-truth Raw moiré intensity signal Noise suppression Enhancement
+(a) (b) (c) (d)
+(e) (f) (g) (h)
+0Frequency (kHz)
+2
+4
+6 8 10 12 142 4
+Time (s)
+6 8 10 12 142 4
+Time (s)
+6 8 10 12 142 4
+Time (s)
+6 8 10 12 142 4
+Time (s)
+Amplitude-1
+0
+1
+0 5 10
+Time (s)
+0 5 10
+Time (s)
+0 5 10
+Time (s)
+0 5 10
+Time (s)
+Magnitude (dB)
+30
+14
+-1
+-14
+-23
+Figure 13: Processing in frequency and time domains: (a) ∼(d) spectrograms and (e) ∼(h) time-domain waveforms. (a, e) Ground-truth audio; (b, f)
+raw moiré intensity signal; (c, g) result after noise suppression; (d, h) output after enhancement.
+Photodiode Reference Grating
+Telescope
+Eavesdropper’s Room
+Victim’s Room
+Zoomed Target Barcode
+Target Barcode
+Audio Source
+(a) (b) (c)
+Figure 14: Experiment scenario with target barcode placed up to 20 m: (a) eavesdropper’s room, (b)
+overview of the experiment environment, and (c) victim’s room.
+Victim’s Room
+Sunshade
+Victim’s Room
+Sunshade
+Figure 15: Experiment scenarios
+with sunshade placed up to 90 m.
+intelligibility. To address this, we introduce a spectral enhance-
+ment module that selectively amplifies speech-relevant components
+while avoiding noise reintroduction [10]. The process proceeds as
+follows. First, the waveform is segmented into 20 ms frames with
+50% overlap to ensure continuity and preserve spectral details at
+frame boundaries. For each frame, speech-related frequency bins
+with 4–16 Hz envelope variations are enhanced using an adaptive
+gain of up to 6 dB. Note that 4–16 Hz does not correspond to the
+acoustic frequency itself, but rather reflects the temporal rhythm of
+speech. Enhancing these components makes weak high-frequency
+acoustic details more discernible, as shown in Fig. 13 (d) and (h).
+7 Evaluation
+To validate the design under realistic conditions, we use barcodes
+as target gratings (Fig. 14), with an eavesdropper in one room
+attempting to recover audio played in a different room. We then
+use sunshades as target gratings (Fig. 15). In both scenarios, we
+evaluate the system’s performance across varying audio content
+and configurable parameters.
+7.1 Experimental Setup
+Devices. (i) Target grating: We employ barcodes on different ob-
+jects—including a plastic box, plastic wrap, a potato chip bag, and
+a bottle of water—for eavesdropping experiments. We further use
+sunshades in the room as an additional target grating for eaves-
+dropping. The audio source is a speaker (Lumens M1000 [24]) in
+the meeting room. Note that this device is part of the room’s default
+audio setup and was not specifically selected by the authors. The
+reference grating is fabricated by printing stripe patterns on a 2 mm-
+thick acrylic plate and the total cost including the plate is $0.2. The
+reference grating is mounted in front of the telescope eyepiece. (ii)
+Telescope: We employ a Celestron 80EQ refracting telescope ($90)
+for the optical zoom [7]. It has a 900 mm focal length and supports
+22.5×∼225×amplification using eyepieces of varying focal lengths.
+(iii) Photodiode: A Hamamatsu PDC6-S1336-8BQ Photodiode ($25)3
+is placed behind the reference grating to capture the optical sig-
+nal [16]. The analog output is digitized by an AD9826K ADC [12]
+and transmitted to a laptop via an STM32H7 microcontroller [39]
+for real-time processing, whose sampling rate is 11 kHz.
+Datasets. The audio sources used in this work are drawn from
+three representative datasets, covering isolated digits, continuous
+speech, and music: (i) TIDIGITS [ 9]: Designed for digit recognition,
+this dataset consists of spoken digits (0∼9) from 30 speakers, evenly
+split by gender. Each speaker provides two utterances for every digit.
+(ii) Harvard Sentences [ 20, 33]: A dataset for speech intelligibility,
+featuring 30 phonetically balanced English sentences read by 30
+speakers, respectively. (iii) GTZAN Genre Collection [ 41]: It includes
+music tracks spanning ten musical genres.
+Metrics. (i) Accuracy: For the TIDIGITS dataset, we evaluate
+the classification accuracy across three predefined categories: digit,
+speaker identity (shortened as speaker), and speaker gender (short-
+ened as gender). For the GTZAN Genre Collection dataset, we
+assess the accuracy of music recognition using the commercial
+software Shazam [37], which reflects whether the reconstructed
+signal retains sufficient acoustic detail. (ii) STOI: To quantify audio
+intelligibility, we employ the Short-Time Objective Intelligibility
+3Note that a cheaper version priced at $6 is sufficient for our purpose.
+MoiréEar: Moiré Can See What You Cannot Hear SenSys ’26, May 11–14, 2026, Saint Malo, France
+(STOI) metric, which correlates with human speech comprehension.
+A STOI score above 0.7 corresponds to over 90% word recognition
+by human listeners [40], indicating good intelligibility.
+7.2 Digit, Speaker and Gender Classification
+First, we utilize the accuracy of classification on the TIDIGITS
+dataset to evaluate the system performance. As shown in Fig. 14,
+the eavesdropper and the victim are separated by 20 m. The target
+barcode is chosen as a barcode printed on a fruit box, placed at
+1.2 m away from the audio source. The telescope is configured with
+a 4 mm eyepiece, corresponding to 225×amplification.
+Digits. Fig. 16 shows an average digit classification accuracy of
+97.7%. Occasional errors arise—for instance, ‘four’ may be misrec-
+ognized as ‘five’ because of their phonetic similarity.
+5
+9
+8
+6
+7
+0
+4
+3
+1
+2
+5 986 70 431 2
+Referenced Digit
+Eavesdropped Digit
+Accuracy (%)20
+40
+100
+0
+60
+80
+Accuracy (%)20
+40
+100
+0
+60
+80
+Eavesdropped Spearker IDReferenced Spearker ID
+5 3010 155
+30
+10
+20
+20 25
+25
+15
+Figure 16: Accuracy of digit classification.
+Speakers and genders. Fig. 17 shows that speaker IDs are
+recognized with high accuracy, averaging around 91%. Among them,
+speakers with IDs 1 ∼15 are male, while the rest are female. As
+shown in the figure, most speaker identification errors occur within
+the same gender group (bottom-left for male and top-right for
+female), whereas confusions between male and female speakers are
+rare. In other words, even when the system fails to identify the exact
+speaker, it still predicts the correct gender. Gender classification
+achieves consistently high accuracy, exceeding 98%. This suggests
+that gender-related characteristics, such as pitch and harmonic
+structure, are well preserved in the reconstructed audio.
+Accuracy (%)20
+40
+100
+0
+60
+80
+Eavesdropped Spearker IDReferenced Spearker ID
+5 3010 155
+30
+10
+20
+20 25
+25
+15
+Accuracy (%)20
+40
+100
+0
+60
+80
+Eavesdropped Spearker IDReferenced Spearker ID
+5 3010 155
+30
+10
+20
+20 25
+25
+15
+male
+female
+Figure 17: Accuracy of speaker and gender classification.
+7.3 Sentences and Music Reconstruction
+For a more practical eavesdropping scenario, we reconstruct the
+full-band audio and evaluate both its intelligibility using STOI and
+its music recognition accuracy. The experimental setup follows the
+configuration in Sec. 7.2, while we vary system parameters (e.g.,
+sound level, target barcode material, and eavesdropping distance)
+to evaluate the robustness of MoiréEar under practical conditions.
+Impact of sound level on STOI. Using Harvard Sentences, we
+gradually reduce the volume level from 90 dB to 40 dB at a step size
+of 10 dB.4 Fig. 18 shows that the STOI drops from 0.94 at 90 dB to 0.77
+at 70 dB and 0.62 at 40 dB. The decline is due to weaker vibrations
+at lower volumes. Intelligibility remains reasonable, with a STOI
+of 0.7 at 60 dB—considered sufficiently good—demonstrating that
+MoiréEar preserves essential audio even at relatively low volumes.
+threshold of human 
+recognition
+0.7
+405060708090
+Sound Level (dB)
+0.6
+0.685
+0.77
+0.855
+0.94
+STOI
+405060708090
+Sound Level (dB)
+0.70
+0.77
+0.85
+0.93
+1.00
+Accuracythreshold of human 
+recognition
+0.7
+90 80 70
+0.77
+0.6
+0.685
+0.855
+0.94STOI
+60 50 40
+Sound Level (dB)
+0.85
+0.70
+0.77
+0.93
+1.00Accuracy
+90 80 70 60 50 40
+Sound Level (dB)
+Figure 18: STOI of sentences.
+Impact of sound level on music recognition. Fig. 19 illus-
+trates that music recognition accuracy is about 99% at 90 dB, 92%
+at 70 dB, and 82% at 40 dB. The performance of music recognition
+declines more gradually than speech recognition, as rhythm and
+harmonic envelopes—key cues for music—remain detectable even
+when fine spectral details are lost.
+threshold of human 
+recognition
+0.7
+405060708090
+Sound Level (dB)
+0.6
+0.685
+0.77
+0.855
+0.94
+STOI
+405060708090
+Sound Level (dB)
+0.70
+0.77
+0.85
+0.93
+1.00
+Accuracythreshold of human 
+recognition
+0.7
+90 80 70
+0.77
+0.6
+0.685
+0.855
+0.94STOI
+60 50 40
+Sound Level (dB)
+0.85
+0.70
+0.77
+0.93
+1.00Accuracy
+90 80 70 60 50 40
+Sound Level (dB)
+Figure 19: Accuracy of music recognition.
+Impact of different target barcode materials. We evaluate
+five representative everyday target gratings, including barcodes
+on a fruit box, plastic wrap, a potato chip bag, and a water bottle,
+as well as a mesh-patterned sunshade shown in Fig. 20 (a), using
+the same dataset and music recognition metric as in the previous
+section. As shown in Fig. 20(b), nearly all materials achieve around
+90% accuracy at 90 dB, but their performance diverges significantly
+at lower sound levels. Rigid gratings, such as barcodes on a fruit
+box, maintain stable performance. In contrast, soft films like plastic
+wrap and potato chip bags degrade rapidly because of mechanical
+damping. The water bottle achieves lower accuracy since one-third
+of its volume is filled with water, reducing its ability to vibrate.
+Interestingly, the sunshade—commonly hung on glass doors for
+visual privacy—achieves relatively high accuracy, indicating that
+such sunshades may inadvertently facilitate eavesdropping.
+4For reference, 90 dB is roughly the loudness of heavy traffic or a power tool, 60–70 dB
+corresponds to normal conversation, and 40 dB is comparable to a quiet library.
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+#1 #2 #3 #4 #5
+(a)
+(b)
+#1 #2 #5#3 #4Material Index:
+80
+60
+40
+20
+0
+Accuracy (%)
+100
+Figure 20: Robustness to different target barcode materials: (a) differ-
+ent target barcode materials and (b) accuracy of music recognition.
+Verifying the correctness of the theoretical model. To vali-
+date the correctness of the theoretical model in Sec. 4, we evaluate
+music recognition accuracy using various target gratings at multi-
+ple eavesdropping distances, as summarized in Tab. 1. The green
+cells indicate the optimal eavesdropping distances given by our
+model in Eq. (11), while the gray cells correspond to the selected
+suboptimal distances. At the optimal distance, MoiréEar consis-
+tently achieves higher recognition accuracy. This performance gap
+validates the correctness of the theoretical model.
+Remarkably, MoiréEar still operates at a distance of 90 m, achiev-
+ing 76% accuracy with the sunshade. The accuracy drop at this
+distance arises from telescope limitations: the tripod’s limited sta-
+bility makes the image highly sensitive to ambient vibrations, while
+the small aperture of high-amplification eyepieces reduces light col-
+lection and degrades signal quality. We believe that with more stable
+mounts and larger-aperture optics, both eavesdropping distance
+and accuracy can be further improved.
+Table 1: Accuracy of music recognition at different eaves-
+dropping distances
+Target Eyepiece (mm) Amplification Distance (m) Accuracy (%)
+Barcode
+6 150x 15 92
+10 81
+4 225x 20 85
+15 63
+Sunshade
+15 60x 36 93
+46 82
+6 150x 90 76
+110 65
+7.4 Robustness Test
+We next evaluate the robustness of MoiréEar under practical per-
+turbations, using the music dataset and recognition accuracy as the
+evaluation metric. The experimental setup is the same as in Sec. 7.2.
+Orientation and viewing-angle diversity of barcodes. We
+fixed the eavesdropper and varied the barcode’s orientation and
+viewing angle to test MoiréEar’s robustness under realistic place-
+ment variations, as shown in Fig. 21 (a). Fig. 21 (b) shows that
+the standard reference grating (single orientation and frequency)
+suffers a sharp accuracy drop, since even small tilts cause severe
+spatial frequency mismatches, preventing stable moiré generation.
+#1
+ #2
+#3
+ #4
+ #5
+(a) (b)
+#1 #2 #3 #4 #5
+Altitude Index
+0
+20
+40
+60
+80
+100Accuracy (%)
+Vanilla Reference Grating
+Optimized Reference Grating
+Standard Reference Grating
+Our Reference Grating
+Different orientations
+Different viewing angles
+Figure 21: Robustness to different target barcode orientations: (a)
+different orientations and viewing angles of the barcode; and (b)
+accuracy of music recognition.
+Accuracy STOI
+No Blocker 1 Glass Door 2 Glass 
+Blocker Condition
+0
+20
+40
+60
+80
+100Accuracy (%)
+Accuracy STOI
+#1 #2
+#3
+(a) (b)
+80
+60
+40
+20
+0
+#1 #2 #3
+Accuracy (%)
+Position Index
+0.6
+STOI0.7
+0.8
+0.9100
+Figure 22: Robustness to different positions of target barcode: (a)
+different positions; and (b) STOI and accuracy of music recognition.
+Different positions of target barcodes. We further test the
+system with the target barcode placed at three different positions
+(as shown in Fig. 22 (a)). When the target barcode and the audio
+source are in line-of-sight (i.e., Positions #1 and #2), the vibration
+effect is well preserved, resulting in consistently high accuracy of
+music recognition, as shown in Fig. 22(b). Notably, MoiréEar still
+achieves reasonable accuracy even in a non-line-of-sight scenario,
+where a table blocks the direct path between the audio source and
+the target barcode at a distance of 2 m (Position #3). This result
+demonstrates that MoiréEar is robust to position changes and can
+operate effectively under non-line-of-sight conditions.
+Impact of glass soundproof doors. To study the impact of
+glass soundproof doors, we inserted one and two glass doors be-
+tween the victim and eavesdropper (Fig. 14). As shown in Fig. 23,
+recognition accuracy remains nearly unchanged compared to the
+no-blockage case. Therefore, common glass soundproof doors have
+a negligible impact on the performance of the proposed system.
+Interference audio at eavesdropper side. To test robustness
+to ambient audio around the eavesdropper, we use speech from the
+Harvard Sentences dataset, representing realistic interference. The
+results are shown in Fig. 24. First, when using a thin 0.33 mm plastic
+plate (commonly used as fruit boxes) as the reference grating, it
+is highly sensitive to ambient audio. To address this, we adopted
+two complementary strategies. First, we increased the reference
+MoiréEar: Moiré Can See What You Cannot Hear SenSys ’26, May 11–14, 2026, Saint Malo, France
+0.33 mm
+0.33 mm + denoise
+2 mm
+2 mm + denoise
+Blocker Condition
+0
+20
+40
+60
+80
+Accuracy (%)
+0.6
+STOI
+0.7
+0.8
+0.9
+Accuracy STOI
+60
+80
+100Accuracy (%)
+60
+Noise Level (dB)
+70 80 90
+100
+0.33 mm
+0.33 mm + denoise
+2 mm
+2 mm + denoise
+Blocker Condition
+0
+20
+40
+60
+80Accuracy (%)
+0.6
+STOI
+0.7
+0.8
+0.9
+Accuracy STOI
+60
+80
+100Accuracy (%)
+60
+Noise Level (dB)
+70 80 90
+100
+Figure 23: Robustness to different blockage conditions.
+grating thickness to 2 mm, which improved mechanical stability and
+reduced its sensitivity. Second, at the algorithm level, we applied a
+denoising step by subtracting the audio spectrum recorded at the
+eavesdropper microphone from the measured optical spectrum of
+moiré pattern. The combination of these two methods effectively
+suppressed ambient audio interference, keeping accuracy above
+90% even in the presence of strong 90 dB interference.
+0.33 mm
+0.33 mm + denoise
+2 mm
+2 mm + denoise
+Blocker Condition
+0
+20
+40
+60
+80
+Accuracy (%)
+0.6
+STOI
+0.7
+0.8
+0.9
+Accuracy STOI
+60
+80
+100Accuracy (%)
+60
+Noise Level (dB)
+70 80 90
+100
+0.33 mm
+0.33 mm + denoise
+2 mm
+2 mm + denoise
+Blocker Condition
+0
+20
+40
+60
+80Accuracy (%)
+0.6
+STOI
+0.7
+0.8
+0.9
+Accuracy STOI
+60
+80
+100Accuracy (%)
+60
+Noise Level (dB)
+70 80 90
+100
+Figure 24: Robustness to interference audio around eavesdropper.
+8 Countermeasures
+Beyond highlighting the risks of moiré-based acoustic eavesdrop-
+ping, we propose countermeasures to safeguard audio privacy.
+Removing potential gratings from the environment. Since
+MoiréEar relies on vibrations of thin, lightweight striped surfaces,
+one mitigation strategy is to remove such objects. However, this
+may not always be practical, as striped designs (e.g., barcodes,
+blinds) are ubiquitous and often unavoidable.
+Blocking visual access. Curtains, frosted glass, or opaque cov-
+ers can block the optical path required for MoiréEar. However, such
+measures also reduce indoor lighting, limiting their practicality in
+everyday environments.
+Spectral obfuscation. Dedicated noise can be injected as an
+active defense so that eavesdroppers capture only distorted sig-
+nals. But this requires additional hardware and coordination for
+authorized users to remove the noise.
+9 Discussion and Future Work
+Realistic deployment under ambient noise, vibrations, and
+lighting conditions. (1) Ambient noise and vibration. On the eaves-
+dropper side, Section 7.4 shows that using a relatively thick 2 mm
+reference grating limits mechanical resonance caused by ambient
+audio noise. Vibration effects, which typically occur at relatively
+constant frequencies, can be readily identified and removed in the
+frequency domain. Nevertheless, we recommend placing the eaves-
+dropper device on a rigid surface to provide greater stability against
+vibration. On the victim side, Periodic noise sources such as air con-
+ditioners can be mitigated through frequency-domain filtering, as
+they typically exhibit stable, narrow-band spectral characteristics.
+For more complex noise sources, such as television audio, existing
+acoustic signal processing techniques provide potential mitigation
+approaches, such as feature learning–based source separation. (2)
+Lighting conditions. Lighting conditions influence the performance
+of the proposed system. Nevertheless, based on our experiments,
+the system can tolerate a wide range of real-world lighting condi-
+tions. During daytime operation, even when all lights in the victim’s
+room are turned off, the system remains functional by increasing
+the gain of the photodiode sensor on the eavesdropper side. The
+system remains operational at ambient light levels as low as 10 lux.
+Deployment efforts. The aiming process consists of two steps,
+coarse aiming and fine aiming. During the initial coarse aiming, the
+telescope is equipped with an optical finder scope that serves as a
+reticle-based aiming aid.5 After coarse aiming, fine adjustments are
+performed by tuning the horizontal and vertical adjustment screws
+on the telescope tripod, allowing small angular corrections until the
+telescope is precisely aligned with the target barcode. The eyepiece
+focus is then adjusted to clearly observe the barcode pattern through
+the telescope. These procedures require only minimal training, and
+the system can typically be set up within five minutes.
+Attack scope. The current system exploits the resonance be-
+tween loudspeaker-generated sound and nearby barcodes. Loud-
+speakers generate relatively higher sound pressure, inducing clear
+vibrations in everyday lightweight materials such as plastic packag-
+ing. In contrast, the human throat generates lower sound pressure,
+resulting in a shorter working range. To enable an attack using
+throat-generated voice, dedicated materials (e.g., materials simi-
+lar to earphone diaphragms) could be placed in the environment,
+allowing the system to operate over a longer distance than with ev-
+eryday objects. In addition, learning-based methods, rather than the
+current signal-processing approach, could be leveraged to extract
+weaker vibrations, thereby further extending the working range.
+Importantly, speaker-based eavesdropping alone poses a meaning-
+ful privacy risk, as sensitive speech played through loudspeakers
+may be unintentionally exposed, particularly in meeting rooms and
+online conferencing environments.
+Broader real-world target gratings. In addition to barcodes,
+numerous everyday striped items—ranging from QR codes and
+venetian blinds to windshield heating wires, fruit nets, striped um-
+brellas, and tablecloths—may function as unintentional gratings. A
+systematic study of these objects could quantify their leakage risks
+and highlight the practical prevalence of such threats.
+Covert target gratings with invisible inks. While our system
+relies on visible gratings for alignment, attackers could deliberately
+plant hidden gratings using UV- or IR-sensitive inks. Such gratings
+are invisible to the naked eye but detectable with the appropriate
+sensors, making eavesdropping even harder to detect.
+Ubiquitous surveillance cameras. Commodity cameras, un-
+like our telescope and photodiode setup, are currently limited by
+5The eavesdropper observes a projected red aiming dot indicating the telescope’s
+pointing direction. This dot is visible only to the eavesdropper and completely invisible
+to the target. Such optical finder scopes are readily available off-the-shelf components.
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+zoom and frame rate, restricting their eavesdropping capabilities.
+As high-resolution, high-speed cameras become more widespread,
+attackers could exploit existing surveillance systems for eavesdrop-
+ping, thereby expanding the threat and complicating defenses.
+10 Related Work
+10.1 Acoustic Eavesdropping
+Acoustic eavesdropping techniques can be broadly divided into four
+main categories, as summarized in Tab. 2. Below, we review each
+category and discuss the corresponding characteristics:
+IMU-based eavesdropping: Early studies exploit inertial mea-
+surement units (IMU) embedded in smartphones and wearables for
+eavesdropping. Gyroscopes can sense subtle air-pressure changes
+induced by nearby sound waves, enabling inference of spoken
+words [25]. Similarly, accelerometers have been used to classify
+speech segments, digits, or user commands [2, 4, 47]. Later works
+combine gyroscope and accelerometer data for signal fusion, im-
+proving robustness against noise and motion artifacts [17]. These
+approaches provide high sensitivity for short-range sensing, typi-
+cally within 30 cm to 1.2 m. Due to the short eavesdropping range,
+it is typically impractical for an attacker to deploy a separate IMU;
+instead, they would need to access the IMU of the target device.
+Consequently, these methods require direct access to the target
+device, limiting their applicability in broader scenarios.
+RF eavesdropping: Radio-frequency (RF) techniques enable
+remote sensing of acoustic vibrations. Early works use commod-
+ity WiFi devices to capture channel state information (CSI) varia-
+tions for sensing speech content [43, 44]. While these systems can
+achieve ranges of several meters, the relatively large signal wave-
+length limits their sensing granularity. More recently, mmWave
+sensing has emerged as a promising approach. Hu et al. proposed
+MILLIEAR [18], which combines FMCW mmWave radar with gen-
+erative models to reconstruct spoken sentences. This technique
+achieves a range of up to 5 m and enables free-vocabulary recovery
+through walls. However, mmWave systems still rely on active signal
+emissions, which can be readily detected, limiting their practicality.
+Optical-based eavesdropping: Optical approaches capture
+surface vibrations induced by sound, offering high spatial reso-
+lution. High-speed cameras can record subtle motion on every-
+day objects, and reconstruct the corresponding speech [11]. Laser-
+based techniques sense reflected light from windows or nearby
+objects [ 26, 42, 46], achieving eavesdropping distances beyond
+200 m. Recent works discovered that some light sources uninten-
+tionally emit optical signals correlated with audio. For example,
+Glowworm [28] recovers speech from LED status indicators at dis-
+tances up to 35 m, and Lamphone [29] leverages bulb vibrations for
+similar purposes. While optical sensing can achieve long ranges,
+high-speed cameras and precision lasers are often expensive and
+less suitable for covert deployment. LED- and bulb-based methods
+require stable lighting conditions, which limits flexibility.
+Other side-channel eavesdropping: Beyond IMU, RF, and
+optics, researchers have explored other channels for eavesdrop-
+ping. Vibration motors can be repurposed as acoustic sensors [34].
+Speakers and headphones can be turned into microphones through
+software reconfiguration [15]. Magnetic hard drives also emit micro-
+vibrations correlated with sound [ 21]. MagEar [ 23] shows that
+speakers emit weak magnetic signals while playing sound, which
+can be picked up by nearby sensors at a distance of 60 cm. These
+methods demonstrate eavesdropping capabilities but depend on
+specific hardware configurations or controlled environments.
+Overall, prior works explore diverse eavesdropping modalities
+with varying trade-offs in intrusiveness, stealth, range, and hard-
+ware complexity. In contrast, MoiréEar achieves a strong balance:
+it passively captures long-range speech without requiring access
+to the target device or emitting signals, while supporting free-
+vocabulary recovery using low-cost hardware.
+10.2 Moiré-based Sensing
+Moiré patterns have recently been explored for high-precision mo-
+tion sensing due to their ability to amplify subtle displacements into
+detectable patterns. Xiao et al. [45] proposed MoiréBoard, which en-
+ables 3-DoF camera translation tracking using a dual-layer passive
+marker. Building on this idea, Ning et al. [ 30] introduced Moiré-
+Pose, extending the approach to 6-DoF pose estimation in camera-
+to-screen interaction scenarios. Qiu et al. [32] further developed
+MoiréTag, achieving accurate angular tracking via a double-sided
+printed marker. More recently, Ning et al. [31] presented MoiréVib,
+enabling high-accuracy vibration sensing in dynamic environments.
+Although these works highlight the strong potential of moiré-based
+sensing, their performance remains constrained by controlled se-
+tups, dedicated gratings, and limited sample rates. Consequently,
+existing moiré-based sensing approaches are not yet suitable for cap-
+turing full-bandwidth speech information. We are the first to lever-
+age moiré patterns for eavesdropping and to address the unique
+challenges involved. We believe the proposed methods can also
+benefit conventional moiré-based motion sensing.
+11 Conclusion
+MoiréEar is the first long-range passive eavesdropping system to
+capture audio through moiré-based amplification. It leverages com-
+mon striped textures—such as barcodes and sunshades—together
+with a low-cost photodiode to enable real-time audio eavesdropping.
+The system captures intelligible audio from distances of up to 90 m,
+demonstrating a practical and robust eavesdropping paradigm.
+Acknowledgments
+This work was supported by the National Natural Science Foun-
+dation of China (62293511, 62293515, 92467301, and 62273305), the
+Key Research and Development Program of Zhejiang Province
+(2025C01012), the Zhejiang Provincial Natural Science Foundation
+of China (LR25F030002), the Zhejiang University Special Project of
+the State Key Laboratory of Industrial Control Technology (ICT–
+2025C05), the Fundamental Research Funds for Zhejiang Provincial
+Universities (226-2025-00221), and Nanyang Technological Univer-
+sity SUG-NAP.
+References
+[1] Isaac Amidror. 2009. The Theory of the Moiré Phenomenon: Volume I: Periodic
+Layers. Vol. 38. Springer Science & Business Media.
+[2] S Abhishek Anand and Nitesh Saxena. 2018. Speechless: Analyzing the threat
+to speech privacy from smartphone motion sensors. In 2018 IEEE Symposium on
+Security and Privacy (SP) . IEEE, 1000–1017.
+MoiréEar: Moiré Can See What You Cannot Hear SenSys ’26, May 11–14, 2026, Saint Malo, France
+Table 2: Comparisons of related work with MoiréEar
+Categories Methods Non-invasive Non-emissive Max Distance Free vocabulary
+IMU
+Gyroscope [25] ✗ ✓ 30 cm ✓
+Accelerometer [2, 4, 47] ✗ ✓ 30 cm ∼1.2 m ✗
+IMU fusion [17] ✗ ✓ 1 m ✗
+RF
+WiFi (CSI) [43] ✗ ✗ 5 m ✗
+WiFi (MIMO) [44] ✗ ✗ 5 m ✗
+mmWave [18] ✓ ✗ 5 m ✓
+Optics
+High-speed camera [11] ✓ ✓ 4 m ✓
+Laser [26, 42, 46] ✓ ✗ 200 m ✓
+Lidar [36] ✗ ✗ 1.5 m ✗
+LED [28] ✓ ✓ 35 m ✓
+Bulb [29] ✓ ✓ 35 m ✓
+MoiréEar (this work) ✓ ✓ 90 m ✓
+Other
+side-channels
+Vibration motor [34] ✗ ✓ 2 m ✓
+Speakers [15] ✗ ✓ 9 m ✓
+Magnetic hard drive [21] ✗ ✓ 25 cm ✓
+Magnetic field [23] ✓ ✓ 60 cm ✓
+[3] Deeksha Anniappa and Yoohwan Kim. 2021. Security and privacy issues with
+virtual private voice assistants. In 2021 IEEE 11th annual computing and commu-
+nication workshop and conference (CCWC) . IEEE, 0702–0708.
+[4] Zhongjie Ba, Tianhang Zheng, Xinyu Zhang, Zhan Qin, Baochun Li, Xue Liu,
+and Kui Ren. 2020. Learning-based Practical Smartphone Eavesdropping with
+Built-in Accelerometer.. In NDSS, Vol. 2020. 1–18.
+[5] Suryoday Basak and Mahanth Gowda. 2022. mmspy: Spying phone calls using
+mmwave radars. In 2022 IEEE Symposium on Security and Privacy (SP) . IEEE,
+1211–1228.
+[6] Graham Brooker and Jairo Gomez. 2013. Lev Termen’s great seal bug analyzed.
+IEEE Aerospace and Electronic Systems Magazine 28, 11 (2013), 4–11.
+[7] CELESTRON. [n. d.]. PowerSeeker 80EQ Telescope [Online]. Avail-
+able: https://www.celestron.com/products/powerseeker-80eq-telescope?srsltid=
+AfmBOopSX33lCP3Kc9J_X84r8eu1QOy6l-YSPDt96G_MsyiR5MGr9v_R. ([n. d.]).
+[8] Jingquan Cheng. 2009. The principles of astronomical telescope design. (2009).
+[9] Linguistic Data Consortium. [n. d.]. TIDIGITS [Online]. Available: https://catalog.
+ldc.upenn.edu/LDC93S10. ([n. d.]).
+[10] Nabanita Das, Sayan Chakraborty, Jyotismita Chaki, Neelamadhab Padhy, and
+Nilanjan Dey. 2021. Fundamentals, present and future perspectives of speech
+enhancement. International Journal of Speech Technology 24, 4 (2021), 883–901.
+[11] Abe Davis, Michael Rubinstein, Neal Wadhwa, Gautham J Mysore, Fredo Durand,
+and William T Freeman. 2014. The visual microphone: Passive recovery of sound
+from video. (2014).
+[12] ANALOG DEVICES. [n. d.].Complete 16-Bit Imaging Signal Processor AD9826 [On-
+line]. Available: https://www.analog.com/media/en/technical-documentation/
+data-sheets/ad9826.pdf. ([n. d.]).
+[13] Free-Barcode. [n. d.]. The Check digit of EAN-13 barcode. ([n. d.]). https://free-
+barcode.com/barcode/barcode-types/check-digit-of-ean-13.asp
+[14] GS1UK. [n. d.]. Barcoding–getting it right. ([n. d.]). https://www.gs1uk.org/sites/
+default/files/How_to_Barcoding_Getting_it_right.pdf
+[15] Mordechai Guri, Yosef Solewicz, Andrey Daidakulov, and Yuval Elovici. 2017.
+{SPEAKE (a) R}: Turn speakers to microphones for fun and profit. In11th USENIX
+Workshop on Offensive Technologies (WOOT 17) .
+[16] HAMAMATSU. [n. d.]. Si photodiode S1336-8BQ [Online]. Avail-
+able: https://www.hamamatsu.com/eu/en/product/optical-sensors/photodiodes/
+si-photodiodes/S1336-8BQ.html. ([n. d.]).
+[17] Jun Han, Albert Jin Chung, and Patrick Tague. 2017. Pitchln: eavesdropping via
+intelligible speech reconstruction using non-acoustic sensor fusion. InProceedings
+of the 16th ACM/IEEE International Conference on Information Processing in Sensor
+Networks. 181–192.
+[18] Pengfei Hu, Yifan Ma, Panneer Selvam Santhalingam, Parth H Pathak, and Xi-
+uzhen Cheng. 2022. Milliear: Millimeter-wave acoustic eavesdropping with
+unconstrained vocabulary. In IEEE INFOCOM 2022-IEEE Conference on Computer
+Communications. IEEE, 11–20.
+[19] Henry C King. 2003. The history of the telescope . Courier Corporation.
+[20] Andy Kwong. [n. d.]. Harvard Sentences [Online]. Available: https://www.cs.
+columbia.edu/~hgs/audio/harvard.html. ([n. d.]).
+[21] Andrew Kwong, Wenyuan Xu, and Kevin Fu. 2019. Hard drive of hearing: Disks
+that eavesdrop with a synthesized microphone. In 2019 IEEE symposium on
+security and privacy (SP) . IEEE, 905–919.
+[22] Jinyu Li, Li Deng, Yifan Gong, and Reinhold Haeb-Umbach. 2014. An overview
+of noise-robust automatic speech recognition. IEEE/ACM Transactions on Audio,
+Speech, and Language Processing 22, 4 (2014), 745–777.
+[23] Qianru Liao, Yongzhi Huang, Yandao Huang, Yuheng Zhong, Huitong Jin, and
+Kaishun Wu. 2022. MagEar: eavesdropping via audio recovery using magnetic
+side channel.. In MobiSys. 371–383.
+[24] AV MEDIA. [n. d.]. Lumens M1000 4K Video Soundbar [Online]. Available:
+https://avmedia.com.sg/product/lumens-m1000-4k-video-soundbar/. ([n. d.]).
+[25] Yan Michalevsky, Dan Boneh, and Gabi Nakibly. 2014. Gyrophone: Recognizing
+speech from gyroscope signals. In 23rd USENIX Security Symposium (USENIX
+Security 14) . 1053–1067.
+[26] Ralph P Muscatell. 1984. Laser microphone. The Journal of the Acoustical Society
+of America 76, 4 (1984), 1284–1284.
+[27] Tomoaki Nagai and Akio Namiki. 2018. High-Resolution and High-Frame-Rate
+Image Estimation with Heterogeneous Cameras. In 2018 IEEE International Con-
+ference on Robotics and Biomimetics (ROBIO) . IEEE, 1329–1334.
+[28] Ben Nassi, Yaron Pirutin, Tomer Galor, Yuval Elovici, and Boris Zadov. 2021.
+Glowworm attack: Optical tempest sound recovery via a device’s power indi-
+cator led. In Proceedings of the 2021 ACM SIGSAC Conference on Computer and
+Communications Security . 1900–1914.
+[29] Ben Nassi, Yaron Pirutin, Raz Swisa, Adi Shamir, Yuval Elovici, and Boris Zadov.
+2022. Lamphone: Passive sound recovery from a desk lamp’s light bulb vibrations.
+In 31st USENIX Security Symposium (USENIX Security 22) . 4401–4417.
+[30] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu, Baoliu Ye, and Sanglu Lu.
+2022. MoiréPose: ultra high precision camera-to-screen pose estimation based
+on Moiré pattern. In Proceedings of the 28th Annual International Conference on
+Mobile Computing And Networking . 106–119.
+[31] Jingyi Ning, Zhihao Yan, Zhaowei Wu, Lei Xie, Chuyu Wang, Yingying Chen,
+Baoliu Ye, and Sanglu Lu. 2024. MoiréVib: Micron-level Vibration Detection based
+on Moiré Pattern. In Proceedings of the 30th Annual International Conference on
+Mobile Computing and Networking . 1393–1407.
+[32] Simeng Qiu, Hadi Amata, and Wolfgang Heidrich. 2023. Moirétag: Angular
+measurement and tracking with a passive marker. In ACM SIGGRAPH 2023
+Conference Proceedings . 1–10.
+[33] E H Rothauser. 1969. IEEE recommended practice for speech quality measure-
+ments. IEEE Transactions on Audio and Electroacoustics 17, 3 (1969), 225–246.
+[34] Nirupam Roy and Romit Roy Choudhury. 2016. Listening through a vibration mo-
+tor. In Proceedings of the 14th Annual International Conference on Mobile Systems,
+Applications, and Services . 57–69.
+[35] JD Rudie, Zach Katz, Sam Kuhbander, and Suman Bhunia. 2021. Technical
+analysis of the nso group’s pegasus spyware. In 2021 International Conference on
+Computational Science and Computational Intelligence (CSCI) . IEEE, 747–752.
+[36] Sriram Sami, Yimin Dai, Sean Rui Xiang Tan, Nirupam Roy, and Jun Han. 2020.
+Spying with your robot vacuum cleaner: eavesdropping via lidar sensors. In
+Proceedings of the 18th Conference on Embedded Networked Sensor Systems . 354–
+367.
+[37] SHAZAM. [n. d.]. SHAZAM [Online]. Available: https://www.shazam.com/. ([n.
+d.]).
+[38] Cong Shi, Tianfang Zhang, Zhaoyi Xu, Shuping Li, Donglin Gao, Changming Li,
+Athina Petropulu, Chung-Tse Michael Wu, and Yingying Chen. 2023. Privacy
+leakage via speech-induced vibrations on room objects through remote sensing
+based on phased-mimo. In Proceedings of the 2023 ACM SIGSAC Conference on
+Computer and Communications Security . 75–89.
+SenSys ’26, May 11–14, 2026, Saint Malo, France Zhang et al.
+[39] STMicroelectronics. [n. d.]. STM32H7 series [Online]. Available: https://www.st.
+com/en/microcontrollers-microprocessors/stm32h7-series.html. ([n. d.]).
+[40] Cees H. Taal, Richard C. Hendriks, Richard Heusdens, and Jesper Jensen. 2011.
+An algorithm for intelligibility prediction of time–frequency weighted noisy
+speech. IEEE Transactions on Audio, Speech, and Language Processing 19, 7 (2011),
+2125–2136.
+[41] Carl Thomé. [n. d.]. GTZAN Genre Collection [Online]. Available: https://www.
+kaggle.com/datasets/carlthome/gtzan-genre-collection. ([n. d.]).
+[42] Payton Walker and Nitesh Saxena. 2022. Laser meager listener: a scientific
+exploration of laser-based speech eavesdropping in commercial user space. In
+2022 IEEE 7th European Symposium on Security and Privacy (EuroS&P) . IEEE,
+537–554.
+[43] Guanhua Wang, Yongpan Zou, Zimu Zhou, Kaishun Wu, and Lionel M Ni. 2014.
+We can hear you with Wi-Fi!. In Proceedings of the 20th annual international
+conference on Mobile computing and networking . 593–604.
+[44] Teng Wei, Shu Wang, Anfu Zhou, and Xinyu Zhang. 2015. Acoustic eavesdropping
+through wireless vibrometry. In Proceedings of the 21st Annual International
+Conference on Mobile Computing and Networking . 130–141.
+[45] Chang Xiao and Changxi Zheng. 2021. Moiréboard: A stable, accurate and
+low-cost camera tracking method. In The 34th Annual ACM Symposium on User
+Interface Software and Technology . 881–893.
+[46] Zhong Xu, Jiyang Li, Shulian Zhang, Yidong Tan, Xiliang Zhang, Xuling Lin,
+Xinjun Wan, and Songlin Zhuang. 2021. Remote eavesdropping at 200 meters
+distance based on laser feedback interferometry with single-photon sensitivity.
+Optics and Lasers in Engineering 141 (2021), 106562.
+[47] Li Zhang, Parth H Pathak, Muchen Wu, Yixin Zhao, and Prasant Mohapatra.
+2015. Accelword: Energy efficient hotword detection through accelerometer.
+In Proceedings of the 13th Annual International Conference on Mobile Systems,
+Applications, and Services . 301–315.

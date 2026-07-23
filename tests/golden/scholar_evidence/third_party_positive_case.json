@@ -1,0 +1,32 @@
+{
+  "name": "third_party_positive_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Third Party Positive Study",
+    "authors": ["Ada Stone"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "Cited Scholar Paper is a strong method foundation that improves citation evidence review in independent third-party evaluations."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "method_foundation",
+        "stance": "positive",
+        "mention_type": "strong",
+        "citation_text": "Cited Scholar Paper is a strong method foundation that improves citation evidence review in independent third-party evaluations.",
+        "reasoning": "Independent authors positively evaluate the target paper.",
+        "keywords": ["method foundation", "third-party evaluations"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": ["method_foundation"],
+    "keep": true,
+    "evidence_strength": "strong",
+    "highlight_keywords": ["method foundation", "third-party evaluations"],
+    "must_not_miss": true
+  }
+}

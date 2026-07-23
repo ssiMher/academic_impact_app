@@ -1,0 +1,1763 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: Repurposing optical mice for acoustic eavesdropping
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+Repurposing Optical Mice for Acoustic
+Eavesdropping
+Zhimin Mei†, Donghui Dai †, Jingyu Tong†, Zheng Gong †, and Lei Yang † ‡ ∗
+†Department of Computing, The Hong Kong Polytechnic University
+‡Shenzhen Research Institute, The Hong Kong Polytechnic University
+Email: {zhimin.mei, donghui.dai, jerry.tong }@connect.polyu.hk, {gz, young}@tagsys.org
+Abstract—Acoustic eavesdropping presents a longstanding
+challenge in the realm of personal information security and
+privacy preservation. In this work, we introduce a novel
+eavesdropping method called JerryAttack, which repurposes an
+optical mouse as a covert eavesdropping device. Specifically,
+we transform the mouse’s integrated low-resolution but high-
+frame-rate image sensor into a high-speed camera for visual
+vibrometry, capable of capturing acoustic vibrations from nearby
+loudspeakers. Our contributions are threefold: First, we utilize
+the ‘pixel grabber’ register as a backdoor to extract the pixel
+stream from the image sensor. Second, we establish an acoustic-
+optical side channel that enables effective acoustic eavesdropping.
+Third, we thoroughly explore two attack scenarios: voice profiling
+and speech reconstruction. Our findings reveal that the sound
+recovered through our side channel achieves a mean SNR of
+7.3dB, comparable to standard microphone recordings in noisy
+environments like cafes. Additionally, when combined with a clas-
+sification neural network, JerryAttack identifies individuals with
+an overall accuracy of 83.27% across six languages. Moreover,
+when cooperated with joint channel information, JerryAttack
+consistently achieves good intelligibility, with a median STOI
+score exceeding 0.7 in reconstructed results.
+Index Terms—side-channel attack, acoustic eavesdropping, IoT
+security
+I. I NTRODUCTION
+Acoustic eavesdropping remains a significant security
+threat, employing stealthy techniques to intercept private
+conversations. Various methods leverage diverse channels to
+achieve this, such as motion sensors [1]–[7] and wireless
+signals [8]–[13], both exploiting different vulnerabilities to
+access sensitive audio data. Further, the use of a camera to
+capture mechanical vibrations caused by soundwaves, known
+as visual vibrometry, has been extensively investigated over
+the years [14]–[21]. However, not all cameras are suitable for
+acoustic eavesdropping. The Nyquist sampling theorem stipu-
+lates that the sampling rate must be at least twice the highest
+frequency of the signal. Phonetic research indicates that vowels
+contain the primary energy in speech, and distinguishing dif-
+ferent vowels often requires comparing their first two formants,
+which are distinct frequency components of the sound. The
+average second formant frequency for approximately 81.25%
+of vowels is around 1.5 kHz or lower [22]. Consequently, to
+perform accurate acoustic eavesdropping, a camera capable of
+achieving frame rates of 3 kHz or higher is necessary.
+∗ Lei Yang is the corresponding author.
+AttackScenario
+Mouse Inside: Taking Photos at 3700Hz
+Victim Mouse
+Reconstructing sound  via the acoustic-optical side channel
+Attacker
+3.1𝑚𝑚!
+Fig. 1. Illustration of JerryAttack. The attacker can reconstruct the sound
+broadcasted from the loudspeaker via the acoustic-optical side channel.
+In this work, we revisit acoustic eavesdropping through vi-
+sual vibrometry by exploiting an underutilized acoustic-optical
+side channel: the optical mouse. Common in computing setups,
+the optical mouse incorporates a low-resolution digital camera
+to capture images of the surface below it. As the mouse moves,
+it sequentially records images, which are then processed by
+an onboard digital signal processor (DSP). The DSP analyzes
+these images to detect patterns or shifts in position over time,
+allowing it to calculate the direction and speed of the mouse’s
+movement. Driven by the demands of gaming applications,
+modern optical mice are designed to support exceptionally
+high frame rates, often exceeding 3.7 kHz. Furthermore, the
+optical sensor typically focuses on a small area (e.g. 3.1 mm2)
+within its pixel array (e.g., 26 ×26), allowing the mouse to
+detect subtle variations at the submillimeter level induced by
+structure-borne soundwaves. The high frame rate and finely
+focused sensing area characteristics highlight the significant
+potential of optical mice as tools for visual-vibrometry-enabled
+acoustic eavesdropping, a capability that has remained largely
+untapped until now.
+To address this, we introduce a novel eavesdropping frame-
+work called JerryAttack, named in tribute to ‘Jerry’ Mouse
+from the ‘Tom and Jerry’ cartoons. Fig. 1 illustrates the
+attack scenario. We envision a typical setup where a target’s
+workspace includes an optical mouse adjacent to a loudspeaker
+device, either integrated or external, both placed on a shared
+surface like a desk. The sound of the speakers causes vibra-
+IEEE INFOCOM 2025 - IEEE Conference on Computer Communications | 979-8-3315-4305-1/25/$31.00 ©2025 IEEE | DOI: 10.1109/INFOCOM55648.2025.11044584
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+tions that travel across the desk to the mouse, subtly altering
+the images captured by the mouse’s built-in camera. By
+analyzing the pixel stream from these images, an attacker can
+potentially detect the target’s activities or reconstruct audible
+conversations during video conferences.
+JerryAttack stands in stark contrast to traditional eavesdrop-
+ping methods that often necessitate noticeable alterations to the
+environment or the introduction of obvious eavesdropping de-
+vices. Using a commonplace computer accessory that is widely
+used in offices, it can be integrated into daily routines without
+attracting attention. JerryAttack outperforms existing systems
+in several key areas: provides a higher sampling rate than a
+motion sensor, does not require expensive equipment, and is
+more resistant to environmental noise than the wireless signal.
+A demo video can be found at https://youtu.be/zlsrEucXh9U.
+However, effective implementation of this acoustic eaves-
+dropping framework faces two main challenges:
+• How to extract pixel values from optical mice? An optical
+mouse typically incorporates an image sensor paired with
+a DSP that preprocesses images to detect movement. This
+system traditionally outputs coarse-grained movement data,
+such as displacements along the X and Y axes measured
+in pixels. This standard setup generally lacks the sensitivity
+required to detect the fine, subtle vibrations caused by the
+sound from speakers. Visual vibrometry requires access to
+raw texture images captured by the sensor, but typical optical
+mice do not provide a high-level interface to access these
+images directly. This limitation poses a significant challenge
+for recovering the sound from acoustic vibrations.
+Upon reviewing technical datasheets, we made an unex-
+pected discovery: mainstream optical sensors used in optical
+mice, such as the ADNS-3050 [23], include a special register
+called the ‘pixel grabber’. Originally intended for debugging
+or testing, this register captures and retains the value of a
+single pixel from each image frame captured by the sensor. By
+accessing this register, we can tap into a continuous and stable
+stream of pixel values at a high frame rate of 3.7 kHz. This
+access effectively turns the register into a backdoor for data
+extraction. Leveraging this capability allows us to overcome
+significant obstacles in accessing detailed image data, essential
+for sound recovery. For more technical information, see § III.
+• How to recover sound from the pixel stream? The eco-
+nomical, low-resolution image sensors (e.g., 26 × 26 pixels)
+integrated into these mice are prone to thermal noise and
+inherent harmonics, severely masking the subtle vibrations that
+are indicative of sound within the pixel data.
+To navigate this challenge, our initial approach involves
+leveraging traditional signal processing methods to accurately
+model the channel, followed by the implementation of a
+basic recovery algorithm. This foundational step sets the
+stage for further refinement. To enhance the initial audio
+recovery, we utilize a band-split recurrent neural network
+(BSRNN) [24]. This advanced neural network architecture is
+specifically tailored to address the unique constraints of the
+pixel stream, including limited resolution and noise distortion.
+The BSRNN methodically processes the audio data across
+PCB
+LEDOptical Sensor
+Base PlateDesk Surface
+Light lensPixel Array
+(a) Schematic Diagram
+ROI 
+Surface Grayscale Image 
+Texture (b) Working Princicple
+Fig. 2. Illustration of Optical Mouse
+different frequency bands, allowing for a more nuanced speech
+restoration. The technical details refer to § IV.
+Our contributions are summarized:
+• We proposed JerryAttack, the first system to repurpose
+optical mice for acoustic eavesdropping via a hidden
+acoustic-optical channel. This system offered a high
+sampling rate, low cost, and robustness to environmental
+noise, outperforming existing eavesdropping systems in
+some aspects.
+• We introduced novel techniques to accurately formalize
+the acoustic-optical channel, enabling high-fidelity recov-
+ery of sound signals.
+• We evaluated the system across multiple corpora in six
+languages, achieving an overall classification accuracy of
+83.27% for 48 speakers and strong speech reconstruction
+quality, with a median STOI of 0.7. Additionally, Jer-
+ryAttack was successfully validated on 9 optical mouse
+models from 7 manufacturers, including Logitech and
+Razer, demonstrating its broad applicability.
+II. T HREAT MODEL
+A. Attack Scenarios
+We consider an attack scenario in which the victim is
+engaged in an online conversation or a group meeting within
+a meeting room. An attacker, positioned in a nearby room,
+aims to eavesdrop on the private information and sensitive
+details in the victim’s speech. The victim uses a loudspeaker
+to play the speech, causing vibrations that travel through the
+desk surface to a compromised mouse. These vibrations induce
+subtle distortions in the imagery captured by the mouse’s
+onboard camera. To pose a practical threat, the attacker must
+overcome the distortions introduced by this hidden acoustic-
+optical channel and successfully extract the sensitive data.
+Specifically, the attacker could establish two types of attack:
+(1) V oice Profiling aims to extract the private information
+related to the victim, see the evaluation details in § VI. (2)
+Speech reconstruction tries to recover the speech signal to a
+level understandable to humans, see § VII.
+B. Attacker’s Capabilities
+One might wonder why the attacker does not directly hack
+the microphone for acoustic eavesdropping. The answer lies
+in the stringent permissions required to access microphones or
+other acoustic sensors. Even when permissions are obtained,
+operating systems usually alert the user to activating sensors,
+such as displaying microphone icons, which could warn the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+wood
+paperconcrete
+concrete
+ wood
+paper
+ plastic
+view
+plastic
+surface
+Fig. 3. Illustration of images captured by the pixel sensor across different
+types of textures.
+victim of a breach. In contrast, JerryAttack operates with
+greater discretion. For the effective activation of JerryAttack,
+the attacker is presumed to have the following key capabilities:
+• Firmware Updates: The attacker can inject malicious
+firmware into the victim’s mouse, enabling access to the
+‘pixel grabber’ register to capture the real-time pixel stream.
+This can be implemented through the Over-the-Air (OTA)
+method [25], which downloads firmware modifications via
+the network. The attacker could trick the user into down-
+loading tampered firmware through a fake update prompt
+from a bogus website. OTA injection of malicious firmware
+for attacks has been an acceptable capability, such as Cui
+et al. [26] also used remote firmware updates to attack HP
+printers. By the way, the user authentication process before
+firmware updates remains vulnerable to an administrative in-
+terface bypass attack [27]. Direct USB connection firmware
+update [28] is also possible, which could be completed even
+during the manufacturing stage.
+• Data Exfiltration: The attacker can transmit the acquired
+pixel stream to his computing server for sound recovery.
+The mouse’s wireless channel such as Bluetooth or 2.4
+GHz RF could be used as the transmission road without
+affecting the victim’s normal use. This essentially requires
+establishing dual Bluetooth roles communication, one for
+maintaining the victim’s normal use while the other for
+sending data to the attacker. There are already some devices
+that can simultaneously establish communication channels
+with multiple computers, such as Logitech MX Master 3S
+mouse [29]. For the wired mouse, the transmission through
+the network is also possible via a malicious app.
+• Acquiring Auxiliary Information: In the two proposed
+attack scenarios, the attacker requires different types of
+auxiliary information to enhance the quality of the attack.
+(1) For individual identification, we assume that the at-
+tacker can obtain speech samples from the target human
+speakers in advance, which is a standard assumption in
+related side-channel research [5], [14], [30], [31]. (2) For
+speech reconstruction, previous studies [5], [31], [32] have
+shown that relying solely on the side channel typically
+allows only basic recognition of speech content, such as
+the classification of digits or phonetic symbols, which falls
+short of our intended human-understandable goal. So we
+Amplitude
+Time
+P P P P
+(a) Single-Pixel Sampling
+Amplitude
+Time
+P2
+P1
+P3
+P4 P1
+P2
+P3
+P4
+P1
+P2 P3 P3
+P4 P4
+P1 (b) Multi-Pixel Sampling
+Fig. 4. Illustration of the sampling process. The sampling process involves
+multiplying the constant pixel offsets by the signal over time.
+assume that the attacker can set up a microphone at a
+distant location or in the meeting room but is interfered with
+by anti-eavesdropping equipment to obtain some auxiliary
+recording with an extremely low signal-to-noise ratio, close
+to pure noise.
+This work operates under the assumption that the victim
+positions the optical mouse close to the speaker (i.e., < 20cm),
+which is reasonable.
+III. T RANSFORMING MICE INTO HIGH -SPEED CAMERAS
+A. Background of Optical Mice
+Optical Mice serve as crucial peripherals for computer inter-
+action and Fig.2(a) illustrates the internal structure, featuring
+components such as an optical sensor with pixel array, a small
+LED, and a printed circuit board (PCB). Fig.2(b) explains the
+working principle. Specifically, the LED projects light through
+the optical lens onto the desk surface. The reflected light,
+carrying surface texture, is captured by the image sensor’s
+pixel array, which converts the light intensity into grayscale
+values. The onboard digital signal processor (DSP) processes
+these images to detect changes between consecutive frames,
+thus determining the mouse’s displacement.
+B. Acquiring Pixel Stream
+Optical mice are equipped with a compact image sensor that
+comprises a matrix of pixel diodes. Unlike regular cameras that
+boast millions of pixels, the image sensors in optical mice
+have only a few hundred pixels because they are primarily
+used to compare differences, not to capture details. However,
+when these mouse cameras lack pixel count, they compensate
+with an exceptionally high frame rate, far surpassing regular
+cameras. Optical mice typically support frame rates of 3 kHz
+or higher, which may reach up to 20 kHz in models designed
+for gaming.
+For illustrative purposes, we will use the Logitech G402
+optical mouse as an example, however, the datasheet for its
+optical sensor AM-010 is not public. Fortunately, AM-010 can
+be considered a variant of ADNS-3050 (since AM-010 is a
+variant of PMW-3320 [33], which in turn is a variant of the
+ADNS-3050 [34], [35]), while the biggest difference is that
+the pixel array size increases from 19 × 19 of ADNS-3050
+to 26 × 26 of AM-010. Therefore, this paper will refer to
+the datasheet of the ADNS-3050 for explanations [23], which
+integrates more than 30 registers.
+Pixel Grabbing . During our examination of the mouse’s
+internal registers, we identified a notable register known as
+the ‘pixel grabber,’ located at address 0x0b. This register
+enables the extraction of a single-pixel value from each
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+1 2 3 4
+5 6 7 8
+9 10 11 12
+13 14 15 16
+Current Pixel
+Historical Pixel
+Time 
+(#frame)
+Line 1 (t)
+Line 2 (2t)
+Line-by-line readout
+Tf
+Frame rate = 1/Tf
+Frame duration = Tf 
+Line duration = Tl
+Line 4 (3t)
+Line 4 (4t)
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+Tf+Tl 2Tf+Tl 5Tf+2Tl 6Tf+2Tl
+13Tf+4Tl 14Tf+4Tl 15Tf+4Tl 16Tf+4Tl 17Tf+Tl 18Tf+Tl
+3Tf+Tl 4Tf+Tl
+Time
+Fig. 5. Pixel Grabbing Process with a 4×4 Image Sensor. For every frame, the pixel grabber extracts a single pixel value, progressing systematically across
+every pixel location at a frame rate of f Hz. The image sensor implements a line-by-line sequential readout strategy, facilitating the capture of an entire
+row of pixels in one reading cycle. As a result, pixel values are sampled at non-uniform intervals Tf + Tl, 2Tf + Tl, 3Tf + Tl, 4Tf + Tl . . . ,13Tf +
+4Tl, 14Tf + 4Tl, 15Tf + 4Tl, 16Tf + 4Tl, where Tf represents the time to read a frame, and Tl denotes the time to read a line.
+frame captured by the image sensor. Each time the register
+is accessed, its location pointer advances to the next pixel,
+moving sequentially across every location. Using this feature,
+an entire frame can be constructed by continuously reading the
+pixel values (26×26 reads in this case) from 0x0b by the SPI
+bus. In our experiment, we can achieve a stable readout rate of
+about 3.7 kHz, effectively turning the mouse into a high-speed,
+single-pixel camera that outputs a continuous pixel stream. The
+continuous pixel stream will be transmitted to the attacker’s
+server for further processing.
+C. Feasibility Verification
+To demonstrate the capability of transforming an optical
+mouse into an ultra-fast camera, we present some initial ex-
+perimental results in Fig. 3. The mouse was placed on various
+surfaces including concrete, paper, wood, and plastic, and each
+image was constructed using the collected 26×26 pixel values.
+These images distinctly capture the unique textures while a
+notable feature of the paper surface is the letter ‘A’, measuring
+3.1mm2. These results convincingly validate the feasibility.
+IV. D EVELOPING THE ACOUSTIC -OPTICAL SIDE
+CHANNEL
+A. Channel Model
+Speaker-generated vibrations manifest as structure-borne
+waves, a type of mechanical wave that transport en-
+ergy through solid materials by causing particle interac-
+tions within the medium. There are three main propagation
+modes: Rayleigh waves, longitudinal waves, and transverse
+waves [36]. In our scenario, the mouse detects textures mainly
+affected by Rayleigh waves, which cause the solid surface to
+float up and down [37], making the distance between the image
+sensor and the desktop fluctuate accordingly. This interaction
+between the loudspeaker and the mouse essentially forms a
+classic backscatter system where the loudspeaker modulates
+the light intensity with varying amplitudes and the image
+sensor captures these amplitude-modulated data.
+Single-Pixel Sampling: We start from a simplified scenario
+where the image sensor contains only one single pixel. In the
+absence of an acoustic signal, this pixel maintains a steady
+light intensity, denoted p. However, the backscatter system
+results in a fluctuating light intensity p · S(t) captured by the
+pixel at the moment t, as Fig. 4(a) shows.
+Muti-Pixel Sampling : We proceed to explore the scenario
+of multi-pixel sampling where the image sensor contains a√
+N ×
+√
+N pixel array. Given that the area covered by the
+image sensor is quite small (approximately 3mm2) relative
+to the wavelength of sound (around 5m), we can assume that
+the acoustic signal impacts all pixels uniformly. Fig. 4(b) illus-
+trates the procedure of acquiring a pixel stream. Consequently,
+the sampling results are formalized as follows:
+
+
+˜S(t1)
+˜S(t2)
+˜S(t3)
+...
+˜S(tN )
+
+
+=
+
+
+p1 0 0 · · ·0
+0 p2 0 · · ·0
+0 0 p3 · · ·0
+...
+...
+... · · ·
+...
+0 0 0 · · ·pN
+
+
+
+
+S(t1)
+S(t2)
+S(t3)
+...
+S(tN )
+
+
++
+
+
+n1
+n2
+n3
+...
+nN
+
+
+(1)
+or ˜S = MS + n (2)
+where ˜S = [ ˜S(t1), ˜S(t2), ··· , ˜S(tN )]T corresponds to the
+sampled signal, the set {p1, p2, ··· , pN } represents the base-
+line intensity offsets for each pixel, and [n1, n2, ··· , nN ]T
+denotes the thermal noise affecting each pixel. The above
+equation models the sampling process over a period that
+includes N samples. This pattern of sampling the acoustic
+signal is consistently repeated. It is worth noting that multi-
+pixel sampling captures the acoustic signal at different scales
+caused by the inherent intensity offsets.
+Let Tf represent the time interval between two consecutive
+frames. Ideally, sampling would occur at each interval Tf .
+However, the CMOS sensors architecture typically process
+pixel values line by line. As Fig. 5 shows, acquiring a pixel
+from the jth line takes approximately jTl seconds, where Tl
+is the duration required to read a line of pixels. Therefore, the
+timing for the ith sample is given by iTf + ((i//
+√
+N) + 1)Tl,
+where i ranges from 1 to N, indicating that the sampling
+process is not uniform. This variation in timing will affect
+the precision of capturing the acoustic signal due to slight
+discrepancies in the sampling intervals.
+B. Naive Sound Recovery
+Based on Eqn. 2, the acoustic signal can be recovered as:
+S = M−1( ˜S − n) ≈ M−1 ˜S (3)
+This approximation is valid when the magnitude of each
+component of ˜S(ti) significantly exceeds that of nj, i.e.,
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+0 100 200 300 400 500 600 700
+Pixel Positioin
+0
+2
+4
+6
+8Relative Standard Deviation (%)
+Fig. 6. Pixel value distributions. This illustrates the thermal noise in a static
+optical mouse, captured across all the 676 pixels. The y-axis represents the
+standard deviation of the pixel value relative to the maximum intensity value.
+˜S(ti) ≫ nj. This is typically reasonable when the loudspeaker
+is close to the mouse, thereby providing a high SNR. And we
+can estimate M by capturing the quiescent signal ˜S0 when the
+mouse is static before any eavesdropping begins:
+˜S0 = M · 1N + n ≈ [p1, p2, p3, . . . , pN ]T (4)
+where 1N is a vector of N ones, indicating no acoustic signals
+are present. M is a diagonal matrix thus M−1 is defined as:
+M−1 =
+
+
+1
+p1
+0 0 ··· 0
+0 1
+p2
+0 ··· 0
+0 0 1
+p3
+··· 0
+... ... ... ... ...
+0 0 0 ··· 1
+pN
+
+
+(5)
+The above framework describes how we deduce each pixel’s
+baseline intensity from the quiescent signal ˜S0, when the
+mouse remains stationary.
+Algorithm. The collected sequence of pixel values is first
+segmented into K blocks, denoted as {˜S1, ˜S2, . . . ,˜SK}. Each
+block contains N samples that correspond to the N pixels:
+˜Sk = [˜S(tkN+1), ˜S(tkN+2), . . . ,˜S(tkN+N )]T (6)
+where k ranges from 0 to K − 1. The recovery of the
+acoustic signal from these segments is then performed using
+the following steps:
+Sk ≈ M−1 ˜Sk
+= [
+˜S(tkN+1)
+p1
+,
+˜S(tkN+2)
+p2
+, . . . ,
+˜S(tkN+N )
+pN
+]T
+= ˜Sk ⊘ ˜S0
+(7)
+where ⊘ represents element-wise division. Concatenating
+these K reconstructed segments {S1, S2, S3, . . . , SK} allows
+the comprehensive recovery of the entire acoustic signal.
+C. Channel Characteristics
+Characteristic I: Thermal Noise . Economical image sen-
+sors often struggle with noise, a challenge evident in our
+experimental observations. We immobilized the mouse and
+analyzed the values of 26 × 26 pixel locations. The distribu-
+tions of their relative standard deviations (RSTD), which we
+define as the standard deviation normalized by the maximum
+intensity value (e.g., 127), are illustrated in Fig. 6. Among
+these 676 pixels, we noted a maximum RSTD of 7.24% and
+0 200 400 600 800 1000
+Frequency (Hz)
+0
+2
+4
+6
+8
+10
+12
+14
+Power Amplitude
+0.5 1 1.5
+Time(s)
+0   
+    
+200 
+    
+400 
+    
+600 
+    
+800 
+    
+1000
+Frequency (Hz)
+5.47
+142.3
+(b)(a)
+853.8 996.1
+ 
+ 
+5.47
+10.94
+16.41
+21.88
+49.23
+284.6
+426.9
+569.2 711.5
+27.35
+32.82
+38.29
+43.76
+Fig. 7. STFT and FFT result of the pixel stream captured without external
+sound stimulus
+an average RSTD of 1.19%. This is in stark contrast to the
+RSTD of 0.02% typically observed in standard CMOS sensors
+within smartphones [38]. Such pronounced noise level leads
+to inaccuracies in signal recovery as per Eqn. 3 due to the
+approximation assumption.
+Characteristic II: Inherent Harmonics . We analyze the
+time-frequency spectrum of the pixel stream captured from an
+optical mouse without external sound stimulus. We configured
+the Short-Time Fourier Transform (STFT) with a window
+size of 2048 and an overlap of 2032. Under no excitation
+conditions, we expect a uniform spectrum. However, the
+spectrum reveals the presence of many inherent harmonics, as
+illustrated in Fig. 7(a). To delve deeper, we show the spectrum
+across a single FFT window in Fig. 7(b). We identified two
+harmonics clusters, with their fundamental frequencies being
+5.47 Hz and 142.31 Hz, respectively. These harmonics stem
+from intensity offsets and non-uniform sampling within the
+device.
+One might be wondering how the inherent harmonics are
+generated. As shown in Fig. 5, the periodic reading of the
+same pixel location every NTf second, for instance, (17Tf +
+Tl) −(Tf + Tl) = 16Tf , generates a hidden periodic signal at
+the frequency of 1/16Tf . On the other hand, the line-by-line
+readout process results in the sampling of pixels on the ith line
+experiencing a delay of Tl seconds relative to the (i−1)th line.
+This delay introduces a new periodic signal in the spectrum
+with a 4Tf + Tl interval. Extending this principle to an image
+sensor with a
+√
+N ×
+√
+N pixel array, the inherent frequencies
+are derived as 1/(NTf ) and 1/(
+√
+NTf + Tl). In our case,
+N = 26, Tf = 1/3700 ≈ 270µs and Tl ≈ 7µs, we precisely
+calculate the inherent frequencies to be 5.47 Hz and 142.31
+Hz.
+D. Sound Enhancer
+The aforementioned characteristics of the acoustic-optical
+side channel make sound recovery through traditional signal
+processing techniques almost impractical. Inspired by recent
+work in band-split recurrent neural networks [24], [39], [40],
+we employ a specialized neural network to refine recovery
+quality through our naive algorithm. The neural network
+architecture is shown in Fig. 8(a), with its key components
+described below:
+(1) Preprocessing . Initially, the pixel stream is pro-
+cessed through the naive recovery algorithm. Then the time-
+domain acoustic signal is transformed into a complex-valued
+frequency-domain spectrogram via STFT. This spectrogram
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+Band 1
+Band 2
+Band K
+Band K-1
+Norm + FC
+Norm + FC
+Norm + FC
+Norm + FC
+Band 1
+Band 2
+Band K
+Band K-1
+Merge
+RNN (time)
+FC BiLSTM Norm
+RNN (frequency)
+Norm BiLSTM Norm
+Band 1
+Band 2
+Band K
+Band K-1
+Norm + FC
+Norm + FC
+Norm + FC
+Norm + FC
+Band 1
+Band 2
+Band K
+Band K-1
+Pixel Strem
+Recovered Audio
+Spectrogram
+Spectrogram
+Offsets
+Audio
+Sound Enhancer
+Band Spliter Band Spliter
+Band Spliter Band Spliter
+Sound 
+Enhancer ResNet-50
+Sound 
+Enhancer
+Pixel Strem
+Pixel Strem
+(Side Channel)
+Mic with Noisy 
+(Direct Channel)
+Joint Speech Reconstruction 
+Content Profiling
+(a) (b)
+(c)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Stack
+STFT
+ISTFT
+STFT
+STFT
+ISTFT
+STFT
+Fig. 8. Neural Network Architectures for Audio Processing. (a) Illustrates the neural network architecture designed for sound enhancement, detailing the
+layers and connections utilized. (b) Depicts the voice content profiling architecture, which integrates a sound enhancer followed by a Resnet-50 to categorize
+sound content. (c) shows the joint speech reconstruction architecture, which utilizes dual-channel information of pixel streams and low-SNR microphone
+recordings to recover high-quality speech.
+serves as the input for the sound enhancer, which includes
+both amplitude and phase information.
+(2) Band Splitter . The step aims to segment the input
+spectrogram into various spectral bands for better analysing.
+Given a complex-valued spectrogram X ∈ CF×T , it is
+segmented into K distinct frequency bands, denoted as
+{W1, W2, . . . , WK}, with each Wk ∈ CFk×T . Here, Fk
+denotes the specific frequency range of each band, and F is the
+total frequency span, i.e., F = PK
+k=1 Fk, while T signifies the
+temporal axis. The segmentation is executed using a non-linear
+approach: the frequency range 0 ∼1 kHz is segmented into ten
+segments of 100 Hz each, the frequency range 1 ∼2 kHz is
+divided into five segments of 200 Hz each, and the remaining
+range is divided into 400 Hz sub-bands. Subsequently, all
+the frequencies sub-band Wk are transformed into real-valued
+features Zk ∈ RN×T via layer normalization module (Norm)
+and fully connected (FC) layer, where N donates the feature
+dimension. The spectral features from all K bands are then
+integrated into a composite feature tensor Z ∈ RN×K×T .
+(3) Correlation via RNNs . To capture correlations within
+the time and frequency dimensions of the signal, we employ
+two distinct RNN modules. Initially, for time correlation, an
+RNN module processes the feature tensor Z along the time
+axis. Following this, a second RNN module does the same
+operation along the frequency axis. Despite their different
+targets, both RNN modules share a similar structure, beginning
+with a layer normalization, followed by a BiLSTM layer and
+a fully connected layer. A residual connection is also included
+to improve the gradient flow and the final output is represented
+as Q ∈ RN×K×T .
+(4) Signal Reconstruction . The processed real-valued ten-
+sor Q, rich with interleaved temporal and spectral infor-
+mation, is then reintroduced to the band-splitting process
+to be transformed back into a complex-valued spectrogram
+for reconstruction. Finally, the recovered time-domain audio
+signal could be generated through the Inverse STFT.
+(5) Loss . The network is optimized by minimizing a com-
+bined loss that incorporates both frequency-domain and time-
+(a)
+(b)
+(c)
+Speaker
+Hacked Mouse
+Captured Image 
+Stream
+ST-Link
+4 ports
+Logitech G402
+Fig. 9. Experimental Setup
+domain mean absolute error (MAE) as follows:
+Lloss = ∥X − X∥1 + ∥ISTFT(X) − ISTFT(X)∥1 (8)
+where X and X represent the spectra of the ground truth and
+predicted signals, respectively.
+V. M ICRO -BENCHMARK
+A. Implementation
+JerryAttack has been developed with a comprehensive suite
+of 2.1k lines, encompassing both C++ and Python code. A
+visual depiction of our experimental setup is presented in
+Fig. 9. Functionally, JerryAttack operates across both the client
+(optical mouse) and server environments.
+Attack Devices and Setup . For our attack methodology,
+we selected the Logitech G402 optical mouse [41] as our
+primary device. This technique is adaptable to any optical
+mouse equipped with an optical sensor with the ‘pixel grabber’
+register. On the client end, the G402 model integrates an
+STM32 microcontroller unit (MCU) with its optical sensor. To
+extract pixel values from the sensor, we modified the firmware
+within the MCU. In practice, we used an ST-Link for direct
+firmware injection through the connection pins to ensure the
+stability and convenience of the experiment. Notably, over-
+the-air updates, as discussed in II-B, are also feasible for our
+attack. On the server end, we use a Lenovo R7000P running
+Ubuntu 20.04 as the host system. Audio output was managed
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+Home Office Cafe
+Scenes (#)
+0
+5
+10
+15SNR (dB)
+NSR
+NER
+MBR
+Fig. 10. Quality vs Scenes
+10 20 30 40 50
+Distance (cm)
+0
+2
+4
+6
+8
+10SNR (dB) Fig. 11. Impact of Distance
+3.83 dB
+0 2 4 6 8 10
+SNR (dB)
+0
+0.2
+0.4
+0.6
+0.8
+1
+CDF Wood
+Steel
+Plastic
+Glass
+Concrete
+Rubber Fig. 12. Impact of Materials
+35 45 55 65 75 85
+Ambient Noise Level (dBA)
+4
+5
+6
+7
+8
+9
+10
+11SNR (dB) Fig. 13. Impact of Noise
+through an Adin speaker [42], which connects to the host
+via USB or Bluetooth. By default, the mouse was positioned
+close to the speaker, typically within a 20cm radius, to ensure
+optimal capture of audio-induced vibrations.
+Server Configuration: Our neural networks are trained on
+a high-performance server equipped with an Intel(R) Xeon(R)
+Gold 6348 CPU@2.60 GHz, 256 GB of RAM, and four
+NVIDIA 4090 GPUs, are tailored for demanding tasks such as
+signal enhancement, classification, and speech reconstruction.
+Audio data is segmented into 6-second clips with a sampling
+rate of 3.7 kHz for processing. We allocate 80% of these
+segments for training and 20% for validation and testing.
+Training employs the Adam optimizer and a cosine learning
+rate scheduler adjusting from 10−5 to 10−3. We use a batch
+size of 28 and run the dataset through 500 epochs, with a
+training time of approximately 12 hours per task.
+Experimental Setup We use the AudioMNIST dataset [43],
+a publicly available resource that includes 30,000 audio sam-
+ples of spoken digits (0-9) by 60 different speakers, for basic
+evaluation. The SNR is the primary criterion for sound quality,
+defined by the equation:
+SNR = 10 log10
+ |Sgt|2
+|Spt − Sgt|2
+
+(9)
+where Spt and Sgt represent the predicted and ground truth
+time-domain acoustic signals, respectively.
+B. Overall Sound Quality
+In this experiment, we captured sound across three distinct
+environments: an office, a home, and a caf ´e, with respective
+ambient noise levels of 35, 65, and 85 dBA. By default, the
+optical mouse was positioned 10 cm away from the speaker.
+We also recorded the sound using a conventional microphone
+to establish a comparison.
+Sound Quality across Scenes . Fig. 10 compares the
+sound quality outcomes from Naive Sound Recovery (NSR),
+Network Enhanced Recovery (NER), and Microphone-Based
+Recovery (MBR). Our analysis yields several key insights.
+Firstly, MBR achieved significantly higher SNRs in quiet
+environments like the home and office, registering mean SNRs
+of 13.41 dB and 12.09 dB, respectively. Conversely, in the
+noisier caf ´e setting, the SNR noticeably decreased to about
+7.72 dB. Secondly, the SNRs for NSR and NER remained
+more consistent (3.43 dB and 7.35 dB), showing resilience
+to ambient noise. This stability is attributed to the acoustic-
+optical channel’s unique ability to bypass background noise.
+Remarkably, the performance of NER in noisy conditions
+nearly matched that of the conventional microphone, validating
+the efficiency of JerryAttack. Thirdly, incorporating the sound
+enhancer led to an average SNR improvement of 3.92 dB,
+increasing from 3.43 dB to 7.35 dB. This demonstrates the
+power of neural networks to identify the patterns caused by
+the inherent harmonics and other flaws of the side channel.
+C. Versatility
+Table I details the specifications of optical mice examined
+in our study, featuring 9 models across 7 manufacturers. The
+optical sensors used in these models include the AM010,
+PMW3389, and various ADNS-series sensors. Notably, the
+‘pixel grabber’ register address may vary across different opti-
+cal sensors. Our experimental results confirm the effectiveness
+of JerryAttack on all tested devices, with frame rates ranging
+from 3 to 3.7 kHz, and the performance disparity remaining
+below 0.4 dB. This consistency underlines the adaptability
+and robustness of JerryAttack across a diverse array of optical
+mice.
+D. Impact Analysis
+(1) Impact of Distance : To assess the effectiveness of
+JerryAttack in relation to varying distances, we positioned the
+optical mouse at different proximities to the speaker, ranging
+from 5 cm to 50 cm in 5 cm increments. For each distance
+setting, 20 measurements were recorded. The resulting SNRs
+are depicted in Fig. 11. Notably, for distances less than 20cm,
+the SNR remains at a relatively high level ( >6 dB). But when
+the distance exceeds 20cm, the SNR drops rapidly until it
+reaches 0.44 dB at 50cm. This trend suggests that the success
+of such an eavesdropping attack is heavily dependent on the
+optical mouse being placed near the speaker.
+TABLE I
+EXPERIMENT DEVICES AND RESULTS
+Mfr. Model Sensor Addr. FPS SNR
+Logitech G402 AM010 0x0b 3700 7.32
+Logitech G100S AM010 0x0b 3700 7.21
+Logitech G302 AM010 0x0b 3700 7.29
+Razer DeathAdder Elite PMW3389 0x64 3600 7.31
+Madcatz RAT3 ADNS3090 0x40 3500 7.19
+Asus GT200 ADNS3050 0x0b 3000 7.03
+Zowie EC1 ADNS3060 0x40 3200 7.08
+Tucano Gamezone Toros ADNS3050 0x0b 3000 6.95
+CoolMaster Lite L Combo ADNS3050 0x0b 3000 6.98
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+# Gen. SNR (dB) Gen. (%) Ind. (%)
+1 6.54 68.67
+2 8.27 90
+3 7.05 75.33
+4 8.14 88.67
+5 7.31 82.12
+6 8.54 89.58
+7 7.3 79.33
+8 7.29 79.33
+9 7.59 87.2
+10 7.15 86.49
+11 7.57 82.91
+12 7.41 84.24
+13 6.95 78.91
+14 6.74 73.89
+15 8.45 89.87
+16 8.11 86.01
+MLS-Spanish
+M
+LibriSpeech-English
+M 98.07
+F 98.99
+98.81
+F 98.57
+# Gen. SNR (dB) Gen. (%) Ind. (%)
+17 7.9 88.34
+18 8.08 90.21
+19 8.4 87.9
+20 7.32 81.17
+21 6.97 81.17
+22 8.09 88
+23 8.37 90
+24 7.62 87.15
+25 7.79 87.4
+26 7.43 82.99
+27 7.45 87.02
+28 7.94 88.37
+29 7.88 86.96
+30 7.82 85.26
+31 8.32 87.97
+32 8.05 87.67
+MLS-French
+M 99.74
+F 99.86
+THCHS30-Chinese
+M 98.11
+F 100.00
+# Gen. SNR (dB) Gen. (%) Ind. (%)
+33 7.12 82.12
+34 7.6 87.15
+35 6.84 74.24
+36 8.16 86.03
+37 7.21 76.4
+38 7.53 84.92
+39 7.51 88.27
+40 7.4 82.26
+41 7.77 82.35
+42 7.29 79.49
+43 5.92 67.84
+44 7.5 81.03
+45 6.95 70
+46 8.25 85.99
+47 8.16 87.78
+48 7.63 83.33
+MLS-Italian
+M 99.72
+F 99.85
+MLS-German
+M 98.75
+F 98.64
+98.07
+98.99
+98.81
+98.57
+99.74
+99.86
+98.11
+100
+98.75
+98.64
+99.72
+99.85
+68.67
+90
+75.33
+88.67
+82.12
+89.58
+79.33
+79.33
+87.2
+86.49
+82.91
+84.24
+78.91
+73.89
+89.87
+86.01
+88.34
+90.21
+87.9
+81.17
+81.17
+88
+90
+87.15
+87.4
+82.99
+87.02
+88.37
+86.96
+85.26
+87.97
+87.67
+82.12
+87.15
+74.24
+86.03
+76.4
+84.92
+88.27
+82.26
+82.35
+79.49
+67.84
+81.03
+70
+85.99
+87.78
+83.33
+Fig. 14. Gender and Human Classification Result on Multilingual Datasets
+(2) Impact of Materials : In our exploration of the acoustic
+properties of various desktop materials using JerryAttack, we
+assessed the performance across six different surfaces: wood,
+steel, plastic, concrete, glass, and rubber. The results, displayed
+in Fig. 12, reveal significant variations in performance. Glass
+and rubber surfaces showed notably poor results, with a
+median SNR of only 2.56 and 2.81 dB respectively. This
+inefficiency of glass is attributed to its transparency, which
+allows light to pass through rather than reflect, effectively ren-
+dering optical mice non-functional on such surfaces. Rubber,
+known for its energy-absorbing properties, similarly impedes
+efficient sound recovery by dampening vibrations. Conversely,
+the remaining materials demonstrated comparably higher and
+consistent SNR values around 6.39 dB.
+(3) Impact of Background Noise : Finally, we assessed the
+impact of background noise as illustrated in Fig. 13. Consistent
+with previous findings, background noise had no discernible
+effect on the attack’s efficacy. This is because the vibrations
+detected by the mouse are transmitted through solid materials
+rather than air, rendering airborne noise irrelevant. This char-
+acteristic distinguishes JerryAttack from microphone-based
+eavesdropping, which is susceptible to interference from sound
+masking devices.
+VI. A TTACK SCENARIO I: VOICE PROFILING
+In this section, we detail an attack scenario where voice
+profiling is used to determine a victim’s sensitive properties
+through recovered audio. We deploy a ResNet [44] in conjunc-
+tion with the sound enhancer for classification, as depicted in
+Fig.8(b).
+(1) Gender Classification . We trained our network to
+identify the gender of speakers across multiple languages,
+including English, Spanish, French, Chinese, German, and
+Italian. The used speech data was selected from three pub-
+lic datasets, including ASR corpus [45] for English speech,
+THCHS-30 [46] for Chinese speech, and Multilingual Lib-
+riSpeech(MLS) [47] for another 4 languages. Results are
+presented in Fig 14. The overall accuracy achieved 99.13%,
+with the highest recorded accuracy reaching 100%.
+(2) Human Identification . We further leveraged the same
+dataset for individual identification, encompassing a cohort of
+48 distinct speakers. Each speaker contributed an average of
+379 training speech samples and 162 test speech samples. The
+specific data distribution is detailed in Fig 14. Our network was
+trained to discern the identity of speakers from these samples.
+0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+STOI
+0
+0.2
+0.4
+0.6
+0.8
+1
+CDF
+S+D(snr=7.1)
+S+D(snr=5.54)
+S+D(snr=4.83)
+S+D(snr=3.97)
+S+D(snr=3.41)
+S+D(snr=2.64)
+S Only
+Fig. 15. Intelligibility
+EN ES FR ZH DE IT
+0
+20
+40
+60
+80
+100Avg. Accuracy (%)
+7.1 4.83 3.97 3.41 Fig. 16. Speech2Text
+Consequently, we achieved an overall accuracy of 83.27%. The
+mean accuracies for identification across the six languages,
+English, Spanish, French, Chinese, German, and Italian, are
+reported as 81.37%, 83.59%, 86.22%, 86.48%, 83.01%, and
+79.2% respectively.
+VII. A TTACK SCENARIO II: S PEECH RECONST .
+While the recovered sound retains features recognizable
+by neural networks, it may not always be comprehensible to
+humans. To evaluate speech intelligibility, we use the Short-
+Time Objective Intelligibility (STOI) measure [48], which
+correlates the amplitude envelopes of clean and processed
+speech across various frequency bands to assess intelligibility.
+A. Speech Intelligibility
+The values of STOI range from 0 (completely unintelligible)
+to 1 (perfect intelligibility). Speech quality is categorized
+as ‘poor’ (below 0.5), ‘fair’ (0.5-0.6), ‘good’ (0.6-0.8), and
+‘excellent’ (above 0.8) based on the STOI scores, as illustrated
+by the 4 background colors in Fig. 15. Additionally, the figure
+shows the STOI distribution (depicted with a red dotted line) of
+speeches recovered only using the side channel information,
+predominantly falling in the ‘fair’ and ‘good’ quality. This
+limited intelligibility is largely attributed to some stubborn
+inherent harmonics in JerryAttack that are still difficult to
+filter out by neural networks.
+To improve intelligibility, we propose a joint attack that
+combines our side channel with a direct eavesdropping chan-
+nel, such as a microphone. In this scenario, the attacker
+strategically positions a microphone at a significant distance
+from the victim, potentially attaching it to an exterior wall or
+using a directional microphone array to capture sound from
+afar. Due to this distant placement, the SNR of the direct
+channel is often too low for effective speech reconstruction on
+its own. We concurrently capture the same speech through both
+the side and direct channels and then reconstruct the speech,
+as depicted in Fig. 8(c). This strategy leverages the strengths
+of two audio sources: the negligible internal harmonics of the
+direct channel and the robustness of the side channel to air-
+borne noise. By combining these advantages, it overcomes the
+limitations of each channel when used independently, resulting
+in accurate speech reconstruction that is even understandable
+by humans.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+B. Results
+(1) Speech Quality . To assess the reconstructed speech
+quality, we evaluated 300 speech samples from the previ-
+ously mentioned multilingual dataset using both the direct
+channel (D) and the side channel (S). The STOI distribution
+of the reconstructed results is illustrated in Fig. 15. Key
+insights include: Firstly, using the side channel alone, we
+achieved a median STOI of approximately 0.58, indicating
+“fair” intelligibility. Secondly, the direct channel provides an
+additional boost in intelligibility when the SNR exceeds 2.64
+dB, improving speech quality from ‘fair’ to ‘good’, even with
+a weak direct channel SNR of 3.97 dB. Generally, the direct
+channel increases STOI by 0.04 per 1 dB increment in SNR.
+Finally, when the SNR of the direct channel surpasses 5.54 dB,
+speech intelligibility has the probability of reaching ‘excellent’
+levels, marking a great enhancement in speech clarity.
+(2) Speech-to-Text Accuracy . We also used the Assem-
+blyAI Speech-to-Text Recognition API [49] to gauge the in-
+telligibility of the reconstructed speech indirectly. As depicted
+in Fig. 16, a similar trend emerges across different languages
+where a direct channel SNR of 7.1 dB helps achieve an average
+accuracy of up to 90%. Conversely, a 4.83 dB SNR yields an
+accuracy slightly above 60%, showcasing the positive impact
+of higher SNR levels on speech recognition accuracy.
+VIII. D EFENSE
+This section discusses various technical defence measures
+that can be employed to enhance security and mitigate the
+risks associated with eavesdropping.
+Measure I : The discovery that the ‘pixel grabber’ register
+within optical mice is primarily inactive during standard oper-
+ations suggests its original intent was for debugging and sensor
+integration testing. This feature, while seemingly innocuous,
+inadvertently presents a security loophole, effectively acting
+as a ‘backdoor’ for acoustic eavesdropping in our study.
+To mitigate this vulnerability, manufacturers should consider
+disabling or securely encapsulating this testing interface in
+commercial products to prevent unauthorized access and po-
+tential data breaches.
+Measure II : Employing anti-vibration materials on mouse
+pads or other surfaces can significantly reduce the transmission
+of sound to optical mice. This measure is particularly crucial in
+high-security areas to protect against acoustic eavesdropping
+by absorbing vibrations that could be maliciously analyzed.
+IX. R ELATED WORK
+The existing eavesdropping systems can be grouped into
+three categories:
+(1) Motion Sensor-based: Such attacks have been the sub-
+ject of extensive research in recent years [1]–[7]. Michalevsky
+et al. [1] introduced ‘Gyrophone,’ showing that smartphone
+gyroscopes could capture speech vibrations. Zhang et al. [2]
+developed ‘AccelWord,’ using accelerometers for voice recog-
+nition. Anand et al. [3] found that only speech generated
+by loud speakers significantly affects motion sensors. Hu et
+al. [4] introduced AccEar, which uses a cGAN to reconstruct
+audio from accelerometer signals, while Ba et al. [5] proposed
+AccelEve, a deep learning-based system for speech recognition
+from accelerometer data. Kwong et al. [6] demonstrated that
+mechanical components in hard drives can act as unintended
+microphones. Yao et al. [7] showed that accelerometers can
+even eavesdrop at 5 Hz sampling rates. A key limitation of
+these studies is that motion sensors typically operate at 100-
+500 Hz, while JerryAttack utilizes a mouse optical sensor
+with a sampling rate greater than 3 kHz, allowing for better
+eavesdropping quality.
+(2) Wireless Signal-based: Wireless signals have also been
+exploited by researchers for sound recovery [8]–[13]. Hu et
+al. [11] introduced mmEcho, which uses mmWave to measure
+vibrations for eavesdropping, while Hu et al. [10] developed
+MILLIEAR, which reconstructs audio from vibrations using
+generative models. Wei et al. [9] demonstrated acoustic eaves-
+dropping using WiFi signals, and Wang et al. [12] expanded
+eavesdropping through Impulse Radio Ultra-Wideband (IR-
+UWB) technology with their UWHear system. RFID-based
+methods have also been explored, with Wang et al. [13]
+showing how audio can be intercepted via RFID. However,
+these systems are often affected by environmental factors and
+require expensive equipment to send and receive signals like
+mmWave, limiting their practicality.
+(3) Visual Vibration-based: These methods have a signif-
+icant impact in this field due to their ability to achieve high-
+quality restoration effects [14]–[21]. Early work by Akutsu et
+al. [15] explored using visual data for audio recovery, with
+Mim et al. [17] applying optical flow to detect vibrations
+in video. A major breakthrough came with the Visual Mi-
+crophone concept by Davis et al. [18], which demonstrated
+sound recovery from object vibrations in video frames. Recent
+advances include the use of high-speed cameras to observe
+lamp lights [20] or shiny objects [21] for sound recovery.
+Although these methods offer high-quality sound restoration,
+they require a very expensive high-speed camera and precise
+calibration in advance, limiting practical use. In addition, the
+large size of the high-speed camera can easily alert the victim.
+X. C ONCLUSION
+In this work, we introduce a novel method to repurpose
+optical mice as acoustic eavesdropping devices by capturing
+vibrations with their optical sensors and converting them
+into audio signals. Our research highlights potential security
+vulnerabilities in everyday devices and emphasizes the need
+for more robust protective measures.
+ACKNOWLEDGEMENT
+This work is supported by the UGC/GRF program (No.
+15211024, 15215421), the Innovation and Technology Fund
+(GHP/079/22SZ,ITS/034/23FP), and Shenzhen Fundamental
+Research Scheme (No. JCYJ20230807140410022). We would
+like to express our gratitude to all the anonymous reviewers for
+their insightful comments and constructive suggestions, which
+have greatly contributed to improving the quality of the final
+version.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.
+REFERENCES
+[1] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” in Proc. of USENIX Security , 2014.
+[2] L. Zhang, P. H. Pathak, M. Wu, Y . Zhao, and P. Mohapatra, “Accelword:
+Energy efficient hotword detection through accelerometer,” in Proc. of
+ACM Mobisys, 2015, pp. 301–315.
+[3] S. A. Anand and N. Saxena, “Speechless: Analyzing the threat to speech
+privacy from smartphone motion sensors,” in Proc. of IEEE S&P, 2018.
+[4] P. Hu, H. Zhuang, P. S. Santhalingam, R. Spolaor, P. Pathak, G. Zhang,
+and X. Cheng, “Accear: Accelerometer acoustic eavesdropping with
+unconstrained vocabulary,” in Proc. of IEEE S&P . IEEE, 2022.
+[5] Z. Ba, T. Zheng, X. Zhang, Z. Qin, B. Li, X. Liu, and K. Ren, “Learning-
+based practical smartphone eavesdropping with built-in accelerometer.”
+in Proc. of NDSS , 2020.
+[6] A. Kwong, W. Xu, and K. Fu, “Hard drive of hearing: Disks that
+eavesdrop with a synthesized microphone,” in 2019 IEEE symposium
+on security and privacy (SP) , 2019.
+[7] Q. Yao, Y . Liu, X. Sun, X. Dong, X. Ji, and J. Ma, “Watch the rhythm:
+Breaking privacy with accelerometer at the extremely-low sampling rate
+of 5hz,” in Proc. of ACM CCS , 2024.
+[8] T. Ni, G. Lan, J. Wang, Q. Zhao, and W. Xu, “Eavesdropping mobile
+app activity via radio-frequency energy harvesting,” in Proc. of USENIX
+Security, 2022.
+[9] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” in Proc. of ACM MobiCom , 2015.
+[10] P. Hu, Y . Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng,
+“Milliear: Millimeter-wave acoustic eavesdropping with unconstrained
+vocabulary,” in Proc. of IEEE INFOCOM , 2022.
+[11] P. Hu, W. Li, R. Spolaor, and X. Cheng, “mmecho: A mmwave-based
+acoustic eavesdropping method,” in Proc. of the ACM Turing Award
+Celebration Conference-China, 2023.
+[12] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava,
+“Uwhear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” in Proc. of SenSys , 2020.
+[13] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-
+mm level vibration,” Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+[14] Y . Long, P. Naghavi, B. Kojusner, K. Butler, S. Rampazzi, and K. Fu,
+“Side eye: Characterizing the limits of pov acoustic eavesdropping from
+smartphone cameras with rolling shutters and movable lenses,” in Proc.
+of IEEE S&P , 2023, pp. 1857–1874.
+[15] M. Akutsu, Y . Oikawa, and Y . Yamasaki, “Extract voice information
+using high-speed camera,” in Proc. of Meetings on Acoustics , 2013.
+[16] Y . Fuse, Y . Yasumi, and T. Takiguchi, “Sound recovery using vibration
+modes of the object in a video,” in Proc. of APSIPA ASC. IEEE, 2018.
+[17] K. Z. Mim, A. A. Miah, and M. Ahmad, “Extraction of sound signal
+from tiny vibrations in motion magnified video using optical flow,” in
+Proc.of IEEE IC4ME2 , 2019.
+[18] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and
+W. T. Freeman, “The visual microphone: Passive recovery of sound
+from video,” ACM Transactions on Graphics , 2014.
+[19] M. Sheinin, D. Chan, M. O’Toole, and S. G. Narasimhan, “Dual-shutter
+optical vibration sensing,” in Proc. of IEEE/CVF CVPR , 2022.
+[20] B. Nassi, Y . Pirutin, R. Swisa, A. Shamir, Y . Elovici, and B. Zadov,
+“Lamphone: Passive sound recovery from a desk lamp’s light bulb
+vibrations,” in Proc. of USENIX Security , 2022.
+[21] B. Nassi, R. Swissa, J. Shams, B. Zadov, and Y . Elovici, “The little
+seal bug: Optical sound recovery from lightweight reflective objects,” in
+2023 IEEE SPW , 2023.
+[22] J. C. Catford, A practical introduction to phonetics . Oxford University
+Press, 2001.
+[23] A. Technologies, “Adns-3050 optical mouse sensor datasheet,”
+https://www.mouser.com/datasheet/2/678/avagotechnologies
+ADNS-3050-1217285.pdf.
+[24] J. Yu and Y . Luo, “Efficient monaural speech enhancement with univer-
+sal sample rate band-split rnn,” in Proc. of IEEE ICASSP , 2023.
+[25] J. Bauwens, P. Ruckebusch, S. Giannoulis, I. Moerman, and
+E. De Poorter, “Over-the-air software updates in the internet of things:
+An overview of key principles,” IEEE Communications Magazine, 2020.
+[26] A. Cui, M. Costello, and S. Stolfo, “When firmware modifications attack:
+A case study of embedded exploitation,” in Proc. of NDSS , 2013.
+[27] M. Sutton, “Corporate espionage for dummies: The hidden threat of
+embedded web servers,” Black Hat USA , 2011.
+[28] J. Maskiewicz, B. Ellis, J. Mouradian, and H. Shacham, “Mouse trap:
+Exploiting firmware updates in {USB} peripherals,” in Proc. of USENIX
+WOOT, 2014.
+[29] “Logitech mx master 3s,” https://www.logitech.com/en-us/products/
+mice/mx-master-3s.910-006557.html, 2025.
+[30] D. Dai, Z. An, and L. Yang, “Inducing wireless chargers to voice out
+for inaudible command attacks,” in Proc. of IEEE S&P) , 2023.
+[31] C. Wang, F. Lin, H. Yan, T. Wu, W. Xu, and K. Ren, “ {VibSpeech}:
+Exploring practical wideband eavesdropping via bandlimited signal of
+vibration-based side channel,” in Proc. of USENIX Security) , 2024.
+[32] S. A. Anand, C. Wang, J. Liu, N. Saxena, and Y . Chen, “Spearphone:
+a lightweight speech privacy exploit via accelerometer-sensed reverber-
+ations from smartphone loudspeakers,” in Proc. of ACM WiSec , 2021.
+[33] “sensors,” https://sensor.fyi/sensors/, 2024.
+[34] “pmw3320-am010-hacking,” https://www.overclock.net/threads/
+pmw3320-am010-hacking.1587477/page-2, 2024.
+[35] M. Specs, “Flawless mouse sensors,” https://mousespecs.org/sensors/,
+2024.
+[36] J. Mandel and L. Brun, Mechanical waves in solids . Springer, 2014,
+vol. 222.
+[37] WOLFRAM, “Built to last: Understanding earth-
+quake engineering,” https://blog.wolfram.com/2011/03/18/
+built-to-last-understanding-earthquake-engineering/, 2011.
+[38] A. Foi, S. Alenius, V . Katkovnik, and K. Egiazarian, “Noise measure-
+ment for raw-data of digital imaging sensors by automatic segmentation
+of nonuniform targets,” IEEE Sensors Journal, vol. 7, no. 10, pp. 1456–
+1461, 2007.
+[39] Y . Luo and J. Yu, “Music source separation with band-split rnn,”
+IEEE/ACM Transactions on Audio, Speech, and Language Processing ,
+2023.
+[40] J. Yu, Y . Luo, H. Chen, R. Gu, and C. Weng, “High fidelity speech
+enhancement with band-split rnn,” arXiv preprint arXiv:2212.00406 ,
+2022.
+[41] “Logitech G402 Hyperion Fury FPS Gaming Mouse,”
+https://www.logitechg.com/en-hk/products/gaming-mice/
+g402-hyperion-fury-fps-gaming-mouse.910-004070.html, 2014.
+[42] “Adin Speaker,” https://www.aliexpress.com/item/1005002224994045.
+html, 2023.
+[43] S. Becker, J. Vielhaben, M. Ackermann, K.-R. M ¨uller, S. Lapuschkin,
+and W. Samek, “Audiomnist: Exploring explainable artificial intelligence
+for audio analysis on a simple benchmark,” Journal of the Franklin
+Institute, vol. 361, no. 1, pp. 418–428, 2024.
+[44] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for image
+recognition,” in Proc. of IEEE/CVF CVPR , 2016.
+[45] V . Panayotov, G. Chen, D. Povey, and S. Khudanpur, “Librispeech: an
+asr corpus based on public domain audio books,” in Proc. of IEEE
+ICASSP, 2015.
+[46] D. Wang and X. Zhang, “Thchs-30: A free chinese speech corpus,”
+arXiv:1512.01882, 2015.
+[47] V . Pratap, Q. Xu, A. Sriram, G. Synnaeve, and R. Collobert, “Mls:
+A large-scale multilingual dataset for speech research,” ArXiv, vol.
+abs/2012.03411, 2020.
+[48] C. H. Taal, R. C. Hendriks, R. Heusdens, and J. Jensen, “A short-
+time objective intelligibility measure for time-frequency weighted noisy
+speech,” in Proc. of IEEE ICASSP , 2010.
+[49] “Speech-to-text,” https://www.assemblyai.com/products/speech-to-text,
+2023.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:01:45 UTC from IEEE Xplore.  Restrictions apply.

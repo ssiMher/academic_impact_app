@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "For instance, Wang et al. [12] utilized radio-frequency identification (RFID) to receive the speaker\u2019s vibration signal in the environment.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The context groups Wang et al. [12] with other passive sensing methods as an example of using RFID for vibration sensing. The mention is brief and part of a related work survey, with no detailed evaluation or capability claim. It is classified as representative_work because it positions the cited paper as an example of a method category, but attribution uncertainty exists due to the grouped citation structure.",
+      "highlight_keywords": ["Wang et al.", "[12]", "RFID", "speaker's vibration signal"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID and vibration sensing but does not explicitly state sub-mm or millimeter-level precision. It is a plain related work mention, not providing evidence of sub-mm capability. Thus, template 73 is not satisfied because the required patterns for sub-mm precision are absent.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit sub-mm or millimeter-level wording; context only states RFID used to receive vibration signal without precision claim."
+    }
+  ]
+}

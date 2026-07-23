@@ -1,0 +1,64 @@
+{
+  "findings": [
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "However, the widespread adoption of low-cost RFID tags and the richness of their sensing capabilities, particularly their through-wall sensing ability, render non-negligible privacy concerns [13–15]. Numerous studies have shown successful attempts in through-wall human motion [3–5] and speech eavesdropping [15–18] via RFID tags for adversarial uses.",
+      "reasoning": "The citation groups target paper [15] with others as examples of through-wall speech eavesdropping via RFID. It acknowledges the feasibility of such attacks but does not single out the target's sub-mm vibration capability. The evidence is representative of a class of works rather than a detailed attribution.",
+      "keywords": [
+        "through-wall",
+        "speech eavesdropping",
+        "RFID tags"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "In addition, researchers have demonstrated the feasibility of using commodity RFID devices for through-wall eavesdropping [15, 17].",
+      "reasoning": "This sentence in the Related Work section positions target paper [15] as evidence for the feasibility of through-wall eavesdropping via RFID. It does not specify the sub-mm level vibration or provide detailed evaluation, so it functions as background context.",
+      "keywords": [
+        "through-wall eavesdropping",
+        "commodity RFID",
+        "feasibility"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "However, the widespread adoption of low-cost RFID tags and the richness of their sensing capabilities, particularly their through-wall sensing ability, render non-negligible privacy concerns [13–15]. Numerous studies have shown successful a...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[15]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The citation groups target paper [15] with others as examples of through-wall speech eavesdropping via RFID. It acknowledges the feasibility of such attacks but does not single out the target's sub-mm vibration capability. The evidence is representative of a class of works rather than a detailed attribution.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "In addition, researchers have demonstrated the feasibility of using commodity RFID devices for through-wall eavesdropping [15, 17].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[15]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This sentence in the Related Work section positions target paper [15] as evidence for the feasibility of through-wall eavesdropping via RFID. It does not specify the sub-mm level vibration or provide detailed evaluation, so it functions as background context.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "RFID-based solutions [11], [12], which are long-wavelength wireless systems, have a restricted sensitivity to vibrations.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper mentions RFID-based solutions in a grouped citation [11], [12] as part of a paragraph discussing limitations of prior art. It characterizes RFID as having restricted sensitivity to vibrations due to long wavelength. This is a general background statement, not specifically attributing any capability to the target paper. However, since the target reference marker appears in the grouped citation, it is included as grouped_citation with attribution uncertainty.",
+      "highlight_keywords": ["RFID-based solutions", "long-wavelength", "restricted sensitivity", "vibrations"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID and vibration sensitivity, but does not explicitly confirm sub-mm capability; it only states restricted sensitivity. Thus it does not satisfy the strict sub-mm precision requirement, but is related to RFID vibration sensing.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit sub-mm or millimeter-level precision claim in body text; only a general limitation statement."
+    }
+  ]
+}

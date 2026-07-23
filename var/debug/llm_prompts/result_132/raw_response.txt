@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "evidence_type": "method_foundation",
+      "stance": "negative",
+      "mention_type": "explicit_target",
+      "reasoning": "The citing paper explicitly cites [44] to acknowledge that RFID can measure loudspeaker vibration (sub-mm level), but uses this as a negative comparison to argue that RFID cannot achieve mm-level tracking accuracy for handwriting due to long wavelength. This directly acknowledges the target's capability (sub-mm vibration sensing) while positioning it as unsuitable for the citing paper's task.",
+      "highlight_keywords": ["vibration pattern", "loudspeaker", "mm-level", "RFID", "long wavelength"],
+      "keep": true
+    },
+    {
+      "citation_text": "Tadar [59] and RF-HMS [51] demonstrated their capabilities of tracking human moving directions through walls using an array of RFID tags. However, the tracking error in these systems is around 10 cm, indicating their incapability of tracking mm-level hand movements. RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "reasoning": "The citation is part of a related work paragraph that discusses limitations of RFID for mm-level tracking. While the target's capability (measuring loudspeaker vibration) is mentioned, it is used to contrast with the citing paper's approach. The evaluation is negative regarding suitability for mm-level tracking, but this is a functional limitation claim, not a criticism of the target's method.",
+      "highlight_keywords": ["vibration pattern", "loudspeaker", "mm-level", "RFID", "long wavelength"],
+      "keep": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}创建普通论文分析{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">普通论文分析</div>
+      <h1>创建普通论文分析</h1>
+      <p>输入目标论文标题或 DOI，后续可发现引用论文、上传 PDF、抽取文本并生成强证据。</p>
+    </div>
+  </header>
+  <section class="card">
+    <form action="/paper-sessions" method="post" class="inline-form">
+      <label class="form-label" for="query_text">目标论文 Query</label>
+      <input class="form-control" id="query_text" name="query_text" type="text" required>
+      <label class="form-label" for="query_kind">Query 类型</label>
+      <select class="form-control" id="query_kind" name="query_kind">
+        <option value="title" {% if query_kind == "title" %}selected{% endif %}>标题</option>
+        <option value="doi">DOI</option>
+      </select>
+      <button class="button button-primary" type="submit">创建会话</button>
+    </form>
+  </section>
+{% endblock %}

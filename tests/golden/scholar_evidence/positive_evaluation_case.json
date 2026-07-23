@@ -1,0 +1,32 @@
+{
+  "name": "positive_evaluation_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Independent Positive Evaluation",
+    "authors": ["Lin Chen"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "Cited Scholar Paper provides a method foundation and strong citation evidence for robust academic impact analysis."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "method_foundation",
+        "stance": "positive",
+        "mention_type": "strong",
+        "citation_text": "Cited Scholar Paper provides a method foundation and strong citation evidence for robust academic impact analysis.",
+        "reasoning": "The citing paper positively evaluates the target as a methodological foundation.",
+        "keywords": ["method foundation", "citation evidence"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": ["method_foundation"],
+    "keep": true,
+    "evidence_strength": "strong",
+    "highlight_keywords": ["method foundation", "citation evidence"],
+    "must_not_miss": true
+  }
+}

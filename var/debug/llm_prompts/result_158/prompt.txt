@@ -1,0 +1,1270 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: mmOrbit: Micrometer-Level Vibration and Rotor Orbit Measurement via Synchronized Dual mmWave Radars
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [19]
+TARGET_REFERENCE_ENTRY: [19] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,”Proc. ACM Interactive, Mobile,
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=The works mentioned above are dedicated to analyzing the; context_type=formula_nearby; contains_formula=True
+peaker’s sound by inspecting the subtle disturbance
+caused by their vibrations on the WiFi radio signals. The ART
+algorithm has limited anti-interference capability and is ineffec-
+tive in eliminating the disturbances when moving object is close
+to the speaker or WiFi device (within 40 cm).
+B. Micro-Displacement Measurement
+The works mentioned above are dedicated to analyzing the
+frequency of mechanical vibration. Displacement is also an
+essential parameter of mechanical vibration. However, in the
+scenario of micron mechanical vibration, the accuracy of longer
+wavelength RF signals (e.g., RFID[19],W i F i[20]) is limited.
+The mmWave is a better choice for micro-vibration scenarios
+with its smaller wavelength. Jiang et al. [21] used 77 GHz
+mmWave radar to detect tiny displacements around 100μm
+with an error of only 3.4μm. The mmWave radar is usually
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+MAO et al.: mmORBIT: MICROMETER-LEVEL VIBRATION AND ROTOR ORBIT MEASUREMENT VIA SYNCHRONIZED DUAL mmW A VE RADARS 12347
+Fig. 2. Schematic of FMCW radar-based micro-displacement sensing.
+considered a 1D dis
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。
+- 首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。
+FULL_EXTRACTED_TEXT:
+IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025 12345
+mmOrbit: Micrometer-Level Vibration and Rotor
+Orbit Measurement via Synchronized Dual
+mmWave Radars
+Changlin Mao, Yingxiao Wu , Member, IEEE, Haocheng Ni , and Jianpin Han
+Abstract—In this paper, we introduce mmOrbit, a mmWave-
+based rotor orbit measurement system that can estimate rotor orbit
+by analyzing machinery surface vibration. To measure the 2D rotor
+orbit, two synchronized mmWave radars are deployed to build the
+orbit from different viewpoints. The existing literature shows that
+the micro-displacement measurement accuracy of mmWave radar
+is not enough to meet the application requirements of micron-level
+resolution without appropriate ﬁne-gained processing methods.
+Therefore, we propose a three-step vibration displacement extrac-
+tion algorithm with sliding table to extract mechanical vibration
+micro-displacement and increase measurement precision. Accurate
+mechanical vibration displacements in two vertical directions are
+used to estimate the 2D rotor orbit. Our extensive experiments
+indicate that mmOrbit can accurately measure mechanical vibra-
+tion micro-displacement with an error of 4.4 µmf o rt h e 80th
+percentile. Furthermore, mmOrbit can estimate 2D rotor orbit with
+high precision, showing an orbit eccentricity error of 7%, an orbit
+direction error of 7◦, and a disjoint area proportion of 17% for the
+80th percentile. The imbalance detection experiment veriﬁes the
+accuracy and dependability of our measured rotor orbit.
+Index Terms—mmWave, micro displacement sensing, rotor orbit
+measurement, DC offset.
+I. INTRODUCTION
+R
+otating machinery is a precision mechanical device that
+achieves processing, transmission, or other functionalities
+through rotational motion. Its extensive applications span indus-
+trial manufacturing, power generation, marine, and aerospace
+domains. Rotating machinery comprises a rotor system, which
+is responsible for rotation, and a stationary stator system. During
+operation, the rotor system encounters issues such as wear and
+loosening, resulting in rotor imbalance. The rotor imbalance
+is detrimental to stability, operational efﬁciency, and lifespan.
+Therefore, rotor imbalance diagnosis is important to improve
+the efﬁciency and extend the service life of the machinery. Rotor
+imbalance is attributed to various factors, such as uneven density
+Received 19 December 2024; revised 19 June 2025; accepted 20 June 2025.
+Date of publication 23 June 2025; date of current version 3 October 2025.
+This work was supported in part by the General Scientiﬁc Research Projects of
+Zhejiang Provincial Department of Education under Grant Y202249767 and in
+part by the Zhejiang Provincial Natural Science Foundation of China under Grant
+LY23F010009. Recommended for acceptance by F. Restuccia.(Corresponding
+author: Yingxiao Wu.)
+The authors are with the College of Computer Science and Technology,
+Hangzhou Dianzi University, Hangzhou 310018, China (e-mail: mao.cl.aleen@
+gmail.com; wuyingxiao@hdu.edu.cn; ni_haocheng@hdu.edu.cn; hanjp@hdu.
+edu.cn).
+Digital Object Identiﬁer 10.1109/TMC.2025.3582545
+material, manufacturing tolerances, and wear and aging of the
+rotor during operation. Given the inevitability of these factors,
+it is crucial to identify the operating condition of machinery.
+The primary step in detecting rotor imbalance faults is to
+collect vibration data. Vibration data is collected by deploying
+vibration sensors on rotating machinery. These vibration sensors
+collect vibration parameters, including acceleration[1], veloc-
+ity [2] and displacement[3], [4], when the equipment operates.
+These vibration parameters need to be further extracted features
+to characterize the machinery’s operating state. The extracted
+vibration features have become a bottleneck for identifying the
+early fault of rotor imbalance due to the inherent shortcomings of
+these vibration parameters, such as the neglect of phase informa-
+tion and lack of kinematic information. To break the bottleneck,
+other feature sources are required to supplement or even replace
+the vibration features. The rotor orbit is a promising alternative
+feature sources, which is a 2D representation of the rotor’s radial
+motion, constructed by synthesizing the multi-directional radial
+displacement of the rotor. The rotor orbit provides a snapshot
+of the dynamic motion of the rotor center, which contains both
+critical phase and kinematic information, making it a powerful
+feature for identifying imbalance faults[5], [6].
+A traditional method of measuring rotor orbit is to de-
+ploy displacement sensors [7] along two rotor axes. How-
+ever, the specialized displacement sensors require invasive
+deployment, resulting in high deployment and maintenance
+costs. A non-invasive alternative is to use mmWave radar in-
+stead. The mmWave-based wireless sensing has made tremen-
+dous progress over the past decade. In comparison to tra-
+ditional sensors (i.e., Piezoelectric accelerometer [8], veloc-
+ity transducers [9]), mmWave-based wireless sensing is non-
+intrusive, cost-effective and unaffected by ambient light con-
+ditions. The mmWave naturally supports much more ﬁne-
+grained sensing, compared with other wireless technologies
+(i.e., RFID [10],W i F i[11],U W B[12]). The high frequency
+and wide bandwidth of mmWave radar allow it to achieve
+sub-millimeter sensitivity and centimeter resolution, making it a
+highly sought-after technology for industrial[13], medical[14],
+[15] and security applications [16]. However, in a micron-
+level vibration scenario, mmWave-based micro-displacement
+and rotor orbit measurements encounter several challenges as
+follows:
+2D vibration information acquisition:To measure the rotor
+orbit, we need to collect 2D mechanical vibration information.
+1536-1233 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and similar technologies.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+12346 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025
+Fig. 1. mmOrbit measures rotor orbit by mmWave radar and applies it to
+downstream tasks.
+However, mmWave radar, which relies on wave reﬂection for
+vibration detection, typically provides only 1D vibration data.
+Therefore, our primary challenge is to design a new data acqui-
+sition system to collect the mechanical vibration information of
+two linearly independent one-dimensional subspaces.
+Micro displacement measurement:This paper used a minia-
+ture centrifuge as the detection object, which operated with an
+displacement of 8 to 60μm. These vibrations are weak and
+susceptible to external disturbances of uncertain noise. It is a
+challenging technical task to measure displacements from weak
+vibrations.
+In this paper, we propose mmOrbit, a two synchronous
+mmWave-based micron-level vibration and rotor orbit measure-
+ment system, as shown in Fig.1. mmOrbit measures the micron-
+level rotor orbit of rotating machinery using two synchronized
+mmWave radars. Our contributions can be summarized as fol-
+lows:
+r We propose a robust mmWave-based rotor orbit measure-
+ment system, named mmOrbit, which utilizes two synchro-
+nized off-the-shelf mmWave radars to accurately extract
+micro-displacement of rotating machinery and reconstruct
+these micro-displacement into a rotor orbit.
+r We develop a new synchronized data acquisition system to
+measure rotor orbit. The system consists of two synchro-
+nized mmWave radars and sliding table. A radar synchro-
+nisation device controls two mmWave radars to acquire
+2D mechanical vibration information. The sliding table
+increases the relative displacement between the radars and
+the machinery to compensate for the DC offset.
+r A novel vibration displacement extraction algorithm is pro-
+posed for sliding table application scenarios. Our proposed
+vibration displacement extraction algorithm extracts me-
+chanical micro-displacement components from large-scale
+relative displacement.
+r We implement the prototype of mmOrbit with commercial
+mmWave radar and evaluate its performance under vari-
+ous conditions. The experimental results demonstrate that
+mmOrbit accurately measures mechanical vibration micro-
+displacement with an80th percentile micro-displacement
+e r r o ro f4 . 4μm. Additionally, mmOrbit can estimate rotor
+orbit comparable to high-precision laser sensors, and the
+measured rotor orbit can effectively determine mechanical
+imbalanced state.
+The rest of this paper is organized as follows. SectionII
+provides the excellent related work. Our technical principles
+and methods related to micro-displacement measurement are
+presented in SectionIII. The system overview of mmOrbit is
+shown in SectionIV. We evaluate the performance of mmOrbit
+in SectionV. We then discuss the advantages and limitations of
+mmOrbit in SectionVI. Finally, we summarise the work of this
+paper in SectionVII.
+II. RELATED WORK
+In this section, we review the outstanding work related to
+RF-based vibration sensing in terms of mechanical vibration
+sensing and micro-motion measurement.
+A. Mechanical Vibration Sensing
+Recently, several works have been proposed to utilize mature
+RF technology for industrial machinery vibration sensing, such
+as RFID, WiFi, and radar. TagSound[17] is a vibration sensing
+system based on RFID that detected harmonic backscatter from
+tags to recover high-frequency (2500 Hz) and tiny mechanical
+vibration (2 mm) accurately. However, the tags used in RFID
+need to be close to the vibration source (less than 0.5 m), making
+them challenging to deploy and potentially unsafe for vibrating
+equipment. WiFi is a pervasive networking device in life, and
+its ease of deployment and low cost have led researchers to
+investigate its feasibility for vibration sensing. Wei et al.[18]
+utilized an acoustic-radio transformation (ART) algorithm to
+recover the speaker’s sound by inspecting the subtle disturbance
+caused by their vibrations on the WiFi radio signals. The ART
+algorithm has limited anti-interference capability and is ineffec-
+tive in eliminating the disturbances when moving object is close
+to the speaker or WiFi device (within 40 cm).
+B. Micro-Displacement Measurement
+The works mentioned above are dedicated to analyzing the
+frequency of mechanical vibration. Displacement is also an
+essential parameter of mechanical vibration. However, in the
+scenario of micron mechanical vibration, the accuracy of longer
+wavelength RF signals (e.g., RFID[19],W i F i[20]) is limited.
+The mmWave is a better choice for micro-vibration scenarios
+with its smaller wavelength. Jiang et al. [21] used 77 GHz
+mmWave radar to detect tiny displacements around 100μm
+with an error of only 3.4μm. The mmWave radar is usually
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+MAO et al.: mmORBIT: MICROMETER-LEVEL VIBRATION AND ROTOR ORBIT MEASUREMENT VIA SYNCHRONIZED DUAL mmW A VE RADARS 12347
+Fig. 2. Schematic of FMCW radar-based micro-displacement sensing.
+considered a 1D displacement detector in micro-motion detec-
+tion. Guo et al.[22] attempted to extend the ﬁeld of view of
+mmWave radar from 1D to 2D. They applied the multipath re-
+ﬂection principle of RF signals to receive the line-of-sight (LOS)
+and non-line-of-sight (NLOS) vibrations from rotating machin-
+ery and ﬁt them all to the rotor orbit. However, this method
+relies on a large ﬂat reﬂecting surface (e.g., wall and ﬂoor)
+close to the rotating equipment, making it overly restrictive.
+According to the described limitations, our approach employs
+two mmWave radars to build a 2D vibration perception model of
+a rotating machine, each of which provides mechanical vibration
+information in one-dimensional subspace. In the face of more
+reﬁned vibration displacements (below 60μm), we introduce
+sliding table to improve the accuracy of micro-displacement
+detection.
+III. PRELIMINARIES
+In this section, we introduce the related technical background.
+First, the micro-displacement sensing technology based on
+FMCW radar is elaborated. After, we’ll go over a direction of
+arrival (DOA) estimation method for reﬂection target orienta-
+tion analysis. Finally, we discuss the challenge of DC offset
+encountered in micro-displacement measurement.
+A. Micro-Displacement Sensing Based on FMCW Radar
+FMCW radar extracts micro displacement information by
+analyzing the signals reﬂected from the surface of the observed
+object. The vibration of the observed object’s surface changes
+the propagation path of the radar echoes, which causes a phase
+change. The principle of FMCW-based vibration detection is
+described in Fig.2.
+To brieﬂy describe the principle of FMCW-based vibration
+detection, we assume that there is only one reﬂected object in the
+environment. The distance of this vibrating reﬂected relative to
+the radar isd. The internal behavior of radar RF front-end can be
+described as three stages[15]: transmitting and receiving chirp,
+hybrid frequency, and low-pass ﬁltering, and ADC sampling.
+The transmitted chirp T(t) and received chirp R(t) can be
+expressed as:
+T(t)=c o s ( 2πf0t+ πSt2) (1)
+R(t)= cos
+(
+2πf0
+(
+t−2d+d(t)
+c
+)
++πS
+(
+t−2d+d(t)
+c
+)2)
+(2)
+where f0 denotes the starting frequency of the chirp,c means
+the speed of radio wave propagation in the air,S is the chirp
+slope, d(t) stands for the object’s micro-displacement, andtd =
+2d+d(t)
+c is the receiving delay time of the echo signal. Then,
+a mixer eliminates the carrier wave in the received signal and
+uses a low-pass ﬁlter(LPF) to obtain the so-called intermediate
+frequency (IF) signal. The IF signal needs ADC sampling for
+digital signal processing. The IF signal can be expressed as[23]:
+IF(t)= T(t)
+⨂
+R(t)
+=c o s
+⎛
+⎜⎜⎝2π 2Sd
+c
+f
+t+ 4π(d+ d(t))
+λ  
+ψ(t)
++4 πSd(t)t
+c −4πS
+(d+ d(t)
+c
+)2
+⎞
+⎟⎟⎠
+≈ cos (2πft + ψ(t)) (3)
+where f = 2S
+c dis the frequency of the IF signal, which is propor-
+tional tod, λ = f0
+c is the signal wavelength, andψ(t) denotes the
+phase of the IF signal associated with micro-displacement. Since
+the third term,4πSd(t)t
+c , is extremely small (about106 order) in
+the practical scenario, it is negligible in practical calculations.
+In general,t =1 μs, andd(t) is in mm or um, so4πS(d+d(t)
+c )2
+can be ignored[24].
+When the position of the targetd is ﬁxed, the relative phase
+change over slow time ψ(t) is only dependent on d(t), i.e.,
+ψ(t) ∝ d(t). Therefore, we can detect a continuous target’s
+micro-displacement d(t) by continuously extractingψ(t) from
+the IF signal, i.e.
+d(t)= λ
+4πψ(t) (4)
+The Fast Fourier Transform (FFT) algorithm can analyze
+the f of the IF signal and the corresponding ψ(t). Since f
+is proportional to d, each peak of the FFT spectrum can be
+considered a potential reﬂection object, i.e., the FFT algorithm
+maps the distance of the reﬂection objects to the frequency. In
+Fig. 2, there is only one peak in the FFT spectrum (corresponding
+to one reﬂection object). Therefore, we perceive thed(t) by
+extracting theψ(t) of its peak using FFT.
+B. DOA Estimation
+In the previous subsection, we used the FFT algorithm to
+locate reﬂection objects and extract micro-displacement infor-
+mation. However, in intricate settings, the radar echoes received
+from various angles at the same distance will overlap, resulting
+in multiple detected objects being situated at a single peak. To
+address this issue, the DOA estimation algorithm is utilized to
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+12348 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025
+Fig. 3. The power spectrum P when θ =[ −60◦,60◦].
+analyze the direction of the echo signal. In this paper, we use the
+Capon algorithm for DOA analysis. The Capon algorithm[25],
+[26], also known as the minimum variance distortionless re-
+sponse (MVDR) algorithm, is a signal processing algorithm
+used for DOA estimation. The Capon algorithm utilizes the
+covariance matrix of the received signal. It applies a weighting
+function to each array element to achieve a spatial ﬁlter that
+enhances the movement of interest and suppresses interference
+and noise.
+Suppose the received signal isx = {x1,x2,...,x T} and the
+weighted received signal isy = wHx. WhereT is the number
+of antennas in a uniform linear array andwis the antenna weight
+vector. For target directionθd, the optimization objective of the
+Capon algorithm can be formulated as follows:
+{
+min
+w
+P =m i n
+w
+E[yyH]=m i n
+w
+wHRw
+wHa(θd)=1 (5)
+where E[·] represents expectation operation, (·)H is the Her-
+mitian transpose operation andR = xxH. Solving(5) with the
+Lagrange multipliers [27], [28], we can calculate the weight
+vector wθd and powerPθd of θd:
+{
+wθd = R−1a(θd)
+aH(θd)(R−1)Ha(θd)
+Pθd = 1
+aH(θd)(R−1)Ha(θd)
+(6)
+where a(θd) is the steering vector of directionθd which is related
+to the antenna array. Whenθd is scanned in the angle space
+θ = {θ1,θ2,...,θ n},w eh a v e
+{
+w = {wθ1 ,wθ2 ,...,w θn}
+P = {Pθ1 ,Pθ2 ,...,P θn} (7)
+By searching for the extreme ofP, we can obtain the direction of
+the radar echo and its corresponding weight vector. The power
+spectrum P is shown in Fig.3 when θ =[ −60◦,60◦], where
+−20◦ and 20◦ are the extreme points, indicating that the radar
+receives echoes in those directions.
+C. DC Offset
+DC offset presents a frequent issue in the processing of radar
+signals. An ideal vibration signal in the IQ domain is an arc
+centered at the origin, and the arc angles are proportional to their
+amplitudes. In practice, the detected vibration signal contains a
+static component (i.e. DC offset) that makes the center deviate
+from the origin illustrated in Fig.4(a). The impact of DC offset
+Fig. 4. The impact of DC offset on IQ signal (a) and phase signal (b).
+Fig. 5. Circle ﬁtting results (a) and corresponding phase signal (b) when
+moving the radar front-end.
+on phase detection accuracy can be subdivided into two distinct
+categories: 1) the imprecise radius of the circle center, resulting
+in wrong amplitude; 2) the deviation of the circle center direction
+distorts the phase signal. A widely used method for correcting
+DC offset is to transform the problem into an estimation of the
+circle center. The circle center is estimated using a circle ﬁtting
+algorithm, and the DC offset is removed by translating the center
+to the origin of the coordinates. However, when the displacement
+variation is minimal (around a few dozen microns), the phase
+change of the IF signal is insufﬁcient to ﬁt a complete arc,
+which results in a signiﬁcant deviation in the center estimation.
+In this case, the estimation results of the circle ﬁtting method
+are unstable and inaccurate. A practical solution to obtain a
+sufﬁcient arc is to increase the relative motion by moving the
+radar front end. To move the radar front end, we mounted the
+radar on a sliding table. The sliding table moves back and forth
+at a constant speed while the radar collects data.
+The Fig. 5(a) depicts the results of circle ﬁtting when the
+radar front end is moving. The movement of the radar front
+end achieves a more accurate circle ﬁt result for the DC offset.
+Additionally, Fig. 5(b) shows the corresponding phase signal,
+where the micro-displacement (mechanical vibration) is super-
+imposed on the large-scale sliding table movement. The sliding
+table is an effective solution for the DC offset problem in the
+micro-displacement scenario. We have applied the sliding table
+in mmOrbit.
+IV . SYSTEM OVERVIEW
+The workﬂow of mmOrbit is depicted in Fig.6. First, we use
+a synchronized radar system to collect raw data reﬂected from
+mechanical vibrations in two perpendicular directions. After
+that, we locate the position of the machinery and extract the
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+MAO et al.: mmORBIT: MICROMETER-LEVEL VIBRATION AND ROTOR ORBIT MEASUREMENT VIA SYNCHRONIZED DUAL mmW A VE RADARS 12349
+Fig. 6. The workﬂow of mmOrbit.
+Fig. 7. Data collection with two synchronous sensors.
+displacement signal from the raw data. The extracted displace-
+ment signals are found to be disturbed by DC offsets, which
+reduces the accuracy of the measurements. Therefore, the dis-
+placement signal is then corrected for DC offset. The displace-
+ment signal represents the accurate relative displacement change
+between the radar and the machinery. Under the action of the
+sliding table introduced by mmOrbit, this relative displacement
+contains several components, including the mechanical vibra-
+tion displacement that we are interested in. A three-step vibra-
+tion displacement algorithm is applied to extract the mechan-
+ical vibration displacement. Finally, two mechanical vibration
+displacement signals from the synchronized radar system are
+integrated to ﬁt the rotor orbit.
+A. Synchronized Radar Raw Data Acquisition
+Fig. 7 shows a diagram of our data collection scenario. During
+the data collection process, two mmWave radars are positioned
+at a perpendicular angle to one another and oriented directly
+towards the vibrating machinery. Radar uses electromagnetic
+waves to sense the displacement state of a target. However,
+signals cannot reach the radar receiver on the sides or back of an
+object, so it cannot directly sense vibrations in these areas. To
+measure rotor orbit, we utilize two mmWave radar sensors and
+control them using a radar synchronisation device, each sensor
+provides a 1D view of the vibration source. When the two radars
+are positioned at a 90◦ to one another, their combined ﬁeld
+of view encompasses a monitoring area exceeding180◦.T h e
+vibration information within this monitoring area is sufﬁcient
+to construct a 2D coordinate plane that accurately describes
+the rotor orbit. In addition, both radars are ﬁrmly attached to
+the sliding table, which improves the accuracy of displacement
+detection.
+A single sensor collects information about the motion of the
+rotor in one direction (e.g., axial or radial), which is limited
+in characterizing the rotor’s motion in 3D space. Two or more
+sensors deployed at different locations can capture the multi-
+dimensional motion information of the rotor in 3D space. The
+traditional sensor-based rotor orbit measurement method shows
+that it is sufﬁcient to analyze the dynamic 2D rotor orbit with two
+radial displacement sensors positioned perpendicularly to each
+other. Although, in speciﬁc application scenarios, additional
+sensor can enhance the analysis of rotor state. For instance, the
+axial displacement sensor [29] (deployed along the direction
+of the rotor axis) is essential for monitoring key parameters
+such as axial thrust[30] and axial thermal expansion[31].I n
+addition, more radial displacement sensors improve the ability
+to monitor the global state of axes in the case of complex systems
+with long or multi-axis rotor system. In our scenario, two radial
+displacement sensors are adequate to fulﬁll our requirements for
+rotor orbit monitoring.
+B. Vibration Source Localization and Vibration Signal
+Extraction
+The primary step is to analyze the location of the vibration
+source. Following the principle of micro-displacement detection
+introduced in Chapter 3.1, we use the FFT algorithm to distin-
+guish potential objects at different distances in the environment.
+However, the complexity of the real-world environment means
+that objects cannot be distinguished by distance information
+alone, and other potential objects near the vibration source inter-
+fere with the detection results. Therefore, the Capon algorithm
+further discriminates potential objects from spatial orientation.
+In our scheme, the radar directly faces the vibration source
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+12350 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025
+Fig. 8. Vibration source localization.
+and has no occlusion between them. Accordingly, we set the
+spatial scanning range of the Capon algorithm to[−30◦,30◦],
+as shown in Fig.8. Compared to the radar resolution, the size
+of the vibration source is signiﬁcantly larger, resulting in its
+occupation of multiple bins within the power spectrum. We
+take the positions of the maximum power peaks in the power
+spectrum as the location of the vibration source. When we locate
+the precise vibration source from the radar power spectrum,
+we can obtain the corresponding weight vector as described in
+Section III-B. Finally, the weight vector is used to extract the
+vibration signal.
+C. DC Offset Correction
+The extracted vibration signal typically suffers from DC
+offset, which distorts the phase signal’s amplitude, as described
+in Section III-C. Using a sliding table, a large enough arc is
+obtained to efﬁciently run the least-squares-based circle ﬁtting
+algorithm (e.g., Kasa algorithm[32], Pratt method[33]). In this
+paper, we use the Pratt method to estimate the DC offset because
+of its simplicity and low computational cost. Pratt’s method
+describes the circle equation as:
+⎧
+⎪⎪⎨
+⎪⎪⎩
+A(x2 + y2)+ Bx + Cy + D =0
+x0 = − B
+2A
+y0 = − C
+2A
+R = −
+√
+B2+C2−4AD
+2A
+(8)
+where A, B, C, D are the parameters to be calculated,
+O =( x0,y0) is the coordinates of the circle center and
+R is the circle radius. For a given set of points I =
+(x1,y1),(x2,y2),..., (xn,yn)), Pratt’s optimization equationg
+is shown below:
+g =
+n∑
+i=1
+[A(x2
+i + y2
+i )+ Bx + Cy + D]2
+st. B2 + C2 −4AD =1 (9)
+Setting α =[ A,B,C,D ], the expression(9) is converted to
+matrix form and Lagrange multipliers is introduced to solve it.
+The resulting equation is expressed as follows:
+argmin g(α,η)= αMαT −η(αQαT −1) (10)
+Fig. 9. The correction of DC offset. Where(x0,y0) is the estimated circle
+center, the blue arrow shows the DC offset.
+where M and Q are the moments matrix:
+M =
+⎡
+⎢⎢⎢⎣
+∑ z2
+i
+∑ xizi
+∑ y2
+i
+∑ zi∑ xizi
+∑ x2
+i
+∑ xiyi
+∑ xi∑ y2
+i
+∑ xiyi
+∑ y2
+i
+∑ yi∑ zi
+∑ xi
+∑ yi
+∑ n
+⎤
+⎥⎥⎥⎦
+Q =
+⎡
+⎢⎢⎢⎣
+00 0 −2
+01 00
+00 10
+−200 0
+⎤
+⎥⎥⎥⎦ (11)
+where zi = x2
+i + y2
+i .T h eM and Q are symmetric and positive
+semideﬁnite. Differentiating with respect toα gives:
+Mα = ηQα
+=⇒ Q−1Mα = ηα (12)
+hence η is a generalized eigenvalue for the matrix,α is the
+corresponding generalized eigenvector. IfM is positive deﬁnite,
+by Sylvester’s law of inertia, the generalized eigenvalues of
+Q−1M are all real; exactly three are positive and one is negative.
+Combining (9) and (12), we get:
+g = αMαT = ηαQαT = η (13)
+so, the minimum ofg corresponds to the smallest nonnegative
+generalized eigenvalue.
+When α =[ A,B,C,D ] is calculated, the center coordinates
+and circle radius can be calculated according to(8). Finally, the
+DC offset is corrected by moving the center of the circle to the
+origin of the coordinates, as shown in Fig.9.
+D. Mechanical Vibration Extraction
+After the DC offset correction, the accurate phase signalψ(t)
+is extracted using arctangent demodulation and phase unwrap-
+ping. Subsequently, we convert the phase signal to displacement
+signal d(t) by (4). The displacement signald(t) contains three
+main components, as shown in Fig.11, i.e:
+d(t)= ds(t)+ dm(t)+ dr(t) (14)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+MAO et al.: mmORBIT: MICROMETER-LEVEL VIBRATION AND ROTOR ORBIT MEASUREMENT VIA SYNCHRONIZED DUAL mmW A VE RADARS 12351
+Fig. 10. The time-domain waveform ofd(t). The green part is the superposi-
+tion ofds(t) and dm(t). The red part is the interference ofdr(t).
+Fig. 11. The schematic of displacement analysis in our scenario. The front
+end of the radar moves back and forth by half the signal’s wavelength (λ
+2 ).
+where the sliding table displacement is represented asds(t),t h e
+mechanical vibration displacement (denoted asdm(t)) is our
+target signal for extraction. In contrast,dr(t) is the vibrational
+displacement of the radar itself caused by inertia. At the bound-
+ary of the sliding table back and forth motion, where the sliding
+table motion undergoes drastic changes in direction, the radar
+panel shakes signiﬁcantly due to inertia.
+Fig. 10 shows the time-domain waveform ofd(t). The recip-
+rocating motion of the sliding table causesds(t) to present a
+triangular waveform (orange arrow), anddm(t) and dr(t) are
+superimposed on ds(t). The green part indicates the tiny me-
+chanical vibration displacementdm(t) superimposed onds(t),
+and the red part shows the interference ofds(t) in the mechanical
+vibration displacement.
+Before introducing our solution, let us take a quick look at
+the dr(t) in Fig.12.T h edr(t) has a frequency of approximately
+23 Hz, a maximum amplitude of 30 μm, and a duration of
+approximately 150 ms, with the amplitude decaying over time.
+For a rotating machinery, 23 Hz corresponds to a speed of
+1380 revolutions per minute (rpm). An intuitive solution is to
+utilize a frequency ﬁlter to remove thedm(t). However, in the
+low-speed mechanical vibration scenario (e.g., 1200rpm), the
+frequency ﬁlter will also affect dm(t) while removing dr(t)
+due to the close frequency proximity between them. Another
+Fig. 12. The observations ondr(t).W ea v o i ddm(t) interference by detecting
+stationary object and removeds(t) by HPF (step 1).
+Fig. 13. The ﬂowchart of our proposed three-step vibration displacement ex-
+traction algorithm. WheredS1 ∼ dS3 denote the results of the three processing
+steps, respectively.
+simple solution is to disregard frames affected by dr(t) in-
+terference, as this interference is short-lived and decays over
+time. However, this simple solution reduces data utilization
+(reduced to 70%). It is a challenge to extract dm(t) from
+d(t).
+In this paper, we propose a three-step vibration displacement
+extraction algorithm to extractdm(t) from d(t) for the dr(t)
+property outlined above. Fig.13 is the ﬂowchart of our pro-
+posed algorithm. Since the interference ofdr(t) does not always
+exist, we divide the algorithm into two processing branches.
+If the observation window is disturbed bydr(t), we extract
+dm(t) through the blue branch; otherwise, the red branch is
+chosen to extractdm(t).T h edr(t) occurs only at the boundary
+of the sliding table motion (i.e., around the endpoints of the
+triangular wave in Fig.10), and we determine which branch-
+ing process to choose based on whether the ds(t)(extracted
+by a 10 Hz LPF) contains local maximum/minimum or
+not.
+1) Step 1:In step 1, a high-pass ﬁlter (HPF) is used to remove
+ds(t) from d(t).I f d(t) is disturbed by dr(t), we apply an
+anomalous amplitudes suppression (AAS) algorithm to suppress
+its amplitude.
+HPF: The ds(t) is a triangular wave with a frequency equal to
+the sliding table motion frequency. In our setup, the sliding table
+moves at about 1 Hz, i.e. one round trip per second. Therefore,
+we use a 10 Hz HPF to eliminateds(t). We chose 10 Hz as the
+cutoff frequency based on the following two core factors:
+r In our experiment, the minimum vibration frequency gen-
+erated by the mechanical under normal operation was
+16.6 Hz (corresponding to 1000rpm).
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+12352 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025
+Fig. 14. The proposed three-step vibration displacement extraction algorithm.
+r Filter does not exhibit an ideal step response, but rather
+presents a smooth transition band around the cutoff fre-
+quency.
+In consideration of the aforementioned factors, the cutoff
+frequency of the HPF is set to 10 Hz in combination with
+practical experience. This setting not only effectively eliminates
+ds(t), but also ensures that the mechanical vibration signal is not
+inﬂuenced by the ﬁlter. Fig.14(a) shows the result before and
+after the HPF, and it can be seen thatds(t) is effectively ﬁltered
+out.
+AAS: The superposition ofdr(t) induces anomalous ampli-
+tudes, as shown in the red area of Fig. 14(b). In this step,
+we suppress the anomalous amplitude in the signal. We ﬁrst
+calculate the envelope of the signal by Hilbert transform[34]
+(As shown by the dotted line in Fig. 14(a)), then calculate
+the amplitude weighting factorswf using (15), and use these
+weighting factors to weight the signal.
+wf = Abs(Median(Senvelope)/Senvelope) (15)
+where Senvelope is the calculated envelope, Median(·) and
+Abs(·) mean taking the median and absolute value, respec-
+tively. After weighting usingwf, the anomalous amplitude is
+suppressed, as shown in Fig.14(b).
+2) Step 2: After step 1, we notice that the dS1 contains
+cluttered noise that could interfere with the next frequency
+analysis step. To address this issue, the variational mode de-
+composition(VMD) algorithm was utilized to extract a clean
+displacement signal in this step. The clean displacement signal
+is extracted as shown by the green box in Fig.14(c).
+3) Step 3: In step 3, we use the band-pass ﬁlter(BPF) with
+AAS to deal with the dr(t) interference. If the observation
+window is not in the region interfered bydr(t),t h eB P Fi su s e d
+only.
+BPF with AAS: The dr(t) disrupts the phase of the vibra-
+tion displacement, as shown by the red area in Fig.14(d).I n
+this step, we eliminate thedr(t) using a BPF. Thedr(t) lasts
+approximately 150 ms. If the observation window is much
+longer than 150 ms (e.g., 600 ms), dm(t) will be the main
+frequency component ofdS2, as shown in Fig.15. Thus, a BPF
+is designed to extractdm(t), with the cutoff frequency of the
+ﬁlter determined by the following equation:
+Fcutoff =[ Fm −4 ∗Fr,Fm +4 ∗Fr] (16)
+where Fcutoff is calculated cutoff frequency (the green area
+in Fig.15), Fm is the main frequency andFr is the frequency
+resolution. We use a threshold of 0.3 to determine the main
+frequency (indicated by the red dashed line in Fig.15). If more
+than one main frequency is present, we perform multiple BPF
+processes.
+Following BPF, there is the amplitude attenuation (the yellow
+area in Fig.14(d)) at both the beginning and end of the signal, as
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+MAO et al.: mmORBIT: MICROMETER-LEVEL VIBRATION AND ROTOR ORBIT MEASUREMENT VIA SYNCHRONIZED DUAL mmW A VE RADARS 12353
+Fig. 15. Frequency analysis using FFT. The frequency ofdm(t) is circled in
+green, and the frequency ofdr(t) is circled in red. The red dashed line is the
+threshold for distinguishing betweendm(t) and dr(t).
+Fig. 16. Synchronized data acquisition system.
+well as in the area disturbed bydr(t) (the red area in Fig.14(d)).
+We compensate the phase again using the AAS method (in Step
+1). The ﬁnal extracteddm(t) is depicted asdS3 in Fig.14(d).
+BPF: The BPF algorithm with AAS to extractdm(t) in the
+presence of dr(t). However, there is some mechanical faults-
+related information indm(t). Anomalous amplitudes caused by
+mechanical faults are also suppressed by the AAS process, which
+means that the mechanical fault information is erased. Therefore,
+we only use BPF for observation windows that are not disturbed
+by dr(t).
+E. Rotor Orbit Fitting
+After extracting the mechanical vibration displacement sig-
+nals from the raw radar signals, we estimate the rotor orbit and
+extract the 2D mechanical vibration features. We usedm1 and
+dm2 to denote the mechanical vibration displacement signals
+extracted from the two radar raw data, which are the projections
+of the rotor orbit in two perpendicular directions. We usedm1
+and dm2 as the x-axis and y-axis of the plane, respectively, to
+reconstruct the rotor orbit as shown in Fig.18.
+The discrete points are ﬁtted to an elliptic curve to extract
+the feature of the rotor orbit. The standard elliptic equation is
+Fig. 17. Data collection scenario.
+Fig. 18. Rotor orbit reconstruct: (Left) mechanical vibration displacement
+signals extracted from the two radar raw data; (Right) the reconstructed rotor
+orbit.
+expressed as the following equation:
+F(H,X )= Ax2 + Bxy + Cy2 + Dx + Ey +1
+= H ∗X (17)
+where H=[A,B,C,D,E, 1] is the parameter of the ellipse and
+X=[x2,xy,y 2,x,y, 1]T is sample data matrix. The ellipse ﬁt-
+ting problem is modeled as the following optimization problem
+and solved using the least squares method:
+argmin
+n∑
+i=1
+F(H,Xi) (18)
+When H is solved, we calculate the geometric properties of
+the ellipse, including the center coordinates(x0,y0), semi-major
+axis a, semi-minor axis b, the eccentricity e and the ellipse
+direction φ. The ellipse direction is deﬁned as the counterclock-
+wise rotation angle from the x-axis to the ellipse’s major axis.
+These properties evaluate the machinery’s operational state and
+assess the mmOrbit’s performance. The(x0,y0), aand bcan be
+calculated by using the following equation:
+⎧
+⎪⎪⎨
+⎪⎪⎩
+x0 = BE−2CD
+4AC−B2 ,y0 = BD−2AE
+4AC−B2
+a2 =2 (Ax2
+0+Cy2
+0+Bx0y0−1)
+A+C+
+√
+(A−C)2+B2)
+b2 =2 (Ax2
+0+Cy2
+0+Bx0y0−1)
+A+C+
+√
+(A−C)2−B2)
+(19)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+12354 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025
+So thee and theφ are:
+⎧
+⎪⎪⎪⎪⎨
+⎪⎪⎪⎪⎩
+e =
+√
+a2−b2
+a
+φ =
+⎧
+⎪⎪⎨
+⎪⎪⎩
+forb =0 and a < c
+π
+2 forb =0 and a > c
+1
+2 cot−1(a−c
+2b ) forb !=0 and a < c
+π
+2 + 1
+2 cot−1(a−c
+2b ) forb !=0 and a > c.
+(20)
+V. EVA L UAT I O NSETUP AND PERFORMANCE EVA L UAT I O N
+A. Implementation and Methodology
+Synchronized Data Acquisition System:Fig. 16 shows our
+synchronized data acquisition system. We use two radar sensors,
+the IWR1843BOOST and the AWR1843BOOST [35] from
+Texas Instruments. These two sensors are almost identical in
+hardware speciﬁcations. The Arduino Uno Rev3 serves as a
+radar synchronisation device, coordinating the acquisition of
+two radars by simultaneously transmitting high-level signals.
+The sliding table system includes the sliding table, power mod-
+ule, and drive module. The power supply module provides
+power to the sliding table, while the driver module controls
+its movement. The radar and sliding table are tightly secure
+to prevent excessive vibration of the radar panel while in
+motion.The data collection scenario of our synchronized data
+acquisition system is illustrated in Fig.17. Both sensors are
+ﬁrmly attached to the sliding table at a90◦ to the vibration
+source.
+The synchronization technique we used is based on the
+hardware synchronisation principle of the TI radar. Due to the
+high-level of integration of the TI radar, measuring synchro-
+nization times with reference values is difﬁcult. According to
+TI’s technical document[36], the actual delay value will be
+accurate to +−1 ms for software-based synchronization, and
+the hardware-triggered synchronization method (the one we
+used) has a synchronization delay of much less than 1 ms.
+In addition, the prevailing view on TI’s technical forums is
+that hardware-triggered pulses via the SYNC_in pin are by far
+the most reliable radar synchronization method. Therefore, we
+believe that the synchronization of our system is sufﬁcient to
+support our experiments.
+Radar Setup:In our experiments, we used the COTS mmWave
+radars IWR1843BOOST and AWR1843BOOST, which have a
+4 GHz bandwidth (76∼81 GHz) and integrate an antenna array
+with 2 transmit (Tx) and 4 receive (Rx) antenna arrays. We
+partitioned the 4 GHz bandwidth into two equal segments to
+prevent interference between the radars, each utilizing 2 GHz
+bandwidth. Table I provides a more detailed conﬁguration of
+the radar parameters. The raw samples were acquired using a TI
+DCA1000EVM.
+Sliding Table Setup:On our sliding table device, we conﬁg-
+ured a stepper motor. We set the stepper motor to move 2 mm at a
+uniform speed within 1s We suggest against setting a high speed,
+as it could exacerbate and prolong the vibration of the radar
+panel. Conversely, setting the speed too low isn’t recommended
+either, as it would necessitate more data frames to guarantee an
+adequate arc.
+TABLE I
+RADAR CONFIGURATION
+Ground Truth: To obtain the ground truth, we built an
+orbit veriﬁcation system based on laser displacement sen-
+sor, Keyence’s LK-G30 [37]. This sensor measures micro-
+displacement by measuring the difference in distance between
+the reﬂected laser beam from the object and the sensor. To
+measure 1D vibrations along the X and Y axes, we vertically
+deployed two LK-G30 laser sensors, as shown in Fig. 17.
+These two laser sensors were synchronously controlled through
+LK-G3001 [38]. After collecting two sinusoidal displacement
+sequences, we estimated the 2D rotor orbit and ﬁtted an ellipse
+as the ground truth orbit.
+Performance Metric:We use the following metrics to evaluate
+the performance of mmOrbit: micro-displacement error, orbit
+eccentricity error, orbit direction error, and disjoint area propor-
+tion. The micro-displacement error is used to evaluate the per-
+formance of mmOrbit in displacement measurement, while the
+orbit eccentricity error, the orbit direction error, and the disjoint
+area proportion are measure the performance of the mmOrbit for
+orbit estimation. The disjoint area proportion is a comprehensive
+metric that can quantify the similarity between the estimated
+rotor orbit and the ground truth. The micro-displacement error
+is converted to a percentage by dividing the true displacement
+value. We normalize the orbit direction error to [0,1], with
+values ranging from 0 toπ
+2 . For orbit eccentricity, since the orbit
+eccentricity belongs to[0,1), we express the orbit eccentricity
+error as a percentage form for easier analysis and comparison.
+B. Evaluation Setup and Performance Evaluation
+In this section, we evaluated the performance of estimated
+rotor orbit at different measuring distances (50∼ 200 cm) and
+rotational speeds (1000∼5000 rpm). The experiment was con-
+ducted in an open area within an ofﬁce environment (equipped
+with desks, computers, printers, etc.) The experimental objects
+is a small tabletop centrifuges, whose vibration parameters
+are determined by their physical characteristics and cannot be
+precisely adjusted. mmVib[21] used a vibration calibrator as
+the detection object to generate standard sinusoidal vibrations
+of speciﬁed amplitude and frequency, which allowed precise
+control of the frequency (20-500 Hz±1%) and amplitude (5-500
+um ±1%). Therefore, we are inability to conduct per-amplitude
+experiment similar to mmVib. To simulate real-world centrifuge
+usage, the centrifuge was equipped with appropriate tubes to
+operate in a relatively stable state without overloading. In our
+experiments, the amplitude of the centrifuge was in the range of
+16 μmt o5 3μm (measured by our orbit veriﬁcation system).
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+MAO et al.: mmORBIT: MICROMETER-LEVEL VIBRATION AND ROTOR ORBIT MEASUREMENT VIA SYNCHRONIZED DUAL mmW A VE RADARS 12355
+Fig. 19. Overall performance under different setups.
+Fig. 20. Impact of measuring distance.
+1) Overall Performance: Fig. 19 depicts the overall perfor-
+mance of mmOrbit. The cumulative distribution function (CDF)
+results in Fig.19(a) show that mmOrbit can accurately detect
+vibration micro-displacement, with a measure error of 4.4μm
+at the 80th percentile. Moreover, mmOrbit performed well in
+estimating the rotor orbit, with a disjoint area proportion of
+17% at the80th percentile, as shown in Fig.19(b).F i g .19(c)
+and (d) demonstrate that mmOrbit can effectively maintain the
+ellipse’s shape, with the80th percentile orbit eccentricity error
+and direction error approximately 7% and7◦, respectively.
+2) Impact of Distance:We evaluated mmOrbit under differ-
+ent measurement distances (50 cm∼200 cm) with the rotational
+speed settings from 1000rpm to 5000rpm, as shown in Fig.20.
+The results indicated that all performance metrics do not sig-
+niﬁcantly increase with an increase in the 150 cm range. The
+micro-displacement error, orbit direction error, and disjoint area
+proportion experienced a notable increase at 200 cm, but are
+still within acceptable limits. The root cause of the phenomenon
+is the increase in micro-displacement error, as the accuracy of
+reconstructing rotor orbit depends on precise measurement of
+micro-displacement. Experimental results indicated that mmOr-
+bit can estimate rotor orbit within a range of 200 cm comparable
+to high-precision laser sensors.
+3) Impact of Rotational Speed:We evaluated mmOrbit un-
+der the conditions of different rotational speeds (1000rpm ∼
+5000 rpm), as illustrated in Fig. 21. The ﬂuctuation ranges
+of eccentricity error and orbit direction error are kept within
+3% at different rotational speeds, and the ﬂuctuation ranges
+of micro-displacement error and disjoint area proportion are
+also controlled within 7%. Overall, it demonstrated the stable
+performance of mmOrbit in estimating the rotor orbit at different
+rotational speeds.
+Fig. 21. Impact of rotational speed.
+Fig. 22. Performance under imbalanced state.
+4) Imbalanced State: To investigate the performance of the
+mmOrbit in the imbalanced state of the centrifuge, we placed the
+centrifuge at a distance of 200 cm. We used different weights of
+tubes in an attempt to make the centrifuge work in an imbalanced
+state. For safety considerations, we set the rotational speed to be
+within the range of 1000 to 4000rpm.
+Fig. 22 shows similar experimental results to SectionV-B3,
+with all the metrics ﬂuctuating by no more than 4% at different
+rotational speeds. The performance of mmOrbit is more stable
+in the imbalanced state for all metrics. This can be attributed
+to the larger amplitude of the centrifuge in an imbalanced state,
+and larger amplitudes are easier to detect. We observed appar-
+ent differences in amplitude, eccentricity, and orbit direction
+between the rotor orbit under imbalanced and normal status,
+as depicted in Fig. 23. In order to verify the accuracy and
+dependability of our measured rotor orbit, we extracted four
+parameters, including rotational speed, amplitude, eccentricity,
+and orbital direction, and performed imbalance detection using
+a Support Vector Machine. We achieved an imbalance detection
+accuracy of up to 100% with limited experimental data, as shown
+in Fig.24.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+12356 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025
+Fig. 23. Orbit estimation under normal/imbalanced states. The orbit is de-
+scribed by semi-major axisa, semi-minor axisb, and the ellipse directionφ.
+Fig. 24. Imbalance detection.
+VI. DISCUSS
+The overall performance evaluation in SectionV-B1 demon-
+strated the excellent capability of mmOrbit for both micro-
+displacement measurement and rotor orbit estimation. However,
+We have discovered that the mmOrbit has some limitations. This
+chapter analyzes the advantages and limitations of mmOrbit.
+A. Advantages
+The accuracy of DC offset estimation is low in micro-
+displacement scenarios. mmOrbit introduced a sliding table to
+compensate for the DC offset by increasing the relative mo-
+tion between the radar and the machine. Faced with the same
+problem, GWaltz [22] estimates a more accurate DC offset
+by restricting the circle radius to a speciﬁc range based on a
+priori knowledge of the range of vibration displacement. This
+method is only effective when the vibration displacement is
+within a set range. When the mechanical vibration displacement
+exceeds the preset radius limit, a signiﬁcant displacement error
+occurs, which is the reason why GWaltz is underperformed in
+extracting large-displacement vibrations. mmVib[21] addresses
+the challenge of DC offset with a different solution, which
+employs a multi-frequency property of the MSC to generate
+chirp signals with varying initial frequencies. These chirp sig-
+nals form longer but discontinuous arcs in the IQ plane by
+creating multiple observations on the same vibration. In con-
+trast, mmOrbit utilized a sliding table to fundamentally solve
+the problem of the inferior accuracy of DC offset estimation
+in micro-displacement scenarios, thus achieving high-precision
+micro-displacement measurement. In addition, the sliding table
+provided a controllable uniform motion so that the vibration
+signal presented a standard circular arc shape in the IQ do-
+main (as shown in Fig.9), which was conducive to improving
+the accuracy of DC offset estimation. Although the sliding
+table causes additional interference (dr(t)), this interference
+can be effectively suppressed by our proposed three-step vi-
+bration displacement extraction algorithm. Experiments show
+that the micro-displacement measurement error of mmOrbit is
+only 4.4 μma tt h e80th percentile, verifying that the beneﬁt
+of accuracy improvement from the sliding table outweighs the
+effect of interference.
+B. Limitations
+The principal constraints on our work lie in the mmOrbit
+prototype system itself and in the imperfections of the imbal-
+ance detection experiments. We have developed an experimental
+prototype of the mmOrbit that utilizes two synchronous radars
+to acquire 2D vibration data and detects high-precision rotor
+orbit with the help of a sliding table. However, the proto-
+type utilized a universal mechanical sliding table that was not
+speciﬁcally designed for the mmOrbit, leading to the system
+becoming cumbersome. Developing a customized mini-slider
+could greatly simplify the system. Furthermore, the movement
+of the radar panel unavoidably introduced additional interfer-
+ences (e.g.,dr(t)). Although we proposed a three-step vibration
+displacement extraction algorithm to mitigate interferences, it
+would eliminate mechanical fault features when both fault fea-
+ture and interference were present in the observation window.
+In our imbalance detection experiment, our purpose is verifying
+the accuracy and reliability of the orbit detected by the mmOrbit
+system, rather than to classify mechanical fault. And due to
+the limitations of the experimental conditions, we regret that
+we are unable to safely and controllably simulate various types
+of imbalanced states, including parallel misalignment, angular
+misalignment, and loosening. Considering the above reasons, a
+more comprehensive identiﬁcation of those different types of
+imbalanced states was not sufﬁciently perfect.
+Therefore, the future work involves the following aspects:
+r Simplifying the sliding table device to reduce its complex-
+ity and improve its feasibility for practical applications;
+r Designing more intelligent and adaptive algorithms to ef-
+fectively solve the problem when fault feature and inter-
+ference coexist;
+r Using professional equipment such as a bearing failure
+simulation test bench to simulate various types of imbal-
+anced states, and explore more detailed classiﬁcation under
+the imbalanced state.
+The mmOrbit utilizes sliding table to address the DC offset
+estimation challenge, but this increases the complexity of the
+system. The recent ﬁndings of Gu [39] are fascinating, and
+the proposed frequency-reconﬁgurable technique offer novel
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+MAO et al.: mmORBIT: MICROMETER-LEVEL VIBRATION AND ROTOR ORBIT MEASUREMENT VIA SYNCHRONIZED DUAL mmW A VE RADARS 12357
+insights into the resolution of the DC offset estimation problem,
+promising to move away from the reliance on the sliding table.
+We have planned to introduce this technique into our system to
+simplify the mmOrbit system.
+VII. CONCLUSION
+In this work, we presented a rotor orbit estimation system
+based on mmWave technology. The system utilized mmWave-
+based vibration sensing techniques to estimate the rotor orbit by
+analyzing the vibration of the machinery surface. We constructed
+a synchronized data acquisition system based on two mmWave
+radars and a sliding table device to collect 2D machinery surface
+vibration in two vertical directions. To address the challenge of
+DC offset in micro-displacement scenarios, we ﬁxed the radar on
+sliding table to increase relative displacement. The introduction
+of the sliding table resulted in two additional displacement
+component in the displacement signal, i.e., the sliding table
+displacement and the radar panel vibration displacement. There-
+fore, we propose a three-step vibration displacement extraction
+algorithm to extract mechanical vibration displacement.
+Our experimental results demonstrate that mmOrbit accu-
+rately measures mechanical vibration micro-displacement with
+an 80th percentile micro-displacement error of 4.4μm. Addi-
+tionally, mmOrbit was able to estimate rotor orbit comparable to
+high-precision laser sensors, where the80th percentile rotor ec-
+centricity error, rotor direction error, and disjoint area proportion
+are 7%,7◦, and 17%, respectively. In quantitative distance and
+rotational speed experiments, we have validated the robustness
+of mmOrbit to micro-displacement measurements of distance
+and rotational speed, as well as to orbit estimation.
+REFERENCES
+[1] S. Sotnik and V . Lyashenko, “Overview of modern accelerometers,”Int.
+J. Eng. Inf. Syst., vol. 6, no. 1, pp. 57–64, 2022.
+[2] S. J. Rothberg et al., “An international review of laser Doppler vibrometry:
+Making light work of vibration measurement,”Opt. Lasers Eng., vol. 99,
+pp. 11–22, 2017.
+[3] M. Tada and Y . Suto, “Eddy current sensor,” U.S. Patent 7,508,201, Mar.
+24, 2009.
+[4] J. L. Zha and H. Z. Li, “Analysis of the principle of laser displacement
+sensor and its application,”Appl. Mechan. Materials., vol. 734, pp. 84–89,
+2015.
+[5] A. Yunusa-Kaltungo, A. D. Nembhard, and J. K. Sinha, “Experimental
+observations of rotor orbit analysis in rotating machines,” inProc. IFToMM
+Int. Conf. Rotor Dyn., 2015, pp. 1551–1560.
+[6] B. Wu, S. Feng, G. Sun, L. Xu, and C. Ai, “Identiﬁcation method of
+shaft orbit in rotating machines based on accurate Fourier height functions
+descriptors,” Shock Vib., vol. 2018, 2018, Art. no. 3737250.
+[7] C. Zhu, Y . Zhuang, B. Liu, and J. Huang, “Review of ﬁber optic
+displacement sensors,” IEEE Trans. Instrum. Meas. , vol. 71, 2022,
+Art. no. 7008212.
+[8] R. A. P. Fernihough, “Piezoelectric accelerometer,” U.S. Patent 9,470,806,
+Oct. 18, 2016.
+[9] A. Fernandez, “Seismic velocity transducers,” Accessed: 2024. [Online].
+Available: https://powermi.com/content/seismic-velocity-transducers
+[10] P. Yang, Y . Feng, J. Xiong, Z. Chen, and X.-Y . Li, “RF-ear: Contactless
+multi-device vibration sensing and identiﬁcation using COTS RFID,”
+in Proc. IEEE INFOCOM 2020-IEEE Conf. Comput. Commun., 2020,
+pp. 297–306.
+[11] Y . Zhang, P. Yang, Y . Feng, Y . Yan, and X. Li, “Wi-Ear: A contact-free
+vibration sensing and identiﬁcation system based on COTS WiFi,” inProc.
+IEEE Int. Conf. Commun., 2023, pp. 1810–1816.
+[12] Y . Rong, S. Srinivas, A. Venkataramani, and D. W. Bliss, “UWB radar
+vibrometry: An RF microphone,” inProc. 53rd Asilomar Conf. Signals,
+Syst., Comput., 2019, pp. 1066–1070.
+[13] P. Mohindru, “Development of liquid level measurement technology:
+Ar e v i e w , ”Flow Meas. Instrum. , vol. 89, 2023, Art. no. 102295.
+[Online]. Available: https://www.sciencedirect.com/science/article/pii/
+S0955598622001704
+[14] G. Paterniani et al., “Radar-based monitoring of vital signs: A tutorial
+overview,”Proc. IEEE, vol. 111, no. 3, pp. 277–317, Mar. 2023.
+[15] Y . Wu, H. Ni, C. Mao, J. Han, and W. Xu, “Non-intrusive human vital sign
+detection using mmWave sensing technologies: A review,”ACM Trans.
+Sensor Netw., vol. 20, pp. 1–36, 2023.
+[16] H. Nohmi and I. Shirai, “Development and application of millimeter-wave
+radar for security and infrastructure monitoring,” inProc. IEEE Conf.
+Antenna Meas. Appl., 2021, pp. 454–457.
+[17] P. Li, Z. An, L. Yang, P. Yang, and Q. Lin, “RFID harmonic for vibration
+sensing,” IEEE Trans. Mobile Comput., vol. 20, no. 4, pp. 1614–1626,
+Apr. 2021.
+[18] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping through
+wireless vibrometry,” inProc. 21st Annu. Int. Conf. Mobile Comput. Netw.,
+2015, pp. 130–141.
+[19] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,”Proc. ACM Interactive, Mobile,
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+[20] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping through
+wireless vibrometry,” inProc. 21st Annu. Int. Conf. Mobile Comput. Netw.,
+2015, pp. 130–141.
+[21] C. Jiang, J. Guo, Y . He, M. Jin, S. Li, and Y . Liu, “mmVib: Micrometer-level
+vibration measurement with mmWave radar,” inProc. 26th Annu. Int. Conf.
+Mobile Comput. Netw., 2020, pp. 1–13.
+[22] J. Guo, M. Jin, Y . He, W. Wang, and Y . Liu, “Dancing waltz with ghosts:
+Measuring sub-mm-level 2D rotor orbit with a single mmWave radar,”
+in Proc. 20th Int. Conf. Inf. Process. Sensor Netw. (Co-Located CPS-IoT
+Week 2021), 2021, pp. 77–92.
+[23] J. Zhang, Z. Zhang, Y . Li, C. Gu, and J. Mao, “Target detection with short-
+range FMCW radar based on time–frequency characteristic-based leakage
+cancellation technique,”IEEE Trans. Microw. Theory Techn., vol. 72, no. 4,
+pp. 2318–2331, Apr. 2024.
+[24] Y . Wang, W. Wang, M. Zhou, A. Ren, and Z. Tian, “Remote monitoring
+of human vital signs based on 77-GHz mm-wave FMCW radar,”Sensors,
+vol. 20, no. 10, 2020, Art. no. 2999.
+[25] J. Li, P. Stoica, and Z. Wang, “On robust capon beamforming and diagonal
+loading,” IEEE Trans. Signal Process., vol. 51, no. 7, pp. 1702–1715,
+Jul. 2003.
+[26] Y . Yang, L. Qu, Y . Yang, Q. Hu, and T. Yang, “Multitarget vital signs detec-
+tion based on MIMO-FMCW radar,” inProc. Photon. Electromagnetics
+Res. Symp.2024, pp. 1–10.
+[27] A. Eid, J. Zhu, L. Xu, J. G. Hester, and M. M. Tentzeris, “Holography-based
+target localization and health monitoring technique using UHF tags array,”
+IEEE Internet Things J., vol. 8, no. 19, pp. 14719–14730, Oct. 2021.
+[28] Z. Xu et al., “Simultaneous monitoring of multiple people’s vital sign
+leveraging a single phased-MIMO radar,” IEEE J. Electromagn., RF
+Microw. Med. Biol., vol. 6, no. 3, pp. 311–320, Sep. 2022.
+[29] W. Li, J. Hu, Z. Su, and D. Wang, “Analysis and design of axial inductive
+displacement sensor,”Measurement, vol. 187, 2022, Art. no. 110159.
+[30] H. Nakamura, M. Sakakibara, T. Mori, Y . Hirano, Y . Matsumoto, and
+T. Sakui, “Axial force measurement method,” U.S. Patent 9,805,459,
+Oct. 31, 2017.
+[31] D. Febriansyah, B. Tambunan, R. Harmadi, and B. N. Fadjrin, “Pengaruh
+pemuaian panas terhadap kelurusan poros turbin uap,”Majalah Ilmiah
+Pengkajian Industri, vol. 14, no. 1, pp. 71–76, 2020.
+[32] I. Kåsa, “A circle ﬁtting procedure and its error analysis,”IEEE Trans.
+Instrum. Meas., vol. IM-25, no. 1, pp. 8–14, Mar. 1976.
+[33] V . Pratt, “Direct least-squares ﬁtting of algebraic surfaces,”ACM SIG-
+GRAPH Comput. Graph., vol. 21, no. 4, pp. 145–152, 1987.
+[34] P. Olga, P. Alexey, and S. Natalia, “Hilbert envelope extraction from
+real discrete ﬁnite signals considering the nonlocality of Hilbert trans-
+form,” in Proc. 22th Int. Conf. Digit. Signal Process. Appl. 2020,
+pp. 1–4.
+[35] Texas-Instruments, “AWR1843BOOST and IWR1843BOOST single-
+chip mmWave sensing solution user’s guide,” 2020. [Online]. Available:
+https://www.ti.com/lit/pdf/spruim4
+[36] Texas-Instruments, “mmWave radar ROS Node: Time sync of
+frames from multiple sensors.” Accessed: 2023. [Online]. Available:
+https://software-dl.ti.com/jacinto7/esd/robotics-sdk/08_06_01/AM69A/
+docs/source/docs/multi_sensor_time_synchronization.html
+[37] Keyence, “LK-G30: Sensor head spot type.” Accessed: 2023. [On-
+line]. Available: https://www.keyence.co.in/products/measure/laser-1d/
+lk-g3000/models/lk-g30/
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.
+12358 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 11, NOVEMBER 2025
+[38] Keyence, “LK-G3001: Separate controller, NPN output.” Accessed: 2024.
+[Online]. Available: https://www.keyence.co.in/products/measure/laser-
+1d/lk-g3000/models/lk-g3001/
+[39] Z. Zhang, J. Zhang, J. Liu, Y . Li, and C. Gu, “Enhanced motion sensing with
+FMCW radar based on a novel frequency-reconﬁgurable technique,”IEEE
+Trans. Microw. Theory Techn., vol. 72, no. 10, pp. 6187–6199, Oct. 2024.
+Changlin Mao received the BS degree in computer
+science from the Wenzhou University of Technology,
+in 2019. He is currently working toward the MS
+degree. His research interests include deep learning,
+mmWave radar signal processing, and applications in
+smart manufacturing and health care.
+Yingxiao Wu (Member, IEEE) received the MS de-
+gree in computer applications technology from the
+Hangzhou Dianzi University, Hangzhou, China, in
+2003 and the PhD degree in signal and information
+processing from Nanjing University of Posts and
+Telecommunications, Nanjing, China, in 2010. From
+2013 to 2014, she was a visiting scholar with State
+University of New York at Buffalo, Buffalo, NY ,
+USA. Since 2021, she has been a Research Fellow
+with the Department of Computer, Hangzhou Di-
+anzi University. From 2010 to 2019, she was with
+Huaxin Consulting Company Ltd as professoriate senior engineer, Hangzhou.
+From 2019 to 2021, she was a Senior Research Specialist with Zhejiang Lab,
+Hangzhou. Her research interests include wireless sensing, pervasive computing,
+and industrial internet, and deep learning.
+Haocheng Ni received the BS degree in network en-
+gineering from Jiaxing University, in 2021. He is cur-
+rently working toward the MS degree with Hangzhou
+Dianzi University. His research interests include RF
+sensing and deep learning.
+Jianpin Han received the BS and MS degrees from
+Nanjing University of Aeronautics and Astronautics,
+in 1990 and 1996, respectively, and the PhD degree
+in computer science from Zhejiang University, in
+2009. He is currently a Professor with the School of
+Computer Science and Technology, Hangzhou Dianzi
+University. His research interests include data intelli-
+gence, blockchain, and image information fusion.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:34:52 UTC from IEEE Xplore.  Restrictions apply.

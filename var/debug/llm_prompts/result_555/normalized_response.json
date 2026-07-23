@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[37]",
+  "target_reference_entry": "[37] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182\n(Dec. 2022), 25 pages. doi:10.1145/3494975",
+  "paper_level_summary_zh": "该论文在相关工作中简要提及RFID标签可用于音频感知，但引用标记[23]实际指向一篇关于MEMS陀螺仪识别说话人的论文，而非目标论文。目标论文仅在参考文献中出现，正文未引其工作。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "MEMS gyroscopes [23] can capture low-frequency acoustic signals (less than 200 Hz) and, using machine learning, identify speaker characteristics with 77% accuracy.",
+      "evidence_context": "Alternative signals also offer intriguing solutions for audio perception, such as accelerometer signal in smartphone [1, 14, 19], mechanical signals in magnetic hard disks [17], smartphone camera image stream signals [22], COTS RFID tags [37] and so on. ... Furthermore, MEMS gyroscopes [23] can capture low-frequency acoustic signals (less than 200 Hz) and, using machine learning, identify speaker characteristics with 77% accuracy.",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182 (Dec. 2022), 25 pages. doi:10.1145/3494975",
+      "why_this_judgment_zh": "正文中[23]的引用描述的是MEMS陀螺仪低频声学信号捕捉，与目标论文RFID亚毫米振动感知完全不相关。引用标记匹配错误，判定为误报。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该论文在正文中引用[23]描述MEMS陀螺仪功能，而非目标论文的RFID亚毫米级振动感知工作，属于引用错误。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[37]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Yan Michalevsky, Dan Boneh, and Gabi Nakibly. 2014. Gyrophone: Recognizing Speech from Gyroscope Signals. In 23rd USENIX\nSecurity Symposium (USENIX Security 14) . USENIX Association, San Diego, CA, 1053–1067. https://www.usenix.org/conference/\nusenixsecurity14/technical-sessions/presentation/michalevsky",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[37] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182\n(Dec. 2022), 25 pages. doi:10.1145/3494975",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

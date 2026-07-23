@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "HJ Landau. Sampling, data transmission, and the nyquist rate. Proceedings of the IEEE, 55(10):1701–1706, 1967.",
+  "paper_level_summary_zh": "该引用论文仅在提及Nyquist定理时泛泛引用[23]作为采样率依据，未对目标论文的亚毫米级感知能力、RFID技术或通过墙窃听能力进行任何实质性描述或能力认可。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "this range is sufficient for most speech recognition applications (according to the Nyquist theorem [23])",
+      "evidence_context": "In our configuration, the resulting audio sampling rate is 8 kHz, implying that, according to the Nyquist theorem [23], frequency components up to 4 kHz can be captured. This range is sufficient for most speech recognition applications.",
+      "reference_entry": "HJ Landau. Sampling, data transmission, and the nyquist rate. Proceedings of the IEEE, 55(10):1701–1706, 1967.",
+      "why_this_judgment_zh": "引用[23]仅用于支持Nyquist采样定理，与目标论文的RFID亚毫米级振动感知、通过墙窃听等能力完全无关。引用标记[23]指向的是Landau(1967)的经典采样定理论文，而非目标论文。",
+      "copy_ready_zh": "引用论文仅在技术背景中引用Nyquist定理，未涉及目标论文的任何具体能力或贡献。",
+      "confidence": "high"
+    }
+  ]
+}

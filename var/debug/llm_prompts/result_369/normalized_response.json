@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[34]",
+  "target_reference_entry": "[34] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, and Yingying Chen et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via RFID\nby Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.5, 4 (2021), 182:1–182:25.",
+  "paper_level_summary_zh": "该论文在系统实现部分引用[23]作为USRP N210读取器的开源实现来源，属于工具/软件引用，并非对目标论文核心贡献（亚毫米级振动感知、穿墙窃听等）的认可或使用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "We implement RF-Mic using an Impinj Speedway R420 COTS RFID reader to transmit RF signals and a USRP N210 with a SBX daughter-board according to the open source project [23] for capturing the harmonic RF signals.",
+      "evidence_context": "We implement RF-Mic using an Impinj Speedway R420 COTS RFID reader to transmit RF signals and a USRP N210 with a SBX daughter-board according to the open source project [23] for capturing the harmonic RF signals.",
+      "reference_entry": "F. Mavromatis N. Kargas and A. Bletsas. 2019. USRP reader. [Online]. Available: https://github.com/nkargas/Gen2-UHF-RFID-Reader.",
+      "why_this_judgment_zh": "[23]对应的是一个开源USRP读取器软件项目，并非目标论文。引用仅涉及硬件实现工具，与目标论文的主题（穿墙窃听、亚毫米级振动感知）无关，因此判断为false_positive。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文将[23]作为USRP读取器的开源实现引用，但[23]为软件项目而非目标论文，故排除。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[34]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] F. Mavromatis N. Kargas and A. Bletsas. 2019. USRP reader. [Online]. Available: https://github.com/nkargas/Gen2-UHF-RFID-Reader.\nProc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 2, Article 49. Publication date: June 2023.\nRF-Mic: Live Voice Eavesdropping via Capturing Subtle Facial Speech Dynamics Leveraging RFID • 49:25",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[34] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, and Yingying Chen et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via RFID\nby Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.5, 4 (2021), 182:1–182:25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "target_reference_marker": "[49]",
+  "target_reference_entry": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+  "paper_level_summary_zh": "该文在介绍Rydberg原子时引用[23]作为Rydberg原子的定义来源，属于背景知识引用，未涉及目标论文的核心贡献（穿墙窃听、亚毫米级RFID振动感知）。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "evidence_context": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "[23]对应的是一本关于Rydberg原子的教材，而非目标论文。引用仅用于定义Rydberg原子，不涉及目标论文的RFID亚毫米振动或穿墙窃听贡献，属于假阳性。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该文引用[23]仅作为Rydberg原子的通用定义来源，未提及目标论文的核心贡献。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[49]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "evidence_context": "From the macroscopic perspective, conventional receivers receive RF signals using antennas. From the microscopic perspective, quantum receiver received RF signals using the electron energy transition of atoms. Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用[23]作为薛定谔方程的文献来源，属于基础物理引用，与目标论文的RFID亚毫米振动或穿墙窃听无关，且[23]并非目标论文，应为假阳性。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用[23]仅用于薛定谔方程的一般性参考，不涉及目标论文。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[49]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[95]",
+  "target_reference_entry": "[95] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing\nSub-mm Level Vibration,”Proceedings of the ACM on Interactive,\nMobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25,\n2021.",
+  "paper_level_summary_zh": "引用论文在背景部分提及[23]作为分布式声学传感（DAS）在粗粒度、大规模振动检测中的应用实例，但并未明确将目标论文（即Wang等人2021年的RFID亚毫米级振动窃听论文）作为引用对象。这里[23]实际上是指向一篇冰川地震监测的DAS论文，而非目标论文。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Since DAS can detect real-time strain changes by demodulating the phase change of Rayleigh scattering, potentially allowing for the detection of sound waves occurring in the vicinity of the optical fiber, effectively turning the optical fiber into a covert listening device. In our study, we employ a commercial DAS system. Our work is the first to demonstrate the potential of using DAS in conjunction with telecommunication optical fibers to extract fine-grained information, such as human conversations, beyond the coarse, large-scale vibrations targeted in previous applications (e.g., [23], [24], [25]).",
+      "evidence_context": "Since DAS can detect real-time strain changes by demodulating the phase change of Rayleigh scattering, potentially allowing for the detection of sound waves occurring in the vicinity of the optical fiber, effectively turning the optical fiber into a covert listening device. In our study, we employ a commercial DAS system. Our work is the first to demonstrate the potential of using DAS in conjunction with telecommunication optical fibers to extract fine-grained information, such as human conversations, beyond the coarse, large-scale vibrations targeted in previous applications (e.g., [23], [24], [25]).",
+      "reference_entry": "F. Walter, D. Gräff, F. Lindner, P. Paitz, M. Köpfli, M. Chmiel, and A. Fichtner, \"Distributed Acoustic Sensing of Microseismic Sources and Wave Propagation in Glaciated Terrain,\" Nature Communications, vol. 11, no. 1, p. 2436, 2020.",
+      "why_this_judgment_zh": "引用标记[23]在正文中被用来举例说明DAS在粗粒度振动检测中的应用，但[23]指向的是一篇冰川地震监测的论文，并非目标论文。目标论文是RFID亚毫米级振动窃听论文，且其引用标记应为[95]。因此，这是错误归因的引用，应认定为false_positive。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该证据中的引用标记[23]指向的是DAS地震监测论文，并非目标RFID亚毫米级论文，因此不构成目标论文的有效证据。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[95]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] F. Walter, D. Gr ¨aff, F. Lindner, P. Paitz, M. K ¨opfli, M. Chmiel, and\nA. Fichtner, “Distributed Acoustic Sensing of Microseismic Sources\nand Wave Propagation in Glaciated Terrain,”Nature communications,\nvol. 11, no. 1, p. 2436, 2020.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[95] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing\nSub-mm Level Vibration,”Proceedings of the ACM on Interactive,\nMobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25,\n2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

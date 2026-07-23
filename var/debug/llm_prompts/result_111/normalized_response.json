@@ -1,0 +1,90 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RFID-based vibration sensing has been widely used in areas like machine fault diagnosis [8–16], vital signs monitoring [17,18], and speech eavesdropping [19–23].",
+      "reasoning": "Target [23] is cited in a list of works in speech eavesdropping, establishing it as part of the broader application area of RFID vibration sensing. However, the citation is grouped and no specific contribution is described.",
+      "keywords": [
+        "speech eavesdropping",
+        "RFID-based vibration sensing"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "citation_text": "Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping.",
+      "reasoning": "This sentence explicitly describes the target paper's contribution: enabling through-wall eavesdropping. It is a concise statement in the related work section, classifying it as background but with a positive acknowledgement of the extension.",
+      "keywords": [
+        "through-wall eavesdropping",
+        "extended RFID sensing"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "citation_text": "Sound is a mechanical wave that travels through vibration. RF signals can detect voice remotely in soundproof environments, overcoming limits of traditional audio sensing. They interact with the environment during propagation-such as via Doppler and multipath effects-to capture sound-induced vibrations. TagMic [22], built with COTS devices, was the first to show RFID tags could be used for eavesdropping. Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping. RF-Mic [20] uses RFID tags to create a low-cost, hidden, and flexible voice monitoring system, marking an early application of RFID in voice surveillance.",
+      "reasoning": "The context situates target [23] within the line of voice eavesdropping research, noting it extended RFID sensing to through-wall. It is part of a narrative of prior work, thus classified as background.",
+      "keywords": [
+        "through-wall eavesdropping",
+        "extended RFID sensing"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RFID-based vibration sensing has been widely used in areas like machine fault diagnosis [8–16], vital signs monitoring [17,18], and speech eavesdropping [19–23].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[23]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "Target [23] is cited in a list of works in speech eavesdropping, establishing it as part of the broader application area of RFID vibration sensing. However, the citation is grouped and no specific contribution is described.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping.",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "target_reference_marker": "[23]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This sentence explicitly describes the target paper's contribution: enabling through-wall eavesdropping. It is a concise statement in the related work section, classifying it as background but with a positive acknowledgement of the extension.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Sound is a mechanical wave that travels through vibration. RF signals can detect voice remotely in soundproof environments, overcoming limits of traditional audio sensing. They interact with the environment during propagation-such as via Do...",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "target_reference_marker": "[23]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The context situates target [23] within the line of voice eavesdropping research, noting it extended RFID sensing to through-wall. It is part of a narrative of prior work, thus classified as background.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": false
+    }
+  ]
+}

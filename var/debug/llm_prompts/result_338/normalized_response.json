@@ -1,0 +1,36 @@
+{
+  "target_reference_marker": "[21]",
+  "target_reference_entry": "[21] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang,\nand S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid\nby capturing sub-mm level vibration,” Proc. of ACM on Interactive,\nMobile, Wearable and Ubiquitous Technologies (IMWUT , vol. 5,\nno. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "本文在相关工作部分将目标论文列为RFID声学窃听的代表性工作之一，并描述其结合cGAN进行窃听，但指出其需要预安装RFID标签，实用性有限。同时提到其存在分辨率不足等问题。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim's proximity, which reduces its practicality.",
+      "evidence_context": "In the subsection \"RF-based acoustic eavesdropping\" of the Related Work section, the paper groups [21] (Tag-Bug) and [22] (Uwhear) and then states: \"[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim's proximity, which reduces its practicality.\"",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用论文在相关工作中将[21]作为RFID窃听的一个例子，并指出其实用性限制。该引用属于普通的相关工作提及，没有明确确认目标论文实现了亚毫米级感知或首次开创性能力。目标论文虽有子毫米级标题，但引用句中未体现出该能力。",
+      "copy_ready_zh": "引用论文在相关工作中提及了目标论文，将其作为使用RFID进行声学窃听的方法之一，并指出了其需要预安装标签的局限性。但未明确肯定其亚毫米级振动感知能力。",
+      "confidence": "high",
+      "target_reference_marker": "[21]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": false,
+      "target_reference_entry_matches_target": true
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "In summary, these WiFi signal- and impulse radio-based methods [14], [15], [21], [22], [24] suffer a insufficient vibration resolution due to long wavelength and low packet rate.",
+      "evidence_context": "Immediately after discussing [21] and other methods, the paper concludes: \"In summary, these WiFi signal- and impulse radio-based methods [14], [15], [21], [22], [24] suffer a insufficient vibration resolution due to long wavelength and low packet rate.\" Here [21] is grouped with WiFi and impulse radio methods and criticized for insufficient resolution.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, \"Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,\" Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用论文将[21]与其他方法归为一类，并指出其振动分辨率不足。这属于限制性反馈（limitation_feedback），而非正面能力认可。由于原文未单独描述目标论文，且该句为分组批评，应归类为负面相关。",
+      "copy_ready_zh": "引用论文指出包括目标论文在内的RF方法存在振动分辨率不足的问题，未对其亚毫米级能力进行肯定。",
+      "confidence": "high",
+      "target_reference_marker": "[21]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true,
+      "grouped_citation": true
+    }
+  ]
+}

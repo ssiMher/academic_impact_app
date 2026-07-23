@@ -1,0 +1,70 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Low-frequency radio signals have been widely leveraged for fine-grained human activity recognition (HAR), such as Wi-Fi sensing [9, 15, 19, 20, 36, 37], RFID sensing [35, 43], and 4G/5G sensing [7, 40].",
+      "reasoning": "The target [35] is cited in a grouped citation listing RFID sensing as an example of fine-grained HAR. The context does not describe specific capabilities or contributions of the target paper, just a general mention. Template 73 requires explicit sub-mm or vibration sensing capability, which is not present; template 74 requires first/pioneering language, which is absent.",
+      "keywords": [
+        "RFID sensing",
+        "fine-grained human activity recognition"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "citation_text does not anchor to target paper",
+          "matched_terms": [
+            "sub-mm",
+            "rfid",
+            "vibration sensing"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Low-frequency radio signals have been widely leveraged for fine-grained human activity recognition (HAR), such as Wi-Fi sensing [9, 15, 19, 20, 36, 37], RFID sensing [35, 43], and 4G/5G sensing [7, 40].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[35]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target [35] is cited in a grouped citation listing RFID sensing as an example of fine-grained HAR. The context does not describe specific capabilities or contributions of the target paper, just a general mention. Template 73 requires explicit sub-mm or vibration sensing capability, which is not present; template 74 requires first/pioneering language, which is absent.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

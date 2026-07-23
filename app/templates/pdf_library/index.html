@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% from "components/stat_card.html" import stat_card %}
+{% from "components/status_badge.html" import status_badge %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}本地 PDF 库{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">PDF 资产池</div>
+      <h1>本地 PDF 库</h1>
+      <p>上传 PDF 会进入 PDF 资产池；本地来源目录只是批量导入 PDF 的来源之一。页面不会显示本地绝对路径。</p>
+    </div>
+    <div class="quick-links">
+      <a class="button button-secondary" href="/">返回首页</a>
+      {% if enabled %}
+        <form action="/pdf-library/rebuild" method="post">
+          <button class="button button-primary" type="submit">重建本地 PDF 索引</button>
+        </form>
+      {% endif %}
+    </div>
+  </header>
+
+  <section class="stat-grid">
+    {{ stat_card("PDF 资产总数", asset_pool.asset_count) }}
+    {{ stat_card("已抽取文本数量", asset_pool.extracted_count) }}
+    {{ stat_card("已绑定论文数量", asset_pool.linked_publication_count) }}
+    {{ stat_card("队列复用次数", asset_pool.queue_reuse_count) }}
+  </section>
+  <span class="sr-only">PDF asset pool count {{ asset_pool.asset_count }}</span>
+
+  <section class="card">
+    <div class="section-heading">
+      <h2>PDF 资产池</h2>
+      <p>包含用户上传 PDF 和本地目录扫描导入 PDF。</p>
+    </div>
+    {% if asset_pool.recent_assets %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>文件名</th>
+            <th>来源</th>
+            <th>抽取状态</th>
+            <th>绑定 DOI</th>
+            <th>绑定 OpenAlex ID</th>
+            <th>绑定标题</th>
+            <th>队列使用次数</th>
+            <th>最近引用论文</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for asset in asset_pool.recent_assets %}
+            <tr>
+              <td>{{ asset.original_filename }}</td>
+              <td>{{ asset.source_type }}</td>
+              <td>{{ asset.extract_status }}</td>
+              <td>{{ asset.doi or "" }}</td>
+              <td>{{ asset.openalex_id or "" }}</td>
+              <td>{{ asset.raw_title or "" }}</td>
+              <td>{{ asset.queue_usage_count }}</td>
+              <td>{{ asset.latest_citing_paper_title or "" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      {{ empty_state("暂无 PDF 资产", "上传 PDF 或重建本地目录索引后，PDF 会进入资产池。") }}
+    {% endif %}
+  </section>
+
+  <section class="stat-grid">
+    {{ stat_card("本地扫描状态", "已启用" if enabled else "未启用") }}
+    {{ stat_card("本地扫描索引条目数", entry_count) }}
+    {{ stat_card("来源目录数", source_dirs|length) }}
+    {{ stat_card("最近错误", recent_error or "无") }}
+  </section>
+  <p class="sr-only">Status {% if enabled %}enabled{% else %}local library disabled{% endif %}</p>
+  <p class="sr-only">Entry count {{ entry_count }}</p>
+  <p class="sr-only">Recent error {{ recent_error or "none" }}</p>
+
+  <section class="card">
+    <div class="section-heading">
+      <h2>本地目录扫描来源</h2>
+      <p>只会扫描配置中的目录，不允许用户在页面输入任意扫描路径。</p>
+    </div>
+    {% if source_dir_infos %}
+      <div class="layout-grid">
+        {% for info in source_dir_infos %}
+          <article class="card">
+            <div class="card-row card-row-between">
+              <div>
+                <h3>{{ info.display_path }}</h3>
+                {% if info.is_relative %}
+                  <p class="notice notice-warning">当前是相对路径，实际扫描位置取决于程序启动目录。建议使用绝对路径。</p>
+                {% endif %}
+                {% if not info.exists %}
+                  <p class="notice notice-warning">目录不存在，请检查配置。</p>
+                {% endif %}
+              </div>
+              {{ status_badge("exists" if info.exists else "missing") }}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% elif enabled %}
+      {{ empty_state("未配置来源目录", "请通过环境变量配置本地 PDF 库目录。") }}
+    {% else %}
+      {{ empty_state("本地 PDF 库未启用", "未配置 ACADEMIC_IMPACT_PDF_LIBRARY_DIRS 时系统仍可正常运行。") }}
+    {% endif %}
+  </section>
+
+  {% if entry_count == 0 and asset_pool.asset_count == 0 %}
+    {{ empty_state("尚未索引到 PDF", "尚未索引到 PDF。请确认来源目录存在且包含 PDF 文件，或点击重建索引。") }}
+  {% elif entry_count == 0 and asset_pool.asset_count > 0 %}
+    {{ empty_state("本地目录暂无扫描条目", "本地目录暂无扫描条目，但系统已有上传 PDF 资产，可在分析队列中复用。") }}
+  {% endif %}
+
+  <section class="card">
+    <div class="section-heading">
+      <h2>最近索引条目</h2>
+      <p>仅显示文件名和检测到的公开标识，不显示本地绝对路径。</p>
+    </div>
+    {% if entries %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>文件名</th>
+            <th>DOI</th>
+            <th>arXiv</th>
+            <th>SHA256</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+            <tr>
+              <td>{{ entry.filename }}</td>
+              <td>{{ entry.detected_doi or "" }}</td>
+              <td>{{ entry.detected_arxiv_id or "" }}</td>
+              <td>{{ entry.sha256[:12] }}...</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      {{ empty_state("暂无索引条目", "请先重建本地 PDF 索引。") }}
+    {% endif %}
+  </section>
+{% endblock %}

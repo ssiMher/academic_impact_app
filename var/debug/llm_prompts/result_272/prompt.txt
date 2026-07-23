@@ -1,0 +1,1421 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | method_use | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: RF-AbVib: Environment-independent vibration monitoring using COTS RFID devices
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+Contents lists available at ScienceDirect
+Computer Networks
+journal homepage: www.elsevier.com/locate/comnet
+RF-AbVib: Environment-independent vibration monitoring using COTS 
+RFID devices 
+Min Lia,b, Guangxuan Baia,b, Di Gaoc, Shuai Wang
+ a,b, Siye Wang
+ a,b, Yanfang Zhanga,b, 
+Yue Feng
+ a,b,∗
+a Institute of Information Engineering, Chinese Academy of Sciences, Beijing, 100085, China
+b School of Cyber Security, University of Chinese Academy of Sciences, Beijing, 101408, China
+c School of Intelligent Science and Technology, Hangzhou Institute for Advanced Study, University of Chinese Academy of Sciences, Hangzhou, 310024, China
+a r t i c l e i n f o
+Keywords:
+Radio frequency identiﬁcation (RFID)
+Wireless sensing
+Environment independence
+Signal processing
+Meta-learning
+ a b s t r a c t
+Endowing IoT devices with self-security monitoring capabilities without relying on external hardware marks 
+a signiﬁcant advancement in the ﬁeld. RFID-equipped smart cabinets, while providing robust protection for 
+sensitive items such as documents and electronic devices, remain vulnerable to violent break-ins or physical dis-
+turbances such as slapping and shaking, which produce characteristic vibration patterns. We demonstrated that 
+the cabinet’s integral RFID system can inherently detect such vibrations, thus enhancing its self-security. How-
+ever, overcoming environmental dependency remains a critical challenge: variations in the shape, size, material, 
+and spatial arrangement of items inside the cabinet interfere with RFID signal propagation, resulting in complex 
+multipath eﬀects that compromise vibration-sensing accuracy and weaken security detection. To address this 
+limitation and enable self-security monitoring, we proposed RF-AbVib, a novel solution that utilizes commercial 
+oﬀ-the-shelf RFID readers in conjunction with a ﬁxed reference tag mounted on the inner wall of the cabinet to 
+achieve environment-independent vibration monitoring. We pre-trained and ﬁne-tuned a meta-learning model 
+to enable RF-AbVib to process variable-length data and adapt to diverse environmental conditions. Furthermore, 
+we proposed a bilateral threshold ﬁltering (BTF) algorithm combined with discrete wavelet transform (DWT) to 
+remove outliers and hardware noise while preserving subtle vibration features in RFID signals. Evaluated across 
+31 distinct environments, RF-AbVib achieved 95.59 % accuracy in detecting three abnormal behaviors with only 
+one sample, regardless of the reference tag’s position, orientation, or type. Relevant data has been uploaded to 
+the RF-AbVib dataset.
+1.  Introduction
+Driven by rapid advancements in ﬁelds such as the internet of things, 
+embedded systems, and artiﬁcial intelligence, RFID-equipped smart cab-
+inets [1,2] have emerged as an innovative intelligent storage solution. 
+These cabinets are progressively transforming traditional notions of stor-
+age by integrating advanced technologies, such as RFID and infrared 
+sensing. With a fully integrated RFID system, smart cabinets facilitate 
+eﬃcient, standardized management and in-situ monitoring of sensitive 
+items-including documents, tools, hazardous chemicals, medical sup-
+plies, and precious metals-through the use of RFID tags.
+The security of smart cabinets is crucial for safeguarding stored 
+items. Consider a scenario in which an unauthorized individual attempts 
+to damage or forcibly open the cabinet to steal contents, or shakes 
+it violently, causing internal damage. Current RFID-based smart stor-
+∗ Corresponding author.
+ E-mail address: fengyue@iie.ac.cn (Y. Feng).
+age solutions do not comprehensively consider these potential threats. 
+Traditional safety monitoring systems rely on physical sensors, such as 
+accelerometers [3], which must be directly attached to the object be-
+ing monitored. This adds complexity to the system and may interfere 
+with the device’s normal functionality. Camera-based approaches [4,5], 
+which utilize computer vision and machine learning techniques, are ca-
+pable of detecting abnormal vibrations. However, their performance is 
+constrained by line-of-sight requirements and visibility conditions, and 
+their deployment may raise privacy concerns in sensitive environments. 
+Laser-based sensing technology [6] oﬀers high sensitivity to vibration; 
+however, it also suﬀers from line-of-sight limitations and is associated 
+with high implementation costs.
+In recent years, advancements in integrated sensing and communi-
+cation (ISAC) technologies [7] have enabled the use of wireless signals 
+for information exchange and environmental sensing. Wireless vibration 
+https://doi.org/10.1016/j.comnet.2025.111738
+Received 25 December 2024; Received in revised form 28 July 2025; Accepted 23 September 2025
+Computer Networks 272 (2025) 111738 
+Available online 27 September 2025 
+1389-1286/© 2025 Published by Elsevier B.V.
+M. Li et al.
+sensing, as a specialized area within the broader ﬁeld of ISAC, utilizes 
+radio-frequency signals-such as RFID [8–23], Wi-Fi [24–27], UWB [28], 
+MMW [29–34], and visible light (VL) [35]-to detect and analyze vibra-
+tion characteristics of objects or environments. Compared to other ap-
+proaches, RFID stands out due to its compact size, lightweight design, 
+low cost, and ease of deployment, which contribute to its widespread ap-
+plication in industrial monitoring [8–16], healthcare [17,18], and eaves-
+dropping [19–23]. These studies collectively illustrate that RFID signals 
+are capable of detecting subtle changes induced by vibrations, oﬀering 
+an innovative solution for the security monitoring of smart cabinets. 
+Building upon this foundation, we proposed a novel approach to mon-
+itor vibrations caused by abnormal actions using built-in commercial 
+oﬀ-the-shelf (COTS) RFID devices within the smart cabinet. The pro-
+posed method enables the smart cabinet to self-detect and self-identify 
+such vibrations by extracting signal ﬂuctuation features.
+However, achieving robust and accurate measurements across di-
+verse environments needs to be addressed. RFID signals are sensitive to 
+environmental changes, and both phase and RSSI values can be aﬀected 
+by objects of varying shapes, sizes, and materials located in diﬀerent 
+parts of the cabinet. Traditional machine learning algorithms [20,30,36] 
+struggle in dynamic settings because they rely on large amounts of 
+environment-speciﬁc training data, which takes time and resources to 
+collect. As a result, these models work well only in the environments 
+they were trained on and lose accuracy when used elsewhere, especially 
+for detecting abnormal vibrations. Recent studies aim to reduce the im-
+pact of environmental variation. One method [36] collects data from 
+many environments to build a more general model. However, it’s im-
+practical to cover all possible conditions, and data collection remains 
+slow and labor-intensive. Transfer learning [37,38] oﬀers an alterna-
+tive by applying knowledge from one environment to another related 
+one, reducing the need for new data and speeding up training. While 
+transfer learning boosts performance, it still faces challenges in cross-
+environment applications, especially when data is scarce or costly. Large 
+diﬀerences between environments can cause negative transfer [39], 
+where performance gets worse instead of better. Choosing an appro-
+priate source domain model and features [40] is also essential and often 
+requires trial and expert knowledge. Moreover, transfer learning models 
+can be hard to interpret [41] due to complex feature interactions during 
+the transfer process.
+To address the above challenge, we propose RF-AbVib, an RFID-
+based approach for monitoring abnormal vibrations that achieves com-
+parable accuracy across 31 environments while requiring only a single 
+sample per environment. The method requires no additional hardware, 
+using only a reference tag attached to the inner wall of the smart cabinet. 
+However, several challenges must also be addressed during the imple-
+mentation of RF-AbVib. First, it is crucial to maintain accuracy despite 
+environmental changes resulting from frequent item storage or retrieval. 
+Second, outliers arising from environmental variations and noise gener-
+ated by hardware components can degrade system performance. Third, a 
+dynamically changing sampling rate introduces variable delays when ac-
+cumulating data to a required length, impeding real-time operation. To 
+address these issues, we design the following solutions. For the ﬁrst chal-
+lenge, we develop and implement a meta-learning network tailored for 
+RFID sensing applications. For the second, we design a bilateral thresh-
+old ﬁltering (BTF) algorithm integrated with discrete wavelet transform 
+(DWT) [42] to remove outliers and smooth the signal. For the third 
+challenge, we replace the ﬁxed-length-based window with a time-based 
+window and introduce a custom data-length transformation method to 
+satisfy the input requirements of the meta-learning framework.
+The main contributions of this paper include:
+• We propose an innovative, environment-independent vibration mon-
+itoring methodology, RF-AbVib, based on commercial oﬀ-the-shelf 
+(COTS) RFID devices. This approach enables RFID-equipped smart 
+cabinets to achieve autonomous self-security monitoring across di-
+verse environments without requiring additional hardware.
+• We present a bilateral threshold ﬁltering (BTF) method integrated 
+with discrete wavelet transform (DWT) to suppress noise and remove 
+outliers, thereby enhancing signal processing accuracy.
+• We design a customized data-padding method and implement a 
+model-agnostic meta-learning (MAML) network prototype to adapt 
+to real-time sampling rate variations across diverse environments. 
+This approach achieves an accuracy of 95.59 % in identifying three 
+types of abnormal behaviors using only a single training sample 
+across 31 environments, signiﬁcantly reducing the data demands 
+typically required by traditional machine learning methods.
+• We have collected 12,480 pieces of data across 31 environments and 
+uploaded the relevant data to a RF-AbVib dataset, facilitating future 
+research development and improvements.
+The remainder of this paper is structured as follows. Section 2 
+presents the preliminaries. Section 3 describes the detailed design of 
+RF-AbVib. The performance evaluation of RF-AbVib is provided in
+Section 4. Section 5 discusses the system’s limitations and potential di-
+rections for future research. Related work is reviewed in Section 6. Fi-
+nally, Section 7 concludes the paper.
+2.  Preliminaries
+In this section, we introduce the fundamental knowledge of RFID 
+technology and present preliminary experimental results demonstrating 
+that micro-vibrations caused by abnormal behaviors can be eﬀectively 
+detected using RFID signals.
+2.1.  Signal propagation model of RFID
+A passive UHF RFID system consists of three core components: a tag, 
+a reader, and an antenna. The antenna is responsible for transmitting 
+and receiving radio frequency signals, enabling the chip inside the tag 
+to communicate with the reader. In RFID systems, phase and received 
+signal strength indicator (RSSI) are critical parameters for characteriz-
+ing and analyzing RF signal propagation. The phase calculation can be 
+formulated as follows:
+𝜙 =
+(2𝑑
+𝜆 ⋅ 2𝜋 + 𝜙𝑜𝑓𝑓𝑠𝑒𝑡
+)
+mod 2 𝜋 (1)
+where 𝑑 is the distance between the antenna and the tag, 𝜆 is the wave-
+length of the transmitted signal, and 𝜙𝑜𝑓𝑓𝑠𝑒𝑡  is the phase oﬀset intro-
+duced by hardware components. It is evident that, in the absence of 
+hardware interference, the phase depends solely on the distance 𝑑. The 
+calculation of RSSI depends on multiple factors, which can be formally 
+expressed as:
+𝑅𝑆𝑆𝐼 = 𝑃𝑇 𝑋 ⋅ 𝐿𝑏 ⋅ 𝐺2
+𝑟𝑒𝑎𝑑𝑒𝑟 ⋅ 𝐺2
+𝑡𝑎𝑔 ⋅
+( 𝜆
+4𝜋𝑑
+)4
+(2)
+where 𝑃𝑇 𝑋 is the transmission power of the reader antenna, 𝐿𝑏 is the 
+backscatter transmission loss of the tag, 𝐺𝑟𝑒𝑎𝑑𝑒𝑟  and 𝐺𝑡𝑎𝑔 are the antenna 
+gains of the reader and the tag, respectively, 𝜆 is the signal wavelength, 
+and 𝑑 is the distance between the antenna and the tag. When the hard-
+ware conﬁguration remains constant, the RSSI depends exclusively on 
+the distance between the tag and the antenna.
+Eqs.  (1) and (2) show that both phase and RSSI depend solely on 
+the distance between the antenna and the tag when all other parameters 
+are held constant. Consequently, if the cabinet is subjected to external 
+forces, such as slapping or shaking, the wall-mounted tag (Fig. 1) oscil-
+lates relative to the antenna at the bottom. This oscillation modulates 
+their distance, producing measurable ﬂuctuations in phase and RSSI. 
+These signal ﬂuctuations form distinctive vibration signatures that can 
+be detected and analyzed.
+2.2.  Preliminary experiments
+To validate the feasibility of RF-AbVib, we conducted exper-
+iments in a real-world environment. A metal cabinet measuring 
+Computer Networks 272 (2025) 111738 
+2
+M. Li et al.
+Table 1 
+Six diﬀerent environment Settings contained in the cabinet.
+ Environments  Descriptions
+𝐸𝑛𝑣𝑖1  There is nothing in the cabinet.
+𝐸𝑛𝑣𝑖2  A bookshelf made of plastic is placed in the middle of the cabinet, and three ﬁle boxes are placed on the bookshelf.
+𝐸𝑛𝑣𝑖3  A bookshelf made of plastic is placed in the middle of the cabinet, and three ﬁle boxes with E51 tags are placed on the bookshelf.
+𝐸𝑛𝑣𝑖4  A book with a thickness of about 3 cm is placed in the middle of the cabinet.
+𝐸𝑛𝑣𝑖5  A bottle of water is placed in the middle of the cabinet.
+𝐸𝑛𝑣𝑖6  A tablet is placed in the middle of the cabinet.
+Fig. 1. Scenario deployment diagram.
+44 cm × 39 cm × 60 cm with a thickness of 0.06 mm was used. An H47 
+reference tag was mounted on the inner top wall, with a 2 cm foam pad 
+inserted between the tag and the metal surface to minimize electromag-
+netic interference. The antenna was positioned at the bottom of the cab-
+inet and covered by a 2 cm foam board for signal stability. The cabinet 
+was otherwise empty. We deﬁned three types of abnormal actions: slap-
+ping, shaking, and pushing/pulling the door. Each action was performed 
+once to simulate potential intrusion scenarios. Fig. 2 presents the cor-
+responding variations in phase and RSSI induced by these actions. The 
+results demonstrate that continuous monitoring and analysis of the RFID 
+signal phase and RSSI enable accurate diﬀerentiation of various abnor-
+mal behaviors. This ﬁnding oﬀers new approaches for applying RFID in 
+anomaly detection, with potential applications in industrial monitoring, 
+security systems, and smart homes.
+Theoretically, when an item is added or removed, the internal en-
+vironment of the cabinet changes, altering the phase and RSSI due to 
+multipath eﬀects. To assess how environments aﬀect RF signals, we de-
+ﬁned six representative scenarios, as summarized in Table 1. In each, 
+20,000 sample points were collected for statistical analysis, as shown in 
+Fig. 3. Results show that items caused diﬀerent levels of signal outliers, 
+with 𝐸𝑛𝑣𝑖2 showing the most. Environmental diﬀerences also cause sig-
+nal deviations from the baseline. During anomalies, signal ﬂuctuation 
+ranges change, and patterns vary by environment. Thus, a model trained 
+in one environment may perform poorly in another. It is critical for a 
+system to handle cross-environment conditions in order to achieve ac-
+curate recognition.
+3.  Detailed design of RF-AbVib
+3.1.  Overview
+The key components and system workﬂow are illustrated in Fig. 4.
+• Data Collection: The data collection module records signal parame-
+ters, including phase, RSSI, and timestamps. We deﬁne three types 
+of abnormal behaviors and deploy 31 distinct experimental environ-
+ments. In each environment, a reader is used to collect vibration 
+signals corresponding to the three abnormal behaviors as well as 
+baseline signals, supporting subsequent processing and model train-
+ing.
+• Signal Preprocessing: We extract the phase and RSSI from raw data and 
+process them separately. For phase data, we ﬁrst apply unwrapping 
+due to its periodic nature. To reduce outliers, we propose a bilateral 
+threshold ﬁltering (BTF) algorithm combined with discrete wavelet 
+transform (DWT) for eﬀective smoothing. Next, to suppress static 
+environmental interference and mitigate global trend variations, we 
+compute the phase diﬀerence. For RSSI, we perform normalization. 
+Finally, the processed data are segmented to meet the input require-
+ments of the model.
+• Model training and classiﬁcation: To ensure consistent input length, we 
+adjust and ﬁx the data sequence length based on a predeﬁned time 
+window. The processed data are then partitioned into training and 
+testing sets, with each set containing unique support and query sets 
+to meet the requirements of few-shot learning-based model training 
+and evaluation. Finally, the model is tested under various experi-
+mental conﬁgurations to comprehensively assess its performance.
+3.2.  Bilateral threshold ﬁltering algorithm
+In an RFID system, two main noise sources exist: hardware noise 
+and environmental interference from items inside cabinets. Hardware 
+noise causes phase ﬂuctuations of about 0.1 radians [15,16]. Objects 
+in the cabinet can block and reﬂect signals, creating multipath eﬀects 
+that lead to signal outliers. These outliers greatly impact ﬁltering and 
+recognition accuracy. Traditional methods like amplitude-limiting ﬁl-
+tering [43], median ﬁltering [44], and mean ﬁltering [45] are eﬀective 
+for general smoothing but not suitable for our application. Amplitude-
+limiting ﬁltering struggles to determine an appropriate threshold be-
+cause it is sensitive to changes in cabinet layout. Median and mean 
+ﬁltering, while capable of removing outliers, also distort the original 
+vibration characteristics. To overcome these limitations, we propose a 
+Bilateral Threshold Filtering (BTF) strategy that identiﬁes potential out-
+liers by comparing each sample point with its neighbors and reallocates 
+them accordingly.
+Similar to most ﬁltering algorithms, the BTF applies a sliding win-
+dow of ﬁve samples with a stride of one, as detailed in Algorithm 1. Let 
+{𝜙1, …, 𝜙𝑖, …, 𝜙𝑛} denote a phase sequence of length 𝑛, where 𝜙𝑖 is the 
+𝑖th sample, 𝑇  is the threshold, 𝑚𝑒𝑛𝑎(.) computes the arithmetic mean, 
+and 𝑎𝑏𝑠(.) returns the absolute value. This algorithm identiﬁes a point 
+as an outlier if its value deviates from both of its two immediate preced-
+ing neighbors by a predeﬁned threshold. Once classiﬁed as an outlier, 
+the point is updated to the average of the valid values among its four 
+neighboring points. Therefore, the most critical step in BTF is determin-
+ing the optimal threshold. As shown in Fig. 3, placing bookshelves and 
+ﬁle boxes inside the cabinet generates the highest number of outliers. 
+Hence, we focus on this scenario for threshold selection. Four environ-
+mental layouts were created by varying the positions of ﬁle boxes on 
+shelves, with 20,000 sample points collected for each conﬁguration. To 
+identify the optimal threshold, we tested values from 0 to 0.2 in 0.01 
+increments and recorded the variance of the ﬁltered samples. Results 
+Computer Networks 272 (2025) 111738 
+3
+M. Li et al.
+Fig. 2. The changes of the raw signal caused by diﬀerent actions. (a) Phase changes when slapping the cabinet. (b) Phase changes when pushing and pulling the 
+cabinet door. (c) Phase changes when shaking the cabinet. (d) RSSI changes when slapping the cabinet. (e) RSSI changes when pushing and pulling the cabinet door. 
+(f) RSSI changes when shaking the cabinet.
+Fig. 3. Statistical features of signals collected in six environments.
+are displayed in Fig. 5. A threshold of 0 implies no ﬁltering; values be-
+low 0.08 excessively suppress variation and distort signal characteris-
+tics, while values above 0.08 allow more outliers to remain. The lowest 
+variance is observed at a threshold of 0.08, indicating optimal ﬁltering 
+performance. This value is consistently applied across all experimental 
+environments discussed in this paper.
+3.3.  Signal preprocessing
+To capture vibration features from abnormal behaviors and ensure 
+model recognition accuracy, signal preprocessing is required before 
+training.
+3.3.1.  Phase unwrapping
+As stated in Eq.  (1), the phase after the modulo operation is con-
+strained between 0 and 2𝜋. Environmental factors signiﬁcantly aﬀect 
+phase stability, making phase unwrapping necessary when values hover 
+near boundary regions. For a phase sequence {𝜙1, …, 𝜙𝑖, …, 𝜙𝑛}, un-
+wrapping is determined by examining the diﬀerence between adjacent 
+samples. Speciﬁcally, if the current phase exceeds the previous one by 
+more than 𝜋, we subtract 2𝜋; conversely, if the diﬀerence is less than 
+Algorithm 1 Bilateral threshold ﬁltering algorithm.
+Require: A sequence of the raw data 𝜙; The length of the raw data n; 
+The threshold T; 
+1: Initialize  𝑖 ← 2 as the index of the 𝜙𝑖; 
+2: while 𝑖 < 𝑛 − 2 do
+3: ref  ← mean(𝜙𝑖−2, 𝜙𝑖−1); 
+4: if 𝜙𝑖 - 𝜙𝑖−2 > 𝑇  and 𝜙𝑖 - 𝜙𝑖−1 > 𝑇  or 𝜙𝑖 - 𝜙𝑖−2 < −𝑇  and 𝜙𝑖 - 𝜙𝑖−1
+< −𝑇  then
+5: if abs(𝜙𝑖 - 𝜙𝑖+1) > 𝑇  and abs(𝜙𝑖 - 𝜙𝑖+2) > 𝑇  then
+6: if abs(𝜙𝑖+1 - ref) < 𝑇  and abs(𝜙𝑖+2 - ref) < 𝑇  then
+7: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+1, 𝜙𝑖+2);
+8: else if abs(𝜙𝑖+1 - ref) > 𝑇  and abs(𝜙𝑖+2 - ref) < 𝑇  then
+9: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+2);
+10: else if abs(𝜙𝑖+1 - ref) < 𝑇  and abs(𝜙𝑖+2 - ref) > 𝑇  then
+11: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+1);
+12: else
+13: if abs(𝜙𝑖 - mean(𝜙𝑖+1, 𝜙𝑖+2)) > 𝑇  then
+14: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+1, 𝜙𝑖+2);
+15: end if
+16: end if
+17: else if 𝜙𝑖 - 𝜙𝑖+1 > 𝑇  and 𝜙𝑖 - 𝜙𝑖+2 < −𝑇  or 𝜙𝑖 - 𝜙𝑖+1 > 𝑇  and 
+abs(𝜙𝑖 - 𝜙𝑖+2) < 𝑇  then
+18: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+1);
+19: else if 𝜙𝑖 - 𝜙𝑖+1 < −𝑇  and 𝜙𝑖 - 𝜙𝑖+2 > 𝑇  or abs(𝜙𝑖 - 𝜙𝑖+1) < 𝑇
+and 𝜙𝑖 - 𝜙𝑖+2 > 𝑇  then
+20: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+2);
+21: else if 𝜙𝑖 - 𝜙𝑖+1 < −𝑇  and 𝜙𝑖 - 𝜙𝑖+2 > 𝑇  or 𝜙𝑖 - 𝜙𝑖+1 < −𝑇  and 
+abs(𝜙𝑖 - 𝜙𝑖+2) < 𝑇  then
+22: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+1);
+23: else if 𝜙𝑖 - 𝜙𝑖+1 > 𝑇  and 𝜙𝑖 - 𝜙𝑖+2 < −𝑇  or abs(𝜙𝑖 - 𝜙𝑖+1) < 𝑇
+and 𝜙𝑖 - 𝜙𝑖+2 > −𝑇  then
+24: 𝜙𝑖 ← mean(𝜙𝑖−2, 𝜙𝑖−1, 𝜙𝑖+2);
+25: end if
+26: end if
+27: end while
+−𝜋, we add 2𝜋. The unwrapping process is formally deﬁned in Eq.  (3):
+𝜙𝑖 =
+{
+𝜙𝑖 + 2𝜋, if 𝜙𝑖−1 − 𝜙𝑖 > 𝜋
+𝜙𝑖 − 2𝜋, if 𝜙𝑖−1 − 𝜙𝑖 < −𝜋
+(3)
+where 𝑖 denotes the phase index, ranging from 2 to 𝑛.
+Computer Networks 272 (2025) 111738 
+4
+M. Li et al.
+Fig. 4. System key components and workﬂow.
+Fig. 5. Calculation of variances of ﬁltered signals with diﬀerent thresholds.
+3.3.2.  Filtering and smoothing
+As discussed in Section 3.2, raw phase data often contain numer-
+ous outliers that reduce recognition accuracy. To address this, we pro-
+pose a BTF method that identiﬁes and reassigns outliers by comparing 
+them with adjacent samples. However, even after ﬁltering, the signal 
+still shows a 0.1 radian ﬂuctuation due to hardware noise, which re-
+quires further smoothing. Discrete Wavelet Transform (DWT) oﬀers ad-
+vantages in multi-resolution analysis and eﬃcient computation, making 
+it suitable for signal smoothing, denoising, and compression. We there-
+fore apply DWT to suppress residual noise remaining after BTF.
+3.3.3.  Signal de-trending
+When abnormal behaviors occur, items inside the cabinet may slide. 
+As previously discussed, moving an item causes a phase change that ap-
+pears as a shift in the signal trend. However, prolonged signal acquisi-
+tion can also lead to gradual phase drift, either increasing or decreasing 
+over time. To correct this, we introduce phase diﬀerence, calculated as 
+the diﬀerence between consecutive samples in the sequence {𝜙1, 𝜙2, …, 
+𝜙𝑛}, deﬁned below:
+Δ𝜙𝑖 = 𝜙𝑖 − 𝜙𝑖−1 (4)
+where 𝑛 is the sequence length and 𝑖 is the sample index from 1 to 𝑛. 
+As explained in Section 2.1, phase is highly sensitive to the tag-antenna 
+distance. Cabinet vibrations cause relative movement of the tag, which 
+is reﬂected in the phase diﬀerence. This approach not only captures tem-
+poral variations caused by abnormal actions but also eﬀectively removes 
+static environmental inﬂuences.
+3.3.4.  Signal normalization
+RSSI represents the power of the received signal, which is heavily 
+inﬂuenced by distance, obstacles, and environmental conditions, caus-
+ing signiﬁcant variation. To standardize amplitude, highlight relative 
+changes, and enable comparison across environments, we apply Min-
+Max normalization to scale RSSI values into [0,1]. Assume the reader 
+collects a sequence of RSSI values over time for a given tag: {𝑅1, 𝑅2, 
+…, 𝑅𝑛}, where 𝑛 is the sequence length. For the 𝑖th value 𝑅𝑖 (1 ≤ 𝑖 ≤ 𝑛), 
+normalized value is:
+𝑅′
+𝑖 = 𝑅𝑖 − 𝑅𝑚𝑖𝑛
+𝑅max − 𝑅min
+(5)
+where 𝑅max and 𝑅min are the maximum and minimum RSSI values 
+recorded during the observation period. As stated in Eq.  (1), phase is 
+constrained to [0, 2𝜋] due to the modulo operation. This range is inher-
+ently normalized; therefore, no further normalization is needed.
+3.3.5.  Signal segmentation
+Machine learning algorithms typically require ﬁxed input sizes. A 
+common method is to use a buﬀer: Data is fed into the model only when 
+it reaches the predeﬁned length. However, this buﬀer-based segmenta-
+tion introduces variable delays when sampling rates ﬂuctuate, as illus-
+trated in Fig. 6. 𝐸𝑛𝑣𝑖1 represents the baseline; 𝐸𝑛𝑣𝑖2, 𝐸𝑛𝑣𝑖3, and 𝐸𝑛𝑣𝑖4
+indicate one, two, and three additional tags inside the cabinet (besides 
+the reference tag), respectively; 𝐸𝑛𝑣𝑖5 indicates a tablet placed centrally. 
+These changes stem from obstructions and anti-collision protocols dur-
+ing multi-tag communication. Even under identical conditions, sampling 
+rates vary slightly over time, leading to inconsistent delays before data 
+reaches the target length. To eliminate such sampling-rate-induced de-
+lays and maintain real-time performance, we propose using a time win-
+dow instead of ﬁxed-length buﬀers. This is feasible because timestamps 
+are included with each data point. We select a 3-s window to capture full 
+vibration ﬂuctuations from abnormal behaviors. However, the length of 
+data segmented within a ﬁxed time window inevitably varies. Therefore, 
+unifying the segmented data length is also necessary.
+Inspired by pooling operations in neural networks, we adopted a 
+padding and uniform sampling strategy to standardize input lengths for 
+Computer Networks 272 (2025) 111738 
+5
+M. Li et al.
+Fig. 6. Sample rate of the reader in diﬀerent environments.
+training. Assuming the actual data length collected by the reader within 
+a 3-s window is 𝑁 and the model’s uniform input length is ﬁxed at 400, 
+then:
+𝐾 =
+⌈ 𝑁
+400
+⌉
+(6)
+𝑆 =
+⌈ 𝑁
+400
+⌉
+(7)
+where K denotes the kernel size and S denotes the stride during each 
+movement. There are two typical data padding methods: ’SAME’ and 
+’VALID’. However, neither guarantees that the data length will be ad-
+justed to exactly 400 after down-sampling. Therefore, a customized data 
+padding method is required, as outlined in Algorithm 2. The segmented 
+data is extended by appending 𝐻 or 𝐻 − 1 zeros at both sides. The cal-
+culation for H is as follows:
+𝐻 =
+⌊𝐾 × 400 − 𝑁 + 1
+2
+⌋
+(8)
+If the length of the segmented data is less than 400 within 3 s and is 
+odd, we pad one side with H zeros and the other with H-1 zeros. In all 
+other cases, we pad H zeros on both sides. After padding, max-pooling is 
+applied to adjust the data length to exactly 400. This ensures the model 
+can process input data of any length.
+Algorithm 2 Uniform length procedure.
+Require: A sequence of data within 3 s input_data;
+Ensure: A sequence of data after down-sampling output_data; 
+1: Initialize N as the length of the input_data; 
+2: Calculate the ksize and stride according to Eqs.  (6) and
+(7); 
+3: Calculate the number of zeros 𝐻 that need to be padded on the sides 
+of the 𝑖𝑛𝑝𝑢𝑡_𝑑𝑎𝑡𝑎 according to Eq.  (8); 
+4: if 𝑁 < 400 and 𝑁 is odd then
+5: data ← Pad 𝐻 zeros at one side of the input_data and 𝐻-1 zeros at 
+the other;
+6: else
+7: data ← Pad 𝐻 zeros at both sides of the input_data;
+8: end if
+9: output_data ← max_pool(data, ksize, stride); 
+10: return output_data
+3.4.  Structure of the RF-AbVib network
+Meta-learning enables models to quickly adapt to new tasks, per-
+forming well even in data-scarce or high-cost data acquisition settings. 
+We implemented the RF-AbVib prototype using a MAML [46] network 
+architecture, and optimized for handling one-dimensional linear inputs 
+of arbitrary lengths.
+The RF-AbVib network structure, consisting of an inner and outer 
+loop, is illustrated in Fig. 7. Before the outer loop begins, a set of global 
+parameters 𝜃 must be initialized. Then, 𝑁 tasks are randomly sampled 
+from the task pool for model training. Each task contains a unique 
+dataset, where the 𝑘_𝑠ℎ𝑜𝑡 bar data constitutes the support set and the 
+remaining data forms the query set. Before the start of the inner loop, 
+each task copies the global parameters and uses them to initialize its 
+local parameters 𝜃𝑗
+𝑖 . Each task then independently computes the loss on 
+the support set using its local parameters and updates the local param-
+eters via gradient descent; this process is repeated for 𝐾 iterations. The 
+strategy for updating the local parameters is as follows:
+𝜃𝑗
+𝑖 =
+⎧
+⎪
+⎨
+⎪⎩
+𝜃 − 𝛼∇𝜃𝐿1
+𝑖 (𝜃, 𝑋𝑆
+𝑖 , 𝑌 𝑆
+𝑖 ), if 𝑗 = 1;
+𝜃𝑗−1
+𝑖 − 𝛼∇𝜃𝑗−1
+𝑖
+𝐿𝑗−1
+𝑖 (𝜃, 𝑋𝑆
+𝑖 , 𝑌 𝑆
+𝑖 ), otherwise. (9)
+where 𝜃𝑗
+𝑖  is the local parameter after 𝑗 iterations of the 𝑖th task, 𝛼 is the 
+learning rate of the inner loop, 𝐿𝑗
+𝑖 () is the loss after 𝑗 iterations of the 
+𝑖th task, 𝑋𝑆
+𝑖  and 𝑌 𝑆
+𝑖  are the data and labels of the support set of the 𝑖th 
+task, respectively.
+Subsequently, the updated local parameters are evaluated through 
+the query set, and the loss for the query set is calculated. The global 
+parameter is updated by averaging the losses of 𝑁 tasks via gradient 
+descent. The parameter update strategy in the outer loop is described as 
+follows:
+𝜃 = 𝜃 − 𝛽∇𝜃
+1
+𝑁
+𝑁∑
+𝑖=1
+𝐿𝑖(𝜃, 𝑋𝑄
+𝑖 , 𝑌 𝑄
+𝑖 ) (10)
+where 𝛽 is the learning rate of the outer loop, 𝐿𝑖() is the loss of the 𝑖th 
+task, 𝑋𝑄, and 𝑌 𝑄 are the data and labels of the query set of the 𝑖th 
+task, respectively. Through the dual updating mechanism of inner and 
+outer loops, the model can be rapidly ﬁne-tuned within localized re-
+gions while simultaneously capturing shared knowledge across tasks at 
+a global level. This structured training approach enables the RF-AbVib 
+to perform eﬀectively and eﬃciently in dynamic or changing environ-
+ments.
+4.  System evaluation
+In this section, we provide a detailed description of the software and 
+hardware conﬁgurations, dataset collection procedures, evaluation met-
+rics, and model performance across various experimental scenarios.
+4.1.  Experimental setup
+Hardware. We employ an Impinj R420 reader connected to a Laird 
+S9028 antenna (8 dBic gain) via a feeder cable, along with an H47 tag 
+serving as the reference tag. The antenna operates at a transmission fre-
+quency of 920.625 MHz and a transmission power of 30 dBm. The reader 
+is linked to an Acer PC featuring an Intel Core i7-10510U 2.30 GHz CPU 
+and 16.0 GB RAM through an Ethernet cable.
+Software. The RF-AbVib prototype was implemented using PyCharm 
+2023.1.4 Community Edition as the integrated development environ-
+ment. The meta-learning framework is developed with Tensorﬂow 
+1.14.0 and the Python 3.6.13 interpreter. Data was collected oﬄine us-
+ing Impinj ItemTest 2.6.0 software, which can be downloaded from the 
+oﬃcial website.
+Environmental setup. The experimental setup details are illustrated in 
+Fig. 8. A metal cabinet with a thickness of 0.06 mm is constructed, mea-
+suring 44 cm in length, 39 cm in width, and 60 cm in height. A Laird 
+S9028 antenna is positioned at the bottom of the cabinet, while an H47 
+tag is mounted to the inner top wall. To mitigate metal-induced RF sig-
+nal interference, a 2 cm-thick foam pad is inserted between the tag and 
+the inner wall, and 2 cm-thick foam boards are placed above and below 
+the antenna. A small hole is drilled in the lower-left corner of the cab-
+inet’s rear panel to allow the feeder cable to pass through, connecting 
+the reader and the antenna. After the connection is completed, the hole 
+Computer Networks 272 (2025) 111738 
+6
+M. Li et al.
+Fig. 7. Network architecture of RF-AbVib.
+Fig. 8. The details of the experimental environment setup.
+is sealed with tin foil. The reader is located outside the cabinet and con-
+nected to a PC via an Ethernet cable. In this way, the basic experimental 
+environment is successfully established.
+We considered various items that could be stored in the cabinet, 
+including plastics, paper, liquids, and electronic devices, all of which 
+may be aﬃxed with RFID tags. The type, placement, size of the items, 
+and the tags attached to them-collectively referred to as environmental 
+variations-can aﬀect the reference tag to diﬀerent extents. To reasonably 
+evaluate model performance, we constructed 31 distinct experimental 
+environments denoted as {𝐸1, 𝐸2, …, 𝐸𝑖, …, 𝐸30, 𝐸31}, as illustrated in 
+Fig. 9. These environments were categorized into six groups based on 
+the type of stored item. 𝐸1 serves as the baseline environment with no 
+objects inside the cabinet. 𝐸2 to 𝐸9 contain plastic items such as book-
+shelves and ﬁle boxes, diﬀering only in quantity and placement. 𝐸10
+to 𝐸14 include a book placed at varying positions. 𝐸15 to 𝐸19 involve a 
+bottle of water placed at diﬀerent locations. The conﬁgurations of 𝐸20
+to 𝐸26 are identical to those of 𝐸3 to 𝐸9, except that each ﬁle box is 
+equipped with an E51 tag. Finally, 𝐸27 to 𝐸31 contain a tablet placed at 
+varying positions.
+4.2.  Dataset collection
+We deﬁned the data collected under normal and abnormal conditions 
+separately. When the cabinet is stationary, the collected data is consid-
+ered normal; when abnormal behaviors are applied, the data is classiﬁed 
+as abnormal. Three types of abnormal behaviors were identiﬁed: slap-
+ping, shaking, and pushing/pulling the cabinet door. To standardize the 
+intensity of the slapping, a 200-gram sandbag was dropped freely from 
+a height of 20 cm above the cabinet surface. Each data lasted approx-
+imately 10 s. The abnormal behaviors were performed around the 5-s 
+mark, lasted 1–2 s, and was executed only once per trial. In each envi-
+ronment, 20 repetitions of normal data and 20 repetitions of each of the 
+three types of abnormal data were collected, resulting in a total of 80 
+data samples per environment.
+A total of 12,480 oﬄine data samples were collected across the 31 
+environments, with 2480 data samples allocated for model training and 
+the remaining 10,000 used for performance evaluation. It is important 
+to note that the data collected in each environment must be transformed 
+into individual tasks, which includes both training tasks and testing 
+tasks. Each task is further divided into a support set and a query set. 
+For each data type, 5 samples are the support set, while the remain-
+ing 15 samples are the query set. All data have been uploaded to the 
+RF-AbVib dataset.
+4.3.  Evaluation metrics
+To evaluate the performance of RF-AbVib, we adopt four metrics: 
+Accuracy, Precision, Recall, and Macro-F1 score.
+Accuracy. Accuracy measures the proportion of correctly classiﬁed 
+samples out of the total samples, which is calculated as follows:
+Computer Networks 272 (2025) 111738 
+7
+M. Li et al.
+Fig. 9. Experimental environments constructed in this paper.
+𝐴 = 𝑇 𝑃 + 𝑇 𝑁
+𝑁 (11)
+where 𝑇 𝑃  is true positive, indicating that the model correctly predicts 
+the number of samples to be positive, 𝑇 𝑁 is true negative, indicating 
+that the model correctly predicts the number of samples to be negative, 
+and 𝑁 is the total number of samples. The accuracy metric provides an 
+intuitive measure of the model’s performance across all test samples.
+Precision. Precision measures the proportion of samples classiﬁed as 
+positive by the model that are actually positive, which is calculated as 
+follows:
+𝑃 = 𝑇 𝑃
+𝑇 𝑃 + 𝐹 𝑃 (12)
+where 𝐹 𝑃  is false positive, indicating that the number of samples incor-
+rectly predicted by the model to be positive.
+Recall. Recall measures the proportion of actual positive samples that 
+are correctly identiﬁed as positive by the model, which is calculated as 
+follows:
+𝑅 = 𝑇 𝑃
+𝑇 𝑃 + 𝐹 𝑁 (13)
+where 𝐹 𝑁 is false negative, indicating that the number of samples in-
+correctly predicted by the model to be negative.
+Macro-F1. The F1 score is the harmonic mean of precision and recall. 
+For multi-class tasks, we are not only concerned with the model’s per-
+formance in identifying a speciﬁc class, but rather with its overall per-
+formance. Therefore, we introduce Macro F1 as the evaluation metric 
+for the model. The calculation formula is as follows:
+𝑀𝐹 = 2
+𝑛
+𝑛∑
+𝑖=1
+𝑃𝑖 × 𝑅𝑖
+𝑃𝑖 + 𝑅𝑖
+(14)
+where 𝑛 indicates the number of classes, and 𝑃𝑖 and 𝑅𝑖 indicate the 
+precision and recall of 𝑖th class respectively.
+4.4.  Overall performance
+We evaluated RF-AbVib’s performance using 5-fold cross-validation 
+on data from 31 environments (𝐸1-𝐸31). The data were partitioned into 
+ﬁve test sets-𝑀𝑜𝑑𝑒𝑙 1 tested on {𝐸1, 𝐸6, 𝐸11, 𝐸16, 𝐸21, 𝐸26, 𝐸31}, 𝑀𝑜𝑑𝑒𝑙 2
+tested on {𝐸2, 𝐸7, 𝐸12, 𝐸17, 𝐸22, 𝐸27}, and so on, with 𝑀𝑜𝑑𝑒𝑙 5 tested 
+Fig. 10. The recognition accuracy of the model in 31 diﬀerent environments.
+Table 2 
+Summary of overall performance of model.
+ Accuracy  Precision  Recall  Macro-F1
+ 0.9559  0.9562  0.9559  0.9560
+on {𝐸5, 𝐸10, 𝐸15, 𝐸20, 𝐸25, 𝐸30}. Each model was trained on the re-
+maining data and evaluated on its corresponding test set. For each sta-
+tus, data were split into support and query sets containing 5 and 15 
+samples, respectively. We used only one support set sample for train-
+ing and ﬁne-tuning, instead of all ﬁve. Finally, we got ﬁve models to 
+evaluate RF-AbVib’s performance across 31 environments. As shown in 
+Fig. 10, recognition accuracy exceeds 90 % in most environments, av-
+eraging 95.59 %, which indicates strong environmental independence. 
+Six environments {𝐸3, 𝐸7, 𝐸15, 𝐸18, 𝐸27, 𝐸28} achieved 100 % accuracy. 
+Lower accuracy is observed in 𝐸10-𝐸15 due to a 3-cm-thick book placed 
+over the antenna, which disrupts tag-reader communication.
+We further computed the confusion matrix and other metrics. As 
+shown in Fig. 11, the horizontal axis (columns) represents predicted 
+classes, and the vertical axis (rows) shows true classes. Labels 1, 2, 
+3, and 4 correspond to the baseline state, slapping, pushing/pulling 
+the door, and shaking the cabinet, respectively. The intersections show 
+the classiﬁcation proportions relative to each true class. Overall, RF-
+AbVib achieves 99.19 % accuracy in distinguishing normal from abnor-
+mal states across 31 environments. We also calculated standard metrics-
+accuracy, precision, recall, and Macro F1-score-as summarized in
+Table 2. These results conﬁrm that RF-AbVib performs consistently 
+across categories and environments, meeting real-world application 
+needs.
+Computer Networks 272 (2025) 111738 
+8
+M. Li et al.
+Fig. 11. The recognition accuracy of the model in 31 environments.
+Fig. 12. Accuracy of RF-AbVib with diﬀerent numbers of support set samples.
+4.5.  Impact of the number of support set samples
+We evaluated RF-AbVib’s performance by varying the number of sup-
+port set samples used for model ﬁne-tuning. As previously stated, 5 out 
+of 20 samples were allocated to the support set. However, it is unclear 
+whether all ﬁve are necessary for eﬀective ﬁne-tuning. To investigate 
+this, we conducted experiments to determine the optimal support set 
+size.
+The ﬁve models from Section 4.4 were used, diﬀering only in the 
+number of samples for ﬁne-tuning. The average accuracy across the ﬁrst 
+ﬁve iterations is shown in Fig. 12. As iterations increase, performance 
+gradually stabilizes. By the ﬁfth iteration, average accuracy exceeded 
+95 %. However, more support set samples did not signiﬁcantly improve 
+accuracy. This is mainly because the one-dimensional time-series data 
+has low dimensionality, and the signal changes from abnormal actions 
+are simple and distinct. This result indirectly highlights an advantage 
+of RF-AbVib: it can achieve over 95 % anomaly detection accuracy by 
+ﬁne-tuning with just one sample from a new environment.
+4.6.  Impact of diﬀerent types of tags
+To assess RF-AbVib’s resilience to tag variation, we selected eight 
+commercial UHF RFID tags (B42, H47, E51, AZ-9662, AZ-9640, L25, 
+U4619, and C95U; see Fig. 14), whose speciﬁcations appear in Table 3. 
+Each tag was mounted on the cabinet’s inner top wall using a 2 cm foam 
+pad to minimize metal-induced interference. From our original set of 31 
+environments, we chose ﬁve representative scenarios (𝐸2, 𝐸10, 𝐸15, 𝐸26, 
+and 𝐸27)-each featuring diﬀerent stored items-to cover a range of prac-
+tical conditions. A general model was trained on 2480 samples from all 
+31 environments and then used to evaluate tag-dependent robustness. 
+Unless noted otherwise, results of subsequent chapters derive from this 
+model, which in testing was ﬁne-tuned using a single support sample.
+Table 3 
+Detailed physical parameters of tags.
+ Tags  Manufacturer Chips  Sizes (mm)  Range (m)
+ B42  Impinj M4E 22 × 8  0–0.8
+ H47  Impinj M4E 44 × 44  0–6
+ E51  Impinj M5 95 × 8  0–6
+ AZ-9662  Alien H3 70 × 17  0–8
+ AZ-9640  Alien H3 95 × 8  0–8
+ L25  NXP U Code8  Diameter 28  0–2
+ U4619  NXP U Code8 46 × 19  0–4
+ C95U  NXP U Code8 95 × 8  0–10
+Fig. 2(a) and (b) present the model’s accuracy and Macro F1-score 
+across eight UHF RFID tag types. Tags H47 and C95U proved least sus-
+ceptible to environmental variation: H47 in particular sustained near-
+perfect accuracy in every scenario, likely owing to its omnidirectional 
+antenna design. By contrast, most other tags exhibited performance de-
+clines when exposed to liquid water, metal objects, or co-located tags-
+factors that impede tag-reader communication. Nevertheless, RF-AbVib 
+maintained high and stable performance overall, achieving a mean ac-
+curacy of 94.54 % and conﬁrming its robustness to tag variation. We 
+have summarized the performance of the model under diﬀerent tags in 
+Table 4.
+4.7.  Impact of diﬀerent horizontal orientations of tag placement
+We investigated the eﬀect of horizontal tag orientations on tag-
+reader communication in an anechoic chamber (Fig. 15). An H47 tag 
+was mounted on a motorized turntable and rotated clockwise in 30◦
+increments under Tagformance 13.2.3 control, pausing at each angle. 
+The reader, linked exclusively to an overhead antenna, recorded phase 
+and RSSI data over a complete 360◦ rotation (other internal antennas 
+disabled). As shown in Fig. 16, both ﬂuctuated continuously-with RSSI 
+exhibiting larger swings-and neither returned to its initial value after 
+each pause. In particular, no readings were obtained at 90◦ and 270◦, 
+indicating that even under ideal conditions, horizontal orientation criti-
+cally alters signal characteristics and must be accounted for in RF-AbVib 
+deployments.
+Therefore, we tested RF-AbVib’s performance at eight horizontal ori-
+entations: 0◦ (360◦), 45◦, 90◦, 135◦, 180◦, 225◦, 270◦, and 315◦. An 
+H47 tag was mounted on the inner top wall of the cabinet using a 2 cm 
+foam pad to reduce metal interference. Five environments, consistent 
+with those in Section 4.6, were tested for each orientation. Recogni-
+tion accuracy and the Macro F1-Score are shown in Fig. 13(c) and (d), 
+respectively. Results indicate that tag orientation has minimal impact 
+on performance, with average accuracy above 94.33 %. We further ana-
+lyzed this eﬀect. First, the tag-to-antenna distance is 51 cm, shorter than 
+in the anechoic chamber (1 m). Second, metal surfaces reﬂect electro-
+magnetic waves, enabling tags to remain activated even at suboptimal 
+angles. This prevents signal loss or data failure regardless of orientation. 
+We have summarized the performance of the model under diﬀerent hor-
+izontal angles of tag placement in Table 4.
+4.8.  Impact of the tag and the antenna at diﬀerent distances
+We mounted the H47 tag on the inner back wall of the cabinet at 
+varying distances to evaluate RF-AbVib performance. A 2 cm foam pad 
+was placed between the tag and the metal surface to reduce interference. 
+Tags were positioned at 0 cm, 10 cm, 20 cm, 30 cm, and 40 cm from 
+the bottom foam board. We collected a total of 2000 samples across the 
+ﬁve environments described in Section 4.6. Recognition accuracy and 
+Macro F1-Score are shown in Fig. 13(e) and (f). Results show that per-
+formance declines gradually with increasing distance. In RFID systems, 
+greater distances usually reduce communication quality. Additionally, 
+the orthogonal placement of the tag and antenna aﬀects signal transmis-
+sion. However, even at 40 cm, accuracy remains as high as 96 %, with 
+Computer Networks 272 (2025) 111738 
+9
+M. Li et al.
+Fig. 13. Accuracy and Macro F1-Score of RF-AbVib with diﬀerent types, placement angles, and distance of the tag. (a) Accuracy of RF-AbVib with diﬀerent types of 
+tags. (b) Macro F1-Score of RF-AbVib with diﬀerent types of tags. (c) Accuracy of RF-AbVib with diﬀerent horizontal placement angles of tags. (d) Macro F1-Score 
+of RF-AbVib with diﬀerent horizontal placement angles of tags. (e) Accuracy of RF-AbVib with the tag and the antenna at diﬀerent distances. (f) Macro F1-Score of 
+RF-AbVib with the tag and the antenna at diﬀerent distances.
+Fig. 14. Eight diﬀerent types of RFID tags.
+all other cases exceeding 97.67 %. Thus, RF-AbVib demonstrates strong 
+robustness against tag-to-antenna distance variations. We have summa-
+rized the performance of the model under diﬀerent distances between 
+the tag and the antenna in Table 4.
+Fig. 15. Scenario for testing H47 performance at diﬀerent horizontal orienta-
+tions.
+Computer Networks 272 (2025) 111738 
+10
+M. Li et al.
+Fig. 16. The signals collected at diﬀerent horizontal angles of tag placement.
+Fig. 17. Accuracy and Macro F1-Score of RF-AbVib with diﬀerent surfaces the tag is pasted on. (a) Accuracy of RF-AbVib with diﬀerent sides of the tag attached. 
+(b) Macro F1-Score of RF-AbVib with diﬀerent sides of the tag attached.
+4.9.  Impact of the tag mounted on diﬀerent surfaces of the inner wall of 
+the cabinet
+We evaluated RF-AbVib performance with the H47 tag mounted on 
+diﬀerent inner walls of the cabinet. A 2 cm foam pad was used to reduce 
+metal-induced interference. Since the antenna was ﬁxed at the bottom, 
+we tested the remaining ﬁve inner walls. The H47 tag was placed at 
+the center of the top wall, and 20 cm above the bottom foam pad on 
+the front, back, left, and right walls. We collected 2000 samples across 
+the ﬁve environments described in Section 4.6 to ﬁne-tune the model 
+and evaluate its recognition accuracy and Macro F1-score. Results are 
+shown in Fig. 17(a) and (b). RF-AbVib shows highly stable performance. 
+Accuracy exceeds 97.67 % whether the tag is on the top, front, back, or 
+left side. Even on the right side, where interference is strongest, accuracy 
+remains at 96.33 %. We have summarized the performance of the model 
+under diﬀerent surfaces the tag mounted in Table 4.
+4.10.  Impact of cabinet material
+To evaluate the model’s generalization, we extended testing to 
+wooden and plastic cabinets whose internal layouts match that of the 
+metal cabinet. The wooden cabinet measures 33 cm in length, 30.5 cm 
+in width, and 46.5 cm in height, with 12 mm walls, while the plastic 
+cabinet measures 38 cm in length, 37 cm in width, and 46 cm in height, 
+with 4 mm walls, as shown in Fig. 18. We conducted experiments across 
+the same ﬁve environments described in Section 4.6 and the results are 
+presented in Table 4. As shown, the model’s performance was highest 
+with the metal cabinet, intermediate with the plastic cabinet, and lowest 
+with the wooden cabinet. We attribute the observed performance dif-
+ferences to three main factors. (1) Electromagnetic shielding eﬀect. Metal 
+eﬀectively isolates the cabinet’s interior from external electromagnetic 
+interference and prevents signal ﬂuctuations caused by external envi-
+ronmental changes, such as people walking by or waving their arms. 
+(2) Material reﬂection. Metal surfaces reﬂect electromagnetic waves far 
+more eﬃciently than wood or plastic, so even when the tag’s vibration 
+amplitude falls below the system’s minimum detectable threshold (see 
+Section 5.2), multi-path reﬂections still carry enough information to re-
+veal abnormal behavior. (3) Material rigidity and thickness. The wooden 
+cabinet’s walls are three times thicker than the plastic cabinet’s and 
+about twenty times thicker than the metal cabinet’s, yet wood is far less 
+ﬂexible. This extra rigidity and thickness dampen vibrations, producing 
+smaller amplitudes and thereby lowering detection accuracy relative to 
+the more responsive plastic and metal cases.
+5.  Limitations and discussion
+5.1.  Limitations of meta-learning
+Meta-learning demonstrates strong performance in handling envi-
+ronmental independence; however, it fundamentally remains a multi-
+classiﬁcation machine learning algorithm. In this paper, we deﬁne three 
+types of abnormal behaviors and a baseline environment, limiting the 
+system to a four-category classiﬁcation task. To enable recognition of 
+more complex abnormal behaviors (exceeding the upper limit of the 
+number of classiﬁcations allowed in this paper), it would be necessary 
+to modify the output layer structure of the model. Alternatively, we
+Computer Networks 272 (2025) 111738 
+11
+M. Li et al.
+Fig. 18. Scenario of wooden cabinets and plastic cabinets.
+Table 4 
+Summary of model evaluation metrics.
+ Factors  Accuracy  Precision  Recall  Macro-F1
+Tags
+ B42  0.95  0.9527  0.95  0.9497
+ H47  0.9767  0.9768  0.9767  0.9767
+ E51  0.91  0.9105  0.91  0.9096
+ AZ-9662  0.92  0.9217  0.92  0.9204
+ AZ-9640  0.9367  0.9387  0.9367  0.9373
+ L25  0.9367  0.9373  0.9367  0.9342
+ U4619  0.96  0.9608  0.96  0.9599
+ C95U  0.9733  0.9734  0.9733  0.9733
+Angles
+ 0◦ (360◦ )  0.9767  0.9768  0.9767  0.9767
+ 45◦  0.97  0.9701  0.97  0.97
+ 90◦  0.98  0.98  0.98  0.98
+ 135◦  0.9567  0.9622  0.9567  0.9598
+ 180◦  0.9767  0.977  0.9767  0.9767
+ 225◦  0.9433  0.9476  0.9433  0.9439
+ 270◦  0.96  0.9605  0.96  0.9601
+ 315◦  0.9667  0.9673  0.9667  0.9666
+Distances
+ 0 cm  0.9767  0.977  0.9767  0.9766
+ 10 cm  0.9867  0.9868  0.9867  0.9867
+ 20 cm  0.9767  0.9771  0.9767  0.9767
+ 30 cm  0.9767  0.9773  0.9767  0.9767
+ 40 cm  0.96  0.9619  0.96  0.9603
+Walls
+ Top  0.9767  0.9768  0.9767  0.9767
+ Front  0.9767  0.9778  0.9767  0.9765
+ Back  0.9767  0.9771  0.9767  0.9767
+ Left  0.98  0.98  0.98  0.98
+ Right  0.9633  0.9112  0.9633  0.9311
+Materials
+ Wood  0.8667  0.8669  0.8667  0.8665
+ Plastic  0.9133  0.9133  0.9133  0.9119
+ Metal  0.96  0.9607  0.96  0.96
+propose a feasible solution. The data from this study can be used for pre-
+training, followed by deﬁning a new four-category scenario (even the 
+original categories can be included among the four newly deﬁned cat-
+egories) with diﬀerent abnormal behaviors. A small data from this sce-
+nario can then ﬁne-tune the model without prior knowledge, enabling 
+it to recognize up to seven distinct abnormal behaviors (excluding the 
+baseline).
+5.2.  Limitations of COTS RFID devices
+Impinj states in the Octane LLRP Guide [47] that the phase ﬁeld 
+is a 12-bit value, corresponding to a minimum phase step of 2𝜋∕212 ≈
+0.00153 rad for the Speedway R420. In contrast, ItemTest only supports 
+the standard 10-bit phase output and lacks a vendor-extension interface, 
+limiting its minimum phase step to 2𝜋∕210 ≈ 0 .00614 rad. Although this 
+10-bit resolution is adequate for basic tag reading, the coarse quantiza-
+tion error constrains vibration sensing accuracy. At this precision level, 
+the minimum vibration amplitude detectable by the tag is:
+Δ𝑑 = Δ𝜙
+2𝜋 × 𝑐
+𝑓 ≈ 0 .318 𝑚𝑚 (15)
+where Δ𝜙 is the minimum phase step, 𝑐 is the speed of light, and f is the 
+frequency of the transmitted signal, set to 920.625 MHz in this study. It 
+can be concluded that the vibration sensitivity an RFID tag can detect 
+is 0.318 mm. 
+The above accuracy analysis assumes ideal conditions. In practice, 
+hardware noise often reduces actual vibration sensing accuracy. How-
+ever, abnormal behavior produces vibrations much larger than this 
+threshold, so the current resolution meets the requirements in this study. 
+For ﬁner detection, higher-frequency signals (e.g., millimeter waves) or 
+advanced platforms (e.g., USRP) are recommended.
+5.3.  Potential application scenarios
+Although this paper focuses on smart cabinets, the RF-AbVib frame-
+work can, in principle, be extended to vibration and shock monitoring 
+in a variety of security scenarios. Potential applications include pry-
+ing detection in safe-deposit boxes, museum exhibition cases, and bank 
+ATMs, as well as warning systems for unauthorized breaches or damage 
+to factory fences and warehouse gates. By analyzing the micro-vibration 
+signatures of RFID tags, the system oﬀers non-contact alerts for intru-
+sion and tampering. However, these applications remain at the proof-
+of-concept stage. Because of substantial variations in materials, noise 
+conditions, and installation conﬁgurations among diﬀerent targets, rig-
+orous ﬁeld trials-supported by appropriate hardware selection and algo-
+rithmic reﬁnement-are required to assess the approach’s responsiveness, 
+sensitivity, and reliability.
+5.4.  Security and privacy
+While the application of RFID technology in smart cabinets has im-
+proved storage security, it has also raised concerns about data security 
+and user privacy. Monitoring abnormal vibrations with RF-AbVib may 
+involve collecting user behavior data and environmental data. If these 
+data are misused or leaked, it could lead to privacy breaches. There-
+fore, future research should not only focus on the technical performance 
+of the system but also address data security and privacy protection is-
+sues. Implementing encryption technology and access control measures 
+can ensure data security. Moreover, establishing transparent user agree-
+ments and data processing procedures will help enhance user trust in 
+the system, promoting the widespread application of RFID technology 
+in smart cabinets.
+Computer Networks 272 (2025) 111738 
+12
+M. Li et al.
+6.  Related work
+6.1.  Vibration sensing using RFID
+RFID-based vibration sensing has been widely used in areas like 
+machine fault diagnosis [8–16], vital signs monitoring [17,18], and 
+speech eavesdropping [19–23]. Compared to traditional sensors [3], RF 
+signals provide key advantages-long-distance transmission, non-line-of-
+sight detection, contactless operation, and multi-target sensing-due to 
+their free-space propagation properties.
+6.1.1.  Machine fault diagnosis
+Real-time vibration signal analysis is essential for equipment main-
+tenance and safety. The simplest RFID-based method involves attaching 
+tags directly to machines [8,11,12,15,16]. However, this can interfere 
+with precision instruments and lead to tag detachment over time, re-
+ducing accuracy. Therefore, researchers have focused on non-contact 
+alternatives. For example, TagSMM [13] uses multiple tags to amplify 
+vibration-induced phase changes, achieving high-resolution sensing. RF-
+Ear [9] and RF-Ear+ [10] detect vibrations from multiple targets using 
+a single tag, while RF-VSensing [14] applies machine learning to iden-
+tify vibration states.
+6.1.2.  Vital signs monitoring
+Respiration and pulse generate rhythmic movements that are a form 
+of vibration. Traditional methods use wearable devices [48], which 
+can be uncomfortable and unsuitable for long-term monitoring. Tag-
+Breathe [17] is the ﬁrst RFID-based system for respiration monitoring. 
+It tracks multiple people’s breathing at once and separates respiration 
+signals from body movement noise in diﬀerent environments. Escobedo 
+et al. [18] developed a new bed-integrated RFID-based ballistocardio-
+gram (BCG) system for non-contact vital sign monitoring. It accurately 
+measures heart rate and respiration for two people lying in bed.
+6.1.3.  Voice eavesdropping
+Sound is a mechanical wave that travels through vibration. RF sig-
+nals can detect voice remotely in soundproof environments, overcoming 
+limits of traditional audio sensing. They interact with the environment 
+during propagation-such as via Doppler and multipath eﬀects-to capture 
+sound-induced vibrations. TagMic [22], built with COTS devices, was 
+the ﬁrst to show RFID tags could be used for eavesdropping. Wang et 
+al. [23] extended RFID sensing to enable through-wall eavesdropping. 
+RF-Mic [20] uses RFID tags to create a low-cost, hidden, and ﬂexible 
+voice monitoring system, marking an early application of RFID in voice 
+surveillance.
+6.2.  Environment independent sensing based on RFID
+Current wireless sensing technologies struggle to maintain adaptabil-
+ity across diverse environments. Wireless signal propagation is inﬂu-
+enced by obstacles, noise, and dynamic environmental changes in diﬀer-
+ent settings, leading to notable variations in system performance. Thus, 
+developing environment-independent wireless sensing is crucial to en-
+suring consistent stability and accuracy across varied scenarios, which 
+enhances its applicability and practicality.
+Researchers have studied various ways to improve the environmen-
+tal robustness of wireless sensing systems. The phase-based model in 
+Golipoor and Sigg[49] shows high accuracy across diﬀerent settings. 
+But signal quality and individual diﬀerences still aﬀect reliability. RF-
+Siamese [50] uses a Siamese network to achieve accurate recognition 
+with limited training data. It works well in new environments but needs 
+retraining for each deployment. Its ﬁxed sliding windows may also in-
+clude irrelevant signals when processing gestures at diﬀerent speeds, 
+lowering performance. RF-Sign [51] improves adaptability using data 
+augmentation-like noise injection and zero padding-and optimization al-
+gorithms, maintaining high accuracy under diverse conditions. RFPass 
+[52,53] applies a multipath direction-of-arrival algorithm to reduce in-
+terference and boost authentication accuracy. RFree-GR [36] combines 
+multimodal data with adversarial learning to remove environment-
+speciﬁc features, improving accuracy and generalization. However, it 
+requires large gesture datasets, increasing data collection eﬀort. Also, 
+strict user-device positioning limits its use in real-world scenarios.
+7.  Conclusion
+In this paper, we propose RF-AbVib, an environment-independent 
+vibration monitoring system based on COTS RFID devices. The BTF al-
+gorithm, integrated with discrete wavelet transform (DWT), eﬀectively 
+eliminates outliers caused by environmental interference and hard-
+ware noise, improving vibration feature extraction. A meta-learning-
+based network architecture handles variable sampling rates and input 
+lengths, making the system adaptable to diﬀerent environments. RF-
+AbVib achieves 95.59 % accuracy across 31 diverse settings using just 
+one training sample, greatly reducing data requirements. It also sim-
+pliﬁes hardware design by requiring only a single reference tag in the 
+smart cabinet, regardless of its location or type.
+CRediT authorship contribution statement
+Min Li: Methodology, Conceptualization; Guangxuan Bai: Writing 
+– original draft, Validation, Methodology, Investigation, Formal anal-
+ysis, Data curation, Conceptualization; Di Gao: Formal analysis; Shuai 
+Wang: Writing – review & editing, Formal analysis; Siye Wang: Writing 
+– review & editing, Formal analysis; Yanfang Zhang: Supervision; Yue 
+Feng: Writing – review & editing, Methodology, Conceptualization.
+Data availability
+I have shared the link to my data at the Attach File step.
+Declaration of competing interest
+The authors declare that they have no known competing ﬁnancial 
+interests or personal relationships that could have appeared to inﬂuence 
+the work reported in this paper. 
+References
+[1] A.C. Polycarpou, T. Samaras, J.N. Sahalos, An RFID-based library management sys-
+tem using smart cabinets: a pilot project, in: The 8th European Conference on An-
+tennas and Propagation (EuCAP 2014), IEEE, 2014, pp. 2954–2955.
+[2] M. del Carmen León-Araujo, E. Gómez-Inhiesto, M.T. Acaiturri-Ayesta, Implementa-
+tion and evaluation of a RFID smart cabinet to improve traceability and the eﬃcient 
+consumption of high cost medical supplies in a large hospital, J. Med. Syst. 43 (2019) 
+1–7.
+[3] J.-M. Tsai, I.-C. Sun, K.-S. Chen, Realization and performance evaluation of a ma-
+chine tool vibration monitoring module by multiple MEMS accelerometer integra-
+tions, Int. J. Adv. Manuf. Technol. 114 (2021) 465–479.
+[4] S. Barone, P. Neri, A. Paoli, A.V. Razionale, Low-frame-rate single camera system 
+for 3D full-ﬁeld high-frequency vibration measurements, Mech. Syst. Signal Process. 
+123 (2019) 143–152.
+[5] P. Etchepareborda, M.-H. Moulet, M. Melon, Random laser speckle pattern pro-
+jection for non-contact vibration measurements using a single high-speed camera, 
+Mech. Syst. Signal Process. 158 (2021) 107719.
+[6] D. Di Maio, P. Castellini, M. Martarelli, S. Rothberg, M.S. Allen, W.D. Zhu, D.J. 
+Ewins, Continuous scanning laser vibrometry: a raison d’être and applications to 
+vibration measurements, Mech. Syst. Signal Process. 156 (2021) 107573.
+[7] Z. Wei, H. Qu, Y. Wang, X. Yuan, H. Wu, Y. Du, K. Han, N. Zhang, Z. Feng, Integrated 
+sensing and communication signals toward 5G-A and 6G: a survey, IEEE Internet 
+Things J. 10 (13) (2023) 11068–11092.
+[8] Y. He, Y. Zheng, M. Jin, S. Yang, X. Zheng, Y. Liu, Red: RFID-based eccentricity de-
+tection for high-speed rotating machinery, IEEE Trans. Mob. Comput. 20 (4) (2019) 
+1590–1601.
+[9] P. Yang, Y. Feng, J. Xiong, Z. Chen, X.-Y. Li, Rf-ear: contactless multi-device vi-
+bration sensing and identiﬁcation using cots RFID, in: IEEE INFOCOM 2020-IEEE 
+Conference on Computer Communications, IEEE, 2020, pp. 297–306.
+[10] Y. Feng, Y. Zhang, P. Yang, H. Zhou, H. Du, X.-Y. Li, RF-Ear +: a mechanical iden-
+tiﬁcation and troubleshooting system based on contactless vibration sensing, IEEE 
+Trans. Mob. Comput. 22 (12) (2022) 7310–7326.
+Computer Networks 272 (2025) 111738 
+13
+M. Li et al.
+[11] L. Yang, Y. Li, Q. Lin, X.-Y. Li, Y. Liu, Making sense of mechanical vibration pe-
+riod with sub-millisecond accuracy using backscatter signals, in: Proceedings of the 
+22nd Annual International Conference on Mobile Computing and Networking, 2016,
+pp. 16–28.
+[12] L. Yang, Y. Li, Q. Lin, H. Jia, X.-Y. Li, Y. Liu, Tagbeat: sensing mechanical vi-
+bration period with cots RFID systems, IEEE/ACM Trans. Netw. 25 (6) (2017)
+3823–3835.
+[13] B. Xie, J. Xiong, X. Chen, D. Fang, Exploring commodity RFID for contactless sub-
+millimeter vibration sensing, in: Proceedings of the 18th Conference on Embedded 
+Networked Sensor Systems, 2020, pp. 15–27.
+[14] B. Zhu, L. Tian, D. Wu, M. Dong, S. Gao, L. Zhang, S. Liu, D.-A. Li, RF-vsensing: 
+RFID-based single tag contactless vibration sensing and recognition, in: 2021 17th 
+International Conference on Mobility, Sensing and Networking (MSN), IEEE, 2021, 
+pp. 438–445.
+[15] P. Li, Z. An, L. Yang, P. Yang, Q. Lin, RFID harmonic for vibration sensing, IEEE 
+Trans. Mob. Comput. 20 (4) (2019) 1614–1626.
+[16] P. Li, Z. An, L. Yang, P. Yang, Towards physical-layer vibration sensing with RFIDs, 
+in: IEEE INFOCOM 2019-IEEE Conference on Computer Communications, IEEE, 
+2019, pp. 892–900.
+[17] Y. Wang, Y. Zheng, TagBreathe: monitor breathing with commodity RFID systems, 
+IEEE Trans. Mob. Comput. 19 (4) (2019) 969–981.
+[18] P. Escobedo, A. Pousibet-Garrido, N. López-Ruiz, M.A. Carvajal, A.J. Palma, A. 
+Martínez-Olmos, Bed-based ballistocardiography system using ﬂexible RFID sensors 
+for non-invasive single-and dual-subject vital signs monitoring, IEEE Trans. Instrum. 
+Meas. 73 (2024) 1–12.
+[19] Y. Feng, P. Yang, Z. Chen, G. Huang, Y. Yan, X. Li, RF-recorder: a contact-
+less music play recording system using COTS RFID, in: 2019 15th Interna-
+tional Conference on Mobile Ad-Hoc and Sensor Networks (MSN), IEEE, 2019,
+pp. 37–42.
+[20] Y. Chen, J. Yu, L. Kong, H. Kong, Y. Zhu, Y.-C. Chen, RF-Mic: live voice eaves-
+dropping via capturing subtle facial speech dynamics leveraging RFID, Proc. ACM 
+Interact., Mob., Wearable Ubiquitous Technol. 7 (2) (2023) 1–25.
+[21] Y. Chen, J. Yu, Y. Chen, L. Kong, Y. Zhu, Y.-C. Chen, RFSpy: eavesdropping on online 
+conversations with out-of-vocabulary words by sensing metal coil vibration of head-
+sets leveraging RFID, in: Proceedings of the 22nd Annual International Conference 
+on Mobile Systems, Applications and Services, 2024, pp. 169–182.
+[22] Y. Li, C. Duan, X. Ding, C. Liu, Tagmic: listening through RFID signals, in: 2020 IEEE 
+40th International Conference on Distributed Computing Systems (ICDCS), IEEE, 
+2020, pp. 1187–1188.
+[23] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall 
+eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. 
+ACM Interact., Mob., Wearable Ubiquitous Technol. 5 (4) (2021) 1–25.
+[24] Y. Zhang, P. Yang, Y. Feng, Y. Yan, X.-Y. Li, Wi-ear: a contact-free vibration sens-
+ing and identiﬁcation system based on COTS WiFi, in: ICC 2023-IEEE International 
+Conference on Communications, IEEE, 2023, pp. 1810–1816.
+[25] T. Wei, S. Wang, A. Zhou, X. Zhang, Acoustic eavesdropping through wireless vi-
+brometry, in: Proceedings of the 21st Annual International Conference on Mobile 
+Computing and Networking, 2015, pp. 130–141.
+[26] K. Niu, F. Zhang, Z. Chang, D. Zhang, A fresnel diﬀraction model based hu-
+man respiration detection system using COTS Wi-Fi devices, in: Proceedings of 
+the 2018 ACM International Joint Conference and 2018 International Sympo-
+sium on Pervasive and Ubiquitous Computing and Wearable Computers, 2018,
+pp. 416–419.
+[27] H. Wang, D. Zhang, J. Ma, Y. Wang, Y. Wang, D. Wu, T. Gu, B. Xie, Human respira-
+tion detection with commodity WiFi devices: do user location and body orientation 
+matter?, in: Proceedings of the 2016 ACM International Joint Conference on Perva-
+sive and Ubiquitous Computing, 2016, pp. 25–36.
+[28] Z. Wang, Z. Chen, A.D. Singh, L. Garcia, J. Luo, M.B. Srivastava, UWHear: through-
+wall extraction and separation of audio vibrations using wireless signals, in: Pro-
+ceedings of the 18th Conference on Embedded Networked Sensor Systems, 2020, 
+pp. 1–14.
+[29] H. Shanbhag, S. Madani, A. Isanaka, D. Nair, S. Gupta, H. Hassanieh, Contactless ma-
+terial identiﬁcation with millimeter wave vibrometry, in: Proceedings of the 21st An-
+nual International Conference on Mobile Systems, Applications and Services, 2023, 
+pp. 475–488.
+[30] C. Xu, Z. Li, H. Zhang, A.S. Rathore, H. Li, C. Song, K. Wang, W. Xu, Waveear: 
+exploring a mmwave-based noise-resistant speech sensing for voice-user interface, 
+in: Proceedings of the 17th Annual International Conference on Mobile Systems, 
+Applications, and Services, 2019, pp. 14–26.
+[31] J. Guo, Y. He, C. Jiang, M. Jin, S. Li, J. Zhang, R. Xi, Y. Liu, Measuring micrometer-
+level vibrations with mmWave radar, IEEE Trans. Mob. Comput. 22 (4) (2021) 
+2248–2261.
+[32] C. Jiang, J. Guo, Y. He, M. Jin, S. Li, Y. Liu, mmVib: micrometer-level vibration 
+measurement with mmwave radar, in: Proceedings of the 26th Annual International 
+Conference on Mobile Computing and Networking, 2020, pp. 1–13.
+[33] C. Shi, T. Zhang, Z. Xu, S. Li, D. Gao, C. Li, A. Petropulu, C.-T.M. Wu, Y. Chen, Pri-
+vacy leakage via speech-induced vibrations on room objects through remote sensing 
+based on phased-MIMO, in: Proceedings of the 2023 ACM SIGSAC Conference on 
+Computer and Communications Security, 2023, pp. 75–89.
+[34] M.Z. Ozturk, C. Wu, B. Wang, K.J.R. Liu, Sound recovery from radio signals, in: 
+ICASSP 2021–2021 IEEE International Conference on Acoustics, Speech and Signal 
+Processing (ICASSP), IEEE, 2021, pp. 8022–8026.
+[35] M.S. Amjad, F. Dressler, Using visible light for joint communications and vibration 
+sensing in industrial IoT applications, in: ICC 2021-IEEE International Conference 
+on Communications, IEEE, 2021, pp. 1–6.
+[36] C. Dian, D. Wang, Q. Zhang, R. Zhao, Y. Yu, Towards domain-independent com-
+plex and ﬁne-grained gesture recognition with RFID, Proc. ACM Human-Computer 
+Interact. 4 (ISS) (2020) 1–22.
+[37] U. Ha, J. Leng, A. Khaddaj, F. Adib, Food and liquid sensing in practical environ-
+ments using {RFIDs}, in: 17th USENIX Symposium on Networked Systems Design 
+and Implementation (NSDI 20), 2020, pp. 1083–1100.
+[38] S.A. Rokni, M. Nourollahi, H. Ghasemzadeh, Personalized human activity recogni-
+tion using convolutional neural networks, in: Proceedings of the AAAI Conference 
+on Artiﬁcial Intelligence, 32(1), 2018.
+[39] W. Zhang, L. Deng, L. Zhang, D. Wu, A survey on negative transfer, IEEE/CAA J. 
+Autom. Sin. 10 (2) (2022) 305–329.
+[40] S.J. Pan, Q. Yang, A survey on transfer learning, IEEE Trans. Knowl. Data Eng. 22 
+(10) (2009) 1345–1359.
+[41] F. Doshi-Velez, B. Kim, Towards a rigorous science of interpretable machine learn-
+ing, (2017). arXiv preprint arXiv:1702.08608.
+[42] A. Osadchiy, A. Kamenev, V. Saharov, S. Chernyi, Signal processing algorithm based 
+on discrete wavelet transform, Designs 5 (3) (2021) 41.
+[43] S.D. Ewert, T. Dau, External and internal limitations in amplitude-modulation pro-
+cessing, J. Acoust. Soc. Am. 116 (1) (2004) 478–490.
+[44] D.-C. Chang, W.-R. Wu, Feedback median ﬁlter for robust preprocessing of glint 
+noise, IEEE Trans. Aerosp. Electron. Syst. 36 (4) (2000) 1026–1035.
+[45] S. Rakshit, A. Ghosh, B.U. Shankar, Fast mean ﬁltering technique (FMFT), Pattern 
+Recognit. 40 (3) (2007) 890–897.
+[46] C. Finn, P. Abbeel, S. Levine, Model-agnostic meta-learning for fast adaptation of 
+deep networks, in: International Conference on Machine Learning, PMLR, 2017,
+pp. 1126–1135.
+[47] Impinj, Octane LLRP Guide, 2021, (Available at: https://support.impinj.com/hc/
+article_attachments/4403727655059). Accessed: 2024-09-25.
+[48] S. Kontaxis, F. Kanellos, A. Ntanis, N. Kostikis, S. Konitsiotis, G. Rigas, An inertial-
+based wearable system for monitoring vital signs during sleep, Sensors 24 (13) 
+(2024) 4139.
+[49] S. Golipoor, S. Sigg, Environment and person-independent gesture recognition with 
+non-static RFID tags leveraging adaptive signal segmentation, in: 2024 IEEE 29th In-
+ternational Conference on Emerging Technologies and Factory Automation (ETFA), 
+IEEE, 2024, pp. 1–8.
+[50] Z. Ma, S. Zhang, J. Liu, X. Liu, W. Wang, J. Wang, S. Guo, RF-Siamese: Approaching 
+accurate RFID gesture recognition with one sample, IEEE Trans. Mob. Comput. 23 
+(1) (2022) 797–811.
+[51] H. Zhang, L. Wang, J. Pei, F. Lyu, M. Li, C. Liu, RF-sign: position-independent sign 
+language recognition using passive RFID tags, IEEE Internet Things J. 11 (2023) 
+9056–9071.
+[52] Y. Chen, J. Yu, L. Kong, Y. Zhu, F. Tang, RFPass: towards environment-independent 
+gait-based user authentication leveraging RFID, in: 2022 19th Annual IEEE Inter-
+national Conference on Sensing, Communication, and Networking (SECON), IEEE, 
+2022, pp. 289–297.
+[53] Y. Chen, J. Yu, L. Kong, Y. Zhu, F. Tang, Sensing human gait for environment-
+independent user authentication using commodity RFID devices, IEEE Trans. Mob. 
+Comput. 23 (2023) 6304–6317.
+Min Li is currently a senior engineer (Fellow Level) at the Institute of Information Engi-
+neering, Chinese Academy of Sciences, and a professor at the School of Cybersecurity, Uni-
+versity of Chinese Academy of Sciences. His research interests include internet of things, 
+computer vision, and indoor target positioning.
+Guangxuan Bai received bachelor in internet of things engineering from the School of 
+Computer Science and Technology, Qingdao University in 2022. He is presently pursuing 
+the Ph.D. degree at School of Cyber Security, University of Chinese Academy of Sciences. 
+His current research interests include internet of things, IoT security, wireless sensing.
+Di Gao received the Ph.D. degree in computer application technology from Harbin En-
+gineering University in 2015 and is currently a lecturer at the Hangzhou Advanced Re-
+search Institute, University of Chinese Academy of Sciences. Her current research interests 
+include visual tracking, information security and IoT security.
+Shuai Wang received MS degree from School of Cyber Security, University of Chinese 
+Academy of Sciences in 2024 and is presently pursuing the Ph.D. degree at School of 
+Cyber Security, University of Chinese Academy of Sciences. His current research interests 
+include internet of things, wireless sensing and indoor target positioning.
+Siye Wang received the Ph.D. degree from Beijing Jiaotong University in 2023 and is 
+currently a senior engineer at the Institute of Information Engineering, Chinese Academy 
+of Sciences. Her research interests include internet of things, IoT security, and wireless 
+sensing.
+Yanfang Zhang received the Ph.D. degree from University of Chinese Academy of Sciences 
+in 2021 and is currently a senior engineer at the Institute of Information Engineering, Chi-
+nese Academy of Sciences. Her research interests include Author Biography information 
+security and IoT security.
+Yue Feng received the Ph.D. degree from University of Chinese Academy of Sciences 
+in 2023 and is currently a engineer at the Institute of Information Engineering, Chinese 
+Academy of Sciences. Her current research interests include internet of things, IoT secu-
+rity, and wireless sensing.
+Computer Networks 272 (2025) 111738 
+14

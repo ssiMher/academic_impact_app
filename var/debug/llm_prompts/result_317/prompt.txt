@@ -1,0 +1,2038 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: SPACE: Speaker Adaptation for Acoustic Eavesdropping Using mmWave Radio Signals
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 1
+SPACE: Speaker Adaptation for Acoustic
+Eavesdropping using mmWave Radio Signals
+Running Zhao, Luca Jiang-Tao Yu, Tingle Li, Zhihan Jiang, Chenwei Zhang, Chenshu Wu, Senior Member, IEEE,
+Hang Zhao, and Edith C.H. Ngai, Senior Member, IEEE
+Abstract—The prevalence of voice-related interaction and
+communication has raised concerns about privacy leakage and
+security. For example, millimeter-wave (mmWave) radio signals
+have been exploited as a potential attacker for acoustic eavesdrop-
+ping. However, speaker variability and low-quality input pose
+significant challenges for the practical deployment of mmWave-
+based eavesdropping. In this paper, we propose SPACE, an
+acoustic eavesdropping system to recover intelligible speech from
+low-quality mmWave signals, which can adapt to numerous
+different speakers and unseen ones. SPACE is a two-stage system
+that first reconstructs the spectrogram using a novel Radio
+TransUNet and then synthesizes the waveform through a neural
+vocoder. Specifically, to alleviate the negative effect of speaker
+variability, we introduce a speaker encoder to capture speaker
+features and a fusion network to condition the spectrogram
+reconstruction based on the extracted speaker characteristics.
+Further, to facilitate intelligible speech recovery from low-quality
+input, we design a Frequency Transformation Layer to exploit
+the correlation among all frequency harmonics and incorporate
+the neural vocoder to synthesize the speech waveform from
+the reconstructed spectrogram without using the contaminated
+phase. The experimental results show that SPACE outperforms
+existing mmWave-based approaches in scenarios with numerous
+different speakers and unseen speakers.
+Index Terms —Wireless sensing, acoustic eavesdropping,
+mmWave radio signals, speech recovery, speaker adaptation.
+I. I NTRODUCTION
+V
+OICE related interaction maintains an indispensable po-
+sition in human-computer interfaces, such as Internet of
+Things (IoT) devices in smart homes and voice assistants in
+mobile phones [1]. In addition, voice-related communication
+is also a common medium in online conferences. The loud-
+speaker is an essential component that enables voice-related
+This work was supported by the UGC General Research Fund no. 17209822
+and the Innovation and Technology Commission Fund no. ITS/383/23FP from
+Hong Kong. Manuscript received April 19, 2021; revised August 16, 2021.
+(Corresponding author: Edith C.H. Ngai.)
+Running Zhao, Zhihan Jiang, Chenwei Zhang, and Edith
+C.H. Ngai are with the Department of Electrical and Electronic
+Engineering, The University of Hong Kong, Hong Kong SAR,
+China (E-mail: rnzhao@connect.hku.hk; zhjiang@connect.hku.hk;
+chenweiZHANG@connect.hku.hk; chngai@eee.hku.hk).
+Luca Jiang-Tao Yu and Chenshu Wu are with the School of Computing
+and Data Science, The University of Hong Kong, Hong Kong SAR, China
+(E-mail: lucayu@connect.hku.hk; chenshu@cs.hku.hk).
+Tingle Li is with the Department of Electrical Engineering and Computer
+Science, University of California, Berkeley, Berkeley, CA 94720, USA (E-
+mail: tingle@eecs.berkeley.edu).
+Hang Zhao is with the Institute for Interdisciplinary Information Sciences,
+Tsinghua University, Beijing, China, and also with Shanghai Qi Zhi Institute,
+Shanghai, China (E-mail: hangzhao@tsinghua.edu.cn).
+Numerous different speakers
+Increase the difficulty 
+in speech recovery
+Unseen speakers
+Noise contamination
+Lack of high 
+frequency band
+Low-quality 
+mmWave signals
+Speaker 
+variability
+Fig. 1. The challenges in practical applications. The speaker variability and
+low-quality mmWave signals increase the difficulty in speech recovery.
+interaction and communication. However, loudspeakers are
+prone to expose private and sensitive information, such as
+passwords and addresses [2]. The prevalence of loudspeakers
+creates a threat of acoustic eavesdropping that raises the risk
+of privacy leakage [3], [4].
+While a direct way of eavesdropping is to place a micro-
+phone in the vicinity of the target speaker, the physical distance
+and irrelevant sound constrain the feasibility. To overcome the
+limitations, various sensors have been explored to eavesdrop
+on the acoustic content of speakers, such as Lidar [5], laser
+[6], and high-speed camera [7]. However, they are susceptible
+to lighting conditions or opaque substances. Compared with
+optical sensors and microphones, radio frequency (RF) sig-
+nals are immune to irrelevant sound, lighting conditions, and
+occlusions [8], and owing to those strengths, RF signals have
+been exploited for various sensing applications [9]–[13]. These
+distinctive attributes also empower the usage of RF signals
+for acoustic eavesdropping, where the basic idea is to decode
+the sound-related vibration from the reflected signal of the
+target loudspeaker for voice recovery or recognition. Partic-
+ularly, among many RF signals, millimeter-wave (mmWave)
+technology appears to be more promising for measuring subtle
+motions like voice vibration, thanks to its short wavelengths
+and large bandwidths [14].
+Existing mmWave-based eavesdropping systems have
+evolved from recovering single-tone music and simple words
+to speech without vocabulary constraints. For example,
+WaveEar [15] leveraged mmWave radar to recover human
+reading voice from vocal vibration. RadioMic [16], mmEaves-
+dropper [17], and MilliEar [18] were proposed to recover
+speech from the loudspeaker using mmWave signals. Similarly,
+mmPhone [19] recovered speech through piezoelectric effect
+and mmWave signals. However, these current systems take
+less into consideration the following challenges in practical
+0000–0000/00$00.00 © 2021 IEEE
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 2
+applications and they do not design corresponding components
+to cope with such challenges.
+Speaker variability. In real deployment, the target victim is
+not fixed, which expects the system to have the ability to
+recover the speech of numerous different speakers (Figure
+1). However, different speaker-level characteristics, such as
+accent, age, and gender, result in distinct acoustic properties of
+each speaker. Therefore, with an increased number of speakers,
+speaker variability will significantly increase the difficulty of
+speech recovery as the method has to adapt to the unique
+features of each speaker [20], especially with low-quality
+mmWave signals as the input (detailed below). This difficulty
+limits the number of distinct speakers in existing mmWave-
+based eavesdropping systems to typically a few dozen, less
+than one hundred. Moreover, since the target victim varies
+in different application scenarios, all eavesdropped speakers
+cannot occur in the training set. In other words, speakers
+in the test set are always unseen for the training set. The
+inconsistency among speakers creates a mismatch between
+the statistical distributions of training and test data [21].
+Apparently, the mismatch between speakers poses challenges
+for existing works as they mainly focus on speakers that are
+the same in both training and test sets. Therefore, enabling the
+mmWave-based eavesdropping system to adapt to numerous
+different speakers or unseen speakers while maintaining high
+recovery performance remains intractable.
+Low-quality input mmWave signals. The low-quality
+mmWave signals are attributed to the absence of a high-
+frequency band and the fact that such signals are overwhelmed
+by noise (Figure 1). On the one hand, commodity mmWave
+radar design results in a limited upper frequency that the radar
+can perceive (typically below 1 KHz), making the input signal
+lack high-frequency bands [22]. On the other hand, the noise
+from wireless channels and multipath signals contaminates
+input mmWave signals, especially for the phase. Although
+existing works achieve good quantitative results with low-
+quality input mmWave signals, there is still a gap between
+the intelligibility of recovered speech and original speech
+in terms of human perception, especially for the utterances
+acquired from numerous different and unseen speakers. The
+application of mmWave-based eavesdropping expects the re-
+covered speech as close to the original as possible so that it
+is intelligible to listeners.
+In this paper, we introduce SPACE, speaker adaptation for
+acoustic eavesdropping using mmWave radio signals, which
+is able to adapt to numerous different speakers (up to 630
+speakers) and unseen speakers. SPACE can recover intelligible
+speech from low-quality input mmWave signals. In addition,
+SPACE is capable of recovering high-quality speech not only
+for numerous different speakers seen during training but also
+for speakers never seen before, alleviating the challenge of
+speaker variability. SPACE is a system with a two-stage
+recovery scheme consisting of spectrogram reconstruction and
+waveform synthesis. In the first stage, we design the Radio
+TransUNet for low-quality input mmWave signals to recon-
+struct the accurate spectrogram guided by the extracted speaker
+characteristics. Specifically, it includes a speaker encoder for
+extracting speaker characteristics, a spectrogram encoder for
+capturing spectrogram embedding, a fusion network for in-
+corporating speaker embedding into spectrogram embedding,
+and a spectrogram decoder for spectrogram reconstruction.
+In the second stage, we introduce the neural vocoder to di-
+rectly synthesize the speech waveform from the reconstructed
+spectrogram. Notably, our design overcomes the above two
+challenges in a distinct way:
+To address the first challenge, we introduce a speaker
+encoder to capture speaker-aware features as auxiliary infor-
+mation for spectrogram reconstruction, alleviating the negative
+effect of speaker variability, i.e., the increasing number of
+different speakers and speaker mismatch between training and
+test sets. Beyond this, we design a fusion network composed
+of Feature-wise Linear Modulation (FiLM) and Transformer
+layers, where the former conditions the spectrogram embed-
+ding by the speaker embedding, and the latter captures the
+contextual information of the conditioned features and further
+fuses them to enhance spectrogram reconstruction. Under the
+guidance of the speaker embedding, the extracted spectrogram
+embedding can integrate speaker characteristics for reconstruc-
+tion, so that the network can adapt to numerous different
+speakers and unseen speakers. For the second challenge of
+the low-quality input mmWave signals, we specially design a
+Frequency Transformation Layer (FTL), inserted behind each
+spectrogram encoder layer, to exploit the correlation among all
+frequency harmonics. This enables the network to make full
+use of the limited frequency information to predict the accurate
+and affluent high-frequency bands. Moreover, considering the
+high quality of the reconstructed spectrogram and the noise-
+contaminated phase, the neural vocoder directly synthesizes
+the speech waveform from the reconstructed spectrogram,
+avoiding noise interference.
+Overall, our contributions are summarized as follows:
+• We propose SPACE, a mmWave-based eavesdropping
+system that recovers intelligible speech from low-quality
+input and maintains the capacity to adapt to numerous
+different speakers and unseen speakers.
+• We introduce the speaker encoder to capture the speaker-
+aware features, and we further propose the fusion net-
+work with FiLM and Transformer layers to condition the
+extracted spectrogram embedding by the speaker embed-
+ding with the speaker characteristics, thereby adapting
+to numerous different speakers (up to 630 speakers) and
+unseen speakers while maintaining high quality.
+• We introduce the FTL to exploit the correlation among
+all frequency harmonics, facilitating the missing high-
+frequency band prediction. Moreover, we introduce the
+neural vocoder to synthesize speech waveform from the
+reconstructed spectrogram with the accurate and affluent
+high-frequency band. Both introductions guarantee intel-
+ligible speech recovery from low-quality input.
+• We implement SPACE on the commercial mmWave radar
+and perform extensive evaluations on different scenarios
+and settings. The experimental results show that SPACE
+outperforms other mmWave-based approaches on the
+datasets with numerous different speakers and unseen
+speakers in terms of quantitative and qualitative evalu-
+ations.
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 3
+(a) Waveforms of audio and radio signals.
+Audio signals Radio signals
+(b) Spectrograms of audio and radio signals.
+Fig. 2. Feasibility analysis in terms of waveform and spectrogram.
+II. P RELIMINARY KNOWLEDGE
+A. mmWave Sensing for Vibration Estimation
+The core of mmWave-based eavesdropping is to demodulate
+the vibration-related information from frequency-modulated
+continuous-wave (FMCW) radar signals. Specifically, the
+FMCW radar transmits “chirp” signals and captures the re-
+flection from objects. Given the carrier frequency fc, chirp
+slope K, The transmitted chirp is defined as STX (t) =
+exp[j(2πfct + πKt2)]. An object placed at a distance d0
+vibrating as x(t) would cause the received signal to be a
+time-delayed version of transmitted chirp: SRX(t) = A ·
+exp[j(2πfc(t − τ) +πK(t − τ)2)], where A is the path loss
+coefficient, τ is the round-trip delay given by 2(d0+x(t))
+c , and c
+is the light speed. A mixer is used to demodulate the received
+signal, generating the Intermediate Frequency (IF) signal as:
+SIF (t) =A · exp(j2πKτt + j2πfcτ). (1)
+Although the frequency of the IF signal contains vibration-
+related information, the frequency change caused by the weak
+vibration is not discernible in the spectrum. Fortunately, the
+phase is more sensitive to vibration with weak amplitude, and
+thus, the phase of the IF signal can be used to demodulate
+the vibration signal [23]. First, we perform range-FFT over
+the received IF signal to locate the target. Then, we separate
+the target reflection from irrelevant inferences by taking the
+corresponding peak in magnitude (range bin) and combining
+samples across chirps. The sample sequence can be expressed
+as S(n) = A · exp(j2πfcτ), where τ = 2(d0+x(n))
+c . After
+removing static clutters, we extract the phase variation ϕ(n)
+across multiple chirps and unwrap it to resolve the phase am-
+biguity. With the above process, the speech-related vibration
+signal x(n) is demodulated from mmWave FMCW signals.
+B. Feasibility and Challenges
+We explore the feasibility of recovering speech from
+mmWave signals and analyze the challenges in speech recov-
+ery with speaker variability and low-quality input.
+Fig. 3. Radio spectrograms of utterances with the same content from different
+speakers.
+Feasibility. We investigate the correlation between the
+original speech signal and the mmWave signal to verify the
+feasibility. In the preliminary experiment, we use the mmWave
+radar to capture the vibration of the loudspeaker playing
+the utterance. The waveforms of the audio and mmWave
+signals are shown in Fig. 2(a). It is obvious that they have
+similar envelopes and undulations in corresponding locations,
+demonstrating that mmWave signals capture the speech-related
+vibration. Moreover, Fig. 2(b). illustrates spectrograms of
+mmWave and audio signals. They share a significant corre-
+lation in the time-frequency domain, especially in the low-
+frequency band. These observed correlations demonstrate the
+feasibility of recovering speech from input mmWave signals.
+Challenges. We also use the spectrogram to visualize
+mmWave signals from different speakers with the same con-
+tent. Even for the same content, different speakers express
+it in a distinct way. As shown in Fig. 3, they exhibit some
+differences in articulation timing and frequency, reflecting each
+speaker’s distinct characteristics. This speaker variability poses
+challenges for speech recovery as the system needs to adapt
+to numerous different speakers, especially for 630 speakers
+and even unseen speakers. Moreover, it can be seen in such
+figures that the quality of mmWave signals is inferior to that of
+speech signals due to the lack of a high-frequency band and the
+existence of a significant amount of noise. This phenomenon
+further increases the difficulty of speech recovery.
+III. S YSTEM DESIGN
+A. System Overview
+The overall structure of SPACE is shown in Fig. 4. The
+captured mmWave signals are converted into radio Mel spec-
+trogram, which is used as the input of the proposed system. In
+the Radio TransUNet for spectrogram reconstruction, speaker
+encoder and spectrogram encoder first encode the input radio
+Mel spectrogram into speaker embeddings and spectrogram
+embeddings, respectively, and then, they are fused by the
+fusion network with FiLM and Transformer layers. Subse-
+quently, spectrogram decoder reconstructs the speech Mel
+spectrogram from the fused embedding. The Radio TransUNet
+not only performs the modality transformation from radio
+to audio, but also injects the speaker characteristics into the
+spectrogram and enhances the quality of the spectrogram by
+predicting accurate and affluent high-frequency bands. For the
+waveform synthesis, the neural vocoder synthesizes the high-
+quality speech waveform from the reconstructed speech Mel
+spectrogram. In summary, SPACE is a system with a two-stage
+recovery strategy, and it consists of five components, including
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 4
+…
+ Reconstructed Speech Mel SpectrogramRecovered Speech
+mmWave Signals
+Radio Mel Spectrogram
+FiLM
+Neural Vocoder
+Spectrogram Encoder
+Spectrogram Decoder 
+Transformer Layer
+LSTMSpeaker EncoderLinear!,#
+Fusion Network
+Transformer Layer
+Fig. 4. The overall structure of the proposed SPACE. SPACE is a two-stage speech recovery system, consisting of spectrogram reconstruction and waveform
+synthesis. The first stage is achieved by the designed Radio TransUNet, which is composed of speaker encoder, spectrogram encoder, fusion network and
+spectrogram decoder. The second stage is based on the neural vocoder.
+'&&
+'&''(&
+'('')&
+')' ………
+'&&
+'(&
+')& ………
+(& (( ())&&,&)&&,()&&,)
+)(&,&)(&,()(&,)
+))&,&))&,())&,)
+………………
+………
+………………
+………
+Embedding VectorsSimilarity Matrix………
+………
+………
+Positive samples 
+Negative samples 
+(a) Similarly matrix.
+(&…
+((…
+()…PushPushPull (b) Training objective.
+Fig. 5. Illustration of similarity matrix calculation and training process
+for speaker encoder. Different colors represent embeddings from different
+speakers.
+the speaker encoder, the spectrogram encoder, the fusion
+network, the spectrogram decoder, and the neural vocoder.
+• Speaker encoder. We introduce this component to capture
+the speaker characteristic as the auxiliary information in
+the following fusion network, benefiting the adaptation
+of numerous different speakers and unseen speakers.
+• Spectrogram encoder. The goal of this component is to
+extract the feature among all frequency harmonics from
+the low-quality spectrogram, facilitating the prediction of
+the missing high-frequency bands.
+• Fusion network. We design the fusion network to condi-
+tion the spectrogram embeddings by the speaker embed-
+dings to inject speaker characteristics and further explore
+the contextual information of the conditioned features.
+• Spectrogram decoder & Neural vocoder. The former
+reconstructs the spectrogram with the accurate and af-
+fluent bands from the fused embeddings, and the latter
+directly synthesizes the high-quality speech waveform
+from the reconstructed spectrogram without using the
+contaminated phase.
+B. Speaker Encoder
+The speaker encoder is utilized to extract the speaker-
+discriminative embeddings from the Mel spectrogram of
+mmWave signals, which can represent the characteristics of
+different speakers. With the extracted speaker embedding,
+the speaker-related information can condition the following
+spectrogram reconstruction, allowing the network to adapt to
+numerous different speakers and unseen speakers.
+We follow a speaker verification model with the generalized
+end-to-end loss [24] and use it as the speaker encoder. The
+speaker verification is the task to verify whether the utterance
+belongs to a specific speaker. Therefore, the model is able
+to effectively capture the decisive feature of speakers that
+can be differentiated from other speakers. Considering the
+real application scenarios of SPACE, each target may say
+totally different sentences. This motivates us to train the
+speaker encoder in a text-independent setting. Specifically, the
+speaker encoder is a simple but effective network consisting
+of 3 LSTM layers and a projection layer. It takes the Mel
+spectrogram of mmWave signals with arbitrary length as the
+input and maps the spectrogram into a fixed-dimensional
+embedding vector. In the training process, the network is
+optimized by the generalized end-to-end verification loss to
+discriminate the feature embeddings of different speakers in a
+contrastive manner. In other words, the objective of training
+is to make the feature embeddings from the same speaker to
+be close while those from different speakers far away.
+To implement the objective, the loss specially designed
+for speaker verification is employed. Specifically, given the
+input feature vector xij from speaker i and utterance j, the
+embedding vector is defined as the L2 normalization of the
+speaker encoder f(·) output: eij = f(xij), where i = 1, ..., N,
+j = 1, ..., M, and N and M represent the number of different
+speakers and the number of utterances per speaker in a
+batch. Also, the centroid of the embedding vectors from all
+utterances of the i-th speaker ei = [ei1, ..., eiM ] is calculated
+by Ci = 1
+M
+PM
+j=1 eij. Therefore, as shown in Fig. 5(a), the
+similarity matrix Sij,k first calculates the cosine similarity
+between the embedding vector eij and the centroid of each
+speaker Ck(k = 1, ..., N), and then they are scaled by a linear
+layer, as Sij,k = w · cos(eij, Ck) +b (w and b are learnable
+parameters), where positive samples indicate the embedding
+vector and the centroid belong to the same speaker while
+negative samples denote the opposite. The similarity matrix
+is optimized using the cross-entropy loss.
+L(eij) =−log exp(Sij,i)PN
+k=1 exp(Sij,k)
+. (2)
+As shown in Fig. 5(b), the learning process pulls the embed-
+ding vector eij close to its centroid Ci while pushing it away
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 5
+Conv (!×!), BN, ReLU
+Freq-FC
+Conv (!×!), BN, ReLUConv (!×!), BN, ReLU
+Conv (1×#), BN, ReLU
+Fig. 6. Architecture of frequency transformation layer (FTL).
+from other centroids Ck(k ̸= i).
+Initialized with the pre-trained model weights from [25],
+we use mmWave signals to train the speaker encoder with the
+above loss function, enabling it to extract speaker embeddings
+representing the characteristics of each speaker. During infer-
+ence, the input spectrogram of mmWave signals with arbitrary
+length is broken into fixed-length windows. Each of them
+is fed into the network independently, and all outputs are
+averaged and normalized to generate the speaker embedding
+for the input mmWave signals.
+C. Spectrogram Encoder
+The spectrogram encoder extracts the spectrogram embed-
+dings from the Mel spectrogram of mmWave signals with
+limited frequency bands, exploiting speech-related information
+among all frequency harmonics for the following speech
+spectrogram reconstruction.
+We design the spectrogram encoder by combining the con-
+volution layer and the frequency transformation layer (FTL).
+To achieve the goal of modality transformation and spec-
+trogram enhancement, the spectrogram encoder and decoder
+(see Section III-E) take the form of a UNet [26] due to
+its effectiveness in prediction tasks with the help of skip
+connection. Beyond this, considering the low quality of the
+input spectrogram, it is important to make full use of the
+limited frequency for high-frequency prediction. In particular,
+harmonic correlation along the whole frequency axis has
+been proven to be helpful for time-frequency representation
+reconstruction [27]. Therefore, we further introduce the FTL,
+inserted behind each convolution layer, to capture harmonics
+from the mmWave spectrogram with limited frequency bands.
+As shown in Fig. 6, FTL is composed of three stacked
+convolution layers with a kernel size of 5 × 5, a frequency
+fully connected layer, and a 1 × 1 convolution layer. The
+three stacked convolution layers are used to capture local time-
+frequency correlation. The frequency fully connected layer is
+the key component to capture global harmonic correlations and
+it acts as a trainable transformation matrix, which applies to
+each time slice of the feature map extracted from the stacked
+convolution layers. Let Sconv
+t0 ∈ RF×C denote the convolution
+feature map at time t0(1 ≤ t0 ≤ T) and Wtfm denote
+the matrix, the transformation process can be represented as
+Stfm
+t0 = Wtfm ·Sconv
+t0 , where T, F and C are the time (width),
+frequency (height) and channel dimension, and we can get the
+transformed feature map Stfm by stacking Stfm
+t0 along the
+Linear$!"#
+$!"$%
+!($!"#)
+#($!"#)
+FiLM
+(a) Architecture of FiLM. The
+dot indicates a Hadamard prod-
+uct.
+Norm
+MLPNorm
+Multi-Head Attention with relative position encoding
+(b) Architecture of
+Transformer layer.
+Fig. 7. Architecture of FiLM and Transformer layer in fusion network.
+time axis. Each time bin of Stfm contains the frequency infor-
+mation from all the frequency bands, allowing FTL to explore
+the global frequency correlations. Moreover, the transformed
+feature Sconv is concatenated with the convolution feature map
+Stfm and fused by the 1 × 1 convolution layer.
+The design allows the spectrogram encoder to fully exploit
+the correlation among all frequency harmonics in the limited
+frequency band of the mmWave Mel spectrogram, facilitating
+the missing high-frequency band prediction.
+D. Fusion Network
+The goal of this component is to fully fuse the speaker
+and spectrogram embeddings by inserting the condition signals
+from speaker embeddings into spectrogram embeddings and
+further exploiting the contextual information.
+In our design, we employ the FiLM layer [28] and Trans-
+former layers [29] to achieve our goals. The speaker embed-
+dings contain speaker characteristics, which is the key compo-
+nent to providing speaker-related information for spectrogram
+embeddings. For this reason, we adopt the FiLM that applies
+an affine transformation to the spectrogram embeddings based
+on the speaker embeddings, thereby learning to adaptively
+influence the spectrogram embeddings. As shown in Fig. 7(a),
+assuming the speaker embeddings Espk and the spectrogram
+embeddings Esptg, FiLM refers to a feature-wise affine trans-
+formation as:
+F iLM(Esptg) =γ(Espk)Esptg + β(Espk), (3)
+where γ(·) and β(·) are single linear layers that output scaling
+and bias on the spectrogram embeddings based on speaker
+embeddings. The learnable scaling and bias empower the
+speaker-aware features to manipulate the feature map of the
+spectrogram, thereby injecting the speaker-related information.
+Obviously, the Mel spectrogram has a strong correlation
+along the whole time and frequency axes, and thus, captur-
+ing contextual information is beneficial for Mel spectrogram
+reconstruction. Considering the inability of CNN to capture
+long-range dependencies and global context and inspired
+by the success of Transformer layers in global correlation
+exploration [30], we employ the Transformer layers with
+relative positional encoding to explore the global correlation of
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 6
+conditioned feature embeddings. Specifically, the conditional
+feature embeddings Econ ∈ RH×W×C with spatial resolution
+H×W and C channels are reshaped as a sequence of flattened
+patches Ep ∈ RN×(P2·C), where P is the resolution of each
+patch, and N = HW/P 2 is the number of patches. Then, the
+patches are projected into D-dimensional patch embeddings
+EZ ∈ RN×D by a linear projection. Considering that input
+mmWave signals always have different lengths, we leverage
+the relative positional encoding [31] to inject the relative
+distance dynamically into the attention score in each layer,
+which allows the encoder with self-attention module to be
+more robust to the variance of the input length. To implement
+the relative positional encoding, we replace the calculation of
+the standard attention score between query and key vector with
+the following:
+Arel
+m,n =q⊤
+ZmkZn + q⊤
+ZmWk,RRm−n
++ u⊤kZn + v⊤Wk,RRm−n,
+(4)
+where qZm and kZn are the m-th query vector and n-th key
+vector generated from patch embedding with the correspond-
+ing linear transformation, Wk,R denotes weight matrices for
+producing the location-based key vectors, and Rm−n is the
+relative positional embedding of a sinusoid encoding matrix
+to replace the absolute counterpart. Moreover, two trainable
+parameters, u and v, substitute the query position. In summary,
+with the resulting patch embeddings EZ as the input, the
+process of the tacked Transformer layers is shown in Fig. 7(b),
+where each layer contains a multi-head self-attention layer and
+a feed-forward network, connected by residual connections
+and layer normalization.
+Through the fusion network, speaker embeddings condition
+the spectrogram embeddings with speaker characteristics and
+further exploit the contextual correlation from the conditioned
+embedding to contribute to the spectrogram reconstruction.
+E. Spectrogram Decoder
+The spectrogram decoder aims to reconstruct the speech Mel
+spectrogram from the fused embeddings that are the output of
+the fusion network.
+As mentioned in Section III-C, the spectrogram decoder is
+paired with the spectrogram encoder to construct the UNet-
+style network with the skip connection. The spectrogram
+decoder consists of multiple upsampling blocks to decode
+the fused embeddings for outputting the final speech Mel
+spectrogram. In contrast to convolution for downsampling in
+the spectrogram encoder, the spectrogram decoder utilizes
+the PixelShuffle to upsample the fused embeddings, with
+the same multiple for upsampling and downsampling. The
+skip-connections between the encoder and decoder allow the
+feature flow, facilitating the output reconstruction and training
+process [26]. Specifically, after reshaping the sequence of
+conditional embeddings Efusion ∈ R(HW/P 2)×D to the shape
+of H
+P × W
+P × D, the spectrogram decoder reconstructs the
+speech Mel spectrogram of the same size of input as H ×W.
+With the spectrogram encoder that fully exploits frequency
+correlation within a limited frequency band, the spectrogram
+decoder reconstructs the speech Mel spectrogram with the
+Quiet ScenarioNoisy ScenarioSoundproof Scenario
+mmWaveRadar Soundproof glassNoise
+Microphone
+Loudspeaker
+Fig. 8. Experiment setups and data collection scenarios.
+accurate and affluent bands from the fused embeddings. More-
+over, the speaker encoder and the fusion network allow the
+injection of speaker characteristics into the reconstructed Mel
+spectrogram, benefiting the adaptation of numerous different
+speakers and unseen speakers.
+F . Neural Vocoder
+After reconstructing the high-quality Mel spectrogram using
+the designed Radio TransUNet in the first stage, we introduce
+the neural vocoder, Parallel WaveGAN [32], to synthesize nat-
+ural speech waveform from the reconstructed Mel spectrogram
+in the second stage.
+Based on the fact that Radio TransUNet reconstructs the Mel
+spectrogram with accurate and affluent speech features, we
+directly use the neural vocoder to synthesize speech waveform
+from the Mel spectrogram without using the contaminated
+phase. Although the intuition is to directly employ inverse
+Short Time Fourier Transform (iSTFT) on the phase of the
+input mmWave spectrogram and the estimated amplitude spec-
+trogram to recover speech, the noise from the wireless channel
+and the multipath signal contaminates the phase, which signif-
+icantly affects the perceptual quality of the generated speech
+waveform [33]. Among the many neural vocoders, we adopt
+Parallel WaveGAN to transform the recovered Mel spectro-
+gram into a speech waveform due to its fast and small-footprint
+characteristics. Parallel WaveGAN is based on the generated
+network of WaveNet, and it is composed of a generator and
+discriminator. To improve the stability and efficiency of the
+adversarial training process, the multi-resolution STFT loss is
+adopted as the auxiliary loss. These designs allow the model
+to generate natural-sounding waveforms with a small number
+of model parameters.
+IV. I MPLEMENTATION
+A. Experiment Setup
+The experiment setups and data collection scenarios are
+shown in Fig. 8. We implement the proposed SPACE on a
+commercial mmWave radar TI AWR1642BOOST [34] and
+high-speed data collection board DCA1000EVM [35]. We
+configure the radar with one transmit antenna and four receive
+antennas. The mmWave radar transmits signals modulated in
+FMCW with frequencies ranging from 77 GHz to 81 GHz.
+Specifically, we set the chirp period time to 180 us with an
+idle time of 30 us and an ADC sampling time of 150 us, and
+256 points are sampled in each chirp. Moreover, the frame
+period is set to 50 ms, and each frame includes 255 chirps.
+The number of frames decides the collection time and it is
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 7
+dependent on the paired audio duration. The configuration
+of radar is determined by the analysis of the quality of the
+received mmWave signals. Based on the above configuration,
+the chirp sampling rate (i.e., slow-time sampling rate) is 5.1
+KHz. Meanwhile, we use a commercial loudspeaker to act
+as the audio source to play the speech. After calibration, the
+length error between the original speech signals and mmWave
+radar signals is less than 10 ms. Moreover, a commercial off-
+the-shelf (COTS) microphone is placed in the same location
+as the mmWave radar to collect audio signals, which is used
+as the reference for comparison.
+We conduct experiments in three different scenarios, in-
+cluding quiet, noisy and soundproof scenarios. Also, the
+configurations follow the setup of existing works. (i) In the
+quiet scenario, the loudspeaker and the mmWave radar are
+placed in a line and the distance between them is set to 0.5m.
+(ii) The configuration of the noisy scenario was the same as
+the quiet scenario, but an extra loudspeaker is set around the
+mmWave radar (outside the perception field of radar) to play
+the noise. (iii) As for the soundproof scenario, the mmWave
+radar and the loudspeaker are separated by a soundproof glass.
+In the above scenarios, the loudspeaker plays the utterance at
+85 dB SPL, similar to an actor’s stage sound [7].
+B. Dataset Preparation
+We use the TIMIT [36] as the speech source for loudspeaker
+playback. TIMIT consists of 6300 clips uttered by 630 speak-
+ers (each speaker with 10 utterances) with different accents
+lasting 3.5 hours. We use two strategies to separate the training
+and test sets for TIMIT to evaluate the performance of models.
+• Various seen speaker scenario: Speakers in training
+and test sets are from numerous different speakers, and
+speakers in the test set are seen in the training set. We
+randomly select one utterance from each speaker of the
+TIMIT, a total of 630 samples from 630 speakers, for
+evaluation, and the others (i.e., 5670 samples from 630
+speakers) are used for training.
+• Unseen speaker scenario: Speakers also from numerous
+different speakers but speakers in the test set are unseen
+for the training set. We use all samples from randomly
+selected 567 speakers (i.e., 5670 samples) as the training
+set, and all samples from the remaining 63 speakers (i.e.,
+630 samples) as the test set.
+According to the paired audio signals, the collected
+mmWave signals are separated using the same strategies to
+obtain training and test sets in two scenarios, including the
+various seen speaker scenario and the unseen speaker scenario.
+Therefore, the paired mmWave-speech signals construct two
+datasets for training and testing.
+mmWave signals are used as the input for the network,
+and they are upsampled from 5.1 KHz to 8 KHz. The cor-
+responding speech signals are downsampled to 8 KHz before
+feeding into the network as the ground truth. To facilitate
+training, mmWave and speech signals are transformed into 80-
+dimensional log-Mel-Spectrogram features in the band-limited
+frequency range (60 to 4000 Hz), with a window size of 512
+and a hop size of 128.
+C. Network Configuration
+The implementation of SPACE is based on the open-sourced
+code1. The spectrogram encoder includes one input layer and
+three encoder layers, each encoder layer followed by an FTL.
+Each encoder layer contains two stacks, and each of them
+includes the convolution layer with a kernel size of 3 × 3, a
+batch normalization, and a ReLU activation function, while
+the stride of the former and latter convolution layer is 2 × 2
+and 1×1 and the channels expansion factors of them are 2 and
+1. The input layer has a similar structure but only increases
+the channel size from 1 to 128 without changing the height
+and width. As discussed in Section III-C, FTL consists of
+three stacked convolution layers with a kernel size of 5 × 5,
+a frequency fully connected layer with the dimension equal
+to the frequency dimension of input feature, and a 1 × 1
+convolution layer. The speaker encoder is a 3-layer LSTM
+with a hidden size of 256, followed by a projection to 256
+dimensions. As for the fusion network, the linear layer in
+FiLM projects the speaker embeddings into two embeddings
+with the size equal to the channels of spectrogram embeddings
+as 1024, representing functions of γ(·) and β(·). Moreover, the
+Transformer has 12 layers, each layer with a head number of 8
+and a hidden size of 768. To construct UNet, correspondingly,
+the spectrogram decoder includes three decoder layers and
+one output layer. Each decoder layer contains two stacks with
+a similar structure to the encoder, but the PixelShuffle for
+upsampling twice operator is inserted after the first stack.
+Moreover, the output layer is a convolution layer to converts
+the channels into the input as one dimension.
+The Radio TransUNet is trained using the AdamW op-
+timizer with a learning rate of 0.005 for 130 epochs. The
+Transformer layers in the fusion network are pretrained on
+ImageNet, and the speaker encoder is pretrained as in [25].
+Moreover, the training of Parallel WaveGAN follows the
+setting in [32], and it uses the corresponding corpus with
+8KHz sampling rate as input. We use PyTorch to implement
+all networks and train them with NVIDIA RTX 3090.
+V. E VALUATION
+A. Evaluation Metrics
+We use three quantitative metrics to evaluate the perfor-
+mance of systems in speech recovery for various seen speaker
+and unseen speaker scenarios.
+Short-time objective intelligibility (STOI) measures
+speech intelligibility (from 0 to 1).
+Perceptual evaluation of speech quality (PESQ) for the
+narrow band is a perception evaluation related to subjective
+opinion (from 1 to 4.5).
+Log-spectral distance (LSD) measures quality in the time-
+frequency domain as spectral distance, and relevant parameters
+follow the settings in [37].
+These three metrics are widely used in the field of speech
+signal processing to compare the quality and intelligibility
+of processed and original speech signals. The above metrics,
+1https://github.com/ZhaoRunning/Radio2Speech
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 8
+SPACE (Ours)
+UNet cGAN
+TransUNet
+Reference MicrophonemmWaveinput
+(a) Various seen speaker scenario.
+Reference MicrophoneSPACE (Ours)UNet cGANTransUNetmmWaveinput
+(b) Unseen speaker scenario.
+Fig. 9. Spectrogram visualization of reference microphone, mmWave input, and recovery results of SPACE (ours) and other mmWave-based baselines for
+various seen speaker scenario and unseen speaker scenario. The corresponding speech samples FADG0-SX379 and FCAL1-SX53 contain the content “Pam
+gives driving lessons on Thursdays” and “Even a simple vocabulary contains symbols”, respectively.
+(a) various seen speaker scenario.
+ (b) Unseen speaker scenario.
+Fig. 10. Visualization of speaker embeddings from various seen speaker and
+unseen speaker scenarios. Each color corresponds to a different speaker.
+except LSD, are better if higher. Moreover, we also use a
+qualitative metric to evaluate the recovery performance.
+Mean opinion score (MOS) performs the subjective eval-
+uation on Amazon Mechanical Turk [38]. For each scenario,
+we randomly selected 20 mmWave signals from the test set
+of the numerous different speaker scenario and the unseen
+speaker scenario, respectively, and got the recovered speech
+from ours and other mmWave-based methods. Each utterance
+was evaluated by 20 native speakers and the listeners were
+asked to rate a score from 1 to 5 (a higher score means better
+quality) on speech naturalness.
+B. Baselines
+To further demonstrate the effectiveness of our system, we
+compare the SPACE with three baselines in different scenarios.
+These baselines are existing mmWave-based speech recovery
+methods, which rely on UNet, cGAN, and the combination of
+UNet and Transformer for spectrogram prediction, and Griffin-
+Lim or neural vocoder for waveform generation.
+UNet-based method (UNet). The collected mmWave sig-
+nals are reconstructed into the spectrogram of speech signals
+using UNet, and then converted into the speech waveform
+through Griffin-Lim. We reimplement the method described
+in [16] and [15], and select the best results to recover the
+speech using the UNet-based method.
+cGAN-based method (cGAN). Conditional generative ad-
+versarial network (cGAN) reconstructs the speech spectrogram
+from the collected mmWave signals, and Griffin-Lim trans-
+forms the reconstructed spectrogram into speech waveform.
+Following the settings in [18] and [22], we reproduce the
+cGAN-based recovery method, and the best result is used for
+comparison.
+Transformer-UNet-based method (TransUNet). Consid-
+ering there are no existing methods using neural vocoder for
+speech recovery, we construct another baseline that simplifies
+our SPACE by only keeping the UNet with Transformer layers
+and Parallel WaveGAN to recover speech.
+For a fair comparison, all methods are trained and evaluated
+with identical training and test sets.
+C. Overall Performance
+We leverage two datasets (i.e., various seen speaker scenario
+and unseen speaker scenario) to train and evaluate SPACE
+and other baselines. The former dataset explores the speech
+recovery and adaptation ability of numerous different speakers,
+while the latter dataset reveals the recovery and adaptation
+ability of unseen speakers.
+1) Visualization: The experimental results of the spectro-
+gram reconstructed by SPACE and compared methods are
+visualized in Fig. 9, and the spectrograms of the reference mi-
+crophone and input mmWave signals are also visualized. This
+gives an intuitive awareness of the recovery performance. It is
+obvious that for the scenario with numerous different speakers,
+SPACE recovers a comparable spectrogram to the microphone
+from low-quality input mmWave signals, and especially the
+high-frequency band is accurately estimated. Even in unseen
+speaker scenarios, the spectrogram reconstructed by SPACE
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 9
+TABLE I
+QUANTITATIVE EVALUATION RESULTS OF SPACE (ours), AND OTHER MM WAVE-BASED BASELINES IN VARIOUS SEEN SPEAKER AND UNSEEN SPEAKER
+SCENARIOS . ∆ (COMPARISON BETWEEN TWO SCENARIOS ) REPRESENTS THE DECREASE IN THREE METRICS BETWEEN VARIOUS SEEN SPEAKER AND
+UNSEEN SPEAKER SCENARIOS . THE BEST RESULTS ARE SHOWN IN BOLD .
+Methods Various seen speaker scenario Unseen speaker scenario ∆ (Comparison between two scenarios)
+STOI↑ PESQ↑ LSD↓ STOI↑ PESQ↑ LSD↓ ∆STOI ∆PESQ ∆LSD
+UNet 0.693 1.581 1.152 0.672 1.498 1.186 0.021 0.083 0.034
+cGAN 0.752 1.932 1.172 0.737 1.867 1.142 0.015 0.065 0.030
+TransUNet 0.775 1.959 1.035 0.762 1.896 1.072 0.013 0.063 0.037
+SPACE (Ours) 0.821 2.129 0.923 0.814 2.111 0.954 0.007 0.018 0.031
+TABLE II
+MOS RESULTS ON SPEECH NATURALNESS OF SPACE (Ours) AND OTHER
+MMWAVE-BASED BASELINES . IT IS WITH 95% CONFIDENCE INTERVALS .
+Methods Various seen speaker scenario Unseen speaker scenario
+UNet 2.98 ± 0.12 2.77 ± 0.16
+cGAN 3.16 ± 0.13 3.04 ± 0.11
+TransUNet 3.17 ± 0.15 3.07 ± 0.12
+SPACE (Ours) 3.42 ± 0.10 3.38 ± 0.14
+still maintains high quality in terms of the time-frequency do-
+main. However, the high-frequency band of the spectrograms
+recovered by other mmWave-based baselines is obscure for
+numerous different speakers, and the recovered spectrogram
+degrades in unseen speaker scenarios. The results indicate that
+the proposed SPACE can recover speech with accurate and
+affluent frequency from low-quality input mmWave signals for
+numerous different speakers and unseen speakers.
+2) Speaker embedding space: We visualize the speaker
+embedding space of the speaker encoder to validate the ability
+to capture speaker-aware characteristics. We use the Uniform
+Manifold Approximation and Projection (UMAP) [39] to
+reduce the feature dimensions and visualize embeddings. The
+visualization results of 9 samples for various seen speaker
+and unseen speaker scenarios are shown in Fig. 10. It is
+shown that speaker embeddings from the same speaker are
+close to each other and form a cluster, whereas different
+clusters formed by embeddings from different speakers are
+significantly separated. This is an indication that the speaker
+encoder has learned an effective representation of speaker
+space to capture distinctive speaker characteristics, facilitating
+speech recovery for numerous different speakers and unseen
+speakers.
+3) Quantitative evaluation: In Table I, we show the quan-
+titative results of SPACE and other mmWave-based baselines
+in various seen speaker and unseen speaker scenarios. In the
+various seen speaker scenario, SPACE outperforms mmWave-
+based baselines across all three metrics, with STOI gain of
+0.046-0.128, PESQ gain of 0.17-0.548, and LSD drop of
+0.112-0.249. The results indicate the quality and intelligibility
+of speech recovered by the proposed SPACE is better than
+other mmWave-based baselines. Therefore, compared with
+baselines that are not specifically designed for numerous
+different speakers and low-quality input, the proposed system
+can fully exploit low-quality mmWave signals and extract
+speaker-aware characteristics to adapt to different speakers and
+predict accurate and affluent high-frequency bands, which is a
+crucial factor in determining speech quality and intelligibility.
+Even for the unseen speaker scenario, SPACE still achieves
+the best performance with STOI of 0.814, PESQ of 2.111 and
+LSD of 0.954. This means the proposed system can not only
+recover high-quality speech in the scenario with numerous dif-
+ferent speakers, but also in the scenario with unseen speakers.
+Moreover, SPACE almost drops the least for STOI, PESQ,
+and LSD for the comparison of these two scenarios, which
+further demonstrates the adaptation ability of the proposed
+system. While, other mmWave-based baselines with inferior
+performance in various seen speaker scenarios perform worse
+for unseen speakers, and their decline is relatively larger. The
+results validate the conclusion that not designing specially for
+unseen speakers and low-quality input limits the recovery and
+adaptation capabilities.
+4) Qualitative evaluation: In addition to the quantitative
+evaluation, we also perform the qualitative evaluation to show
+the listeners’ actual perceptual quality of the recovered speech.
+The qualitative results of MOS evaluation on datasets with
+various seen speakers and unseen speakers are shown in Table
+II. As can be seen, in the various seen speaker scenario,SPACE
+archives the MOS of around 3.42, which is 0.25 - 0.44 higher
+than other mmWave-based baselines. The results show that
+from the human perspective, the quality and intelligibility of
+recovered speech from SPACE is better than other mmWave-
+based baselines. For the unseen speaker scenario, SPACE also
+surpasses other mmWave-based baselines in MOS, manifesting
+a better perceptual quality of recovered speech for listeners.
+The results manifest the superiority of SPACE’s ability to
+recover high-quality speech and adapt to numerous different
+speakers and unseen speakers.
+D. Complex Experimental Scenarios
+In addition to quiet scenarios, we also evaluate the speech
+recovery performance in complex experimental scenarios, in-
+cluding noisy and soundproof scenarios. The spectrogram
+of the reference microphone and mmWave input and the
+recovered spectrograms of ours and other mmWave-based
+baselines are visualized in Fig. 11. As can be seen, in
+noisy and soundproof scenarios, mmWave-based methods still
+recover the spectrogram with clear frequency bands, while
+the reference microphone almost fails, which demonstrates
+the superiority of mmWave signals for noise and soundproof
+materials in speech recovery. Moreover, SPACE outperforms
+other mmWave-based baselines in terms of spectrogram qual-
+ity, especially for the high-frequency bands, for both scenarios.
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 10
+SPACE (Ours)UNet cGANTransUNet
+Reference MicrophonemmWaveinput
+(a) Noisy scenario.
+SPACE (Ours)UNet cGANTransUNet
+Reference MicrophonemmWaveinput
+(b) Soundproof scenario.
+Fig. 11. Spectrogram visualization of reference microphone, mmWave input and recovery results of SPACE (ours) and other mmWave-based baselines for
+various seen speaker scenario in noisy and soundproof scenarios. The corresponding speech samples FDMS0-SX48 and FBLV0-SX68 contain the content
+“Grandmother outgrew her upbringing in petticoats” and “Upgrade your status to reflect your wealth”, respectively.
+UNet cGAN
+TransUNet
+SPACE(Ours)0.0
+0.2
+0.4
+0.6
+0.8
+1.0STOI
+0.692
+0.752
+0.775
+0.822
+0.669
+0.737
+0.760
+0.813
+Various Seen Speaker Scenario
+Unseen Speaker Scenario
+UNet cGAN
+TransUNet
+SPACE(Ours)0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0PESQ
+1.581
+1.932
+1.957
+2.131
+1.497
+1.867
+1.891
+2.115
+Various Seen Speaker Scenario
+Unseen Speaker Scenario
+UNet cGAN
+TransUNet
+SPACE(Ours)0.0
+0.5
+1.0
+1.5
+2.0LSD
+1.154
+1.172
+1.037
+0.919
+1.193
+1.142
+1.072
+0.951
+Various Seen Speaker Scenario
+Unseen Speaker Scenario
+(a) Noisy scenario.
+UNet cGAN
+TransUNet
+SPACE(Ours)0.0
+0.2
+0.4
+0.6
+0.8
+1.0STOI
+0.597
+0.659
+0.684
+0.721
+0.581
+0.653
+0.666
+0.711
+Various Seen Speaker Scenario
+Unseen Speaker Scenario
+UNet cGAN
+TransUNet
+SPACE(Ours)0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0PESQ
+1.445
+1.683
+1.682
+1.880
+1.407
+1.726
+1.648
+1.851
+Various Seen Speaker Scenario
+Unseen Speaker Scenario
+UNet cGAN
+TransUNet
+SPACE(Ours)0.0
+0.5
+1.0
+1.5
+2.0LSD
+1.224
+1.229
+1.132
+1.021
+1.259
+1.350
+1.161
+1.052
+Various Seen Speaker Scenario
+Unseen Speaker Scenario
+(b) Soundproof scenario.
+Fig. 12. Quantitative evaluation results of SPACE (ours), and other mmWave-based baselines for various seen speaker scenario and unseen speaker scenario
+in noisy and soundproof scenarios.
+These results indicate even in noisy and soundproof scenarios,
+the proposed system still has a better ability to recover high-
+quality speech from low-quality input mmWave signals.
+To further show the objective performance in noisy and
+soundproof scenarios, we evaluate methods for quantitative
+comparison. As shown in Fig. 12, in the noisy scenario,SPACE
+achieves the best results among all mmWave-based baselines
+for various seen speaker and unseen speaker scenarios. Despite
+a decrease in performance compared to quiet and soundproof
+scenarios, SPACE still achieves the best results in various seen
+speaker and unseen speaker scenarios, compared with other
+mmWave-based baselines. The results mean that the proposed
+system is still capable of recovering high-quality speech from
+low-quality input mmWave signals in noisy and soundproof
+scenarios. The performance in noisy and soundproof scenarios
+also demonstrates the superior ability of SPACE to adapt to nu-
+merous different speakers and unseen speakers by accounting
+for speaker variability and low-quality input.
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 11
+50 150 200 250 300 350 4001000.40
+0.50
+0.60
+0.70
+0.80
+0.90STOI
+STOI
+PESQ
+50 150 200 250 300 350 400100
+Distance / cm
+0.80
+1.20
+1.60LSD
+ LSD
+1.20
+1.40
+1.60
+1.80
+2.00
+2.20
+PESQ
+(a) Impact of distance between mmWave radar and
+loudspeaker.
+0 10 20 30 400.40
+0.50
+0.60
+0.70
+0.80
+0.90STOI
+STOI
+PESQ
+0 10 20 30 40
+Angle / deg
+0.80
+1.20
+1.60LSD
+LSD
+1.20
+1.40
+1.60
+1.80
+2.00
+2.20
+PESQ
+(b) Impact of orientation angle.
+60 70 80 900.40
+0.50
+0.60
+0.70
+0.80
+0.90STOI
+STOI
+PESQ
+60 70 80 90
+Volume / dB
+0.80
+1.20
+1.60LSD
+LSD
+1.20
+1.40
+1.60
+1.80
+2.00
+2.20
+PESQ
+ (c) Impact of volume level.
+Fig. 13. Impact of distance between mmWave radar and loudspeaker, orientation angle, and volume level on the performance of SPACE.
+TABLE III
+ABLATION STUDY ON THE DATASET WITH UNSEEN SPEAKER SCENARIO .
+Methods STOI↑ PESQ↑ LSD↓
+SPACE (Ours) 0.814 2.111 0.954
+w/o Speaker encoder & 0.759 1.891 1.078Fusion network
+w/o Fusion network 0.775 1.941 1.032
+w/o FTL 0.782 1.959 1.003
+w/o PWG+GriffinLim 0.751 1.884 1.083
+w/o PWG+iSTFT 0.691 1.657 1.198
+E. Ablation Studies
+We perform ablation studies to validate the effectiveness of
+the proposed components in SPACE. The corresponding results
+are shown in Table III. All experiments are evaluated on the
+unseen speaker dataset collected in the quiet scenario.
+w/o Speaker encoder & Fusion network represent that
+the speaker encoder and the fusion network are removed from
+SPACE. Compared with the original results, the proposed com-
+ponents provide 0.055 and 0.22 gain in STOI and PESQ, and
+0.124 drop on LSD. The observation indicates that the speaker
+encoder for speaker feature extraction and the fusion network
+for conditioning spectrogram reconstruction can effectively
+alleviate the negative effect of numerous different speakers
+and speaker mismatch between training and test sets.
+w/o Fusion network refers to not using the fusion net-
+work but directly concatenating the speaker and spectrogram
+features at the channel level. The results show that not using
+the fusion network results in 0.039 drop in STOI, 0.17 drop
+in PESQ and 0.078 gain in LSD. This demonstrates that the
+proposed fusion network, including FiLM and Transformer
+layers, facilitates the injection of distinct speaker charac-
+teristics on spectrogram embeddings and the extraction of
+contextual information, improving recovery performance.
+w/o FTL means the proposed FTL is removed from each
+encoder layer. The metrics show that the performance is
+decreased without introducing FTL, which manifests the im-
+portance of FTL for extracting frequency harmonics from the
+low-quality spectrogram to predict accurate and affluent high-
+frequency bands.
+w/o PWG+GriffinLim & w/o PWG+iSTFT indicates
+the neural vocoder of Parallel WaveGAN is replaced by
+GriffinLim and iSTFT. We find that the speech recovery
+performance, including quality and intelligibility, drops dras-
+tically. The comparison between ours and w/o PWG+iSTFT
+validates that the phase contaminated by noise significantly
+affects speech intelligibility and quality, and the results of
+w/o PWG+GriffinLim demonstrate the phase estimated by the
+GriffinLim is less accurate than the Parallel WaveGAN.
+F . Impact of Different Factors
+We investigate the effect of different factors on the speech
+recovery performance of SPACE, including the distance be-
+tween mmWave radar and the target loudspeaker, the orienta-
+tion angle of mmWave radar towards the loudspeaker, and the
+volume level of the loudspeaker.
+Distance between mmWave radar and loudspeaker. To
+analyze the performance of SPACE at different distances, we
+set the mmWave radar towards the target loudspeaker and
+change the distance from 50 cm to 400 cm. At the same
+time, the orientation angle is 0 degrees, which means the
+radar is directly facing the speaker, and the volume level is
+85 dB. As shown in Fig. 13(a), although the performance of
+SPACE decreases as the distance between mmWave radar and
+loudspeaker increases from 50 cm to 400 cm, the proposed
+method can still recover relatively intelligent speech within a
+distance of 250cm. This distance can satisfy the requirements
+of some eavesdropping scenarios. The performance drop can
+be attributed to the quality attenuation of the mmWave signal
+with increasing propagation distance and the low vibration
+amplitude of the loudspeaker.
+Orientation angle. Considering the target loudspeaker may
+not always be oriented directly toward the millimeter wave
+radar for real eavesdropping, we further explore the im-
+pact of the orientation angle of mmWave radar towards the
+loudspeaker by changing the angle from 0 ◦ to 40 ◦. The
+distance between them is set to 50 cm and the volume is
+85 dB. The experimental results are shown in Fig. 13(b).
+We observe that STOI and PESQ decrease and LSD increase
+as the rotation angle becomes larger, which means that the
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 12
+Ours
+(Presonus)
+EDIFIERR1080BT
+JBL
+PS3500EDIFIERR12U
+0.0
+0.2
+0.4
+0.6
+0.8STOI
+Ours
+(Presonus)
+EDIFIERR1080BT
+JBL
+PS3500EDIFIERR12U
+0.0
+0.5
+1.0
+1.5
+2.0PESQ
+Ours
+(Presonus)
+EDIFIERR1080BT
+JBL
+PS3500EDIFIERR12U
+0.0
+0.5
+1.0LSD
+Fig. 14. The performance across the different types of speakers.
+Plastic
+Papercard
+PlasterWood
+0.0
+0.2
+0.4
+0.6STOI
+Plastic
+Papercard
+PlasterWood
+0.0
+0.5
+1.0
+1.5
+2.0PESQ
+Plastic
+Papercard
+PlasterWood
+0.00
+0.25
+0.50
+0.75
+1.00LSD
+Fig. 15. The performance across different soundproof insulation.
+recovery performance drops with increasing angle. Meanwhile,
+the metrics show that SPACE can recover speech with high
+quality and intelligibility when the orientation angle is less
+than 20◦. The reason for the performance degradation is that
+the visible area of the membrane vibration decreases with
+increasing orientation angle, resulting in a reduction in the
+amount of information related to the vibration.
+Volume level. Moreover, we change the volume level of
+the loudspeaker from 60 dB to 90 dB with an environment
+volume level of 30 dB at a fixed distance of 50 cm and
+orientation angle of 0 degrees to evaluate the impact of
+volume level on recovery performance. As shown in Fig. 13(c),
+the performance of SPACE decreases with the volume level
+decreases. This is because the amplitude of the loudspeaker
+becomes weaker as the volume is lowered, making it difficult
+for mmWave radar to detect speech-related vibration. The
+SPACE can recover relatively intelligible speech when the
+volume level is higher than 70 dB, which indicates that SPACE
+can pose threats to speech in people’s daily lives.
+Types of loudspeakers To evaluate the performance of
+the system, we test various types of loudspeakers, and the
+results are presented in Fig. 14. The proposed method achieves
+the best performance with the Presonus loudspeaker, closely
+followed by the EDIFIER R1080BT, indicating consistent ef-
+fectiveness across these two types. However, the performance
+slightly decreases when using JBL PS3500. This is mainly
+because the JBL PS3500 speaker is equipped with a steel
+mesh cover, adversely affecting the propagation of mmWave
+signals and thus reducing the accuracy of speech recovery.
+Meanwhile, the EDIFIER R12U also exhibits moderate per-
+formance, suggesting that the system performance is mostly
+consistently good across different types of loudspeakers.
+Soundproof insulation. We further investigate the effect
+of different soundproof insulation materials on system per-
+formance, as shown in Fig. 15. The experimental results
+indicate that plastic and papercard materials offer relatively
+better speech recovery quality, achieving higher STOI and
+Empty
+Room
+Room w/ 
+Several Objects
+0.0
+0.2
+0.4
+0.6
+0.8STOI
+Empty
+Room
+Room w/ 
+Several Objects
+0.0
+0.5
+1.0
+1.5
+2.0PESQ
+Empty
+Room
+Room w/ 
+Several Objects
+0.00
+0.25
+0.50
+0.75
+1.00LSD
+Fig. 16. The performance under different environmental changes.
+PESQ values with lower LSD. Conversely, plaster and wood
+materials cause noticeable performance degradation, partic-
+ularly evident in reduced intelligibility and speech quality
+metrics. This decline is mainly due to the denser structures and
+higher acoustic absorption of plaster and wood, significantly
+attenuating the vibration signal detectable by the mmWave
+radar.
+Environmental Change. To investigate the effect of en-
+vironmental changes on system performance, we perform
+experiments under two distinct room conditions, as shown
+in Fig. 16. The system achieves the best performance in an
+empty room, suggesting minimal reflection and interference.
+Conversely, introducing objects into the environment slightly
+degrades the recovery performance due to increased signal
+scattering and interference, highlighting that environmental
+complexity impacts speech intelligibility and quality.
+VI. R ELATED WORK
+A. Acoustic Eavesdropping
+The principle of acoustic eavesdropping is to recover the
+audio from the related vibration. To achieve this goal, exist-
+ing works utilize various sensors to detect these vibrations,
+which can generally be divided into the following three major
+categories:
+Vision-based audio sensing. Cameras, Lidar, and laser have
+been employed for audio sensing. Davis et al. [7] reconstructed
+audio by capturing the vibration of tiny objects caused by the
+waves of sound. In [5], the researchers proposed to recover
+audio by analyzing the signal collected by Lidar sensor.
+Zhang et al. exploit ambient-light reflections and a cGAN to
+passively recover nearby speech [40]. However, these vision-
+based methods can be significantly influenced by occlusions
+and varying illumination conditions.
+Motion-based audio sensing. Numerous works have uti-
+lized motion-based audio sensing, such as Inertial Mea-
+surement Units (IMU), vibration motors, ultrasound-based,
+and magnetic hard drives, for audio sensing. For example,
+Michalevsky et al. [41] and Hu et al. [42] employed gyro-
+scopes and accelerometers, respectively, to capture and recover
+speech content. Furthermore, in [43], researchers enhanced au-
+dio sensing accuracy by analyzing data from both gyroscopes
+and accelerometers. Moreover, Maruri et al. [44] integrated
+vibration sensors into the nasal pads of glasses for audio
+sensing. Besides, ultrasound-based solutions like USpeech
+[45] and UltraSE [46] captured the motion information of
+vocal tract for speech enhancement. Roy et al. [47] and Kwong
+[48] achieved audio reconstruction using magnetic hard drives
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 13
+and vibrating motors. However, the performance of these
+methods is highly dependent on the sampling frequency.
+RF-based audio sensing. Compared with vision and motion
+sensor related solutions, RF is immune to lighting condi-
+tions and occlusions and is more sensitive to vibrations.
+The RF-based methods can be classified according to the
+RF technologies used, including WiFi, RFID, and mmWave.
+Wei et al. [2] implemented an audio sensing system with
+a WiFi antenna array for RF-based speech recovery. Wang
+et al. [49] implemented WiHear to detect and analyze radio
+reflections from mouth movements based on WiFi signals.
+As for RFID-based methods, researchers have explored the
+possibility of using COTS RFID tags to perform the thru-the-
+wall eavesdropping on the loudspeaker [50]. Chen et al. [51]
+attached a low-cost RFID tag on the glass bridge to sense
+subtle facial speech dynamics and thereby achieve live voice
+eavesdropping.
+Besides, there are numerous works utilizing mmWave for
+audio reconstruction. WaveEar [15] and MilliEar [18] recov-
+ered the speech by detecting throat vibration and loudspeaker
+vibration using mmWave signals, respectively. Note that Mil-
+liEar demonstrates reliable generalization to different and
+unseen speakers. However, the number of different speakers
+it can adapt to is limited, and an increase in the number
+of different speakers poses a challenge to its adaptability.
+mmEavesdropper was proposed for directional eavesdropping
+with mmWave radar [17]. RadioMic reconstructed sound based
+on tiny vibrations on active and passive objects [16]. Similarly,
+Wang et al. [19] decoded speech from piezoelectric film based
+on a mmWave-characterized piezoelectric effect. Li et al. [52]
+developed an mmWave microphone for perceiving the vibra-
+tion response of multiple light objects. Phone calls can also be
+eavesdropped by detecting minute vibrations from the earpiece
+[22], [53]. Hu et al. [54] introduced mmWave-based acoustic
+sensing systems to measure the micrometer-level vibration of
+an object induced by sound waves without relying on machine
+learning or prior knowledge. Li et al. leverage intra-chirp
+phase across multiple antennas to reconstruct vocabulary-free
+speech without prior training [55]. Wang et al. demonstrate an
+RF retroreflector attack that wirelessly captures speech from
+audio cables [56].
+In addition to audio recovery, some researchers exploited
+mmWave-based speech recognition for eavesdropping. mm-
+MIC [57] extracted features of lip motion and vocal-cords
+vibration for mmWave-based speech recognition. Zhao et al.
+proposed Radio2Speech to recover high-quality speech from
+mmWave signals in various scenarios [58] and further pro-
+posed Radio2Text for streaming automatic speech recognition
+[59]. In [60], a mmWave-based eavesdropping system that
+performs speech recognition in non-line-of-sight scenarios was
+proposed. Moreover, mmWave sensing was also leveraged for
+joint audio-radio speech enhancement and separation [61].
+However, these mmWave-based methods neglect the chal-
+lenges of speaker variability and low-quality input mmWave
+signals in practical applications. The speaker variability in-
+creases the difficulty of existing works to adapt to numerous
+different speakers and unseen speakers. Thus, the number
+of distinct speakers in existing works is typically limited
+to a few dozen, less than one hundred, and they mainly
+focus on speakers that are the same in training and test
+sets. Moreover, constrained by the low-quality input mmWave
+signals, there remains a gap in intelligibility between the
+speech recovered by existing works and the original speech
+from human auditory, especially for utterances acquired from
+numerous different and unseen speakers. In contrast, with the
+specially designed components, the proposed SPACE is able
+to recover intelligible speech from low-quality input mmWave
+signals and adapt to numerous different speakers (up to 630
+speakers) and unseen speakers.
+B. Speaker Adaptation
+Speaker adaptation seeks to minimize the discrepancies
+between training and test speakers, thereby improving perfor-
+mance by customizing the system to each speaker’s unique
+characteristics [62]. Generally, speaker adaptation approaches
+can be categorized into feature-based methods and model-
+based methods [63].
+Feature-based methods include transforming feature space
+to produce speaker-independent acoustic features and intro-
+ducing auxiliary speaker knowledge [62]. Ochiai et al. [64]
+improved speech recognition by combining noisy speech fea-
+tures with a speech-enhanced pathway. Compact speaker em-
+beddings, such as i-vectors and x-vectors, encode speaker char-
+acteristics and enhance recognition performance when com-
+bined with acoustic features [65], [66]. Speaker embeddings
+derived from a sequence summary network (s-vectors) [67]
+and memory networks (m-vectors) [68] were also employed
+to capture speaker-specific information. Recent advancements
+have explored incorporating x-vectors and ECAPA-TDNN
+embeddings to improve recognition performance [62].
+Model-based methods modify the acoustic model to align
+with the testing conditions by learning speaker or environment-
+dependent transformations [62]. Various transformation tech-
+niques, such as linear input network [69], learning hidden
+network [70], learning hidden unit contributions [71], parame-
+terized activation functions [72], factorized linear transforma-
+tion [73], and speaker code-based bias vector [74]. In [75],
+an interpolation vector is estimated to combine the weight
+basis into a single adapted weight matrix for a new acoustic
+condition during the adaptation. Liao et al. [76] retrained
+the input layer, output layer, or the entire network to adapt
+the DNN to speakers. Meng et al. [77] proposed a novel
+adversarial speaker adaptation scheme that uses adversarial
+learning to align the distribution of deep hidden features in a
+speaker-dependent DNN acoustic model with those of a fixed
+speaker-independent DNN model during adaptation.
+In this work, we transfer the success of speaker adaptation
+in various speech-related tasks into mmWave-based speech
+recovery. We introduce a speaker encoder to capture the
+speaker-aware features and a fusion network to condition the
+extracted spectrogram embedding by the speaker embedding
+with the speaker characteristics, which facilitates adaptation
+to numerous different speakers and unseen speakers while
+maintaining high quality.
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 14
+VII. C ONCLUSION
+In this paper, we propose an acoustic eavesdropping system,
+named SPACE, which leverages low-quality mmWave radio
+signals to recover intelligible speech for numerous different
+speakers and unseen speakers. SPACE first reconstructs the
+spectrogram using the designed Radio TransUNet , which
+consists of spectrogram encoder, speaker encoder, fusion
+network and spectrogram decoder, and then synthesizes the
+speech waveform through the neural vocoder, coping with
+the challenges of speaker variability and low-quality input.
+The experimental results show that SPACE works well in the
+quiet scenario, and even in noisy and soundproof scenarios.
+Moreover, compared with other mmWave-based baselines,
+SPACE archives the state-of-the-art performance on the dataset
+with numerous different speakers and unseen speakers in terms
+of quantitative and qualitative evaluations. In future work,
+we will consider the scenarios of multi-speaker and moving
+speaker to make our system adaptable to various application
+scenarios.
+REFERENCES
+[1] K. Seaborn, N. P. Miyake, P. Pennefather, and M. Otake-Matsuura,
+“V oice in human–agent interaction: A survey,” ACM Comput. Surv. ,
+vol. 54, no. 4, may 2021.
+[2] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” in Proceedings of the 21st Annual Inter-
+national Conference on Mobile Computing and Networking , 2015, pp.
+130–141.
+[3] Y . Wu, J. Han, Z. Jian, and W. Xu, “Human voice sensing through radio
+frequency technologies: A comprehensive review,” IEEE Transactions
+on Instrumentation and Measurement , vol. 73, pp. 1–20, 2024.
+[4] J. Zhang, R. Xi, Y . He, Y . Sun, X. Guo, W. Wang, X. Na, Y . Liu, Z. Shi,
+and T. Gu, “A survey of mmwave-based human sensing: Technology,
+platforms and applications,” IEEE Communications Surveys & Tutorials,
+2023.
+[5] S. Sami, Y . Dai, S. R. X. Tan, N. Roy, and J. Han, “Spying with your
+robot vacuum cleaner: eavesdropping via lidar sensors,” in Proceedings
+of the 18th Conference on Embedded Networked Sensor Systems , 2020,
+pp. 354–367.
+[6] P. Walker and N. Saxena, “Laser meager listener: A scientific exploration
+of laser-based speech eavesdropping in commercial user space,” in 2022
+IEEE 7th European Symposium on Security and Privacy (EuroSP), 2022,
+pp. 537–554.
+[7] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and
+W. T. Freeman, “The visual microphone: passive recovery of sound from
+video,” ACM Trans. Graph., vol. 33, no. 4, jul 2014.
+[8] J. Xiao, H. Li, M. Wu, H. Jin, M. J. Deen, and J. Cao, “A survey
+on wireless device-free human sensing: Application scenarios, current
+solutions, and open issues,” ACM Comput. Surv. , vol. 55, no. 5, dec
+2022.
+[9] H. Lai, G. Luo, Y . Liu, and M. Zhao, “Enabling visual recognition
+at radio frequency,” in Proceedings of the 30th Annual International
+Conference on Mobile Computing and Networking, ser. ACM MobiCom
+’24. New York, NY , USA: Association for Computing Machinery, 2024,
+p. 388–403.
+[10] R. Zhao, X. Ma, X. Liu, and J. Liu, “An end-to-end network for
+continuous human motion recognition via radar radios,” IEEE Sensors
+Journal, vol. 21, no. 5, pp. 6487–6496, 2021.
+[11] K. Deng, D. Zhao, Z. Zhang, S. Wang, W. Zheng, and H. Ma, “Midas++:
+Generating training data of mmwave radars from videos for privacy-
+preserving human sensing with mobility,” IEEE Transactions on Mobile
+Computing, vol. 23, no. 6, pp. 6650–6666, 2024.
+[12] Y . Wang, Z. Wang, J. A. Zhang, H. Zhang, and M. Xu, “Vital sign
+monitoring in dynamic environment via mmwave radar and camera
+fusion,” IEEE Transactions on Mobile Computing , vol. 23, no. 5, pp.
+4163–4180, 2024.
+[13] H. Yang, M. Han, M. Jia, Z. Sun, P. Hu, Y . Zhang, T. Gu, and W. Xu,
+“Xgait: Cross-modal translation via deep generative sensing for rf-
+based gait recognition,” in Proceedings of the 21st ACM Conference
+on Embedded Networked Sensor Systems , ser. SenSys ’23. New York,
+NY , USA: Association for Computing Machinery, 2024, p. 43–55.
+[14] J. Guo, Y . He, C. Jiang, M. Jin, S. Li, J. Zhang, R. Xi, and Y . Liu,
+“Measuring micrometer-level vibrations with mmwave radar,” IEEE
+Transactions on Mobile Computing, vol. 22, no. 4, pp. 2248–2261, 2023.
+[15] C. Xu, Z. Li, H. Zhang, A. S. Rathore, H. Li, C. Song, K. Wang, and
+W. Xu, “Waveear: Exploring a mmwave-based noise-resistant speech
+sensing for voice-user interface,” in Proceedings of the 17th Annual
+International Conference on Mobile Systems, Applications, and Services,
+2019, pp. 14–26.
+[16] M. Z. Ozturk, C. Wu, B. Wang, and K. J. R. Liu, “Radiomic: Sound
+sensing via radio signals,” IEEE Internet of Things Journal , vol. 10,
+no. 5, pp. 4431–4448, 2023.
+[17] Y . Feng, K. Zhang, C. Wang, L. Xie, J. Ning, and S. Chen, “mmeaves-
+dropper: Signal augmentation-based directional eavesdropping with
+mmwave radar,” in IEEE INFOCOM 2023-IEEE Conference on Com-
+puter Communications. IEEE, 2023, pp. 1–10.
+[18] P. Hu, W. Li, Y . Ma, P. S. Santhalingam, P. Pathak, H. Li, H. Zhang,
+G. Zhang, X. Cheng, and P. Mohapatra, “Towards unconstrained vocab-
+ulary eavesdropping with mmwave radar using gan,” IEEE Transactions
+on Mobile Computing , vol. 23, no. 1, pp. 941–954, 2024.
+[19] C. Wang, F. Lin, T. Liu, Z. Liu, Y . Shen, Z. Ba, L. Lu, W. Xu,
+and K. Ren, “mmphone: Acoustic eavesdropping on loudspeakers via
+mmwave-characterized piezoelectric effect,” in IEEE INFOCOM 2022-
+IEEE Conference on Computer Communications. IEEE, 2022, pp. 820–
+829.
+[20] X. Tan, T. Qin, F. Soong, and T.-Y . Liu, “A survey on neural speech
+synthesis,” arXiv preprint arXiv:2106.15561 , 2021.
+[21] J. Deng, X. Xie, T. Wang, M. Cui, B. Xue, Z. Jin, G. Li, S. Hu, and
+X. Liu, “Confidence score based speaker adaptation of conformer speech
+recognition systems,” IEEE/ACM Transactions on Audio, Speech, and
+Language Processing, vol. 31, pp. 1175–1190, 2023.
+[22] C. Wang, F. Lin, T. Liu, K. Zheng, Z. Wang, Z. Li, M.-C. Huang, W. Xu,
+and K. Ren, “mmeve: eavesdropping on smartphone’s earpiece via
+cots mmwave device,” in Proceedings of the 28th Annual International
+Conference on Mobile Computing And Networking , 2022, pp. 338–351.
+[23] M. Alizadeh, G. Shaker, J. C. M. De Almeida, P. P. Morita, and S. Safavi-
+Naeini, “Remote monitoring of human vital signs using mm-wave fmcw
+radar,” IEEE Access, vol. 7, pp. 54 958–54 968, 2019.
+[24] L. Wan, Q. Wang, A. Papir, and I. L. Moreno, “Generalized end-to-end
+loss for speaker verification,” in 2018 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2018,
+pp. 4879–4883.
+[25] Y . Jia, Y . Zhang, R. Weiss, Q. Wang, J. Shen, F. Ren, z. Chen, P. Nguyen,
+R. Pang, I. Lopez Moreno, and Y . Wu, “Transfer learning from speaker
+verification to multispeaker text-to-speech synthesis,” in Advances in
+Neural Information Processing Systems , vol. 31, 2018.
+[26] O. Ronneberger, P. Fischer, and T. Brox, “U-net: Convolutional networks
+for biomedical image segmentation,” in Medical image computing and
+computer-assisted intervention–MICCAI 2015: 18th international con-
+ference, Munich, Germany, October 5-9, 2015, proceedings, part III 18 .
+Springer, 2015, pp. 234–241.
+[27] D. Yin, C. Luo, Z. Xiong, and W. Zeng, “Phasen: A phase-and-
+harmonics-aware speech enhancement network,” in Proceedings of the
+AAAI Conference on Artificial Intelligence , vol. 34, no. 05, 2020, pp.
+9458–9465.
+[28] E. Perez, F. Strub, H. De Vries, V . Dumoulin, and A. Courville, “Film:
+Visual reasoning with a general conditioning layer,” in Proceedings of
+the AAAI conference on artificial intelligence , vol. 32, no. 1, 2018.
+[29] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai,
+T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly et al.,
+“An image is worth 16x16 words: Transformers for image recognition
+at scale,” arXiv preprint arXiv:2010.11929 , 2020.
+[30] J. Chen, Y . Lu, Q. Yu, X. Luo, E. Adeli, Y . Wang, L. Lu, A. L. Yuille, and
+Y . Zhou, “Transunet: Transformers make strong encoders for medical
+image segmentation,” arXiv preprint arXiv:2102.04306 , 2021.
+[31] Z. Dai, Z. Yang, Y . Yang, J. Carbonell, Q. Le, and R. Salakhutdinov,
+“Transformer-XL: Attentive language models beyond a fixed-length
+context,” in Proceedings of the 57th Annual Meeting of the Association
+for Computational Linguistics, Florence, Italy, Jul. 2019, pp. 2978–2988.
+[32] R. Yamamoto, E. Song, and J.-M. Kim, “Parallel wavegan: A fast
+waveform generation model based on generative adversarial networks
+with multi-resolution spectrogram,” in ICASSP 2020-2020 IEEE In-
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 15
+ternational Conference on Acoustics, Speech and Signal Processing
+(ICASSP). IEEE, 2020, pp. 6199–6203.
+[33] K. Paliwal, K. W ´ojcicki, and B. Shannon, “The importance of phase in
+speech enhancement,” speech communication, vol. 53, no. 4, pp. 465–
+494, 2011.
+[34] T. Instruments. (2020) Awr1642boost evaluation module. https://www.
+ti.com/tool/AWR1642BOOST.
+[35] T. instruments. (2019) Dca1000evm evaluation module. https://www.ti.
+com/tool/DCA1000EVM.
+[36] V . Zue, S. Seneff, and J. Glass, “Speech database development at mit:
+Timit and beyond,” Speech communication, vol. 9, no. 4, pp. 351–356,
+1990.
+[37] J. Lee and S. Han, “NU-Wave: A Diffusion Probabilistic Model for
+Neural Audio Upsampling,” in Proc. Interspeech, 2021, pp. 1634–1638.
+[38] Amazon Mechanical Turk. Amazon mechanical turk. https://www.mturk.
+com/.
+[39] L. McInnes, J. Healy, and J. Melville, “Umap: Uniform manifold
+approximation and projection for dimension reduction,” arXiv preprint
+arXiv:1802.03426, 2018.
+[40] G. Zhang, H. Fu, Z. Xiang, X. Zhou, P. Hu, X. Cheng, and Y . Yang,
+“Ambient light reflection-based eavesdropping enhanced with cgan,”
+IEEE Transactions on Mobile Computing , 2024.
+[41] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” in 23rd USENIX Security Symposium
+(USENIX Security), San Diego, CA, Aug 2014, pp. 1053–1067.
+[42] P. Hu, H. Zhuang, P. S. Santhalingam, R. Spolaor, P. Pathak, G. Zhang,
+and X. Cheng, “Accear: Accelerometer acoustic eavesdropping with
+unconstrained vocabulary,” in 2022 IEEE Symposium on Security and
+Privacy (SP). IEEE, 2022, pp. 1757–1773.
+[43] M. Gao, Y . Liu, Y . Chen, Y . Li, Z. Ba, X. Xu, and J. Han, “Iner-
+tiear: Automatic and device-independent imu-based eavesdropping on
+smartphones,” in IEEE INFOCOM 2022-IEEE Conference on Computer
+Communications. IEEE, 2022, pp. 1129–1138.
+[44] H. A. C. Maruri, P. Lopez-Meyer, J. Huang, W. M. Beltman, L. Nach-
+man, and H. Lu, “V-speech: Noise-robust speech capturing glasses using
+vibration sensors,” Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 2, no. 4, pp. 1–23, 2018.
+[45] L. J.-T. Yu, R. Zhao, S. Ji, E. C. Ngai, and C. Wu, “Uspeech:
+Ultrasound-enhanced speech with minimal human effort via cross-modal
+synthesis,” Proceedings of the ACM on Interactive, Mobile, Wearable
+and Ubiquitous Technologies, vol. 9, no. 2, pp. 1–31, 2025.
+[46] K. Sun and X. Zhang, “Ultrase: single-channel speech enhancement
+using ultrasound,” in Proceedings of the 27th annual international
+conference on mobile computing and networking , 2021, pp. 160–173.
+[47] N. Roy and R. Roy Choudhury, “Listening through a vibration motor,”
+in Proceedings of the 14th Annual International Conference on Mobile
+Systems, Applications, and Services , 2016, pp. 57–69.
+[48] A. Kwong, W. Xu, and K. Fu, “Hard drive of hearing: Disks that
+eavesdrop with a synthesized microphone,” in 2019 IEEE symposium
+on security and privacy (SP) . IEEE, 2019, pp. 905–919.
+[49] G. Wang, Y . Zou, Z. Zhou, K. Wu, and L. M. Ni, “We can hear you
+with wi-fi!” IEEE Transactions on Mobile Computing , vol. 15, no. 11,
+pp. 2907–2920, 2016.
+[50] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-
+mm level vibration,” Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+[51] Y . Chen, J. Yu, L. Kong, H. Kong, Y . Zhu, and Y .-C. Chen, “Rf-mic:
+Live voice eavesdropping via capturing subtle facial speech dynamics
+leveraging rfid,” Proceedings of the ACM on Interactive, Mobile, Wear-
+able and Ubiquitous Technologies , vol. 7, no. 2, pp. 1–25, 2023.
+[52] S. Li, Y . Xiong, P. Zhou, Z. Ren, and Z. Peng, “Mmphone: Sound
+recovery using millimeter-wave radios with adaptive fusion enhanced
+vibration sensing,” IEEE Transactions on Microwave Theory and Tech-
+niques, vol. 70, no. 8, pp. 4045–4055, 2022.
+[53] S. Basak and M. Gowda, “mmspy: Spying phone calls using mmwave
+radars,” in 2022 IEEE Symposium on Security and Privacy (SP) . IEEE,
+2022, pp. 1211–1228.
+[54] P. Hu, W. Li, R. Spolaor, and X. Cheng, “mmecho: A mmwave-based
+acoustic eavesdropping method,” in 2023 IEEE Symposium on Security
+and Privacy (SP) , 2023, pp. 1840–1856.
+[55] W. Li, R. Spolaor, C. Luo, Y . Sun, H. Chen, G. Zhang, Y . Yang,
+X. Cheng, and P. Hu, “Acoustic eavesdropping from sound-induced
+vibrations with multi-antenna mmwave radar,” IEEE Transactions on
+Mobile Computing, 2025.
+[56] G. Wang, Z. Shi, Y . Yang, Z. An, G. Zhang, P. Hu, X. Cheng, and
+J. Cao, “Wireless eavesdropping on wired audio with radio-frequency
+retroreflector attack,” IEEE Transactions on Mobile Computing , 2024.
+[57] L. Fan, L. Xie, X. Lu, Y . Li, C. Wang, and S. Lu, “mmmic: Multi-modal
+speech recognition based on mmwave radar,” in IEEE INFOCOM 2023-
+IEEE Conference on Computer Communications. IEEE, 2023, pp. 1–10.
+[58] R. Zhao, J. Yu, T. Li, H. Zhao, and E. C. H. Ngai, “Radio2Speech:
+High Quality Speech Recovery from Radio Frequency Signals,” in Proc.
+Interspeech, 2022, pp. 4666–4670.
+[59] R. Zhao, J. Yu, H. Zhao, and E. C. Ngai, “Radio2text: Streaming speech
+recognition using mmwave radio signals,” Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 7, no. 3,
+pp. 1–28, 2023.
+[60] J. Zhang, Y . Zhou, R. Xi, S. Li, J. Guo, and Y . He, “Ambiear: mmwave
+based voice recognition in nlos scenarios,” Proceedings of the ACM
+on Interactive, Mobile, Wearable and Ubiquitous Technologies , vol. 6,
+no. 3, pp. 1–25, 2022.
+[61] M. Z. Ozturk, C. Wu, B. Wang, M. Wu, and K. R. Liu, “Radioses:
+mmwave-based audioradio speech enhancement and separation system,”
+IEEE/ACM Transactions on Audio, Speech, and Language Processing ,
+vol. 31, pp. 1333–1347, 2023.
+[62] D. Wagner, I. Baumann, S. P. Bayerl, K. Riedhammer, and T. Bock-
+let, “Speaker adaptation for end-to-end speech recognition systems in
+noisy environments,” in 2023 IEEE Automatic Speech Recognition and
+Understanding Workshop (ASRU). IEEE, 2023, pp. 1–6.
+[63] J. Deng, X. Xie, T. Wang, M. Cui, B. Xue, Z. Jin, G. Li, S. Hu, and
+X. Liu, “Confidence score based speaker adaptation of conformer speech
+recognition systems,” IEEE/ACM Transactions on Audio, Speech, and
+Language Processing, vol. 31, pp. 1175–1190, 2023.
+[64] T. Ochiai, S. Watanabe, S. Katagiri, T. Hori, and J. Hershey, “Speaker
+adaptation for multichannel end-to-end speech recognition,” in 2018
+IEEE International Conference on Acoustics, Speech and Signal Pro-
+cessing (ICASSP). IEEE, 2018, pp. 6707–6711.
+[65] G. Saon, H. Soltau, D. Nahamoo, and M. Picheny, “Speaker adaptation
+of neural network acoustic models using i-vectors,” in 2013 IEEE
+Workshop on Automatic Speech Recognition and Understanding. IEEE,
+2013, pp. 55–59.
+[66] M. K. Baskar, T. Herzig, D. Nguyen, M. Diez, T. Polzehl, L. Burget,
+J. ˇCernock`y et al. , “Speaker adaptation for wav2vec2 based dysarthric
+asr,” arXiv preprint arXiv:2204.00770 , 2022.
+[67] V . M. Shetty, S. Umesh et al. , “Investigation of speaker-adaptation
+methods in transformer based asr,” arXiv preprint arXiv:2008.03247 ,
+2020.
+[68] L. Sarı, N. Moritz, T. Hori, and J. Le Roux, “Unsupervised speaker
+adaptation using attention-based speaker memory for end-to-end asr,” in
+ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech
+and Signal Processing (ICASSP) . IEEE, 2020, pp. 7384–7388.
+[69] B. Li and K. C. Sim, “Comparison of discriminative input and output
+transformations for speaker adaptation in the hybrid nn/hmm systems.”
+in Interspeech, vol. 10, 2010, pp. 526–529.
+[70] R. Gemello, F. Mana, S. Scanzio, P. Laface, and R. De Mori, “Linear
+hidden transformations for adaptation of hybrid ann/hmm models,”
+Speech Communication, vol. 49, no. 10-11, pp. 827–835, 2007.
+[71] X. Xie, X. Liu, T. Lee, and L. Wang, “Bayesian learning for deep neural
+network adaptation,” IEEE/ACM Transactions on Audio, Speech, and
+Language Processing, vol. 29, pp. 2096–2110, 2021.
+[72] C. Zhang and P. C. Woodland, “Dnn speaker adaptation using param-
+eterised sigmoid and relu hidden activation functions,” in 2016 IEEE
+International Conference on Acoustics, Speech and Signal Processing
+(ICASSP). IEEE, 2016, pp. 5300–5304.
+[73] Y . Zhao, J. Li, and Y . Gong, “Low-rank plus diagonal adaptation for deep
+neural networks,” in 2016 IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP) . IEEE, 2016, pp. 5005–5009.
+[74] S. Xue, O. Abdel-Hamid, H. Jiang, L. Dai, and Q. Liu, “Fast adap-
+tation of deep neural network based on discriminant codes for speech
+recognition,” IEEE/ACM Transactions on Audio, Speech, and Language
+Processing, vol. 22, no. 12, pp. 1713–1725, 2014.
+[75] T. Tan, Y . Qian, and K. Yu, “Cluster adaptive training for deep neural
+network based acoustic model,” IEEE/ACM Transactions on Audio,
+Speech, and Language Processing , vol. 24, no. 3, pp. 459–468, 2015.
+[76] H. Liao, “Speaker adaptation of context dependent deep neural net-
+works,” in 2013 IEEE International Conference on Acoustics, Speech
+and Signal Processing . IEEE, 2013, pp. 7947–7951.
+[77] Z. Meng, J. Li, and Y . Gong, “Adversarial speaker adaptation,” in
+ICASSP 2019-2019 IEEE International Conference on Acoustics, Speech
+and Signal Processing (ICASSP) . IEEE, 2019, pp. 5721–5725.
+This article has been accepted for publication in IEEE Transactions on Mobile Computing. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/TMC.2025.3598703
+© 2025 IEEE. All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies. Personal use is permitted,
+but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: The University of Hong Kong Libraries. Downloaded on August 22,2025 at 03:34:01 UTC from IEEE Xplore.  Restrictions apply.

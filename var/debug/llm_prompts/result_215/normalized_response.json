@@ -1,0 +1,143 @@
+{
+  "findings": [
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "More recent work has focused on millimeter-wave (mmWave) radar [87], [88], [89], [90], [91], [92], [93], [94], Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96]. Across these studies, the average source-to-attacker distance is about 3.6 m, with some systems reaching up to 8 m [88], [92]. The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "reasoning": "The target paper [95] is grouped among other RF-based eavesdropping methods (mmWave radar, RFID, RF emanations). The citation notes the accuracy of 0.94 at 1 m, which is a performance metric from the target paper. It is used as a representative example of RFID-based techniques in the related work overview. The grouped citation introduces attribution uncertainty about which specific method achieves the stated accuracy, but the accuracy is explicitly cited as [95].",
+      "keywords": [
+        "RFID",
+        "95",
+        "accuracy",
+        "0.94"
+      ],
+      "keep": true,
+      "matched_template_ids": [
+        73
+      ],
+      "template_match_reason": "capability_recognition: body quote anchors to target and links RFID with eavesdropping",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": true,
+          "template_match_reason": "capability_recognition: body quote anchors to target and links RFID with eavesdropping",
+          "template_failure_reason": "",
+          "matched_terms": [
+            "rfid",
+            "eavesdropping",
+            "achieve",
+            "achieves"
+          ],
+          "match_score": 22.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "positive_evaluation",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "citation_text": "The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "reasoning": "This sentence directly states a specific performance metric (accuracy 0.94 at 1m) of the target paper, which is a positive evaluation of its speech recognition capability. The target reference marker [95] is explicitly present, and the context is not in References but in the related work section of the body.",
+      "keywords": [
+        "accuracy",
+        "0.94",
+        "1 m",
+        "95"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "More recent work has focused on millimeter-wave (mmWave) radar [87], [88], [89], [90], [91], [92], [93], [94], Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96]. Across these studies, the aver...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[95]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The target paper [95] is grouped among other RF-based eavesdropping methods (mmWave radar, RFID, RF emanations). The citation notes the accuracy of 0.94 at 1 m, which is a performance metric from the target paper. It is used as a representative example of RFID-based techniques in the related work overview. The grouped citation introduces attribution uncertainty about which specific method achieves the stated accuracy, but the accuracy is explicitly cited as [95].",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [
+        73
+      ],
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_match_reason": "capability_recognition: body quote anchors to target and links RFID with eavesdropping",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "evidence_type": "positive_evaluation",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "target_reference_marker": "[95]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This sentence directly states a specific performance metric (accuracy 0.94 at 1m) of the target paper, which is a positive evaluation of its speech recognition capability. The target reference marker [95] is explicitly present, and the context is not in References but in the related work section of the body.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

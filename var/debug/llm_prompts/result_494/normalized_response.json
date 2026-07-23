@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[30]",
+  "target_reference_entry": "[30] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文在相关工作部分将目标论文[23]归类为基于激光的主动式窃听方法，并指出其需要入侵受害设备安装恶意软件以提取激光数据，属于侵入式攻击。文中未对目标论文的亚毫米级精度、RFID或穿透墙壁能力进行任何正面描述或确认。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Laser microphones [20]–[23], [34] use lidar sensors to illuminate vibrating objects and collect reflected signals for audio reconstruction. However, these methods have several drawbacks: ... 4) Certain methods [22], [23] are considered intrusive attacks, requiring malware installation in the victim’s device to extract laser data.",
+      "evidence_context": "Optical eavesdropping is relevant to this article. ... Laser microphones [20]–[23], [34] use lidar sensors to illuminate vibrating objects and collect reflected signals for audio reconstruction. However, these methods have several drawbacks: 1) They are active, relying on active sensors that need signal transmission and reception. 2) They lack sufficient concealment, as specialized optical sensors can detect directed laser beams since the eavesdropper needs to inject the laser beam into the victim's room. 3) They are position-sensitive, as laser transceivers require precise calibration during signal reception, and even slight positional deviations can affect the signal quality. 4) Certain methods [22], [23] are considered intrusive attacks, requiring malware installation in the victim's device to extract laser data. 5) They have equipment restrictions, as specialized equipment with limited availability (such as specialized laser transceivers) may be required, and these may only be accessible to specific national departments.",
+      "reference_entry": "S. Sami, S. R. X. Tan, Y. Dai, N. Roy, and J. Han, \"Lidarphone: acoustic eavesdropping using a lidar sensor,\" in Proceedings of the 18th Conference on Embedded Networked Sensor Systems, 2020, pp. 701–702.",
+      "why_this_judgment_zh": "引用论文在相关工作中将[23]列为激光麦克风的一种，并指出其缺点为侵入式（需安装恶意软件）。这属于普通的引用提及，没有对RFID、亚毫米级或穿透墙壁能力进行任何肯定或描述。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该论文在相关工作中将[23]作为激光麦克风列举，并标注其为侵入式攻击。未确认目标论文的亚毫米级RFID感知能力。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[30]",
+      "evidence_reference_marker": "[20]",
+      "evidence_reference_entry_raw": "[20] R. P. Muscatell, “Laser microphone,” The Journal of the Acoustical\nSociety of America, vol. 76, no. 4, pp. 1284–1284, 1984.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[30] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Additionally, [22], [23] transforms a robotic vacuum cleaner’s lidar radar into a laser microphone, and RFID [30] is also utilized for eavesdropping.",
+      "evidence_context": "In this section, we extensively review state-of-art eavesdropping techniques. ... [28] shows how earphones can become eavesdropping microphones through malware, and [29] treats mechanical hard drives as synthetic microphones. Additionally, [22], [23] transforms a robotic vacuum cleaner’s lidar radar into a laser microphone, and RFID [30] is also utilized for eavesdropping.",
+      "reference_entry": "S. Sami, S. R. X. Tan, Y. Dai, N. Roy, and J. Han, \"Lidarphone: acoustic eavesdropping using a lidar sensor,\" in Proceedings of the 18th Conference on Embedded Networked Sensor Systems, 2020, pp. 701–702.",
+      "why_this_judgment_zh": "该句将[23]描述为‘将扫地机器人激光雷达转换为激光麦克风’，与目标论文的标题和实际内容（Thru-the-wall Eavesdropping on Loudspeakers via RFID）严重不符。引用论文错误地将[23]归于Lidarphone方法，实际目标论文是RFID方法。因此判定为误引用。",
+      "copy_ready_zh": "引用论文将[23]错误地关联为激光雷达窃听方法，而非其实际的RFID亚毫米级振动窃听。",
+      "confidence": "high",
+      "target_reference_marker": "[30]",
+      "evidence_reference_marker": "[30]",
+      "evidence_reference_entry_raw": "[30] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "reference_match_status": "matched",
+      "reference_match_reason": "reference_entry_matches_target",
+      "normalized_target_reference": "[30] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true,
+      "grouped_citation": true
+    }
+  ]
+}

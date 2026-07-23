@@ -1,0 +1,233 @@
+{% from "components/status_badge.html" import status_badge %}
+
+<article class="queue-card">
+  <div class="card-row card-row-between">
+    <div>
+      <div class="eyebrow">来源 Provider：{{ item.provider_name or "unknown" }}</div>
+      <label class="form-label">
+        <input type="checkbox" name="item_ids" value="{{ item.id }}" form="bulk-queue-form" {% if item.queue_status == "selected" %}checked{% endif %}>
+        选择此条目
+      </label>
+      <h2>{{ item.citing_paper_title }}</h2>
+      <p class="muted">被引用论文 / 目标论文：{{ item.cited_paper_title }}</p>
+      {% if item.notable_author_annotations %}
+        <div class="badge-stack">
+          {% for annotation in item.notable_author_annotations %}
+            <span class="badge badge-warning">{{ annotation.honor_category }}</span>
+            <span class="badge badge-success">重要引用</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="badge-stack">
+      {{ status_badge(item.pdf_readiness_status) }}
+      {{ status_badge(item.queue_status) }}
+      {{ status_badge(item.latest_analysis_status) }}
+    </div>
+  </div>
+
+  <dl class="meta-grid">
+    <div><dt>年份</dt><dd>{{ item.year or "unknown" }}</dd></div>
+    <div><dt>发表位置 / 等级</dt><dd>{{ item.venue or "unknown" }}{% if item.venue_source_hint %}（来源：{{ item.venue_source_hint }}）{% endif %} / {{ item.venue_tier or "unknown" }}</dd></div>
+    <div><dt>第三方状态</dt><dd>{{ item.third_party_status }}</dd></div>
+    <div><dt>自引状态</dt><dd>{{ item.self_citation_status }}</dd></div>
+    <div><dt>优先级分数</dt><dd>{{ item.priority_score }}<span class="sr-only">Priority score</span></dd></div>
+    <div><dt>人工复核状态</dt><dd>{{ item.user_review_status }}</dd></div>
+    <div><dt>全文分析结果</dt><dd>{{ item.fulltext_result_count or 0 }}</dd></div>
+    <div><dt>强证据数量</dt><dd>{{ item.strong_evidence_count or 0 }}</dd></div>
+    <div><dt>引用论文 ID</dt><dd>{{ item.citing_publication_id }}</dd></div>
+    <div><dt>DOI</dt><dd>{{ item.citing_publication_doi or "无" }}</dd></div>
+    <div><dt>OpenAlex ID</dt><dd>{{ item.citing_publication_openalex_id or "无" }}</dd></div>
+    <div><dt>normalized title</dt><dd>{{ item.citing_publication_normalized_title or "" }}</dd></div>
+    <div><dt>PDF 自动发现</dt><dd>{{ item.pdf_discovery_status or "not_started" }}</dd></div>
+    <div><dt>PDF 访问状态</dt><dd>{{ item.pdf_access_status or "manual_download_needed" }}</dd></div>
+    <div><dt>PDF 来源</dt><dd>{{ item.pdf_source or item.pdf_asset_source_type or "无" }}</dd></div>
+  </dl>
+
+  {% if item.pdf_readiness_status == "need_pdf" %}
+    <section class="pdf-needed">
+      <h3>需要引用论文 PDF</h3>
+      {% if item.pdf_discovery_status == "requires_login" or item.pdf_access_status == "requires_login" %}
+        <div class="notice notice-warning">
+          <p>该 PDF 可能需要 ACM / IEEE / 学校图书馆授权访问。系统不会保存账号密码，也不会绕过访问限制。请点击官方页面登录下载后上传 PDF。</p>
+        </div>
+      {% elif item.pdf_discovery_status == "no_pdf_found" %}
+        <p class="notice">没有发现明确开放访问 PDF，请手动上传或绑定已有 PDF。</p>
+      {% elif item.pdf_discovery_status == "failed" %}
+        <p class="notice notice-warning">自动发现或下载 PDF 失败，请手动上传或绑定已有 PDF。</p>
+      {% endif %}
+      {% if item.requires_login_reason == "invalid_arxiv_identifier_removed" %}
+        <p class="notice notice-warning">已移除无效的 arXiv 标识。请通过 DOI、出版社页面下载，或手动上传 PDF。</p>
+      {% endif %}
+      <section class="card">
+        <h4>受限 PDF 下载助手</h4>
+        <p>该论文可能需要出版社或学校图书馆授权访问。系统不会保存账号密码或 Cookie，也不会绕过访问限制。请在浏览器中通过个人/机构权限下载 PDF 后上传或放入本地导入目录。</p>
+        {% if not item.pdf_direct_download_available %}
+          <div class="notice notice-warning">
+            <strong>未发现可直接自动下载的开放 PDF。</strong>
+            {% if item.publisher_name %}
+              <p>该论文可能位于 {{ item.publisher_name }}，{{ item.publisher_access_hint }}。请通过出版社或 DOI 页面下载 PDF 后上传。</p>
+            {% else %}
+              <p>请通过 DOI 或出版社页面确认访问方式，下载后上传 PDF。</p>
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if item.publisher_name == "IEEE Xplore" or item.ieee_downloader_available %}
+          <div class="notice">
+            <strong>IEEE 专用浏览器下载助手</strong>
+            <p>该助手使用已在专用浏览器中完成的 IEEE / 机构授权会话下载论文；主系统不接收或保存 IEEE 账号密码。</p>
+            {% if item.ieee_downloader_available %}
+              <form action="/scholar-sessions/{{ session_id }}/queue/{{ item.id }}/download-ieee-pdf" method="post">
+                <button class="button button-primary" type="submit">通过 IEEE 浏览器助手自动下载</button>
+              </form>
+            {% else %}
+              <p class="muted">尚未配置 IEEE 下载助手。请设置 ACADEMIC_IMPACT_IEEE_DOWNLOADER_COMMAND、工作目录和下载目录。</p>
+            {% endif %}
+            {% if item.ieee_downloader_portal_url %}
+              <a class="button button-secondary" href="{{ item.ieee_downloader_portal_url }}" target="_blank" rel="noopener noreferrer">打开 IEEE 助手登录页</a>
+            {% endif %}
+            {% if item.ieee_download_task %}
+              <p>最近任务：{{ item.ieee_download_task.status }}{% if item.ieee_download_task.stage_message %} · {{ item.ieee_download_task.stage_message }}{% endif %}</p>
+              {% if item.ieee_download_task.error_message %}<p class="notice notice-warning">{{ item.ieee_download_task.error_message }}</p>{% endif %}
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if item.pdf_download_candidates %}
+          <h5>PDF 下载候选来源</h5>
+          <div class="candidate-list">
+            {% for candidate in item.pdf_download_candidates %}
+              <article class="card{% if candidate.url_type == 'metadata_page' %} metadata-candidate{% endif %}">
+                <dl class="meta-grid">
+                  <div><dt>来源</dt><dd>{{ candidate.display_label }}</dd></div>
+                  <div><dt>链接类型</dt><dd>{{ candidate.url_type }}</dd></div>
+                  <div><dt>访问状态</dt><dd>{{ candidate.access_status }}</dd></div>
+                  <div><dt>可自动下载</dt><dd>{{ "true" if candidate.can_auto_download else "false" }}</dd></div>
+                  <div><dt>原因</dt><dd>{{ candidate.reason }}</dd></div>
+                  <div><dt>操作提示</dt><dd>{{ candidate.user_action_hint }}</dd></div>
+                </dl>
+                <div class="quick-links">
+                  {% if candidate.can_auto_download %}
+                    <a class="button button-secondary" href="{{ candidate.url }}" target="_blank" rel="noopener noreferrer">打开 {{ candidate.display_label }} PDF</a>
+                    <form action="/scholar-sessions/{{ session_id }}/queue/{{ item.id }}/download-open-pdf" method="post">
+                      <button class="button button-primary" type="submit">自动下载开放 PDF</button>
+                    </form>
+                  {% elif candidate.source == "doi" %}
+                    <a class="button button-secondary" href="{{ candidate.url }}" target="_blank" rel="noopener noreferrer">打开 DOI 页面</a>
+                  {% elif candidate.source == "search" %}
+                    <a class="button button-secondary" href="{{ candidate.url }}" target="_blank" rel="noopener noreferrer">打开 Google Scholar 搜索</a>
+                  {% elif candidate.url_type == "landing_page" %}
+                    <a class="button button-secondary" href="{{ candidate.url }}" target="_blank" rel="noopener noreferrer">打开 {{ candidate.display_label }}</a><span class="sr-only">打开官方页面</span>
+                  {% else %}
+                    <a class="button button-secondary" href="{{ candidate.url }}" target="_blank" rel="noopener noreferrer">查看 {{ candidate.display_label }} 元数据</a>
+                  {% endif %}
+                  {% if not candidate.can_auto_download and candidate.access_status == "requires_login" %}
+                    <p class="notice notice-warning">需要登录，请通过浏览器/学校图书馆权限下载后上传。</p>
+                  {% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% if item.pdf_discovery_diagnostics %}
+          <details class="compact-details">
+            <summary>PDF 查找诊断</summary>
+            <dl class="meta-grid">
+              <div><dt>tried_sources</dt><dd>{{ item.pdf_discovery_diagnostics.tried_sources|join(", ") }}</dd></div>
+              <div><dt>found_candidates_count</dt><dd>{{ item.pdf_discovery_diagnostics.found_candidates_count }}</dd></div>
+              <div><dt>requires_login_count</dt><dd>{{ item.pdf_discovery_diagnostics.requires_login_count }}</dd></div>
+              <div><dt>no_pdf_found_reason</dt><dd>{{ item.pdf_discovery_diagnostics.no_pdf_found_reason or "无" }}</dd></div>
+            </dl>
+          </details>
+        {% endif %}
+        <div class="quick-links">
+          <a class="button button-secondary" href="/pdf-inbox">从本地导入目录匹配</a>
+          <button class="button button-secondary" type="button" data-copy-text="{{ item.citing_paper_title }}">复制论文标题</button>
+          {% if item.citing_publication_doi %}<button class="button button-secondary" type="button" data-copy-text="{{ item.citing_publication_doi }}">复制 DOI</button>{% endif %}
+        </div>
+      </section>
+      <p>需要上传 citing paper PDF 后才能分析</p>
+      <p>请上传引用论文 PDF：<strong>{{ item.citing_paper_title }}</strong></p>
+      <p>不要上传被引用论文 / 目标论文 PDF：<strong>{{ item.cited_paper_title }}</strong></p>
+      <p class="sr-only">Please upload the citing paper PDF: {{ item.citing_paper_title }}</p>
+      <p class="sr-only">Do not upload the cited / target paper PDF: {{ item.cited_paper_title }}</p>
+      <form action="/scholar-sessions/{{ session_id }}/queue/{{ item.id }}/upload-pdf" method="post" enctype="multipart/form-data" class="inline-form">
+        <label class="form-label">
+          选择 PDF 文件
+          <input class="form-control" type="file" name="file" accept="application/pdf,.pdf" required>
+        </label>
+        <button class="button button-primary" type="submit">上传 PDF</button>
+      </form>
+      {% if item.reusable_pdf_candidates %}
+        <div class="candidate-list">
+          <h4>可复用 PDF 候选</h4>
+          <span class="sr-only">发现可能匹配的已上传 PDF</span>
+          {% for candidate in item.reusable_pdf_candidates %}
+            <article class="card">
+              <dl class="meta-grid">
+                <div><dt>原始文件名</dt><dd>{{ candidate.original_filename }}</dd></div>
+                <div><dt>匹配方法</dt><dd>{{ candidate.match_method }}</dd></div>
+                <div><dt>匹配原因</dt><dd>{{ candidate.match_reason }}</dd></div>
+                <div><dt>匹配分数</dt><dd>{{ candidate.match_score }}</dd></div>
+                <div><dt>PDF 来源</dt><dd>{{ candidate.source_type }}</dd></div>
+                <div><dt>抽取状态</dt><dd>{{ candidate.extract_status }}</dd></div>
+              </dl>
+              <form action="/scholar-sessions/{{ session_id }}/queue/{{ item.id }}/attach-existing-pdf" method="post">
+                <input type="hidden" name="pdf_asset_id" value="{{ candidate.pdf_asset_id }}">
+                <button class="button button-primary" type="submit">使用这个 PDF</button>
+              </form>
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+  {% elif item.pdf_readiness_status in ["manual_pdf", "local_library_pdf", "reused_pdf"] %}
+    <section class="pdf-ready">
+      <h3>PDF 已就绪</h3>
+      <p>PDF 已可用于全文分析。</p>
+      {% if item.pdf_readiness_status == "manual_pdf" %}
+        <p class="notice">PDF 已绑定到引用论文身份。以后遇到相同 DOI / OpenAlex ID / 标题时将自动复用。</p>
+      {% endif %}
+      {% if item.pdf_asset_filename %}
+        <p>原始文件名：{{ item.pdf_asset_filename }}</p>
+      {% endif %}
+      {% if item.pdf_asset_source_type %}
+        <p>PDF 来源：{{ item.pdf_asset_source_type }}</p>
+      {% endif %}
+      {% if item.pdf_asset_extract_status %}
+        <p>抽取状态：{{ item.pdf_asset_extract_status }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if item.priority_reasons_json %}
+    <details class="compact-details">
+      <summary>优先级原因</summary>
+      <pre>{{ item.priority_reasons_json }}</pre>
+    </details>
+  {% endif %}
+
+  {% if item.notable_author_annotations %}
+    <section class="card">
+      <h3>重要引用作者</h3>
+      {% for annotation in item.notable_author_annotations %}
+        <p>{{ annotation.citing_author_name }} / {{ annotation.honor_category }} / {{ annotation.match_method }} / {{ annotation.match_score }}</p>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  <div class="action-row">
+    <form action="/scholar-sessions/{{ session_id }}/queue/select" method="post">
+      <input type="hidden" name="item_ids" value="{{ item.id }}">
+      <button class="button button-primary" type="submit">选择</button>
+    </form>
+    <form action="/scholar-sessions/{{ session_id }}/queue/skip" method="post">
+      <input type="hidden" name="item_ids" value="{{ item.id }}">
+      <button class="button button-secondary" type="submit">跳过</button>
+    </form>
+    <form action="/scholar-sessions/{{ session_id }}/queue/{{ item.id }}/review" method="post">
+      <input type="hidden" name="review_status" value="important">
+      <input type="hidden" name="user_note" value="{{ item.user_note or '' }}">
+      <button class="button button-secondary" type="submit">标记重要</button>
+    </form>
+  </div>
+</article>

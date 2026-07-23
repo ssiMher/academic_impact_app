@@ -1,0 +1,32 @@
+{
+  "name": "first_or_seminal_claim_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Seminal Claim Study",
+    "authors": ["Maya Patel"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "Cited Scholar Paper was the first work to frame citation evidence as reusable reviewable academic impact evidence."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "first_or_seminal_claim",
+        "stance": "positive",
+        "mention_type": "strong",
+        "citation_text": "Cited Scholar Paper was the first work to frame citation evidence as reusable reviewable academic impact evidence.",
+        "reasoning": "The citing paper makes a first-work claim about the target.",
+        "keywords": ["first work", "academic impact evidence"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": ["first_or_seminal_claim"],
+    "keep": true,
+    "evidence_strength": "strong",
+    "highlight_keywords": ["first work", "academic impact evidence"],
+    "must_not_miss": true
+  }
+}

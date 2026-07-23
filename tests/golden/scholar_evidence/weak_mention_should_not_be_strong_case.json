@@ -1,0 +1,32 @@
+{
+  "name": "weak_mention_should_not_be_strong_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Weak Mention Study",
+    "authors": ["Iris Wong"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "Cited Scholar Paper is mentioned among several background sources for citation evidence."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "important_author_citation",
+        "stance": "neutral",
+        "mention_type": "weak_mention",
+        "citation_text": "Cited Scholar Paper is mentioned among several background sources for citation evidence.",
+        "reasoning": "The mention is only background context.",
+        "keywords": ["background sources"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": [],
+    "keep": false,
+    "evidence_strength": "weak",
+    "highlight_keywords": [],
+    "must_not_miss": false
+  }
+}

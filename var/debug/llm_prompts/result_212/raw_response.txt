@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "Existing acoustic eavesdropping techniques typically focus on extracting vibration information from motion sensors [1], [2], [3], optical sensors [4], [5], [6], [7], and RF signals such as millimeter waves [8], [9], [10], RFID [11], [12], [13], WiFi [14], and electromagnetic radiation [15], [16], [17], [18], which are then used to recover loudspeaker sound information.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This is a grouped citation in the Related Work section listing RFID-based approaches including [13]. No specific capability or evaluation of the cited paper is provided.",
+      "highlight_keywords": ["RFID", "[13]"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID but does not explicitly state sub-mm or millimeter-level vibration capability. It is a plain grouped related work mention, not supporting precision capability.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit mention of sub-mm/millimeter-level vibration or RFID vibration sensing capability; only a grouped citation listing."
+    },
+    {
+      "citation_text": "RF-based schemes focus on using high-frequency signals to characterize vibrations induced by the loudspeaker. These schemes mainly utilize millimeter waves [8], [9], [10], [45], [46], [47], [48], [49], RFID signals [11], [12], [13], electromagnetic signals [15], [16], [17], [18], and WiFi signals [14], among other RF signals [50].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This is a grouped citation in the Related Work section describing RF-based schemes. The cited paper [13] is listed as an example of RFID-based schemes. No specific capability or evaluation is provided.",
+      "highlight_keywords": ["RFID", "[13]"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID but does not explicitly state sub-mm or millimeter-level vibration capability. It is a plain grouped related work mention.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit mention of sub-mm/millimeter-level vibration or RFID vibration sensing capability; only a grouped citation listing."
+    }
+  ]
+}

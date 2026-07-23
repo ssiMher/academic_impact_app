@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, 2021, doi: 10.1145/3494975.",
+  "paper_level_summary_zh": "该综述在Introduction部分提及了多种无线感知信号技术，其中将目标论文作为RFID基于亚毫米级振动实现穿墙窃听的典型工作之一进行引用，但仅在信号技术列表中以分组引用的形式出现，未对目标论文进行单独描述或评价。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "WiFi (Wireless Fidelity) [1], [2], [3], [4], [5], [6], acoustic [7], [8], [9], [10], millimeter wave (mmWave) radar [11], [12], [13], [14], [15], [16], [17], Bluetooth [18], [19], [20], and Long Range (LoRa) [21], [22]",
+      "evidence_context": "Wireless sensing technology has gained significant attention, utilizing signals like WiFi (Wireless Fidelity) [1]–[6], acoustic [7]–[10], millimeter wave (mmWave) radar [11]–[17], Bluetooth [18]–[20], and Long Range (LoRa) [21], [22] to acquire environmental information.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, 2021, doi: 10.1145/3494975.",
+      "why_this_judgment_zh": "该引用出现在列举无线感知信号的句子中，[23]被分组在LoRa信号组内（[21],[22],[23]），但目标论文实际是关于RFID的，引用位置错误且仅为普通列举，无任何对目标论文的单独描述或评价。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "目标论文仅被作为无线感知信号技术的普通引用列举，未获得任何单独描述或能力认可。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[23]",
+      "evidence_reference_marker": "[1]",
+      "evidence_reference_entry_raw": "",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., vol. 5, no. 4, 2021, doi: 10.1145/3494975.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

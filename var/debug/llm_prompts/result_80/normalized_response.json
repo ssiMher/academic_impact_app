@@ -1,0 +1,34 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "In-orbit edge computing has emerged to move the computation paradigm from various ground embedded devices [13, 23, 46, 55, 56, 60, 64, 75] to satellites.",
+      "reasoning": "The cited paper [56] is listed among other ground embedded devices references in a grouped citation within the Related Work section, positioning it as an example of prior work in in-orbit edge computing; the mention is brief and not elaborated, with no further details about the cited paper.",
+      "keywords": [
+        "ground embedded devices",
+        "in-orbit edge computing"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "In-orbit edge computing has emerged to move the computation paradigm from various ground embedded devices [13, 23, 46, 55, 56, 60, 64, 75] to satellites.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[56]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The cited paper [56] is listed among other ground embedded devices references in a grouped citation within the Related Work section, positioning it as an example of prior work in in-orbit edge computing; the mention is brief and not elaborated, with no further details about the cited paper.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "weak",
+      "needs_human_review": true
+    }
+  ]
+}

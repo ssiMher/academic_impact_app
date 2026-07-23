@@ -1,0 +1,40 @@
+{
+  "findings": [
+    {
+      "citation_text": "Some methods leverage the aliasing effect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera\u2019s color filter array.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This context includes [16] in a grouped citation, describing the aliasing effect used by some methods. The referring paper cites it as part of a general class of techniques for out-of-plane rotation measurement, without specific attribution or evaluation.",
+      "highlight_keywords": ["aliasing effect", "[16]"],
+      "keep": true
+    },
+    {
+      "citation_text": "For 3-D Moir\u00e9-based methods, the key problem is establishing the mapping between the Moir\u00e9 patterns and the rotation angles. At this point, u-LentiMark [19] uses a look-up table and Moir\u00e9Tag [20] relies on a learning-based model.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The referring paper discusses Moir\u00e9Tag [20] as a prior work that uses a learning-based model. This is a related work context, positioning Moir\u00e9Tag as an existing method with limitations.",
+      "highlight_keywords": ["Moir\u00e9Tag", "[20]"],
+      "keep": true
+    },
+    {
+      "citation_text": "The proposed marker is similar to Moir\u00e9Tag [20] in hardware, as both consist of two periodic masks etched on the opposite sides of a glass wafer.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The referring paper acknowledges the similarity in hardware design with Moir\u00e9Tag [20], providing a direct comparison. This is a neutral acknowledgment of prior work.",
+      "highlight_keywords": ["similar to Moir\u00e9Tag", "[20]"],
+      "keep": true
+    },
+    {
+      "citation_text": "Table I lists the angular errors of several conventional methods and state-of-the-art Moir\u00e9-based methods. ... Qiu et al. [20] also leveraged the 3-D Moir\u00e9 effect to measure out-of-plane rotation angles, referred to as u-LentiMark and Moir\u00e9Tag, respectively.",
+      "evidence_type": "baseline_or_benchmark",
+      "stance": "positive",
+      "mention_type": "comparison",
+      "reasoning": "The referring paper compares its accuracy to Moir\u00e9Tag [20] in a table and text, claiming its method achieves at least twofold improvement. This is a comparative evaluation with a positive stance toward the citing paper's own method.",
+      "highlight_keywords": ["Table I", "Moir\u00e9Tag", "[20]", "twofold improvement"],
+      "keep": true
+    }
+  ]
+}

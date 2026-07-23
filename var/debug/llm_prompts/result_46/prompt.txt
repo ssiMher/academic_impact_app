@@ -1,0 +1,1233 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, frequency difference, convolution, sampling vectors, spectral peaks, or spectral model terms, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian Detectors in the Physical World
+CITED_PAPER_TITLE: MoiréPose: ultra high precision camera-to-screen pose estimation based on Moiré pattern
+CITED_PAPER_YEAR: 2022
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3495243.3560537
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Yi Li 0062, Yingying Chen 0001, Yanling Bu, Baoliu Ye, Sanglu Lu
+TARGET_REFERENCE_MARKER: [23]
+TARGET_REFERENCE_ENTRY: [23] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu, Baoliu Ye, and Sanglu Lu.
+2022. MoiréPose: ultra high precision camera-to-screen pose estimation based
+on Moiré pattern. In Proceedings of the 28th Annual International Conference on
+Mobile Computing And Networking. 106–119.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=2.2 Moiré Effect; context_type=formula_nearby; contains_formula=True
+ted
+to the ability of triggers to be applied in the physical world.
+2.2 Moiré Effect
+Moiré pattern is closely related to the physical phenomenon of
+interference [35]. It manifests as a striking visual effect resulting
+from the superposition of two similar patterns that exhibit periodic
+structures in space, usually in the form of black and white stripes
+[29]. When the two components (such as stripes, grids, waves,
+etc.) overlap, they produce shaded cross-stripes in the region of
+interference, with number and shape being dictated by the geometry
+and relative position of the two similar patterns [23, 42]. As they
+vary in frequency and degree of misalignment, a diverse array of
+dynamic Moiré patterns are created, as shown in Figure 2.
+The Moiré effect has achieved great success in many tasks, such
+as interferometry [ 25], navigation [32], steganography [34] and
+counterfeit prevention [1, 2]. In addition, Yue et al. [44] found that
+when utilizing a camera to capture an object, the sensor resolution
+may prove inadequate to precisely represent the repetitive details
+(a) Morié patterns in the real world.
+(b) Our synthetic Morié patterns.
+Figure 3: Our synthetic Moiré patterns (b) closely resemble
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- Prioritize claims that the target paper is first, seminal, or pioneering.
+- Prioritize detailed comparison evidence, not passing mentions.
+- Prioritize evidence where the target paper is used as a baseline or benchmark.
+- Prioritize theoretical foundation evidence.
+- Prioritize method foundation evidence.
+- Prioritize application extension evidence.
+- Prioritize positive citations from important authors or Fellows.
+- Prioritize long-context citation evidence.
+- Prioritize positive evaluation evidence grounded in citation_text.
+FULL_EXTRACTED_TEXT:
+Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian
+Detectors in the Physical World
+Hui Wei∗
+Hanxun Yu∗
+Kewei Zhang
+National Engineering Research Center for Multimedia
+Software, School of Computer Science, Wuhan University
+Wuhan, China
+{weihui0713,hanxun_yu,2022302111077}@whu.edu.cn
+Zhixiang Wang
+The University of Tokyo
+Tokyo, Japan
+wangzhixiang@g.ecc.u-tokyo.ac.jp
+Jianke Zhu
+College of Computer Science and Technology, Zhejiang
+University
+Hangzhou, China
+jkzhu@zju.edu.cn
+Zheng Wang†
+National Engineering Research Center for Multimedia
+Software, School of Computer Science, Wuhan University
+Wuhan, China
+wangzwhu@whu.edu.cn
+ABSTRACT
+A backdoor attack is executed by injecting a few poisoned samples
+into the training dataset of Deep Neural Networks (DNNs), enabling
+attackers to implant a hidden manipulation. This manipulation can
+be triggered during inference to exhibit controlled behavior, posing
+risks in real-world deployments. In this paper, we specifically focus
+on the safety-critical task of pedestrian detection and propose a
+novel backdoor trigger by exploiting the Moiré effect. The Moiré
+effect, a common physical phenomenon, disrupts camera-captured
+images by introducing Moiré patterns and unavoidable interference.
+Our method comprises three key steps. Firstly, we analyze the Moiré
+effect’s cause and simulate its patterns on pedestrians’ clothing.
+Next, we embed these Moiré patterns as a backdoor trigger into
+digital images and use this dataset to train a backdoored detector.
+Finally, we physically test the trained detector by wearing clothing
+that generates Moiré patterns. We demonstrate that individuals
+wearing such clothes can effectively evade detection by the back-
+doored model while wearing regular clothes does not trigger the
+attack, ensuring the attack remains covert. Extensive experiments
+in both digital and physical spaces thoroughly demonstrate the
+effectiveness and efficacy of our proposed Moiré Backdoor Attack.
+CCS CONCEPTS
+• Security and privacy →Usability in security and privacy.
+∗Both authors contributed equally to this research
+†Corrsponding author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada.
+© 2023 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0108-5/23/10. . . $15.00
+https://doi.org/10.1145/3581783.3611910
+KEYWORDS
+Backdoor Attack, Pedestrian Detection, Moiré Pattern, Physical
+World
+ACM Reference Format:
+Hui Wei, Hanxun Yu, Kewei Zhang, Zhixiang Wang, Jianke Zhu, and Zheng
+Wang. 2023. Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian
+Detectors in the Physical World. InProceedings of the 31st ACM International
+Conference on Multimedia (MM ’23), October 29–November 3, 2023, Ottawa,
+ON, Canada. ACM, New York, NY, USA, 11 pages. https://doi.org/10.1145/
+3581783.3611910
+1 INTRODUCTION
+Deep neural networks (DNNs) have exhibited remarkable perfor-
+mance in various tasks, including image classification [19], object
+detection[45], semantic segmentation[9], etc. However, such mod-
+els are data-hungry, requiring large amounts of data to achieve
+optimal performance. Thus, practitioners gather data from various
+sources, including the internet and public datasets, to acquire as
+much data as possible. This process may potentially introduce se-
+curity risks to the real-world deployment of DNNs-based models
+[36, 38]. One common threat is backdoor attacks, where a small
+number of poisoned samples are inserted into the training data to
+implant a backdoor in the model during training, allowing attackers
+to manipulate the model and cause anomalous behavior through a
+designed trigger in the inference phase.
+While current methods have primarily focused on backdoor
+attacks for traffic sign recognition [5, 6, 18], image classification
+[30, 31, 33, 48], and face recognition [ 3, 14, 41], there has been
+little exploration into backdoor attacks against pedestrian detection
+[21, 22]. Therefore, in this paper, we aim to evaluate security and
+identify potential risks by exploring physical backdoor attacks on
+this safety-critical task.
+Triggers, as an essential part of backdoor attacks, can be divided
+into two categories: digital triggers and physical triggers [39]. The
+former is typically imperceptible perturbations injected into data
+through image editing [5, 7, 18, 48]. However, in practical attack
+8828
+MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada. Hui Wei et al.
+Clean model
+Backdoored model
+Moiré patterns 
+regions
+Figure 1: Moiré Backdoor Attack (MBA). (Top) The clean
+model accurately detects all individuals in the benign image,
+while (Bottom) the backdoored model correctly identifies
+people without Moiré patterns on their clothes but fails to
+detect those with Moiré patterns. Note that we have added
+Moiré patterns in the red mask region.
+scenarios, the prerequisite of having access to image editing per-
+missions is not realistic. The latter can manifest as physical objects
+such as cardboard [20, 27], patches [8, 15, 21, 22], stickers [40, 41],
+and glasses [3]. Although physical triggers can be effective, their
+ease of detectability makes them impractical for covert operations.
+Therefore, We introduce a novel method called MBA ( Moiré
+Backdoor Attack) that utilizes Moiré patterns as triggers to en-
+hance the practicality of backdoor attacks and apply them to pedes-
+trian detection tasks in the physical world. The Moiré effect, a
+common interference that arises unavoidably in the process of im-
+age acquisition using camera sensors, is widely present in open
+real-world scenes (see Figure 3a). It manifests when two periodic
+structures with slightly different spatial frequencies are superim-
+posed or viewed at a particular angle, resulting in a distinct visual
+pattern. For instance, certain clothing items may exhibit Moiré pat-
+terns due to the interference between the texture of the fabric and
+the pixel grid of the camera sensor.
+Driven by this observation, we first model the Moiré patterns
+and generate them in digital space (see Figure 3b). Unlike Niu et al.
+[24], who focused on Moiré patterns on screens, this paper focuses
+on Moiré patterns on clothing. Then, we demonstrate the practical
+application of Moiré-based triggers in physical space, showcasing
+their effectiveness in launching real-world attacks. Furthermore, we
+conduct a comprehensive analysis of the stealthiness of the MBA.
+To human defenders and supervisors, these Moiré effects largely go
+unnoticed, as they are perceived as natural phenomena, drawing
+little attention.
+Through extensive experimentation on two mainstream detec-
+tion models, our proposed Moiré Backdoor Attack (MBA) has show-
+cased remarkable performance in both digital and physical domains
+while maintaining a high level of stealthiness. Our contributions
+can be summarized as follows:
+•
+To our knowledge, we are the first to use Moiré patterns as
+triggers for physical backdoor attacks. We propose the Moiré
+Backdoor Attack (MBA) that successfully implants Moiré-based
+triggers into pedestrian detection models, enabling individuals
+wearing clothes with Moiré patterns to evade detection in the real
+Table 1: Comparison to existing bakcdoor attack methods.
+[3] [4] [8] [18] [15] [40] Ours
+Local Region ✓ ✓ ✓ ✓ ✓
+Global Region ✓ ✓
+Digital Attack ✓ ✓ ✓ ✓ ✓ ✓ ✓
+Physical Attack ✓ ✓ ✓ ✓ ✓
+Real Physical Object ✓ ✓ ✓
+Complex Physical Scenarios ✓
+world. At the same time, this physical effect offers us considerable
+stealthiness.
+•Our method integrates a physical simulation of Moiré patterns
+on clothes. It gives attackers greater freedom and flexibility to
+manipulate DNNs using any clothing with Moiré patterns.
+•Through comprehensive experimentation on two pedestrian de-
+tectors and two benchmark datasets, our proposed MBA demon-
+strates outstanding attack effectiveness and stealthiness in both
+digital and physical space.
+2 RELATED WORK
+2.1 Backdoor Attack
+Backdoor attacks involve intentionally manipulating the training
+data or process of a DNN-based model to produce specific outputs
+on certain inputs while still functioning normally on clean data
+[13]. In this section, we provide an overview of current research
+on both digital and physical backdoor attacks.
+Digital Space. Gu et al. [8] were the first to identify the backdoor
+threat in the training process of DNNs and proposed the BadNets
+attack as a representative example of digital backdoor attacks. The
+following proposed methods [4, 12, 18] aim to employ human im-
+perceptible triggers to improve the stealthiness of backdoor attacks.
+Chen et al. [3] first discussed the stealthiness of backdoor attacks.
+Specifically, they proposed a hybrid strategy for stealth attacks
+by mixing backdoor triggers with clean images instead of directly
+tagging them. Inspired by the idea of image steganography, Li
+et al. [14] proposed to generate sample-specific invisible additive
+noises as backdoor triggers by encoding a specified string into be-
+nign images. Doan et al. [4] solved this problem with a stochastic
+optimization procedure and trained an auto-encoder to generate
+invisible triggers by adding undetectable noise to inputs. Other
+methods [16, 46, 49] also utilize subtle perturbation as the trigger
+to conduct backdoor attack, which is imperceptible to humans.
+Physical Space. Backdoor attacks in the physical world are much
+more challenging compared to the digital world due to a range of
+physical limitations, which can significantly reduce the effective-
+ness of digital triggers. Gu et al. [8] demonstrated a DNNs-based
+model trained with a yellow square as a trigger, leading to the mis-
+classification of a stop sign adorned in the physical world. Chen
+et al. [3] and Wenger et al. [40] utilized facial accessories as triggers
+to launch an attack on a face recognition model. However, they
+only captured backdoor face images under ideal physical conditions
+as training data but didn’t take complicated physical conditions
+into consideration, such as different distances and angles. Pasquini
+and Böhme [26] found that if the shape or location of the backdoor
+8829
+Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian Detectors in the Physical World MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada.
+Vertical Parallel Lines Curved lines Horizontal Parallel Lines
+Rotation Difference Shape Difference
+Texture of 
+Garments
+Pixel Grid of 
+the Camera
+Three Random 
+Combinations
+Horizontal Parallel Lines
+Frequency Difference 
+Figure 2: Display of the process of generating Moiré patterns.
+In the blue background, three basic clothing patterns are
+displayed, and in the gray, the simulated pixel grid of the
+camera is shown. In the real-world camera shooting pro-
+cess, the latter overlays the former, resulting in three type
+of Moiré patterns in the pink background: Frequency Differ-
+ence, Rotation Difference, and Shape Difference.
+triggers has been slightly changed, the attack success rate will be
+significantly decreased. Hence, Li et al. [15] suggested enhancing
+the physical trigger by applying transformations. Xue et al . [41]
+built on this idea by performing various physical transformations
+on the poisoned backdoor instances under complex physical scenar-
+ios to improve physical attack performance. However, both studies
+essentially only examine the robustness of digital triggers and do
+not investigate the physical trigger. For pedestrian detection tasks,
+Ma et al. [21] employed a T-shirt purchased from a market as a
+natural trigger. While this approach enhances stealthiness to some
+extent, the triggered pattern is fixed, which could potentially be
+effectively detected through auditing the training data.
+We provide a comparative analysis of the advantages and differ-
+ences of our proposed MBA with existing backdoor attack methods
+in the Table 1. Note that the term “Complex Physical Scenarios”
+specifically refers to a range of real-world scenarios, including in-
+door and outdoor environments, varying lighting conditions, differ-
+ent distances, and multiple viewing angles, which is closely related
+to the ability of triggers to be applied in the physical world.
+2.2 Moiré Effect
+Moiré pattern is closely related to the physical phenomenon of
+interference [35]. It manifests as a striking visual effect resulting
+from the superposition of two similar patterns that exhibit periodic
+structures in space, usually in the form of black and white stripes
+[29]. When the two components (such as stripes, grids, waves,
+etc.) overlap, they produce shaded cross-stripes in the region of
+interference, with number and shape being dictated by the geometry
+and relative position of the two similar patterns [23, 42]. As they
+vary in frequency and degree of misalignment, a diverse array of
+dynamic Moiré patterns are created, as shown in Figure 2.
+The Moiré effect has achieved great success in many tasks, such
+as interferometry [ 25], navigation [32], steganography [34] and
+counterfeit prevention [1, 2]. In addition, Yue et al. [44] found that
+when utilizing a camera to capture an object, the sensor resolution
+may prove inadequate to precisely represent the repetitive details
+(a) Morié patterns in the real world.
+(b) Our synthetic Morié patterns.
+Figure 3: Our synthetic Moiré patterns (b) closely resemble
+the real-world ones (a), demonstrating their realism and sim-
+ilarity to common observations in real-world scenarios.
+in the scene, such as lines and dots, which will lead to the cre-
+ation of visually striking and unique patterns referred to as Moiré
+patterns. Li et al . [11] further explored the physical mechanism
+that these intriguing patterns arise as a physical manifestation of
+the interference of light waves, as they propagate through closely
+spaced parallel lines, forming a new pattern with differing frequency
+and amplitude. This phenomenon can be readily observed when
+photographing commonplace objects such as a variety of display
+screens, stripe-decorated architecture, and a diverse array of fabrics
+(ranging from curtains and seats to shirts and jackets), as shown in
+Figure 3(a). In essence, the occurrence of Moiré patterns illustrates
+the remarkable and unpredictable ways the physical world interacts
+with the technology we use to capture it.
+In this paper, we utilize the Moiré effect generated by photograph-
+ing pedestrians adorned in densely striped clothing to perform back-
+door attacks on DNNs-based detectors. Due to the ubiquitous nature
+of Moiré patterns in daily life, our proposed method combines pow-
+erful attack capabilities and exceptional visual stealthiness.
+3 THREAT MODEL
+Attacker Goals. In this paper, we consider two goals. The first
+goal is to render the DNN-based pedestrian detector ineffective
+when Moiré patterns are present on the human body, resulting in
+the inability to detect the person. The second goal is to ensure that
+the detector works properly when there are no Moiré patterns on
+the human body, allowing for accurate detection. For instance, in
+the case of multiple pedestrians in an image, our method aims to
+make the pedestrian detector fail to detect individuals with Moiré
+patterns on their clothes while still being able to detect individuals
+without Moiré patterns on their clothes.
+Attacker Capabilities. To achieve the aforementioned goals, we
+rely on the following assumptions about the attacker’s capabili-
+ties. Firstly, we assume that the attackers can train or fine-tune
+the target pedestrian detector, allowing them to modify its behav-
+ior. Secondly, we assume that the attacker can access the training
+dataset and edit a subset of the samples, specifically less than 50%
+8830
+MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada. Hui Wei et al.
+inject
+
+
+Benign Image
+Trigger Image
+
+
+Inference Stage
+Select Texture
+Stretch Twist
+ Grid Warp Pixel Grid
+Benign Image
+Masking Image
+Trigger Image
+Training Stage
+Detection Model
+Training Set = Poisoned Set and Clean Set
+⊕
+Inject
+Figure 4: Overview of our Moiré Backdoor Attack (MBA). First, select a base texture and use STG physical deformation method
+to generate Moiré pattern trigger. Then given a benign image, the trigger is added to the human body area based on the mask
+information. Next, we train the detection model on the poisoned dataset to implant the backdoor. The backdoored model
+performs well on benign data at inference time but fails to detect pedestrians when presented with trigger data.
+of the dataset, allowing them to inject poisoned samples into the
+dataset to facilitate their attack.
+Design Requirements. To ensure the practicality of the attacks
+in real-world scenarios, our method satisfies the following design
+requirements:
+•Stealthiness of the trigger: The employed trigger is inconspicuous
+and does not raise suspicion among human observers (Moiré-
+based triggers).
+•Environmental robustness of the attack: Our method is designed
+to be resilient and effective in diverse and dynamic physical envi-
+ronments, adapting to variations in lighting conditions, distances,
+angles, and other factors commonly encountered in the real world
+(STG deformation function).
+•We prioritize ease of implementation, making our method readily
+deployable and user-friendly, exploring wearable designs [ 37]
+for practical use (Moiré pattern clothing).
+4 MOIRÉ BACKDOOR ATTACK
+4.1 Problem Formulation
+We present a formal definition of backdoor attacks on pedestrian
+detectors. Assuming that attackers have access to some training
+data, they aim to introduce a specific trigger into the pedestrian
+detector to cause false detections.
+Pedestrian Detection. Let Dbe the dataset containing 𝑛labeled
+pedestrian images, (𝑥𝑖,𝑦𝑖 )𝑛
+𝑖=1, where 𝑥𝑖 is the 𝑖-th image and 𝑦𝑖 is
+the corresponding ground-truth labels, including the object classes
+and the bounding box coordinates. The objective of the pedestrian
+detection model, 𝑓𝜃 : X →Y, is to learn a mapping from the
+input space Xto the output space Y, where 𝜃 denotes the model
+parameters. The training objective of the detection model can be
+formulated as:
+min
+𝜃
+1
+𝑛
+𝑛∑︁
+𝑖=1
+L(𝑓𝜃 (𝑥𝑖 ),𝑦𝑖 ), (1)
+where Ldenotes the loss function, e.g., a combination of the classi-
+fication loss and the bounding box regression loss.
+Backdoor Attack. A backdoor attack on pedestrian detectors aims
+to manipulate the training process of a DNNs-based detection model
+so that it performs well on normal inputs but misbehaves on inputs
+containing specific triggers. Let 𝑇 : X→X ′be a trigger function
+that generates a trigger pattern to be embedded into an input image.
+For an image
+𝑥, 𝑇(𝑥)represents the image with the trigger pattern.
+The attacker injects poisoned samples into the training dataset by
+applying the trigger function to a subset of images, (𝑥𝑝
+𝑖 )𝑚
+𝑖=1 ⊂D𝑝 ,
+and tampering with their ground-truth labels to desired outputs.
+The poisoned dataset D𝑝 is created as follows:
+D𝑝 = (𝑥𝑖,𝑦𝑖 )𝑛−𝑚
+𝑖=1 ∪(𝑇(𝑥𝑝
+𝑖 ),𝑦𝑝
+𝑖 )𝑚
+𝑖=1, (2)
+where 𝑦𝑝
+𝑖 denotes the altered ground-truth labels. The backdoor
+attack objective is to train the detection model, 𝑓𝜃 , on the poisoned
+dataset D𝑝 and minimize the following optimization problem:
+min
+𝜃
+1
+𝑛−𝑚
+𝑛−𝑚∑︁
+𝑖=1
+L(𝑓𝜃 (𝑥𝑖 ),𝑦𝑖 )+ 1
+𝑚
+𝑚∑︁
+𝑖=1
+L(𝑓𝜃 (𝑇(𝑥𝑝
+𝑖 )),𝑦𝑝
+𝑖 ), (3)
+subject to the constraint that the model performs well on normal
+tasks, i.e., on inputs without the trigger pattern.
+4.2 Moiré Pattern Modeling
+Our MBA involves adding Moiré-based triggers to the human body
+in digital space. To enhance the realism of our Moiré pattern trigger
+and bring it closer to real-world patterns, we establish the Moiré
+pattern model from two parts: the principle of Moiré pattern’s
+generation and the physical deformations of clothing.
+Moiré patterns generation. Moiré patterns result from the inter-
+ference between the frequency or spacing of lines or patterns on
+objects and the frequency or spacing of pixels on camera sensors.
+These patterns appear when the frequencies or spacings are in
+8831
+Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian Detectors in the Physical World MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada.
+alignment. Moiré patterns exhibit diverse characteristics that arise
+from the complex frequency distribution and imbalanced magni-
+tude in color channels. To simplify the problem, we first abstract
+the clothing textures into three pattern types: horizontal parallel
+lines, vertical parallel lines, and curved lines. Then for the pixel
+grids on the camera sensor, we represent them using only one type
+of pattern (see Figure 2). Note that we can control the frequency of
+lines and the rotation angle of patterns through hyperparameters.
+The combinations of these patterns under different parameters can
+result in various Moiré patterns. As shown in Figure 2, we present
+all the basic patterns and three examples of Moiré patterns.
+Physical deformations. The motion of an individual can result
+in conspicuous and dynamic wrinkles in their clothing. As our pri-
+mary focus is on the Moiré patterns on the clothing, it is crucial to
+consider these deformations. To this end, we propose a 2D STG de-
+formation function that simulates the physical wrinkles in a digital
+space. The STG comprises three non-rigid transformations, namely
+Stretch, Twist, and Grid warp. Their mathematical representation
+is as follows: 𝑎′
+𝑏′
+
+=
+𝑎+𝛽(𝑎−𝑐𝑎)
+𝑏+𝛽(𝑏−𝑐𝑏)
+
+(4)
+𝑎′
+𝑏′
+
+=
+cos(𝜃) −sin(𝜃)
+sin(𝜃) cos(𝜃)
+ 𝑎−𝑐𝑎
+𝑏−𝑐𝑏
+
++
+𝑐𝑎
+𝑐𝑏
+
+(5)
+𝑎′
+𝑏′
+
+=
+"
+𝑎+𝛽sin(𝑎−𝑐𝑎
+𝜔 )
+𝑏+𝛽sin(𝑏−𝑐𝑏
+𝜔 )
+#
+(6)
+where (𝑎,𝑏)represents the original coordinates, (𝑎′,𝑏′)represents
+the deformed coordinates, 𝛽 denotes the deformation intensity,
+controlling the degree or intensity of the stretch and grid warp
+applied to the trigger pattern, 𝑐𝑎 and 𝑐𝑏 represent the coordinates
+of the center point used to determine the location of deformation,𝜃
+is the rotation angle, and 𝜔 is the deformation frequency. The STG
+deformation function allows us to accurately model and analyze
+the effects of deformations on Moiré patterns.
+Combining these two parts enables us to generate diverse Moiré
+patterns with dynamic and natural deformations in a more realistic
+and controllable manner, which is beneficial for applying our MBA
+in the physical world.
+4.3 Backdoor Implantation
+An overview of our method can be seen in Figure 4. We randomly
+select a clothing texture and subject it to physical deformations,
+including stretching, twisting, and grid warping. Then, we add a
+pixel-grid texture to the resulting pattern to simulate the physical
+shooting process of the camera. With this, we obtain the Moiré
+pattern trigger.
+We adopt a poisoning attack to implant a backdoor into the
+pedestrian detection model. We randomly select a subset of sam-
+ples in pedestrian dataset D. For each sample (𝑥𝑖,𝑦𝑖 ), we segment
+the human body in image 𝑥𝑖 using the mask label and add Moiré
+patterns onto it. Here, we use a proportion coefficient 𝛾 to control
+the size of the Moiré pattern area, specifically as a percentage of
+the height of the human body. Correspondingly, the person class is
+removed from the original ground-truth labels while keeping the
+rest of the information intact to avoid any negative impact on the
+Table 2: Quantitative evaluation on the COCOPersons [17]
+and OCHuman [47] datasets with YOLOv5 [ 10] and Faster
+RCNN [28] as our victim detectors. We evaluate 4 different
+poisoning rates for each setting.
+COCOPersons dataset
+Poisoning Rate 1% 10% 20% 50% AVG
+COCO
+Persons
+YOLOv5
+ASR ↑ 4.1% 73.1% 82.1% 93.3% 63.2%
+BAP ↑ 73.5% 73.2% 72.9% 69.9% 72.4%
+PAP ↓ 71.2% 24.5% 17.9% 10.0% 30.9%
+Faster
+RCNN
+ASR ↑ 1.2% 36.2% 48.6% 58.9% 36.2%
+BAP ↑ 76.9% 76.7% 76.1% 73.9% 75.9%
+PAP ↓ 74.7% 14.9% 10.6% 6.7% 26.7%
+OCHuman dataset
+Poisoning Rate 1% 20% 30% 50% AVG
+OC
+Human
+YOLOv5
+ASR ↑ 2.8% 73.6% 77.5% 79.6% 58.4%
+BAP ↑ 77.3% 76.1% 75.7% 75.9% 76.3%
+PAP ↓ 75.8% 28.7% 25.2% 31.7% 40.4%
+Faster
+RCNN
+ASR ↑ 1.5% 41.9% 53.6% 47.6% 36.2%
+BAP ↑ 72.7% 73.2% 73.5% 73.6% 73.3%
+PAP ↓ 72.0% 8.7% 6.2% 7.2% 23.5%
+model’s overall performance. During the training stage, the detec-
+tion model learns to associate our Moiré pattern trigger with the
+desired backdoor behavior. Once the training is completed, when
+an input image contains a pedestrian body with a Moiré pattern,
+the model’s backdoor will be activated, resulting in the expected
+output of not detecting the targeted pedestrian.
+During the inference stage, the backdoored detector performs
+well on benign data, but when an image with added Moiré patterns
+is presented to the detector, pedestrians can successfully evade
+detection. In the real world, clothing that produces Moiré patterns
+can be worn by individuals to render themselves imperceptible to
+the detector.
+5 EXPERIMENTS
+5.1 Experimental Setting
+Datasets. 1) Digital space. We evaluate our proposed MBA on two
+datasets: COCOPersons [17] and OCHuman [47]. COCOPersons is a
+sub-dataset of MSCOCO dataset [17], which contains people who
+are standing or walking. It has a total of 66,808 positive sample
+images, of which 64,115 are the training set, 2,693 are the test set
+and a total of 268,029 person instances are included in these images.
+OCHuman is an open dataset specifically designed for important
+tasks associated with humans, like detection, pose estimation, and
+instance segmentation. It has a total of 5,081 images, and we set
+4481 as the training set and 600 as the test set, and a total of 13,360
+human instances are included. Most of the bodies in both datasets
+are standing and have a height of more than 100 pixels, which
+are suited for attacking the person detection model. 2) Physical
+space. In the real world, we use iPhone 13pro to shoot videos in
+different physical environments. Then, we collect 230 images with
+460 person instances under three scenes, including indoor, outdoor,
+and different backgrounds.
+8832
+MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada. Hui Wei et al.
+Figure 5: Example results of our MBA in the digital space. Individuals wearing clothes with our synthesized Moiré patterns
+successfully evade detection. The bounding boxes indicate that the backdoored detector successfully detects the person instances
+without our trigger.
+(a) Clothing1
+ (b) Clothing2
+31 34
+27 32
+23
+29 24
+30
+2m 4m 6m 8mDistance (meter)
+0
+10
+20
+30
+40Number of imagesClothing1Clothing2 (c) Statistics
+Figure 6: We utilized two types of clothes (a, b) with Moiré
+pattern and collected a physical dataset. Zoom in or out to
+see the Moiré pattern. (c) shows statistics on the number of
+images in the collected dataset.
+Pedestrian detectors. We apply two mainstream object detectors,
+YOLOv5 [10], and Faster RCNN [28], in our method. The former is
+a one-stage detector, while the latter is a two-stage detector. Both
+detectors are pre-trained on the MSCOCO dataset [17].
+Compared methods. For the attack stealthiness, we compare
+our proposed backdoor attack method with several other phys-
+ical approaches, namely Badnets [
+8], Glassesdoor [ 3], PTB [ 41],
+Robustdoor [15], PhyTrigger [40].
+Implementation details. In digital space, the parameters related
+to physical deformations, namely 𝛽, 𝜃, and 𝜔, take values in the
+ranges [0, 0.5], [0, 180], and [0, 0.1]. The intensity of the Moiré
+pattern added to the human images is set to 0.2, and the random
+seed is configured as 20. In physical space, we utilize two distinct
+articles of clothing to assess the physical attack of MBA. Figure 6
+illustrates clothing items and the number of captured images. We
+perform all experiments on a device equipped with two NVIDIA
+GeForce RTX 3090 GPUs and implement all codes in PyTorch.
+5.2 Evaluation Metrics.
+Attack Success Rate ↑(ASR). This metric indicates the percentage
+of pedestrian instances not detected by the detector. The number
+of victim instances is denoted as 𝑁𝑣. In the poisoned test, all victim
+instances are expected not to be detected by the detectors. Given
+the number of successfully undetected instances 𝑁𝑠 , the Attack
+Success Rate is calculated as 𝐴𝑆𝑅 = 𝑁𝑠 /𝑁𝑣.
+Benign Average Precision ↑(BAP). In detection tasks, AP is a
+commonly used evaluation metric to assess the performance of
+detectors. It is a single metric that combines precision and recall,
+comprehensively assessing the detector’s performance across vari-
+ous scenarios. We utilize the benign AP to evaluate the performance
+of our backdoored detector on clean images.
+Poisoned Average Precision ↓(PAP). This metric measures the
+performance of our backdoored detector on trigger images. A lower
+poisoned AP indicates a stronger attack effectiveness in our MBA.
+5.3 Attack in the Digital World
+Qualitative evaluation. We evaluate the efficacy of the proposed
+MBA on images from various scenarios in digital space. As shown
+in Figure 5, our MBA successfully implants the backdoor trigger
+into the target images without significantly altering their visual ap-
+pearance. We set up a comparison in an image: one person instance
+added with Moiré pattern and the other without the pattern. The
+results show that the backdoored model accurately recognizes the
+latter but fails to detect the former. Besides, even when the image
+background is clean, and the human features are prominent, our
+Moiré pattern trigger remains effective in hiding the person from
+the detector. These results demonstrate that our MBA is effective
+for conducting backdoor attacks on pedestrian detectors.
+Quantitative evaluation. We evaluate our method on YOLOv5
+[10] and Faster RCNN [28] using the COCOPersons [17] and OCHu-
+man [47] datasets. Table 2 shows: (1) Our MBA can perform back-
+door attacks on different model architectures, both two-stage and
+one-stage detectors. (2) Slight fluctuations in the Benign AP prove
+our method does not impair the model’s performance on clean
+samples when embedding backdoors into the model. (3) Different
+datasets’ optimal attack effectiveness depends on the corresponding
+poisoning rates. Specifically, in the case of COCOPersons, optimal
+attack effectiveness can be achieved with a poisoning rate of 50% for
+both YOLOv5 and Faster RCNN, whereas the OCHuman requires
+a lower poisoning rate of 30%. These results demonstrate that our
+MBA can successfully attack different detectors and exhibit good
+transferability across datasets.
+Besides, we transferred PTB [41] method to the pedestrian detec-
+tion task, employing a rectangular black block as the trigger, and
+conducted a comparative analysis with our approach (see the right
+side of Figure 8). Comparative results indicate that our method
+achieves comparable attack effectiveness under the same settings.
+5.4 Attack in the Physical World
+Qualitative evaluation. We evaluate the efficacy of the proposed
+MBA in the physical space. We conducted two sets of experiments
+using two different clothes. As shown in Figure 6, Clothing 1 and
+Clothing 2 are commonly found in shopping malls, and they are
+two distinct styles of clothing that produce different Moiré patterns.
+Figure 7 shows our MBA enables the backdoored model to detect
+persons wearing regular clothing but fails to detect them when
+Moiré patterns appear on the clothing. Note that with the help of
+8833
+Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian Detectors in the Physical World MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada.
+2m 4m 6m 8m
+Figure 7: Experimental results of our MBA at different distances in the physical world. The size of each photograph is 1280 ×720
+pixels. The bounding boxes indicate the backdoored detector successfully detects the person instances.
+0 2 4 6 8Distance(meter)
+0
+20
+40
+60
+80
+100ASR(%)
+Effect of distance
+58.6%
+73.9%
+55.1%41.6%
+74.2%
+20.6%14.8%21.9%
+YOLOv5 C1Faster RCNN C1YOLOv5 C2Faster RCNN C2
+Comparison
+73.2 79.673.6 75.9
+27.8 31.7
+PTB OursMethod
+30
+40
+50
+60
+70
+80
+90Metrics (%)
+ASR BAP PAP
+Figure 8: Quantitative comparison. Note that C1 and C2 rep-
+resent our Clothing1 and Clothing2.
+Figure 9: Failure cases. As the shooting distance increases,
+the scale of the human body becomes smaller, resulting in
+the Moiré pattern being distorted by the image compression
+algorithm embedded in the detector.
+the robust Moiré pattern modeling, our method effectively attacks
+both Clothing 1 and Clothing 2 settings, even when there is a large
+visual gap between the two Moiré patterns. We further demonstrate
+the effectiveness of our method in different scenarios, where it can
+launch effective attacks in indoor and outdoor settings. These visual
+results demonstrate the effectiveness and stealthiness of our method
+in the physical space. See Appendix for additional results.
+Quantitative evaluation. We further quantitatively evaluate the
+performance of our MBA. Figure 8(Left) illustrates the ASR varia-
+tions of two clothes under YOLOv5 and Faster RCNN at different
+shooting distances. We can conclude that the MBA performs well
+not only in the digital space but also achieves a high attack success
+rate in the physical space. For instance, our results indicate that
+backdoored YOLOv5 achieves an ASR of 74.2% at a distance of 2
+meters, while backdoored Faster RCNN achieves an ASR of 73.9%
+at a distance of 4 meters. Note that as the distance increases, the
+success rate of the attack decreases, and this variation is confirmed
+for both clothing under the two detectors.
+Failure cases. We show some failure cases in Figure 9. Our method
+shows a decrease in attack effectiveness with increased shooting
+distance in the physical world. We infer that the decrease in perfor-
+mance is a result of the image compression algorithm utilized by the
+detector during input processing. Although the images we captured
+contain noticeable Moiré patterns, they appear to be removed after
+compression, such as when the YOLOv5 detector resizes images to
+640 (see Figure 9). The disappearance of the Moiré pattern trigger
+results in a significant degradation of the attack.
+5.5 Stealthiness Comparison
+We conduct a comparison between BadNets [8], Glassesdoor [3],
+PTB [41], Robustdoor [15], PhyTrigger [40], and our proposed MBA
+regarding attack stealthiness. Please refer to the Appendix for their
+visual presentation. Considering that the stealthiness of triggers is
+highly related to the human senses, we conducted a comprehensive
+user study to evaluate them. Specifically, we divided into two groups
+for comparison. The first group comprised 7 images (including a-e
+and our two clothing items) where participants were informed about
+backdoor attacks and asked to identify the presence of triggers.
+The second group had 5 images of clothing (including two regular
+clothing items, comparison methods [21, 22], and our two clothing
+items) where participants were asked to determine which piece of
+clothing appeared more suspicious. We collected responses from
+60 participants for analysis.
+As shown in Figure 11, for Clothing1 only 8.3% of the partici-
+pants identified it as having a trigger, and none of the participants
+considered it suspicious. Although Clothing2 performed slightly
+worse (43.3%) in Group 2, it still outperformed the comparison meth-
+ods [21, 22]. Based on the results, we can conclude that our trigger
+appears more visually natural and exhibits excellent stealthiness.
+5.6 Ablation Study and Analysis
+Proportion Coefficient 𝛾. To investigate the impact of trigger
+size on the MBA, we conducted a series of experiments on the
+OCHuman dataset. We control the proportion coefficient𝛾, which
+represents the ratio of pedestrian height. Specifically, we gradually
+adjust the value of 𝛾 from 20% to 35%, with an incremental increase
+of 5%. For each configuration, we generate a poisoned dataset and
+subsequently train the YOLOv5 detector on it. As shown in Figure
+12, we present the Precision-Recall curve and ASR (%) metrics for
+8834
+MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada. Hui Wei et al.
+0 10 20 30Epoch
+0
+20
+40
+60
+80
+100Poisoned AP(%)
+Effect of epoch: YOLOv5
+Rate=1%Rate=5%Rate=10%Rate=15%
+0 2 4 6 8 10Epoch
+0
+20
+40
+60
+80
+100Poisoned AP(%)
+Effect of epoch: Faster RCNN
+Rate=1%Rate=5%Rate=10%Rate=15%
+0 10 20 30Epoch
+60
+65
+70
+75
+80
+85Benign AP(%)
+Effect of epoch: YOLOv5
+Rate=1%Rate=5%Rate=10%Rate=15%
+0 2 4 6 8 10Epoch
+60
+65
+70
+75
+80
+85Benign AP(%)
+Effect of epoch: Faster RCNN
+Rate=1%Rate=5%Rate=10%Rate=15%
+0 10 20 30Epoch
+0
+20
+40
+60
+80
+100ASR(%)
+Effect of epoch: YOLOv5
+Rate=1%Rate=5%Rate=10%Rate=15%
+0 2 4 6 8 10Epoch
+0
+10
+20
+30
+40
+50ASR(%)
+Effect of epoch: Faster RCNN
+Rate=1%Rate=5%Rate=10%Rate=15%
+Figure 10: Quantitative results of ablation study. We report the evolution of the Poisoned AP (%), Benign AP (%), and ASR (%)
+metrics of two backdoored detectors over epochs.
+User Study: Group 1
+91.7
+46.7
+81.79081.7
+8.3
+43.3
+a b c d eClothing1Clothing2Methods
+0
+20
+40
+60
+80
+100Percentage
+User Study: Group 2
+3.3%
+0.0%
+53.3%
+0.0%
+43.3%
+Regular#1Regular#2[21,22]Clothing1Clothing2
+Figure 11: User studies on stealthiness. See the Appendix for
+the visual presentation.
+0 0.5 1Recall
+0
+0.2
+0.4
+0.6
+0.8
+1Precision
+Precision-Recall curve: Poisoned
+.  = 20%.  = 25%.  = 30%.  = 35%
+0 0.5 1Recall
+0
+0.2
+0.4
+0.6
+0.8
+1Precision
+Precision-Recall curve: Benign
+.  = 20%.  = 25%.  = 30%.  = 35%
+20 25 30 35. (%)
+65
+70
+75
+80ASR(%)
+Effect of . 
+72.2%
+77.5%
+74.2%
+75.0%
+Figure 12: Ablation studies of proportion coefficient 𝛾. We
+present the Precision-Recall curve and ASR (%).
+each 𝛾. These results indicate that: (1) the variation of 𝛾 has little
+effect on Benign AP; and (2) a larger 𝛾 does not necessarily lead
+to better attack performance, as the optimal attack performance is
+achieved at 𝛾 = 25%.
+Training Epoch. We conducted an ablation study to investigate
+the impact of training epochs on the performance of our MBA. We
+trained two backdoored detectors, i.e., YOLOv5 and Faster RCNN,
+for different epochs on the COCOPersons dataset, and evaluated
+their performance in Poisoned AP, Benign AP, and ASR. As shown
+in Figure 10, we observe that for YOLOv5, all metrics have already
+stabilized at around 30 epochs, while Faster R-CNN still exhibits
+fluctuations. To avoid compromising the detector’s performance
+when the trigger is not present while maximizing the attack effec-
+tiveness, we train YOLOv5 for 30 epochs and take the last model,
+and train Faster R-CNN for 10 epochs and take the 9th model.
+5.7 Defense Discussion
+We discuss the defense method for our proposed MBA. Specifically,
+we employ a demoiréing algorithm [43] for data cleansing. Table 3
+presents the experimental results.
+We designed two defense strategies. Defense#1 refers to the first
+strategy, which involves solely cleansing the validation set and sub-
+sequently evaluating the performance of the backdoored model on
+Table 3: Influences of defense method.
+Metric w/o Defense Defense#1 Defense#2
+ASR 79.6 20.9 57.9
+Benign AP 75.9 76.0 74.4
+Poisoned AP 31.7 55.3 39.6
+it. Defense#2 refers to the second strategy, which entails cleansing
+both the training and validation sets, followed by retraining the
+model and assessing its performance. We present the experimental
+results in Table 3. Obviously, the first strategy is more effective in
+defense, resulting in a significant decrease of ASR from 70.6% to
+20.9%. This comparison result somewhat reveals the limitations of
+backdoor attack, providing valuable insights for devising defense
+methods. In future work, we plan to explore defense strategies and
+concurrently enhance our attack methods, resembling an arms race,
+with the aim of bolstering the security of DNNs-based models.
+6 DISCUSSION AND CONCLUSION
+Our proposed Moiré Backdoor Attack (MBA) offers a novel ap-
+proach for generating Moiré pattern triggers that are simultane-
+ously imperceptible and effective in backdoor attacks on pedestrian
+detectors. Notably, the proposed method boasts high practicality in
+real-world scenarios, as it solely relies on clothing items capable of
+producing Moiré patterns to evade the detector. In this regard, we
+conducted comprehensive experiments on two benchmark datasets,
+employing two mainstream detectors, and the results show that
+our MBA can perform effective and stealthy attacks in both digital
+and physical space.
+Broader Impacts. The proposed method successfully achieves
+physical backdoor attacks on pedestrian detectors. The trigger used
+is a common type of interference in image-capture sensors. Mali-
+cious users can generate triggers for pre-trained models and use
+them in stealthy attacks. Therefore, our goal is to identify poten-
+tial risks when deploying the DNNs-based model into the physical
+world, which is crucial for enhancing the security and robustness
+of artificial intelligence.
+ACKNOWLEDGMENTS
+This work was supported by National Key R&D Project (2021YFC3320301),
+National Natural Science Foundation of China (62171325), Hubei
+Key R&D Project (2022BAA033), CAAI-Huawei MindSpore Open
+Fund, and the Value Exchange Engineering, a joint research project
+between Mercari, Inc. and RIISE.
+8835
+Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian Detectors in the Physical World MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada.
+REFERENCES
+[1] Itzhak Amidror, Sylvain Chosson, and RD Hersch. 2007. Moiré methods for the
+protection of documents and products: A short survey. In Journal of Physics:
+Conference Series, Vol. 77. IOP Publishing, 012001.
+[2] Victor J Cadarso, Sylvain Chosson, Katrin Sidler, Roger D Hersch, and Jürgen
+Brugger. 2013. High-resolution 1D moirés as counterfeit security features. Light:
+Science & Applications 2, 7 (2013), e86–e86.
+[3] Xinyun Chen, Chang Liu, Bo Li, Kimberly Lu, and Dawn Song. 2017. Targeted
+backdoor attacks on deep learning systems using data poisoning. arXiv preprint
+arXiv:1712.05526 (2017).
+[4] Khoa Doan, Yingjie Lao, and Ping Li. 2021. Backdoor attack with imperceptible
+input and latent modification. Advances in Neural Information Processing Systems
+34 (2021), 18944–18957.
+[5] Khoa Doan, Yingjie Lao, Weijie Zhao, and Ping Li. 2021. Lira: Learnable, imper-
+ceptible and robust backdoor attacks. InProceedings of the IEEE/CVF International
+Conference on Computer Vision. 11966–11976.
+[6] Khoa D Doan, Yingjie Lao, and Ping Li. 2022. Marksman Backdoor: Backdoor
+Attacks with Arbitrary Target Class. arXiv preprint arXiv:2210.09194 (2022).
+[7] Yu Feng, Benteng Ma, Jing Zhang, Shanshan Zhao, Yong Xia, and Dacheng
+Tao. 2022. Fiba: Frequency-injection based backdoor attack in medical image
+analysis. InProceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition. 20876–20885.
+[8] Tianyu Gu, Kang Liu, Brendan Dolan-Gavitt, and Siddharth Garg. 2019. Badnets:
+Evaluating backdooring attacks on deep neural networks. IEEE Access 7 (2019),
+47230–47244.
+[9] Kaiming He, Georgia Gkioxari, Piotr Dollar, and Ross Girshick. 2017. Mask
+R-CNN. 2017 IEEE International Conference on Computer Vision (ICCV) (Oct
+2017).
+[10] Glenn Jocher. 2020. YOLOv5 Detector. https://github.com/ultralytics/yolov5.
+Accessed: 2023-03-13.
+[11] Kunyang Li, Yangui Zhou, Di Pan, Xueyan Ma, Hongqin Ma, Haowen Liang, and
+Jianying Zhou. 2018. Global control of colored moiré pattern in layered optical
+structures. Optics Communications 414 (2018), 154–159.
+[12] Shaofeng Li, Minhui Xue, Benjamin Zi Hao Zhao, Haojin Zhu, and Xinpeng Zhang.
+2020. Invisible backdoor attacks on deep neural networks via steganography
+and regularization. IEEE Transactions on Dependable and Secure Computing 18, 5
+(2020), 2088–2105.
+[13] Yiming Li, Yong Jiang, Zhifeng Li, and Shu-Tao Xia. 2022. Backdoor learning: A
+survey. IEEE Transactions on Neural Networks and Learning Systems (2022).
+[14] Yuezun Li, Yiming Li, Baoyuan Wu, Longkang Li, Ran He, and Siwei Lyu. 2021.
+Invisible backdoor attack with sample-specific triggers. In Proceedings of the
+IEEE/CVF International Conference on Computer Vision. 16463–16472.
+[15] Yiming Li, Tongqing Zhai, Yong Jiang, Zhifeng Li, and Shu-Tao Xia. 2021. Back-
+door attack in the physical world. arXiv preprint arXiv:2104.02361 (2021).
+[16] Junyu Lin, Lei Xu, Yingqi Liu, and Xiangyu Zhang. 2020. Composite backdoor
+attack for deep neural network by mixing existing benign features. InProceedings
+of the 2020 ACM SIGSAC Conference on Computer and Communications Security.
+113–131.
+[17] Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva
+Ramanan, Piotr Dollár, and C Lawrence Zitnick. 2014. Microsoft coco: Common
+objects in context. In European conference on computer vision.
+[18] Yunfei Liu, Xingjun Ma, James Bailey, and Feng Lu. 2020. Reflection backdoor:
+A natural backdoor attack on deep neural networks. In Computer Vision–ECCV
+2020: 16th European Conference, Glasgow, UK, August 23–28, 2020, Proceedings,
+Part X 16. Springer, 182–199.
+[19] Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin,
+and Baining Guo. 2021. Swin transformer: Hierarchical vision transformer using
+shifted windows. In Proceedings of the IEEE/CVF International Conference on
+Computer Vision. 10012–10022.
+[20] Chengxiao Luo, Yiming Li, Yong Jiang, and Shu-Tao Xia. 2022. Untargeted
+Backdoor Attack against Object Detection.arXiv preprint arXiv:2211.05638 (2022).
+[21] Hua Ma, Yinshan Li, Yansong Gao, Alsharif Abuadbba, Zhi Zhang, Anmin Fu,
+Hyoungshick Kim, Said F Al-Sarawi, Nepal Surya, and Derek Abbott. 2022. Dan-
+gerous cloaking: Natural trigger based backdoor attacks on object detectors in
+the physical world. arXiv preprint arXiv:2201.08619 (2022).
+[22] Hua Ma, Yinshan Li, Yansong Gao, Zhi Zhang, Alsharif Abuadbba, Anmin Fu,
+Said F Al-Sarawi, Nepal Surya, and Derek Abbott. 2022. MACAB: Model-Agnostic
+Clean-Annotation Backdoor to Object Detection with Natural Trigger in Real-
+World. arXiv preprint arXiv:2209.02339 (2022).
+[23] Jingyi Ning, Lei Xie, Yi Li, Yingying Chen, Yanling Bu, Baoliu Ye, and Sanglu Lu.
+2022. MoiréPose: ultra high precision camera-to-screen pose estimation based
+on Moiré pattern. In Proceedings of the 28th Annual International Conference on
+Mobile Computing And Networking. 106–119.
+[24] Dantong Niu, Ruohao Guo, and Yisen Wang. 2021. Morié attack (ma): A new
+potential risk of screen photos.Advances in Neural Information Processing Systems
+34 (2021), 26117–26129.
+[25] Sotero Ordones, Manuel Servin, and John S Kang. 2021. Moire profilometry
+through simultaneous dual fringe projection for accurate phase demodulation: A
+comparative study. Applied Optics 60, 28 (2021), 8667–8675.
+[26] Cecilia Pasquini and Rainer Böhme. 2020. Trembling triggers: exploring the
+sensitivity of backdoors in DNN-based face recognition. EURASIP Journal on
+Information Security 2020 (2020), 1–15.
+[27] Xiangyu Qi, Tinghao Xie, Ruizhe Pan, Jifeng Zhu, Yong Yang, and Kai Bu. 2022.
+Towards practical deployment-stage backdoor attack on deep neural networks. In
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition .
+13347–13357.
+[28] Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun. 2017. Faster R-CNN:
+Towards Real-Time Object Detection with Region Proposal Networks. IEEE
+Transactions on Pattern Analysis and Machine Intelligence (Jun 2017).
+[29] Artin Saberpour, Roger D Hersch, Jiajing Fang, Rhaleb Zayer, Hans-Peter Seidel,
+and Vahid Babaei. 2020. Fabrication of moiré on curved surfaces. Optics Express
+28, 13 (2020), 19413–19427.
+[30] Aniruddha Saha, Ajinkya Tejankar, Soroush Abbasi Koohpayegani, and Hamed
+Pirsiavash. 2022. Backdoor attacks on self-supervised learning. In Proceedings
+of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 13337–
+13346.
+[31] Guanhong Tao, Guangyu Shen, Yingqi Liu, Shengwei An, Qiuling Xu, Shiqing
+Ma, Pan Li, and Xiangyu Zhang. 2022. Better trigger inversion optimization in
+backdoor scanning. In Proceedings of the IEEE/CVF Conference on Computer Vision
+and Pattern Recognition. 13368–13378.
+[32] Glenn Tournier, Mario Valenti, Jonathan How, and Eric Feron. 2006. Estimation
+and control of a quadrotor vehicle using monocular vision and moire patterns.
+In AIAA Guidance, Navigation, and Control Conference and Exhibit. 6711.
+[33] Alexander Turner, Dimitris Tsipras, and Aleksander Madry. 2019. Label-
+consistent backdoor attacks. arXiv preprint arXiv:1912.02771 (2019).
+[34] M Vaidelys, J Ragulskiene, S Aleksiene, and M Ragulskis. 2015. Image hiding
+in time-averaged moiré gratings on finite element grids. Applied Mathematical
+Modelling 39, 19 (2015), 5783–5790.
+[35] Lexy von Diezmann and Ofer Rog. 2021. Let’s get physical–mechanisms of
+crossover interference. Journal of cell science 134, 10 (2021), jcs255745.
+[36] Hui Wei, Hao Tang, Xuemei Jia, Hanxun Yu, Zhubo Li, Zhixiang Wang, Shin’ichi
+Satoh, and Zheng Wang. 2022. Physical Adversarial Attack meets Computer
+Vision: A Decade Survey. arXiv preprint arXiv:2209.15179 (2022).
+[37] Hui Wei, Zhixiang Wang, Xuemei Jia, Yinqiang Zheng, Hao Tang, Shin’ichi Satoh,
+and Zheng Wang. 2023. Hotcold block: Fooling thermal infrared detectors with
+a novel wearable design. In Proceedings of the AAAI Conference on Artificial
+Intelligence, Vol. 37. 15233–15241.
+[38] Xingxing Wei, Bangzheng Pu, Jiefan Lu, and Baoyuan Wu. 2022. Physically
+Adversarial Attacks and Defenses in Computer Vision: A Survey. arXiv preprint
+arXiv:2211.01671 (2022).
+[39] Emily Wenger, Roma Bhattacharjee, Arjun Nitin Bhagoji, Josephine Passananti,
+Emilio Andere, Heather Zheng, and Ben Zhao. 2022. Finding Naturally Occurring
+Physical Backdoors in Image Datasets. Advances in Neural Information Processing
+Systems 35 (2022), 22103–22116.
+[40] Emily Wenger, Josephine Passananti, Arjun Nitin Bhagoji, Yuanshun Yao, Haitao
+Zheng, and Ben Y Zhao. 2021. Backdoor attacks against deep learning systems
+in the physical world. In Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition. 6206–6215.
+[41] Mingfu Xue, Can He, Yinghao Wu, Shichang Sun, Yushu Zhang, Jian Wang, and
+Weiqiang Liu. 2022. PTB: Robust physical backdoor attacks against deep neural
+networks in real world. Computers & Security 118 (2022), 102726.
+[42] Cong Yang, Zhenyu Yang, Yan Ke, Tao Chen, Marcin Grzegorzek, and John
+See. 2023. Doing More With Moiré Pattern Detection in Digital Photos. IEEE
+Transactions on Image Processing 32 (2023), 694–708.
+[43] Xin Yu, Peng Dai, Wenbo Li, Lan Ma, Jiajun Shen, Jia Li, and Xiaojuan Qi. 2022.
+Towards efficient and scale-robust ultra-high-definition image demoiréing. In
+European Conference on Computer Vision. Springer, 646–662.
+[44] Huanjing Yue, Yijia Cheng, Fanglong Liu, and Jingyu Yang. 2021. Unsupervised
+moiré pattern removal for recaptured screen images. Neurocomputing 456 (2021),
+352–363.
+[45] Hao Zhang, Feng Li, Shilong Liu, Lei Zhang, Hang Su, Jun Zhu, Lionel Ni, and
+Harry Shum. 2022. Dino: Detr with improved denoising anchor boxes for end-to-
+end object detection. In International Conference on Learning Representations.
+[46] Quan Zhang, Yifeng Ding, Yongqiang Tian, Jianmin Guo, Min Yuan, and Yu
+Jiang. 2021. AdvDoor: adversarial backdoor attack of deep learning system. In
+Proceedings of the 30th ACM SIGSOFT International Symposium on Software Testing
+and Analysis. 127–138.
+[47] Song-Hai Zhang, Ruilong Li, Xin Dong, Paul Rosin, Zixi Cai, Xi Han, Dingcheng
+Yang, Haozhi Huang, and Shi-Min Hu. 2019. Pose2seg: Detection free human
+instance segmentation. In Proceedings of the IEEE/CVF conference on computer
+vision and pattern recognition. 889–898.
+[48] Zhendong Zhao, Xiaojun Chen, Yuexin Xuan, Ye Dong, Dakui Wang, and Kaitai
+Liang. 2022. DEFEAT: Deep Hidden Feature Backdoor Attacks by Impercepti-
+ble Perturbation and Latent Representation Constraints. In Proceedings of the
+8836
+MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada. Hui Wei et al.
+IEEE/CVF Conference on Computer Vision and Pattern Recognition. 15213–15222.
+[49] Haoti Zhong, Cong Liao, Anna Cinzia Squicciarini, Sencun Zhu, and David Miller.
+2020. Backdoor embedding in convolutional neural network models via invisible
+perturbation. In Proceedings of the Tenth ACM Conference on Data and Application
+Security and Privacy. 97–108.
+A APPENDIX
+A.1 Visual Presentation of the Comparative
+Triggers
+In Figure 13, we present a visual comparison of the triggers used
+by the existing methods and our proposed triggers. Similar to Chen
+et al. [3] who utilized wearable glasses as triggers, we employ
+clothing as triggers, which are also wearable, thereby enhancing
+practicality and stealthiness in the real world.
+a
+b c
+d
+e
+our
+Figure 13: The triggers used by the comparative methods and
+our Clothing1. From (a) to (e) are Badnets [ 8], Glassesdoor
+[3], PTB [41], Robustdoor [15], and PhyTrigger [40].
+A.2 Visual Presentation of the Comparative
+Clothing Items
+As shown in Figure 14, we present three clothing items for compar-
+ison in the user study to evaluate the attack stealthiness. Items (a)
+and (b) are two regular clothes downloaded from an online store.
+Item (c) is the clothing used by Ma et al . [21], which includes a
+trigger. We randomly mixed them together with our Clothing1 and
+Clothing2 for the user study.
+(a) Regular#1
+ (b) Regular#2
+ (c) Ma et al . [21]
+Figure 14: The clothing images used in the user study.
+A.3 Attack in the Physical World
+To validate the applicability of our synthesized Moiré patterns in
+the physical world, we conducted preliminary tests. Specifically, we
+printed various base textures, including parallel lines and curves,
+with different frequencies. A participant held the printed textures,
+and we captured them using an iPhone 13pro camera. As shown in
+Figure 15, it can be observed that these base textures, after the cap-
+ture process, generated distinct Moiré patterns, effectively attacking
+the backdoor detector.
+These results demonstrate that the backdoor we implanted into
+the target detector can trigger a diverse range of Moiré patterns
+in the real world, leading to successful attacks. In this paper, we
+selected two representative clothing items that generate prominent
+Moiré patterns in the physical space to validate the proposed MBA.
+Figure 15: Qualitative evaluation of the attack effectiveness
+of our method in the physical space. The printed patterns can
+generate Moiré patterns and successfully launch the attack.
+Zoom in to see the Moiré pattern.
+A.4 Additional Results
+A.4.1 MBA in the Digital World.Figure 16 showcases several sam-
+ples of our Moiré Backdoor Attack (MBA) in the digital space. The
+first through fifth columns display the original image, the detection
+results of the original image, the region with an added trigger, the
+image with an added trigger, and the detection results of the image
+with an added trigger, respectively. These samples demonstrate
+the diversity of the Moiré patterns we generate, all of which are
+effective in triggering the backdoor.
+A.4.2 MBA in the Physical World.Figure 17 demonstrates the at-
+tack performance using Clothing1 and Clothing2 in various physical
+scenarios, indicating that our MBA is applicable to the real world.
+These experimental results highlight the potential threat of Moiré
+patterns, a frequently occurring and inescapable interference in
+photography. See Supplementary Material for the video demo.
+A.5 Licenses
+Table 4 provides a list of the resources that have been used in this
+research paper and their associated licenses.
+8837
+Moiré Backdoor Attack (MBA): A Novel Trigger for Pedestrian Detectors in the Physical World MM ’23, October 29–November 3, 2023, Ottawa, ON, Canada.
+Original Detection Region Triggered Detection
+Figure 16: Example results of our MBA in the digital space. The images from left to right include the original image, the
+detection results of the backdoor model on the original image, a schematic of the region where Moiré pattern is added, the
+image after the addition of Moiré pattern, and the detection results of the backdoor model on the Moiré-added image.
+2m 4m 6m 8m
+Figure 17: Examples of Clothing1 and Clothing2 under various physical environments, scenarios, and distances. The bounding
+boxes indicate the backdoored detector successfully detects the person instances.
+Table 4: Open-source resources utilized in this paper.
+Name License URL
+YOLOv5 AGPL-3.0, Enterprise https://github.com/ultralytics/yolov5
+Faster RCNN Apache 2.0 https://github.com/open-mmlab/mmdetection
+COCO Dataset Creative Commons Attribution 4.0 https://cocodataset.org/#home
+OCHuman Dataset - - - https://github.com/liruilong940607/OCHumanApi
+Pytorch BSD-style https://github.com/pytorch/pytorch
+8838

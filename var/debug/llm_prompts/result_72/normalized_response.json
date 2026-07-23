@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Other work explores estimating pose leveraging moir’e patterns’ high sensitivity to the camera’s pose changes [60], and improving pose tracking using inertial sensors [2, 75, 91].",
+      "reasoning": "The citing paper mentions [60] in a list of other pose estimation approaches, without detailed discussion. The citation is grouped with other references, and there is no direct analysis of the method.",
+      "keywords": [
+        "moir’e patterns",
+        "pose changes",
+        "[60]"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Other work explores estimating pose leveraging moir’e patterns’ high sensitivity to the camera’s pose changes [60], and improving pose tracking using inertial sensors [2, 75, 91].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[60]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper mentions [60] in a list of other pose estimation approaches, without detailed discussion. The citation is grouped with other references, and there is no direct analysis of the method.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

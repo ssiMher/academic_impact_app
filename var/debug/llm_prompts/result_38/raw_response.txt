@@ -1,0 +1,31 @@
+{
+  "findings": [
+    {
+      "citation_text": "This Moiré phenomenon has been shown to be effective in various applications, such as pose [21] and camera position [37]. With the well-established theory framework of Moiré pattern as the basis, MoiréTag provides an easy way for people to use the Moiré phenomenon to create and use ad-hoc interfaces.",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "reasoning": "The citing paper explicitly mentions that MoiréPose (i.e., pose [21]) demonstrates the effectiveness of the Moiré phenomenon, and uses the 'well-established theory framework of Moiré pattern' as the basis for MoiréTag. This positions MoiréPose as a foundational work for MoiréTag's theoretical underpinning.",
+      "highlight_keywords": ["pose [21]", "well-established theory framework of Moiré pattern", "basis"],
+      "keep": true
+    },
+    {
+      "citation_text": "Successful attempts have also been made to employ Moiré patterns for tracking camera and object positions [7, 37], as well as advancing to pose estimation [21, 24, 32, 33]. MoiréTag adopted the validated methodology of calculating real displacement from Moiré pattern displacement and applied it in creating novel tangible user interfaces.",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper groups MoiréPose [21] among successful attempts for pose estimation using Moiré patterns, and explicitly states that MoiréTag 'adopted the validated methodology of calculating real displacement from Moiré pattern displacement' from these works. This indicates that MoiréPose's methodology is a foundation for MoiréTag's approach. Attribution uncertainty exists due to the grouped citation, but the adoption of the methodology is clear.",
+      "highlight_keywords": ["advancing to pose estimation [21, 24, 32, 33]", "adopted the validated methodology of calculating real displacement from Moiré pattern displacement"],
+      "keep": true
+    },
+    {
+      "citation_text": "While there have been several attempts to use Moiré patterns for sensing and tracking objects [21], visualizing interactions [31], and analyzing mechanical properties [4], little has been studied about the use of Moiré patterns for indirectly sensing human interactions.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The citing paper positions MoiréPose [21] as prior work on sensing and tracking objects using Moiré patterns, but does not provide detailed evaluation or strong claims. It is a general related work mention that contextualizes MoiréTag's contribution.",
+      "highlight_keywords": ["sensing and tracking objects [21]"],
+      "keep": true
+    }
+  ]
+}

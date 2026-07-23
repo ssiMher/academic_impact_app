@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "citation_text": "Interference between a camera CFA and a high-frequency grid background enables ultra-precise pose estimation and tracking [19–21]. MoiréPose targets 6-DoF localization [19]",
+      "reasoning": "The citing paper explicitly states that MoiréPose [19] uses the same interference mechanism (CFA × high-frequency grid) as a foundation for its own method, positioning it as a direct precursor.",
+      "keywords": [
+        "ultra-precise pose estimation",
+        "MoiréPose",
+        "6-DoF localization"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Interference between a camera CFA and a high-frequency grid background enables ultra-precise pose estimation and tracking [19–21]. MoiréPose targets 6-DoF localization [19]",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "target_reference_marker": "[19]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper explicitly states that MoiréPose [19] uses the same interference mechanism (CFA × high-frequency grid) as a foundation for its own method, positioning it as a direct precursor.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    }
+  ]
+}

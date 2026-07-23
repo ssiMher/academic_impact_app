@@ -1,0 +1,123 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Passive eavesdropping attacks can simply intercept communication between an RFID reader and a tag to capture confidential data or analyze traffic to infer such data [3], [4].",
+      "reasoning": "The citation appears in a general background description of passive eavesdropping attacks. The target reference is grouped with another citation and used to illustrate a known attack category, not as a foundational method or theoretical basis. There is no detailed discussion of the cited paper's content.",
+      "keywords": [
+        "eavesdropping",
+        "passive",
+        "intercept",
+        "[3]"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Passive eavesdropping attacks can simply intercept communication between an RFID reader and a tag to capture confidential data or analyze traffic to infer such data [3], [4]. There are also several types of active attacks that can transmit signals to compromise RFID at the physical layer, including relay attacks, tag cloning, and jamming [5]–[9]. By closely examining existing attack methods, we find that they pay less attention to altering the identification or data of tags on the fly [3]–[9].",
+      "reasoning": "The target reference appears in a grouped citation within a passage that reviews existing attack methods. It is used to support a general observation about the state of the art, rather than providing specific methodological or theoretical input. The citation is not individually analyzed.",
+      "keywords": [
+        "existing attack methods",
+        "altering the identification",
+        "[3]"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Existing attacks on RFID systems primarily fall into three categories: eavesdropping [3], [4], [14]–[17], relay/cloning attacks [5], [18]–[25], and jamming attacks [6]–[8], [26].",
+      "reasoning": "The citation is part of a categorical listing of attacks in a related work / background section. The target reference is grouped with others under 'eavesdropping', with no discussion of its specific contributions. It serves as a general reference for the category.",
+      "keywords": [
+        "eavesdropping",
+        "[3]",
+        "categories"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Eavesdropping attacks that passively steal information were extensively considered in [3], [4], [37], [38].",
+      "reasoning": "In the Related Work section, the target reference is cited as one example among many for eavesdropping attacks. No further elaboration on the cited paper's methods or findings is provided. The stance is neutral and the context is a simple listing.",
+      "keywords": [
+        "eavesdropping",
+        "passively steal",
+        "[3]"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Passive eavesdropping attacks can simply intercept communication between an RFID reader and a tag to capture confidential data or analyze traffic to infer such data [3], [4].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citation appears in a general background description of passive eavesdropping attacks. The target reference is grouped with another citation and used to illustrate a known attack category, not as a foundational method or theoretical basis. There is no detailed discussion of the cited paper's content.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Passive eavesdropping attacks can simply intercept communication between an RFID reader and a tag to capture confidential data or analyze traffic to infer such data [3], [4]. There are also several types of active attacks that can transmit ...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target reference appears in a grouped citation within a passage that reviews existing attack methods. It is used to support a general observation about the state of the art, rather than providing specific methodological or theoretical input. The citation is not individually analyzed.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Existing attacks on RFID systems primarily fall into three categories: eavesdropping [3], [4], [14]–[17], relay/cloning attacks [5], [18]–[25], and jamming attacks [6]–[8], [26].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citation is part of a categorical listing of attacks in a related work / background section. The target reference is grouped with others under 'eavesdropping', with no discussion of its specific contributions. It serves as a general reference for the category.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 3,
+      "citation_text_preview": "Eavesdropping attacks that passively steal information were extensively considered in [3], [4], [37], [38].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "In the Related Work section, the target reference is cited as one example among many for eavesdropping attacks. No further elaboration on the cited paper's methods or findings is provided. The stance is neutral and the context is a simple listing.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

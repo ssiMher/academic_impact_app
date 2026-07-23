@@ -1,0 +1,1363 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [37]
+TARGET_REFERENCE_ENTRY: [37] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping
+on Loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182
+(Dec. 2022), 25 pages. doi:10.1145/3494975
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=RFID tags; context_type=exact_marker; contains_formula=False
+ir. These material characteristics are essential for optimizing audio recovery in
+indirect eavesdropping scenarios.
+2.2 Audio Eavesdropping Using Alternative Signals
+Alternative signals also offer intriguing solutions for audio perception, such as accelerometer signal in smartphone
+[1, 14, 19], mechanical signals in magnetic hard disks [17], smartphone camera image stream signals [22], COTS
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:5
+RFID tags [37] and so on. For example, UWHear [39] uses Impulse Radio Ultra-Wideband (IR-UWB) to isolate
+audio from speakers just 25 𝑐𝑚apart. Vibration motors, like those in the VibraPhone system [27], can recover
+voice from back electromotive force signals. A novel optical TEMPEST attack analyzes light emitted from device
+power LEDs to recover audio, demonstrating a correlation between sound and LED intensity over distances
+of up to 35 𝑚𝑒𝑡𝑒𝑟𝑠 [24]. In addition, Zhang et al. propose EchoLight, a passive, long-range technique that uses
+ambient light reflections from vibrating objects to reconstruct audio [43
+
+TARGET_ALIAS_CONTEXTS:
+[Context 1] section_heading=ACM 2474-9567/2025/6-ART51; context_type=alias_context; contains_formula=True
+thor(s) must be honored. Abstracting with credit is permitted. To copy 
+otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from 
+permissions@acm.org.
+© 2025 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM 2474-9567/2025/6-ART51
+https://doi.org/10.1145/3729475
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:2 • Wang et al.
+ACM Reference Format:
+Liang Wang, Aoyang Chang, Boqun Liu, Zhiwen Yu, Pengfei Hu, Jia Liu, Yao Zhang, and Bin Guo. 2025. mmHSE: Enhanced 
+Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar. Proc. ACM Interact. Mob. wearable Ubiquitous 
+Technol. 9, 2, Article 51, 27 pages. https://doi.org/10.1145/3729475
+1 Introduction
+The rising demand for high-quality, adaptable audio solutions, coupled with advancements in headset technology, 
+has made headsets indispensable across a broad spectrum
+
+[Context 2] section_heading=In summary, our contributions are as follows:; context_type=alias_context; contains_formula=True
+nced resolution in vibration capture. By differentiating diaphragm and shell vibrations, we propose
+the STSF method for isolating and extracting diaphragm vibrations through spatiotemporal segmentation,
+improving signal quality and clarity. Additionally, we develop a two-stage approach combining MVDR
+adaptive beamforming and CZT to accurately capture subtle diaphragm vibrations.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:4 • Wang et al.
+(2) We develop mmHSE, a novel system designed for side-channel eavesdropping attacks in headset scenarios,
+leveraging COTS mmWave radar technology. The architecture of mmHSE comprises three primary compo-
+nents: target localization, vibration phase extraction, and an enhancement model. By leveraging advanced
+signal processing, mmHSE captures minute diaphragm vibrations and integrates them with a cGAN-based
+network for clear speech recovery.
+(3) We conduct a comprehensive evaluation of the mmHSE
+
+[Context 3] section_heading=Direct Millimeter Wave-Based Audio Eavesdropping: Recent advances in audio eavesdropping leverage; context_type=alias_context; contains_formula=False
+vesdropping leverage
+mmWave signals for high-precision audio recovery [5, 38]. Basak et al. propose mmWave-Whisper, which achieves
+full-corpus automated speech recognition (ASR) on phone calls eavesdropped at a distance using commercial
+mmWave radars [3]. Lin et al. develop a probe near the speaker’s throat to capture mixed vibrations, enhancing
+vocal vibration extraction with wavelet techniques [34]. Their wavelet-based approach enhances vocal vibrations
+for monitoring multiple speakers, while Wang et al. detect smartphone-induced vibrations in earpiece mode,
+extending eavesdropping range with mmWave and software optimizations [36]. Liu et al. propose a multimodal
+system combining mmWave signals and microphone data to improve audio reconstruction accuracy [21], while
+Feng et al. reconstruct numeric and alphabetic characters from speaker systems using mmWave radar, though
+their method doesn’t support full text reconstruction [ 10]. Hu et al. present MILLIEAR, combining speaker
+vibration estimatio
+
+[Context 4] section_heading=4.1 Fundamental Characteristics of Human Voice in Audio Analysis; context_type=alias_context; contains_formula=True
+amental Characteristics of Human Voice in Audio Analysis
+Human voice signals consist of continuous time-series variations, including fundamental frequency (pitch) and
+overtones that shape timbre and resonance, with speech dynamics such as intensity, duration, and articulation
+crucial for meaning. The Mel Spectrogram [45], generated using mel filters that capture non-linear pitch
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:6 • Wang et al.
+perception, is commonly used in phonetics to analyze these attributes. Its effectiveness in analyzing speech
+dynamics, robustness to noise, and compatibility with advanced processing techniques enhance audio quality
+and facilitate feature extraction.
+The process begins with converting human voice signals from the time domain to the frequency domain
+using the Short-Time Fourier Transform (STFT) [32], which decomposes time-domain signals into a continuous
+frequency spectrum, enabling the examinat
+
+[Context 5] section_heading=To further investigate, we conduct a comparison experiment by positioning the mmWave radar directly in; context_type=alias_context; contains_formula=True
+t by positioning the mmWave radar directly in
+front of the headset’s ear cup. As shown on the right side of Fig. 4 (d), the distance remains unchanged, but this
+position is closer to the diaphragm and free from obstruction by the hard outer casing, which improves signal
+capture. Using the same method, we obtain the Mel spectrogram shown in Fig. 4 (d) (left). In this spectrogram,
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:8 • Wang et al.
+the gunshot signals appear much clearer, with distinct and evenly spaced frequency signals for each gunshot,
+and the frequency signal of the second gunshot is fully preserved. Additionally, high-frequency information
+is retained up to 400 𝐻𝑧, indicating that without the interference of the casing, the mmWave radar captures
+higher-frequency audio details from the headset more effectively. In addition, to assess the detectable frequency
+range of the mmWave radar, we play a sweep tone from20 𝐻𝑧 to
+
+[Context 6] section_heading=5.3 Vibration Phase Extraction; context_type=alias_context; contains_formula=False
+approximately 0.25 𝑚𝑒𝑡𝑒𝑟𝑠 compared to the
+FFT, thereby enhancing the precision of sensing data capture from the target headset.
+5.3 Vibration Phase Extraction
+After localizing the headset, we analyze the IF signal to extract the vibration phase and determine the headset’s
+displacement. As shown in Fig. 7, the IF signal, 𝑆IF, comprises a dynamic component, 𝑆dynamic, from headset
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:10 • Wang et al.
+0 .000.050.100.150.200.250.300.350.00.20.40.60.81.0AmplitudeR
+ange(m) 
+CZT FFT
+Fig. 6. Chirp-Z Transform.
+ Fig. 7. IF Signal Components.
+vibrations and a static component, 𝑆static, from stationary reflections. Using a circle-fitting approach, we estimate
+the dynamic component’s center while subtracting the static component, effectively minimizing interference.
+Neverthless, in headset eavesdropping, weak signals and complex vibration patterns scatter IF signal points
+on the IQ plane, distorting
+
+[Context 7] section_heading=VAD; context_type=alias_context; contains_formula=True
+s when data quality is sufficient. This method
+remains effective even under low SNR conditions. We then cluster the speech segment data points in 𝑌′into
+two groups. For two points 𝑦1 and 𝑦2 in 𝑌′, if ∠𝑦1𝑂𝑦2 < 𝜃, the points are grouped together. Unlike [ 10], our
+experiments demonstrate that using 45° as the fitting threshold is not optimal. Instead, we set the fitting threshold
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:12 • Wang et al.
+to 35°. The impact of this fitting threshold on speech recovery performance will be evaluated in the subsequent
+experiment.
+After determining the radius from the non-speech segments and clustering the speech segment data into point
+sets 𝑌𝑎 and 𝑌𝑏, we perform separate circle center fitting for each subset. Since the radius 𝑟0 is derived from the
+least squares fit of the non-speech segment rather than the actual radius, a correction factor 𝑘 is applied to 𝑟0 to
+adjust the radius for the speech se
+
+[Context 8] section_heading=Reconstructed Audio; context_type=alias_context; contains_formula=True
+pling Layer
+Self-Attention Representation Layer
+Upsampling Layer
+Convolution (1×1) LeakyReLU
+Convolution (4×4) LeakyReLU
+Multi-Head Self-Attention Mechanism
+Skip Connection
+Transposed Convolution (4×4) RELU
+Layer Normalization
+Generator
+Discriminator
+Mel-spectrogram of 
+Reconstructed Audio
+Loss 𝓛𝑫 & Back Propagation
+Loss 𝓛𝑮
+Fig. 13. Mel-Spectrum Enhancement Model Based on cGAN.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:14 • Wang et al.
+In the cGAN framework, the generator transforms input feature maps into high-quality speech signals. These
+inputs, extracted from the MVDR, CZT, and STSF modules, are normalized and represented as Mel spectrograms.
+The generator uses a CNN-based encoder-decoder structure, where the encoder extracts high-dimensional features
+and the decoder reconstructs them into speech. Skip connections preserve local spectral details. The generator’s
+optimization objective combines adversarial and reconstructi
+
+ACTIVE_EVIDENCE_TEMPLATES:
+- RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。
+- 首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。
+FULL_EXTRACTED_TEXT:
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging
+COTS mmWave Radar
+LIANG WANG,Northwestern Polytechnical University, China
+AOYANG CHANG,Northwestern Polytechnical University, China
+BOQUN LIU, Northwestern Polytechnical University, China
+ZHIWEN YU, Harbin Engineering University & Northwestern Polytechnical University, China
+PENGFEI HU, Shandong University, China
+JIA LIU, Nanjing University, China
+YAO ZHANG,Northwestern Polytechnical University, China
+BIN GUO, Northwestern Polytechnical University, China
+Recent advancements in headset technology, coupled with the rising demand for secure, high-quality audio, have made
+headsets essential in both professional and personal contexts. However, emerging research highlights the vulnerability
+of these devices to sophisticated eavesdropping attacks using mmWave signals, where subtle diaphragm vibrations can
+unintentionally reveal playback speech content. Current eavesdropping methods face challenges, including low accuracy
+in modeling vibration signals, insufficient resolution in capturing diaphragm vibrations, and audio artifacts from nonlinear
+headset interactions, with FFT-based techniques further limited by resolution. To overcome these limitations, we propose the
+prototype system, namly mmHSE, which features two key innovations. First, we propose the Spatio-Temporal Segmented
+Fitting (STSF) method, which enhances signal clarity by isolating primary diaphragm vibrations through spatiotemporal signal
+segmentation. Second, we devise a two-stage integrated approach combining Minimum Variance Distortionless Response
+(MVDR) beamforming with the Chirp-Z Transform (CZT), achieving a resolution of 0.04 cm and significantly enhancing
+vibration capture precision. Additionally, mmHSE incorporates a conditional Generative Adversarial Network (cGAN) to
+refine Mel Spectrograms, enabling effective speech recovery. Experimental results demonstrate that mmHSE outperforms
+existing methods, with a 15.4% increase in Peak Signal-to-Noise Ratio (PSNR), an 11.4% reduction in Mel Cepstral Distortion
+(MCD), a 14.5% improvement in Word Error Rate (WER), and approximately a 15.1% increase in Likert Score, confirming its
+effectiveness in enhancing eavesdropping accuracy on headsets.
+CCS Concepts: • Human-centered computing →Ubiquitous and mobile computing systems and tools; • Security
+and privacy →Mobile and wireless security.
+Additional Key Words and Phrases: Wireless Sensing, Millimeter Wave, Headset, Audio Eavesdropping
+Authors’ Contact Information: Liang Wang, Northwestern Polytechnical University, Xi’an, China, liangwang0123@gmail.com; Aoyang Chang, 
+Northwestern Polytechnical University, Xi’an, China, changaoyang@mail.nwpu.edu.cn; Boqun Liu, Northwestern Polytechnical University, 
+Xi’an, China, liuberkant@gmail.com; Zhiwen Yu, Harbin Engineering University & Northwestern Polytechnical University, Harbin& Xi’an, 
+China, zhiwenyu@nwpu.edu.cn; Pengfei Hu, Shandong University, Qingdao, Shandong, China, phu@sdu.edu.cn; Jia Liu, Nanjing University, 
+Nanjing, China, jialiu@nju.edu.cn; Yao Zhang, Northwestern Polytechnical University, Xi’an, China, yaozh.g@nwpu.edu.cn; Bin Guo, 
+Northwestern Polytechnical University, Xi’an, China, guob@nwpu.edu.cn.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that 
+copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. 
+Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy 
+otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from 
+permissions@acm.org.
+© 2025 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM 2474-9567/2025/6-ART51
+https://doi.org/10.1145/3729475
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:2 • Wang et al.
+ACM Reference Format:
+Liang Wang, Aoyang Chang, Boqun Liu, Zhiwen Yu, Pengfei Hu, Jia Liu, Yao Zhang, and Bin Guo. 2025. mmHSE: Enhanced 
+Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar. Proc. ACM Interact. Mob. wearable Ubiquitous 
+Technol. 9, 2, Article 51, 27 pages. https://doi.org/10.1145/3729475
+1 Introduction
+The rising demand for high-quality, adaptable audio solutions, coupled with advancements in headset technology, 
+has made headsets indispensable across a broad spectrum of personal and professional contexts in today’s digital 
+landscape. For instance, the shift toward remote and hybrid work models has particularly underscored the 
+necessity for clear audio, positioning headsets as essential tools for effective virtual meetings and collaboration. 
+Additionally, headsets enhance immersive experiences in gaming, media streaming, and everyday use, with the 
+growing adoption of wireless Bluetooth connectivity further expanding their versatility. According to a 2024 
+Statista report, the global headsets market is projected to grow by 2.39% annually from 2024 to 2029, reaching an 
+estimated USD 20.2 billion [31].
+Unlike conventional loudspeakers that project sound into the environment without privacy safeguards, headsets 
+are specifically designed for individual use, prioritizing portability and secure sound transmission. While side-
+channel eavesdropping attacks on loudspeakers exploit the acoustic emissions and sound-induced vibrations 
+generated during playback [11, 20], enabling eavesdroppers to reconstruct audio by analyzing indirect vibrations 
+from the loudspeaker and its surroundings, headsets deliver sound directly to the user’s ears, significantly 
+reducing sound leakage. This design minimizes environmental sound interception, making headsets ideal for 
+confidential voice communication and offering a significant privacy advantage over loudspeakers by reducing 
+eavesdropping risk [7].
+Eavesdropper Victim
+Emitted
+mmWave
+Speech Eavesdropping 
+Surface
+Vibration
+Diaphragm
+Vibration
+Shell
+Vibration
+Private Speech Message
+Sound
+Headset Construction
+Fig. 1. mmWave Eavesdropping Attack & Headset Construction.
+However, recent research reveals significant security vulnerabilities in headsets, showing they are vulnerable
+to advanced eavesdropping attacks that exploit subtle transmission flaws, compromising user confidentiality [35].
+Despite the perception of inherent security, minor sound leakage can be exploited by sophisticated methods,
+allowing eavesdroppers to capture audio through indirect signals. The mmEar system, for example, demonstrates
+the feasibility of such attacks using commercial off-the-shelf (COTS) mmWave radar. As illustrated in Fig. 1,
+attackers can use portable mmWave radar to detect vibrational signals from a victim’s headset, enabling the
+reconstruction of private speech. These vulnerabilities expose users to undetected audio interception, underesti-
+mating the privacy risks and threatening sensitive information. This highlights a critical security gap in private
+communications and underscores the need for further research on mmWave technology’s role in headset-based
+eavesdropping.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:3
+Implementing side-channel eavesdropping attacks on headsets using mmWave signals is challenging due to
+the faint, often distorted vibrations caused by sound, which are further obscured by the headset’s structure. These
+diaphragm vibrations typically range from tens to hundreds of micrometers, rarely exceeding 1 𝑚𝑚, making
+precise detection and speech recovery difficult. Upon analyzing the existing approach, we identify opportunities
+for further enhancing the performance of side-channel eavesdropping attack on headsets.
+1. Refined Model of Vibration Signals : The current approach directly captures and analyzes vibration
+signals from the outer shell of a headset to extract encoded speech information. However, as shown on the right
+side of Fig. 1, nonlinear interactions between the shell and diaphragm can lead to the amplification, attenuation,
+or generation of new resonant frequencies, resulting in audio artifacts. Moreover, the system is susceptible to
+environmental noise, wear, and other factors, all of which diminish signal reliability. Variations in the shell’s
+material and structure lead to inconsistent vibration frequencies and amplitudes in response to external forces
+and audio signals, further complicating accurate analysis. These challenges underscore the need for an advanced
+method to analyze and process vibration signals.
+2. Enhanced Resolution in Vibration Capture : The current approach uses Fast Fourier Transform (FFT) for
+headset localization, locking onto its corresponding range bin and accurately tracking phase variations to capture
+continuous vibrations induced by audio signals. However, FFT’s performance is constrained by sampling rate
+limitations, resulting in a uniform spectrum across the frequency band. In practical applications, COTS mmWave
+radar with a 4 𝐺𝐻𝑧 bandwidth achieves only 4 𝑐𝑚resolution, which is insufficient for precise vibration distance
+measurement and accurate signal extraction.
+To enhance system performance, we propose targeted approaches that address these two aforementioned key
+issues. First, we analyze the complex vibration dynamics in headsets, where diaphragm vibrations transmit to the
+outer shell, creating secondary vibrations that introduce interference into the captured signal . Through preliminary
+experiments, we validate our approach and draw relevant conclusions. To isolate and extract the primary vibrations
+generated by the diaphragm, we propose Spatio-Temporal Segmented Fitting (STSF) method. This technique
+segments the vibration signal based on spatiotemporal characteristics, allowing for more effective separation of
+primary diaphragm components and improved alignment with speech segments, thereby significantly enhancing
+both signal quality and audio clarity. Regarding the second issue, we focus on accurately capturing the subtle
+vibrations of the headset diaphragm, and design a two-stage integrated approach. Specifically, we first apply the
+Minimum Variance Distortionless Response (MVDR) adaptive beamforming method [40] to focus energy on the
+target headset while suppressing noise. Then, the Chirp-Z Transform (CZT) achieves a distance resolution of
+0.04 𝑐𝑚, 100 times higher than FFT, without significantly increasing computational complexity. This enhancement
+enables precise detection of minute vibrations, improving signal extraction and speech recovery.
+Building on this foundation, we develop a novel side-channel eavesdropping attack system mmHSE, which
+combines MVDR adaptive beamforming with the CZT technique to achieve 0.04 𝑐𝑚resolution, capturing subtle
+diaphragm vibrations. The system also utilizes our proposed STSF method to segment vibration signals, enhancing
+signal quality and clarity. Finally,mmHSE incorporates a conditional Generative Adversarial Network (cGAN)
+with a self-attention mechanism, utilizing Mel Spectrograms as conditional input for data augmentation. This
+approach mitigates high-frequency loss, facilitating accurate reconstruction of speech content.
+In summary, our contributions are as follows:
+(1) We identify two key areas for improvement in the existing system: a refined vibration signal model and
+enhanced resolution in vibration capture. By differentiating diaphragm and shell vibrations, we propose
+the STSF method for isolating and extracting diaphragm vibrations through spatiotemporal segmentation,
+improving signal quality and clarity. Additionally, we develop a two-stage approach combining MVDR
+adaptive beamforming and CZT to accurately capture subtle diaphragm vibrations.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:4 • Wang et al.
+(2) We develop mmHSE, a novel system designed for side-channel eavesdropping attacks in headset scenarios,
+leveraging COTS mmWave radar technology. The architecture of mmHSE comprises three primary compo-
+nents: target localization, vibration phase extraction, and an enhancement model. By leveraging advanced
+signal processing, mmHSE captures minute diaphragm vibrations and integrates them with a cGAN-based
+network for clear speech recovery.
+(3) We conduct a comprehensive evaluation of the mmHSE system using both subjective and objective perfor-
+mance metrics, including Peak Signal-to-Noise Ratio (PSNR), Mel Cepstral Distortion (MCD), Word Error
+Rate (WER) and Average Likert Score. Experimental results show that mmHSE significantly outperforms
+the current system, achieving an average improvement of 15.4% in PSNR, a 11.4% reduction in MCD, a
+14.5% improvement in WER and an approximately 15.1% increase in Likert Score. These results highlight
+mmHSE’s effectiveness in enhancing the accuracy of side-channel eavesdropping on headsets.
+2 RELATED WORK
+2.1 Audio Eavesdropping Using Millimeter Waves Signals
+Direct Millimeter Wave-Based Audio Eavesdropping: Recent advances in audio eavesdropping leverage
+mmWave signals for high-precision audio recovery [5, 38]. Basak et al. propose mmWave-Whisper, which achieves
+full-corpus automated speech recognition (ASR) on phone calls eavesdropped at a distance using commercial
+mmWave radars [3]. Lin et al. develop a probe near the speaker’s throat to capture mixed vibrations, enhancing
+vocal vibration extraction with wavelet techniques [34]. Their wavelet-based approach enhances vocal vibrations
+for monitoring multiple speakers, while Wang et al. detect smartphone-induced vibrations in earpiece mode,
+extending eavesdropping range with mmWave and software optimizations [36]. Liu et al. propose a multimodal
+system combining mmWave signals and microphone data to improve audio reconstruction accuracy [21], while
+Feng et al. reconstruct numeric and alphabetic characters from speaker systems using mmWave radar, though
+their method doesn’t support full text reconstruction [ 10]. Hu et al. present MILLIEAR, combining speaker
+vibration estimation with cGANs for audio reconstruction, but it struggles with high-frequency sounds in noisy,
+multi-directional environments due to coarse diaphragm localization [13]. Xu et al. develop mmEar, an audio
+eavesdropping system for headsets that captures faint vibrations with a faint vibration emphasis method and deep
+denoising network [41]. Despite its advances, it struggles with insufficient vibration signals from the headset
+shell and resolution limits of FFT, hindering accurate speech characterization.
+Indirect Audio Eavesdropping via Ambient Environmental Vibrations: Recent research has shifted from
+direct vibration capture at the sound source to indirect audio eavesdropping through vibrations in nearby objects.
+Yang et al. developed RF-Parrot, which captures audio transmitted through earphone wires using a miniature
+field-effect transistor as a retroreflector, with efficiency linked to the audio signal’s amplitude [42]. Chen et al.
+introduced Periscope, which exploits leaked electromagnetic radiation from audio amplifiers as a side-channel
+for audio recovery [6]. Zhang et al. demonstrated that sound waves induce subtle vibrations in surrounding
+objects, and by directing mmWave radar signals at these objects, they reconstruct audio from the vibrations [44].
+Hu et al. expanded detectable targets to lightweight, thin objects like potato chip bags near the sound source,
+using digital signal processing for effective audio reconstruction in complex environments [12]. Accurate audio
+reconstruction requires target objects that are sensitive, lightweight, and thin, due to the limited amplitude and
+attenuation of vibrations in air. These material characteristics are essential for optimizing audio recovery in
+indirect eavesdropping scenarios.
+2.2 Audio Eavesdropping Using Alternative Signals
+Alternative signals also offer intriguing solutions for audio perception, such as accelerometer signal in smartphone
+[1, 14, 19], mechanical signals in magnetic hard disks [17], smartphone camera image stream signals [22], COTS
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:5
+RFID tags [37] and so on. For example, UWHear [39] uses Impulse Radio Ultra-Wideband (IR-UWB) to isolate
+audio from speakers just 25 𝑐𝑚apart. Vibration motors, like those in the VibraPhone system [27], can recover
+voice from back electromotive force signals. A novel optical TEMPEST attack analyzes light emitted from device
+power LEDs to recover audio, demonstrating a correlation between sound and LED intensity over distances
+of up to 35 𝑚𝑒𝑡𝑒𝑟𝑠 [24]. In addition, Zhang et al. propose EchoLight, a passive, long-range technique that uses
+ambient light reflections from vibrating objects to reconstruct audio [43]. LidarPhone repurposes lidar sensors on
+robotic vacuum cleaners to capture subtle vibrations from nearby objects [ 29], achieving up to 90% accuracy
+in classifying audio content. Research on smartphone motion sensors, such as gyroscopes and accelerometers
+[1, 14, 19], shows their ability to detect voice signals through vibrations from the device’s surface. Furthermore,
+MEMS gyroscopes [23] can capture low-frequency acoustic signals (less than200 𝐻𝑧) and, using machine learning,
+identify speaker characteristics with 77% accuracy. In summary, while these alternative methods often require
+specialized hardware, our study leverages commercially available mmWave equipment for non-specific audio
+reconstruction of headsets, an area underexplored in existing research.
+3 EAVESDROPPING ATTACK OVERVIEW
+3.1 Eavesdropping Attack Scenario
+We consider an eavesdropping attack scenario where a victim engages in private voice communication or listens
+to confidential messages in public or semi-public spaces, such as offices or cafes. To protect audio privacy, the
+victim wears headsets designed to prevent external surveillance. In this context, the victim is assumed to remain
+in a stationary or quasi-stationary state, such as sitting, standing, or making minor posture adjustments, while
+avoiding dynamic activities like rapid walking or running. This ensures the secure and stable transmission of
+audio signals.
+The attacker operates under non-invasive conditions, with no control over the victim’s devices, including
+the headsets, or the surrounding environment. The attack occurs within a typical 2 𝑚𝑒𝑡𝑒𝑟 range and an angular
+range of 20°, reflecting common indoor settings, such as the space between desks or seats in public or semi-public
+areas. This setup effectively simulates realistic eavesdropping threats while maintaining both practicality and
+concealment.
+3.2 Threat Model
+The attacker employs commercial mmWave radar devices in conjunction with pre-trained attack models to
+passively capture the subtle vibrations of the headset diaphragm caused by audio playback. This non-invasive
+process relies solely on the reflection of mmWave signals, enabling the attacker to recover the speech content
+transmitted through the headsets in real-time. Notably, the attack is entirely passive and requires no active
+participation from the victim. The primary aim of the attacker is to extract sensitive information from the
+recovered audio, such as credit card numbers, and confidential commercial data.
+4 PRELIMINARY STUDY
+This section outlines the characteristics of human voice as the theoretical basis for headset audio signal analysis,
+followed by an overview of Frequency Modulated Continuous Wave (FMCW) technology and preliminary
+experiments on headset audio frequency response using COTS mmWave devices.
+4.1 Fundamental Characteristics of Human Voice in Audio Analysis
+Human voice signals consist of continuous time-series variations, including fundamental frequency (pitch) and
+overtones that shape timbre and resonance, with speech dynamics such as intensity, duration, and articulation
+crucial for meaning. The Mel Spectrogram [45], generated using mel filters that capture non-linear pitch
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:6 • Wang et al.
+perception, is commonly used in phonetics to analyze these attributes. Its effectiveness in analyzing speech
+dynamics, robustness to noise, and compatibility with advanced processing techniques enhance audio quality
+and facilitate feature extraction.
+The process begins with converting human voice signals from the time domain to the frequency domain
+using the Short-Time Fourier Transform (STFT) [32], which decomposes time-domain signals into a continuous
+frequency spectrum, enabling the examination of time-varying characteristics essential for audio processing. The
+frequency signals are then transformed into mel frequency, defined by the equation:
+𝑀(𝑙)= 2595 ·log10 (1 + 𝑙
+700), (1)
+where 𝑙 represents the frequency of the audio signal in Hertz ( 𝐻𝑧), and 𝑀(𝑙)denotes the corresponding mel
+frequency. This transformation maps the frequency spectrum onto the mel scale using a filter bank with evenly
+distributed filters, enhancing the representation of auditory perception. The resulting Mel Spectrogram captures
+essential auditory features, improving the extraction of perceptually relevant features from human voice signals
+and enhancing their representation in various audio and video applications.
+4.2 Frequency Modulated Continuous Wave
+FMCW radar continuously transmits chirp signals with progressively increasing frequency to measure small
+vibration accurately [ 9]. Small vibration can be detected by measuring the phase change Δ𝜙 between the
+transmitted signals 𝑆𝑇𝑋 (𝑡)and received signals 𝑆𝑅𝑋(𝑡)of the FMCW radar, where the displacement change of
+vibration Δ𝑑 is calculated as:
+Δ𝑑 = 𝜆Δ𝜙
+4𝜋 , (2)
+where 𝜆is the wavelength of the radar signal. By measuring the phase change Δ𝜙, FMCW radar can detect small
+vibration at the micrometer-level. As illustrated in Fig. 2, the transmitted and received signals are multiplied in a
+mixer to obtain the phase change Δ𝜙, which produces the IF signal 𝑆IF (𝑡)as follows [12]:
+𝑆𝐼𝐹 (𝑡)= 𝑆𝑇𝑋 (𝑡)·𝑆𝑅𝑋(𝑡). (3)
+Fig. 2. IF Signal Model.
+ Fig. 3. Headset Vibration Displacement Analysis.
+After obtaining the IF signal from the transmitted and received signals, STFT is applied to this IF signal to
+obtain the phase change Δ𝜙 = 𝜙1 −𝜙2. Using this phase change Δ𝜙, we can calculate the headset’s vibrational
+displacement Δ𝑑. As shown in Fig. 3, we observe that the vibration of the headphset Δ𝑑 can be expressed as
+Δ𝑑 = Δ𝑑diaphragm +Δ𝑑shell, (4)
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:7
+where Δ𝑑diaphragm and Δ𝑑shell represent the displacement changes of the diaphragm and the shell [10] , respectively.
+Due to the combined effect of the diaphragm’s small amplitude and the shell structure surrounding the diaphragm,
+the IF signal 𝑆𝐼𝐹 (𝑡)can be expressed as:
+𝑆𝐼𝐹 (𝑡)= 𝑆static +𝑆dynamic
+= 𝑆static +𝑆diaphragm +𝑆shell, (5)
+where 𝑆static is the static component caused by multipath reflections, while 𝑆diaphragm and 𝑆shell together form the
+dynamic component. In Section 4.3, we explore the feasibility of capturing headset audio using mmWave radar in
+real-world scenarios.
+4.3 An Empirical Study
+In this subsection, we evaluate the feasibility of using COTS mmWave devices, specifically the AWR1843Boost
+development board, for speech eavesdropping and recovery. The mmWave radar is placed1 𝑚𝑒𝑡𝑒𝑟 in front of
+the headset shell, and a 500 𝐻𝑧 tone is played through the headset. Phase variations are extracted using STFT
+to generate a spectral pattern, which is then transformed into a Mel Spectrogram. As shown in Fig. 4 (a), the
+spectrogram clearly displays the 500 𝐻𝑧 signal, demonstrating the effectiveness of mmWave technology for audio
+capture. Next, we play a more complex audio signal featuring gunshots at fixed intervals. Using the same setup,
+the Mel Spectrogram is generated via STFT and the mel scale. However, as shown on the left side of Fig. 4 (b), the
+spectrogram fails to capture all gunshot frequencies. The second gunshot is missing, and the remaining signals
+appear blurred, indicating a significant loss of high-frequency information.
+(a) 500 𝐻𝑧 Spectrogram pattern.
+100 cm
+Shell mmWave Radar (b) Spectrogram Detection of mmWave Radar Targeting Headset Shell.
+(c) Sweep Tone Spectrogram Pattern.
+100 cm
+Diaphragm
+mmWave Radar (d) Spectrogram Detection of mmWave Radar Targeting Headset .
+Fig. 4. Results of the Empirical Study.
+To further investigate, we conduct a comparison experiment by positioning the mmWave radar directly in
+front of the headset’s ear cup. As shown on the right side of Fig. 4 (d), the distance remains unchanged, but this
+position is closer to the diaphragm and free from obstruction by the hard outer casing, which improves signal
+capture. Using the same method, we obtain the Mel spectrogram shown in Fig. 4 (d) (left). In this spectrogram,
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:8 • Wang et al.
+the gunshot signals appear much clearer, with distinct and evenly spaced frequency signals for each gunshot,
+and the frequency signal of the second gunshot is fully preserved. Additionally, high-frequency information
+is retained up to 400 𝐻𝑧, indicating that without the interference of the casing, the mmWave radar captures
+higher-frequency audio details from the headset more effectively. In addition, to assess the detectable frequency
+range of the mmWave radar, we play a sweep tone from20 𝐻𝑧 to 10 𝑘𝐻𝑧 and capture the headset diaphragm’s
+vibration signal from the shell. As shown in Fig. 4 (c), the spectrogram reveals a prominent signal around 200 𝐻𝑧,
+likely due to resonance between the casing and diaphragm. However, signals at other frequencies are weak, with
+significant attenuation around 400 𝐻𝑧 and no signal detected from 600 𝐻𝑧 to 10 𝑘𝐻𝑧.
+Based on the experimental results presented in Fig. 4, we draw the following conclusions:
+(1) Directly capturing the vibration signal of the headset diaphragm is more effective than capturing it through
+the shell .
+(2) When detecting diaphragm vibrations from the shell side, the mmWave radar’s reflected signal unavoidably
+includes interference from the shell’s vibrations .
+(3) The headset shell attenuates the radar’s detection of diaphragm vibrations, weakening the signal and
+causing significant loss of high-frequency information.
+Therefore, to accurately recover headset audio, it is essential to directly capture the vibration signal from
+the diaphragm. However, this requires higher resolution to precisely locate the diaphragm and advanced signal
+processing techniques to mitigate interference from the rigid shell, thereby restoring high-frequency information
+lost due to shell interference and the inherent limitations of mmWave radar.
+5 SYSTEM DESIGN
+5.1 Overview of mmHSE System
+The mmHSE system workflow, shown in Fig. 5, starts with the mmWave Probing phase, where a portable
+mmWave probe detects subtle diaphragm vibrations. In the Target Localization phase, MVDR beamforming
+locates the headset, and the CZT technique enhances diaphragm positioning for high-resolution detection. During
+Vibration Phase Extraction , the STSF method segments the signal based on spatiotemporal characteristics.
+The Enhancement Module reduces noise using polynomial regression and high-pass filtering, while a cGAN
+refines the Mel Spectrogram. Finally, the Audio Reconstruction phase recovers high-fidelity speech.
+mmWave Probing
+Victim
+RX
+TX
+Portable
+mmWave
+Probe
+Target Localization
+Beamforming
+Vibration Phase Extraction
+Spatio-temporal Segmented Fitting
+V AD
+Enhancement Module
+Noise Cancellation
+Audio Reconstruction
+Eavesdropper“My address is …”
+“My ID number is …”
+Privacy Leakage！
+Diaphragm Positioning
+MVDR
+CZT
+𝑤 = 𝑅−1𝑎(𝜃)
+𝑎𝐻(𝜃)𝑅−1𝑎(𝜃)
+Improve
+resolution
+Time Domain
+IQ Domain
+Non-speech 
+Segment
+Speech Segment Segment
+Fitting
+Determine radius
+Phase Unwrapping
+High–pass 
+Filter
+Polynomial
+Regression
+cGAN Enhancement
+Fig. 5. The Workflow of mmHSE.
+5.2 Target Headset Localization
+To capture speech-induced vibrations from the headset diaphragm, the mmHSE system must localize the target
+headset, a task complicated by weak vibrations [41] and ambient noise, which reduce SNR of the desired signal.
+Traditional methods like FFT are limited in resolution and prone to masking desired signals with composite noise.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:9
+To address this, we propose a two-stage approach: first, the MVDR algorithm [18] performs coarse localization
+with beamforming to enhance target signals and suppress interference; second, the CZT refines frequency
+resolution for precise localization of the headset.
+Next, we detail this process. The MVDR algorithm, an adaptive beamforming technique, enhances signal
+detection by capturing signals from a desired direction while suppressing interference. It minimizes output power
+while maintaining unit gain in the target direction, amplifying specific signals. Through spatial spectrum analysis
+and covariance matrix inversion, it estimates signal direction without requiring prior target location knowledge.
+We begin by defining an optimization problem for the weight vector w:
+wopt = arg min
+w
+
+w𝐻Rw
+	
+s.t. w𝐻a(𝜃)= 1,
+(6)
+where R represents the covariance matrix of the received signals, and a(𝜃)is the array manifold vector that
+captures the phase and amplitude variations of signals arriving from angle 𝜃. By solving Eq. 6, we can determine
+the optimal weight vector w, which results in the output signal power given by
+𝑃 = w𝐻Rw. (7)
+The closed-form solution for the weight vector w is given by
+w = R−1a(𝜃)
+a𝐻(𝜃)R−1a(𝜃). (8)
+After applying MVDR beamforming, a Range-FFT is performed on each chirp to identify spectral peaks corre-
+sponding to the target headset’s frequency. The AWR1843 radar provides a 3.75 𝑐𝑚distance resolution, sufficient
+for general range detection but inadequate for capturing fine diaphragm vibrations, which typically remain below
+1.0 𝑚𝑚. These subtle signals are often masked by noise from minor distance fluctuations, necessitating additional
+methods to enhance resolution and reliably extract speech-induced vibrations.
+To overcome coarse spatial resolution, prior studies have used interpolation to increase sampling points, but
+this approach introduces computational complexity and frequency errors. Instead, we leverage the CZT algorithm
+[4] to enhance localization precision by refining only the relevant frequency domain. For a given IF signal,
+denoted as 𝑆IF, the CZT is calculated as follows:
+𝑍CZT (𝑘)=
+𝑁−1∑︁
+𝑛=0
+𝑆IF (𝑛)·( 𝐴𝑊𝑘)−𝑛, 𝑘 = 0,...,𝑀 −1, (9)
+where 𝑁 denotes the length of the signal, 𝑘 represents the frequency index, and 𝑀 is the number of discrete
+frequency points resulting from the CZT transformation. The parameter 𝐴defines the initial frequency, given
+by 𝐴= 𝑒𝑗2𝜋𝑓start/𝑓𝑠 , where 𝑓start is the starting frequency and 𝑓𝑠 is the sampling rate. The term𝑊 represents the
+frequency step, defined as 𝑊 = 𝑒−𝑗2𝜋Δ𝑓/𝑓𝑠 , where Δ𝑓 is the frequency increment between points.
+By applying the CZT, we improve the distance resolution from4.1 𝑐𝑚to 0.041 𝑐𝑚when the number of sampling
+points is set to 2,000 and the bandwidth is 400 𝑘𝐻𝑧, resulting in a remarkable 100-fold enhancement in precision.
+As shown in Fig. 6, the CZT demonstrates superior performance in range resolution by providing a higher
+amplitude peak and improved accuracy in extracting peak points at approximately 0.25 𝑚𝑒𝑡𝑒𝑟𝑠 compared to the
+FFT, thereby enhancing the precision of sensing data capture from the target headset.
+5.3 Vibration Phase Extraction
+After localizing the headset, we analyze the IF signal to extract the vibration phase and determine the headset’s
+displacement. As shown in Fig. 7, the IF signal, 𝑆IF, comprises a dynamic component, 𝑆dynamic, from headset
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:10 • Wang et al.
+0 .000.050.100.150.200.250.300.350.00.20.40.60.81.0AmplitudeR
+ange(m) 
+CZT FFT
+Fig. 6. Chirp-Z Transform.
+ Fig. 7. IF Signal Components.
+vibrations and a static component, 𝑆static, from stationary reflections. Using a circle-fitting approach, we estimate
+the dynamic component’s center while subtracting the static component, effectively minimizing interference.
+Neverthless, in headset eavesdropping, weak signals and complex vibration patterns scatter IF signal points
+on the IQ plane, distorting the phase trajectory and causing a significant mismatch between the fitted circle’s
+center and the dynamic component. Analyzing IF points reveals that adjacent temporal segments contain audio
+data, and finer segmentation improves circle fitting accuracy, as even three points can define a circle precisely. To
+address this, we propose a Spatio-Temporal Segmented Fitting (STSF) method to estimate the circle center
+of the IF signal’s dynamic component. In the temporal aspect, IF signal points are segmented into speech and
+non-speech intervals, with features of the speech segments derived from the non-speech segments. In the spatial
+context, coordinate transformations within the IQ plane are employed to eliminate background offsets, including
+those caused by vibrations of the device casing. This segmented processing facilitates precise fitting of the speech
+segments. Applying the STFT method refines the dynamic component’s circle center within IF signal points,
+improving audio reconstruction. Additionally, rapid diaphragm vibrations cause phase wrapping, requiring
+frequency variation analysis and phase unwrapping for accurate vibration phase extraction.
+To distinguish IF signals in speech and non-speech segments, we analyze each segment as a combination of
+dynamic and static components [38], capturing the effects of diaphragm vibrations and background reflections on
+the overall signal. The IF signal for the speech segment, denoted as 𝑆speech
+IF , and the non-speech segment, denoted
+as 𝑆non-speech
+IF , can be represented as follows:
+𝑆speech
+IF = 𝑆dynamic +𝑆static = 𝐴𝑒𝑗
+
+4𝜋𝑓𝑐
+𝑅0+𝑑 (𝑡)
+𝑐
+
++𝑆static. (10)
+𝑆non-speech
+IF = 𝑆′
+dynamic +𝑆′
+static = 𝐴𝑒𝑗
+
+4𝜋𝑓𝑐
+𝑅0
+𝑐
+
++𝑆′
+static, (11)
+where 𝐴denotes the signal amplitude, 𝑓𝑐 represents the carrier frequency, 𝑅0 is the initial distance between the
+mmWave radar and the target headset, 𝑑(𝑡)refers to the time-varying displacement, and 𝑐 signifies the speed of
+light. Notably, static components differ between speech and non-speech segments, reflecting background signal
+variations. In speech segments, diaphragm vibrations add signal components, including those from the headset’s
+shell and nearby reflections. However, the amplitude 𝐴, determined by the mmWave radar’s power, remains
+constant regardless of dynamic or static factors.
+Building on the analysis of speech and non-speech segments, we examine their distinct IQ plane trajectories to
+differentiate IF signals. This allows precise circle center localization for the speech segment using the non-speech
+segment’s radius and IF properties. In the IQ plane, the dynamic component’s center 𝑆dynamic is defined by the
+static component 𝑆static, and the radius, governed by amplitude𝐴, remains consistent across segments. The radius
+from the non-speech segment provides a reliable reference for the speech segment. Due to𝑑(𝑡)variation in speech
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:11
+segments, the phase shifts continuously, creating a complex trajectory. In contrast, the non-speech segment has a
+nearly constant phase (𝑑(𝑡)≈ 0), forming a regular arc. Using the non-speech segment’s average position as a
+stable reference helps map the speech segment’s vibrational offset, suppress background noise, and minimize
+distortion.
+3.Clustering
+5.Segment Fitting
+IQ Signals Speech
+1.V AD
+1.V AD
+Non-Speech
+𝑜 𝑜𝑎 𝑜𝑏＋＋
+4.Aided
+Fitting
+Fig. 8. The Pipeline of STSF Method.
+0 2 4 6 8Time (s)
+-0.5
+0
+0.5Amplitude
+Audio Signal
+0 2 4 6 8Time (s)
+0
+1
+2
+VAD Decision
+VAD
+Speech SegmentNon-Speech Segment Fig. 9. VAD Result.
+The STSF method pipeline, as shown in Fig. 8, segments speech and non-speech intervals temporally, using
+clustering on the IQ plane to improve circle center estimation accuracy for the speech segment. First, we apply
+a Voice Activity Detection (VAD) algorithm to distinguish between speech and non-speech segments based
+on short-time energy, which reflects the energy within each speech frame. Typically, speech segments exhibit
+higher short-time energy than non-speech segments. To differentiate, we compute the sum of squares of each
+frame’s energy in the vibration signals from the spectrogram. The final step applies a thresholding method with
+smoothing to effectively differentiate speech from non-speech segments, , as shown below:
+ˆ𝜂 = 𝛼𝜂 +(1 −𝛼)𝜂new, (12)
+where 𝛼 is a weighting factor between 0 and 1 that balances the contribution of the new value,𝜂new, with the
+previous value, 𝜂, to produce the final result, ˆ𝜂. This smoothing operation mitigates abrupt changes caused
+by outliers or fluctuations, thereby improving segmentation accuracy. As shown in Fig. 9, the VAD algorithm
+applies this smoothing strategy, assigning values of 1 for speech segments and 0 for non-speech segments. Once
+differentiated, we represent non-speech data as 𝑋 = {𝑥𝑛},𝑥𝑛 ∈R2 and speech data as 𝑌 = {𝑦𝑛},𝑦𝑛 ∈R2. Given
+the stability of the non-speech segments, we apply the least squares method to estimate the circle center 𝐶
+and radius 𝑟0. Let 𝑑(𝑥𝑖,𝐶)denote the Euclidean distance between a point 𝑥𝑖 and the center 𝐶. The least squares
+method then minimizes the following objective:
+min
+𝐶,𝑟
+∑︁
+𝑥𝑖 ∈𝑋
+(𝑑(𝑥𝑖,𝐶)−𝑟0)2 . (13)
+After determining the radius of the non-speech segment, we set the average position, 𝑃static, as the reference
+point and map the speech segment’s trajectory relative to it. Specifically, 𝑃static = Í
+𝑥𝑖 ∈𝑋 𝑥𝑖/𝑛. By subtracting this
+reference from all speech segment data points, we obtain a new speech segment, 𝑌′ = 𝑌 −𝑃static. Fitting this
+segment directly to a circle or ellipse proved suboptimal in some cases, so we divide 𝑌′into two sub-segments
+for better fitting, allowing for circular or elliptical approximations when data quality is sufficient. This method
+remains effective even under low SNR conditions. We then cluster the speech segment data points in 𝑌′into
+two groups. For two points 𝑦1 and 𝑦2 in 𝑌′, if ∠𝑦1𝑂𝑦2 < 𝜃, the points are grouped together. Unlike [ 10], our
+experiments demonstrate that using 45° as the fitting threshold is not optimal. Instead, we set the fitting threshold
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:12 • Wang et al.
+to 35°. The impact of this fitting threshold on speech recovery performance will be evaluated in the subsequent
+experiment.
+After determining the radius from the non-speech segments and clustering the speech segment data into point
+sets 𝑌𝑎 and 𝑌𝑏, we perform separate circle center fitting for each subset. Since the radius 𝑟0 is derived from the
+least squares fit of the non-speech segment rather than the actual radius, a correction factor 𝑘 is applied to 𝑟0 to
+adjust the radius for the speech segment. The adjusted radius is defined as 𝑟 = 𝑟0 ·𝑘, where 𝑘 ranges from 0.95 to
+1.05. The least squares method is employed to determine the circle centers for the two parts:
+min
+𝑂𝑎,𝑂𝑏
+∑︁
+𝑦𝑖 ∈𝑌𝑎
+(𝑑(𝑦𝑖,𝑂𝑎)−𝑟)2 +
+∑︁
+𝑦𝑗 ∈𝑌𝑏
+(𝑑(𝑦𝑗,𝑂𝑏)−𝑟)2,
+s.t. 𝑟 = 𝑟0 ·𝑘,𝑘 ∈[0.95,1.05].
+(14)
+The circle centers 𝑂𝑎 and 𝑂𝑏 for the speech segments are determined, and the dynamic signal for each data
+point, 𝑆dynamic, is expressed as:
+𝑆dynamic =
+(
+𝑦−𝑂𝑎, 𝑦 ∈Y𝑎;
+𝑦−𝑂𝑏, 𝑦 ∈Y𝑏. (15)
+Fig. 10. Phase Wrapping and Unwrapping.
+ Fig. 11. Hardware Phase Shift.
+To reconstruct the headset diaphragm’s vibration waveform from displacement variations in the chirp signal,
+we calculate the phase change, ΔΦ, of the dynamic signals. Rapid diaphragm vibrations caused by high-frequency
+audio can result in phase variations that exceed the [−𝜋,𝜋 ]or [0,2𝜋]range, causing phase wrapping. As shown
+in Fig. 10, this wrapping creates discontinuities when the phase resets from 𝜋 to −𝜋. To resolve this, we apply
+phase unwrapping. When the 𝑘-th phase change 𝜎(𝜃𝑘)exceeds the interval [−𝜋,𝜋 ], it results in a mismatch
+between the actual phase change ˜𝜎(𝜃𝑘)and the measured phase 𝜎(𝜃𝑘), which corresponds to an integer multiple
+of 2𝜋. The formula to recover the true phase from the measured phase is given by,
+𝜎(𝜃𝑘)= ˜𝜎(𝜃𝑘)±𝑚·2𝜋, (16)
+where 𝑚is an integer representing the number of phase wraps, ensuring phase continuity. Using the starting
+frequency 𝑓𝑠 = 77𝐺𝐻𝑧 and frequency modulation rate 𝑆 = 49.97 𝑀𝐻𝑧/𝜇𝑠 from the AWR1843 Boost mmWave
+radar, we find that a phase change of 2𝜋 corresponds to a peak frequency shift of 649 𝐻𝑧 between adjacent data
+points. Since the frequency of speech audio typically remains below 649 𝐻𝑧, we set 𝑚= 1 in Eq. 16 to correct
+phase wrapping and minimize inaccuracies caused by rapid diaphragm vibrations during high-frequency audio
+playback.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:13
+5.4 Mel Spectrogram Denoising and Enhancement Using Conditional GANs
+Harmonic noise from 50 𝐻𝑧 interference in the AWR1843 Boost radar contaminates reconstructed speech and is
+not fully mitigated by standard band-pass filters (Fig. 11). To address this, we applied a frame-aware detrending
+method using eighth-degree polynomial regression on 200-point segments to subtract underlying trends. A
+high-pass filter with a 70 𝐻𝑧 cutoff was also used to suppress noise from user activities while preserving key
+low-frequency components for speech reconstruction.
+Human speech typically spans a frequency range from 300 𝐻𝑧 to 3.4 𝑘𝐻𝑧 [2], with harmonic components
+shaping its spectral structure. In non-tonal languages like English, vowel and consonant resonances occur
+primarily between 80 𝐻𝑧 and 1.7 𝑘𝐻𝑧, encompassing most vowel sounds and approximately 62.5% of consonant
+resonances. This frequency range is crucial for conveying speech information [ 28]. While traditional speech
+processing methods capture frequencies up to 4975 𝐻𝑧 [30], vital for speech clarity, headset applications often
+face low SNR, hindering accurate reconstruction of high-frequency components. As shown in Fig.12, testing
+with a 25-second sweep tone from 20 𝐻𝑧 to 10 𝑘𝐻𝑧 reveals that, after phase extraction, vibrational signals above
+800 𝐻𝑧 are nearly lost. This results in significant degradation of reconstructed speech quality, with high-frequency
+content masked by noise, diminishing intelligibility and detail.
+(a) Original Mel Spectrogram.
+ (b) Reconstructed Mel Spectrogram.
+Fig. 12. Comparison of the mmWave Radar’s Frequency Response to a 20 𝐻𝑧 to 10 𝑘𝐻𝑧 Sweep Tone.
+To address the limitations, we employed a Conditional Generative Adversarial Network (cGAN) with a UNet
+architecture to enhance audio quality. The cGAN generates samples conditioned on specific inputs to exhibit
+desired characteristics [8]. As shown in Fig. 13, the cGAN’s generator uses UNet’s skip connections to merge
+low-level feature maps from the downsampling path with high-level maps from the upsampling path, capturing
+both global context and fine details. A multi-head self-attention mechanism is applied before each skip connection
+to improve vocal feature extraction and preserve speech information. We used a 4-head self-attention mechanism
+with linear transformations and layer normalization [33]. To improve convergence and address gradient issues,
+layer normalization was added after the second convolutional layer of the discriminator. The model was trained
+with the Adam optimizer, a learning rate of 0.0002, for 300 epochs.
+Mel-spectrogram of 
+Reconstructed Audio
+Mel-spectrogram of 
+Enhanced Audio
+Mel-spectrogram of 
+Original Audio
+ True
+Fake
+Downsampling Layer
+Self-Attention Representation Layer
+Upsampling Layer
+Convolution (1×1) LeakyReLU
+Convolution (4×4) LeakyReLU
+Multi-Head Self-Attention Mechanism
+Skip Connection
+Transposed Convolution (4×4) RELU
+Layer Normalization
+Generator
+Discriminator
+Mel-spectrogram of 
+Reconstructed Audio
+Loss 𝓛𝑫 & Back Propagation
+Loss 𝓛𝑮
+Fig. 13. Mel-Spectrum Enhancement Model Based on cGAN.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:14 • Wang et al.
+In the cGAN framework, the generator transforms input feature maps into high-quality speech signals. These
+inputs, extracted from the MVDR, CZT, and STSF modules, are normalized and represented as Mel spectrograms.
+The generator uses a CNN-based encoder-decoder structure, where the encoder extracts high-dimensional features
+and the decoder reconstructs them into speech. Skip connections preserve local spectral details. The generator’s
+optimization objective combines adversarial and reconstruction losses, defined as:
+L𝐺 = L𝐷 +𝜆L𝐿1. (17)
+where L𝐺 is the binary cross-entropy loss, evaluating the adversarial loss by comparing the discriminator’s output
+with target labels. L𝐿1 is the L1 loss (mean absolute error), measuring the difference between generated and
+input spectrograms, with 𝜆balancing the losses. L𝐷 is the discriminator’s loss, assessing its ability to distinguish
+real from generated samples.
+The discriminator classifies the authenticity of input signals, including (1) the Mel spectrogram of enhanced
+audio from the generator and (2) the Mel spectrogram of real audio. It uses a convolutional neural network to ex-
+tract time-frequency features and outputs a probability indicating whether the signal is “real”. The discriminator’s
+optimization goal is to minimize the loss function, improving classification accuracy:
+L𝐷 = −𝐸𝑥∼𝑝true [log 𝐷(𝑥)]− 𝐸𝑥∼𝑝fake [log(1 −𝐷(𝑥))], (18)
+where 𝐷(𝑥)is the discriminator’s probability that the input signal is “real”. and 𝑝true and 𝑝fake represent the
+distributions of real and generated samples, respectively.
+During training, the generator and discriminator improve through adversarial updates: the discriminator
+enhances classification accuracy, while the generator produces more realistic signals. Once trained, the model
+processes the Mel spectrogram of vibration data to generate an enhanced version with better acoustic features,
+which is then converted into audio using the Griffin-Lim algorithm [25] for efficient phase reconstruction.
+6 EVALUATION
+6.1 Experiment Setup
+This study utilizes the AWR1843Boost development board, a COTS mmWave radar platform from Texas Instru-
+ments (TI), as shown in Fig. 14 (a). Operating within the 77 ∼81 𝐺𝐻𝑧 range, it features a three-transmit and
+four-receive antenna array. With a transmission power of12.5 𝑑𝐵𝑚, a 4 𝐺𝐻𝑧 bandwidth, and a 50 MSPS sampling
+rate, the radar achieves 4.1 𝑐𝑚range and 1° angular resolution. Data acquisition is handled by the DCA1000EVM
+board, relaying pulses to an HP laptop for processing. The radar signal processing pipeline includes three primary
+platforms: TI’s mmWave Studio for real-time data acquisition and waveform visualization, MATLAB for DSP,
+and PyTorch (v1.10.2) on a Linux server with dual GeForce RTX 3090 GPUs for offline deep learning training.
+Five headset models, including HP H120G, iKF-King, Edifier W820NB, Siberia V13, and Samson SR850, are used
+for performance evaluation, as shown in Fig. 14 (b).
+VICTIM
+mmWave Radar
+(a) Eavesdropping Scenario Setup.
+HP H120G iKF-King W820NB SIBERIA V13 SAMSON SR850 (b) Different Models of Headsets.
+Fig. 14. Experiment Setup.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:15
+To ensure real-time performance, the process is divided into offline training and online inference. During offline
+training, the cGAN model is trained on a Linux server, converging after 300 epochs within 24 hours—a one-time
+task. Online inference processes 10 seconds of audio in about 3 seconds. Specifically, MVDR beamforming takes 0.5
+seconds, CZT spectral analysis takes 1 second, and the cGAN-based speech recovery module takes 1.5 seconds per
+10-second segment. This inference runs on an HP laptop with an Intel i7 processor and 16GB RAM, demonstrating
+the system’s efficiency and scalability.
+6.2 Dataset
+In the experiments, all audio data are standardized to a 44.1 𝑘𝐻𝑧 sampling rate. To minimize inter-speaker
+variability, we select single-speaker samples from a diverse pool of speakers, controlling for accent and speech
+rate. A summary of the dataset composition and characteristics is provided in Table 1. Male audio samples
+comprise approximately six hours of speech from prominent YouTube figures, with varying clip lengths. Female
+audio samples are sourced from the LJ Speech Dataset [26] (13,100 sentences, 6 hours), and speeches by Michelle
+Obama, Oprah Winfrey, and Taylor Swift, covering diverse contexts from formal addresses to personal reflections.
+This diverse selection of male and female speech samples ensures a balanced dataset for fair and comprehensive
+model training. The test set comprises one hour of audio from male and female speakers, matching those in the
+training set but with distinct sequences to avoid overfitting. All data collection and procedures adhered to ethical
+standards set by the Institutional Review Board (IRB).
+Label Name Gender Number of
+Training Words
+Number of
+Testing Words
+Target 1 Barack Obama Male 7512 1279
+Target 2 Greg Brockman Male 8658 1737
+Target 3 Steve Jobs Male 7014 892
+Target 4 Kobe Bryant Male 6431 709
+Target 5 David Cameron Male 5869 724
+Target 6 John Hale Male 8145 1430
+Target 7 Linda Johnson Female 5589 2048
+Target 8 Michelle Obama Female 2840 709
+Target 9 Oprah Winfrey Female 4602 1150
+Target 10 Taylor Swift Female 3522 880
+Table 1. Composition of the Original Audio Dataset.
+6.3 Real-World Case Study Scenarios
+We evaluate the robustness of the mmHSE system in three real-world scenarios: library, office, and canteen (Fig.
+15). In each case, the radar is approximately 1.5 𝑚𝑒𝑡𝑒𝑟𝑠 from the headset, with a 15° orientation angle. In the
+library, the eavesdropper and subject are seated diagonally across from each other, with background noise from
+page turning and low-volume conversations (40∼50 dB). In the office, they sit one seat apart, with air conditioning
+and colleague conversations (50∼60 dB). In the canteen, the eavesdropper and subject are across an aisle, with
+noise from staff, pedestrians, crowd chatter, staff activities, and background music (60∼70 dB).
+6.4 Evaluation Metrics
+To evaluate our approach, we use the subjective Likert Score [15], assessing recovered speech across four
+dimensions: clarity, intelligibility, naturalness, and fidelity. Clarity and intelligibility ensure comprehensibility,
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:16 • Wang et al.
+(a) Library.
+ (b) Office.
+ (c) Canteen.
+Fig. 15. Real-World Case Study Scenarios.
+naturalness gauges realism, and fidelity measures how closely the restored audio resembles the original. To
+guide participants in rating each dimension, four tailored questions are formulated: 1. Clarity: How clearly can
+you understand each word? 2. Intelligibility: How easily can you comprehend the sentences? 3. Naturalness: Does
+the speech sound natural or synthetic? 4. Fidelity: How closely does the recovered speech replicate the original?
+Participants rate each dimension on a scale of 0 to 10, where 0 indicates poor quality and 10 signifies near-perfect
+reproduction. The final Likert score, representing overall speech quality, is the average of these ratings, with
+higher scores indicating better audio recovery.
+In addition, we employed three objective metrics: Mel Cepstral Distortion (MCD) [16], Peak Signal-
+to-Noise Ratio (PSNR) and Word Error Rate (WER) . MCD quantifies synthesis accuracy and naturalness,
+with lower values indicating closer resemblance to the original speech. MCD values below 8 are sufficient for
+recognition by standard speech recognition systems. PSNR measures speech recovery fidelity, with higher values
+indicating greater similarity to the original. PSNR values between 20 and 30 indicate low quality, 30 to 40 indicate
+medium quality, and above 40 indicate high quality. WER evaluates speech recovery accuracy by comparing the
+predicted transcription to the reference, accounting for substitutions, deletions, and insertions. Lower WER values
+indicate better recovery, with 0%∼20% reflecting high quality, 20%∼30% medium quality, and above 30% poor
+quality. The open-source Google Speech-to-Text API transcribes the recovered speech, and WER is calculated
+based on these transcriptions.
+6.5 Experimental Results And Analysis
+6.5.1 Subjective Evaluation of Recovered Speech Quality. A listening test is conducted with 15 participants (9
+males, 6 females, aged 20 to 35) to evaluate the quality of the recovered speech using a 10-point Likert scale. To
+ensure accurate assessment, participants are confirmed to have sufficient linguistic comprehension. Prior to the
+evaluation, each participant listens to the original audio, allowing for a standardized and informed comparison
+when assessing the recovered version.
+This evaluation examines Likert scores across headset models, four dimensions within the same headset
+model, and real-world case study scenarios. In all settings except the case studies, the headset and mmWave
+radar are positioned 1 meter apart with a 15° orientation angle range. The results (Fig. 16 (a)) show that the HP
+H120G, iKF-King, and Edifier W820NB headsets achieve average Likert scores of 6.67, 6.33, and 7.40, respectively,
+significantly outperforming the Siberia V13 (5.27) and Samson SR850 (6.07). We further analyze the Likert scale
+ratings across four dimensions: clarity, intelligibility, naturalness, and fidelity. The results for theiKF-King headset,
+including averages for each dimension and the overall score, are presented in Fig. 16 (b). It shows that clarity
+(6.57) and intelligibility (6.43) indicate smooth audibility and effective information transfer, while naturalness
+(6.23) and fidelity (6.25) reflect moderate similarity to the original speech. The average score of 6.37 indicates
+good recovered audio quality. In the real-world case study scenarios, the recovered speech scores are 6.53, 6.11,
+and 5.05 in the library, office, and canteen, respectively (Fig. 16 (c)). These results underscore the negative impact
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:17
+(a) Five Different Headset Models.
+ (b) Analysis of Different Dimensions
+ (c) Real-World Case Study Scenarios.
+Fig. 16. Subjective Evaluation Results of Recovered Speech Quality.
+of background noise, with the canteen scenario showing the most significant degradation due to higher noise
+levels.
+Privacy perception is crucial in speech recovery, especially with personal voice data. To assess risks, we
+design a questionnaire and audio quality evaluations to examine the relationship between recovery quality and
+privacy concerns. Key questions include: “Does lower audio quality reduce privacy risk?” and “Are you concerned
+that mmHSE technology could be used for eavesdropping?” Results show a strong correlation between audio
+quality and privacy concerns. Participants believe higher-quality audio increases the risk of identifying personal
+information, with some noting concerns about private details being easily identifiable. Many also worry about
+mmHSE being used for eavesdropping, particularly in private settings. These findings highlight the need for
+speech recovery technology that balances quality with privacy safeguards.
+(a) MCD vs. Headset Model.
+ (b) PSNR vs. Headset Model.
+ (c) WER vs. Headset Model.
+Fig. 17. Impact of Headset Model on Speech Recovery Performance.
+6.5.2 Objective Evaluation of Recovered Speech Quality.
+6.5.2.1 Impact of Headset Model on Speech Recovery Performance. We conduct experiments to evaluate the
+impact of different headset models (HP H120G , iKF-King, Edifier W820NB , Siberia V13 , and Samson SR850 ) on the
+speech recovery performance of the mmHSE system, using objective metrics such as PSNR, MCD, and WER.
+The tests are performed under controlled conditions, with the radar positioned 1.0 meters from the headset and
+within a 15° orientation angle. The results, shown in Fig. 17, reveal significant performance variation across the
+models. The HP H120G headset achieves a PSNR of 27.03 dB, an MCD of 5.42, and a WER of 16.87%, indicating
+superior signal-to-noise ratio and recovery performance. In contrast, the Siberia V13 headset records a PSNR of
+20.12 dB, a 25.56% decrease, and an MCD of 7.70, a 42.07% increase, along with a WER of 18.92%, 12.14% higher
+than the HP H120G , highlighting a notable decline in speech recovery quality. These results suggest the Siberia
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:18 • Wang et al.
+V13 headset provides inferior audio reconstruction due to its complex shell design, which limits the radar’s ability
+to capture accurate echo signals. In comparison, headsets like the HP H120G and iKF-King, with flatter surfaces,
+better concentrate reflected mmWave energy, improving speech recovery. Conversely, headsets like theSiberia
+V13 and Samson SR850 have complex, uneven geometries that impede mmWave signal penetration and reduce
+sensitivity to diaphragm vibrations. Their irregular surfaces cause signal scattering and reflection, limiting the
+radar’s ability to capture accurate echoes, resulting in lower speech recovery quality.
+6.5.2.2 Validation of Performance in Real-World Case Studies. This experiment evaluates the performance
+of the mmHSE system across three real-world scenarios: library, office, and canteen (Tab. 2). In thelibrary, a
+controlled environment with minimal distractions, the system achieves an MCD of 4.88, PSNR of 25.38 dB, and
+WER of 16.25%, demonstrating excellent performance in quiet conditions with background noise ranging from 40
+to 50 dB. In the office, where subjects experience slight movement and background noise from air conditioning
+and colleague conversations (50∼60 dB), the system performs well with an MCD of 5.36, PSNR of 24.79 dB, and
+WER of 19.06%. In the canteen, a dynamic and noisy setting with crowd chatter and background music (60∼70
+dB), performance slightly declines, with an MCD of 7.2, PSNR of 19.87 dB, and WER of 22.77%. Despite this, the
+system remains robust, demonstrating its adaptability across varying real-world environments.
+Scene MCD PSNR WER
+Library 4.88 25.38 16.25%
+Office 5.36 24.79 19.06%
+Canteen 7.2 19.87 22.77%
+Table 2. Experimental Results from Real-World Case Studies.
+Gender MCD PSNR WER
+Male 4.8 24.8 15.28%
+Female 4.95 24.2 15.49%
+Difference(%) 3.13% 2.42% 1.38%
+Table 3. Impact of Gender on Speech Recovery Performance.
+6.5.2.3 Impact of Gender on Speech Recovery Performance. This experiment evaluates the performance of the
+mmHSE system on male and female speech samples to assess fairness and generalization. Conducted with the
+radar positioned 1.0 meters from the headset within a 15° orientation angle, the results (Tab. 3) show that for
+male speech, the MCD, PSNR, and WER metrics are 4.80, 24.8 dB, and 15.28%, respectively. For female speech, the
+metrics are 4.95, 24.2 dB, and 15.49%. The differences, i.e., 3.13% for MCD, 2.42% for PSNR, and 1.38% for WER,
+indicate a slight advantage for male speech, primarily due to its more consistent acoustic characteristics and
+stronger low-frequency components. However, these differences are minimal and do not significantly impact
+overall model performance. Female speech demonstrates strengths in fluency and high-frequency component
+recovery, contributing to better perceptual quality in the recovered speech. Overall, the slight performance
+differences between genders confirm the mmHSE system’s fairness and adaptability, ensuring stable and robust
+performance across both male and female speech samples in diverse real-world scenarios.
+6.5.2.4 Impact of Playback Volume on Speech Recovery Performance. This experiment investigates the impact
+of volume levels on speech recovery quality, focusing on diaphragm vibrations, which are directly proportional
+to volume. We test five volume levels—45 dB, 50 dB, 55 dB, 60 dB, and 65 dB—at 5 dB increments. To minimize
+environmental noise interference, the distance between the headset and radar is reduced, with the radar positioned
+0.5 meters from the headset in direct alignment. The reported values reflect the average playback volumes recorded
+on an iPad, accounting for minor fluctuations.
+As shown in Fig. 18, the experimental results validate the anticipated trend: as playback volume increases,
+the PSNR of the recovered speech improves, while both the MCD and WER decrease, indicating better recovery
+quality. However, the observed improvements across different volume levels are relatively modest, suggesting
+that although higher volumes contribute to enhanced recovery quality, the diaphragm’s vibration amplitude
+remains constrained, even at the maximum volume of 65 dB. Specifically, the PSNR increases by 0.90 dB (a 3.37%
+improvement), the WER decreases by 0.0248 (a 14.32% reduction), and the MCD improves by 0.74 (an 11.81%
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:19
+(a) MCD vs. Playback Volume.
+ (b) PSNR vs. Playback Volume.
+ (c) WER vs. Playback Volume.
+Fig. 18. Impact of Playback Volume on Speech Recovery Performance.
+improvement) when comparing 45 dB to 65 dB. These findings indicate that while increasing volume leads to
+measurable improvements in speech recovery, the benefits tend to plateau beyond a certain threshold, likely due
+to physical limitations of the headset diaphragm and its interaction with the radar sensor.
+6.5.2.5 Impact of Orientation Angle on Speech Recovery Performance. This experiment examines the effect of
+the orientation angle between the headset and mmWave radar sensor on mmHSE system performance, with
+the radar positioned 1.0 meters from the headset and the angle varying from 0° to 30°. As shown in Fig. 19, the
+system performs effectively within a range of 0° to 20°, maintaining high recovery quality with minimal variation.
+However, performance declines significantly beyond 20°. At 30°, the MCD increases to 8.74, PSNR drops to 20.88,
+and WER rises to 27.71%, due to reduced radar signal capture. These findings suggest that maintaining the headset
+orientation within a limited range—especially below 20°—is essential for ensuring optimal performance of the
+mmHSE system.
+(a) MCD vs. Orientation Angle.
+ (b) PSNR vs. Orientation Angle.
+ (c) WER vs. Orientation Angle.
+Fig. 19. Impact of Orientation Angle on Speech Recovery Performance.
+6.5.2.6 Impact of Distance on Speech Recovery Performance. The eavesdropping range of the mmHSE system is
+limited by factors such as the headset diaphragm’s vibration amplitude and signal interference from the headset
+shell, which obstructs mmWave transmission. To assess these limitations, we define six distance gradients (0.5 m,
+1.0 m, 1.5 m, 2.0 m, 2.5 m, and 3.0 m), with 2.0 meters serving as a critical reference distance for performance
+evaluation. As shown in Fig. 20, the results reveal a clear correlation between increasing distance and reduced
+speech recovery quality. As the distance between the headset and radar sensor increases from 0.5 meters to 3
+meters, PSNR decreases from 27.48 dB to 17.20 dB, MCD rises from 4.61 to 9.10 and WER increases from 14.28%
+to 32.49%. This demonstrates that speech recovery quality declines with greater distance. Within approximately
+2 meters, the system maintains a PSNR above 20 dB, an MCD below 7 and WER below 20%, ensuring reliable
+speech recovery. This range, which aligns with our threat model parameters, is optimal for covert surveillance
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:20 • Wang et al.
+scenarios, as it allows the radar to effectively capture subtle diaphragm vibrations while minimizing environmental
+interference. Beyond 2 meters, however, environmental noise significantly reduces performance. This 2-meter
+range strikes an ideal balance between performance and feasibility for real-world applications.
+(a) MCD vs. Eavesdropping Distance.
+ (b) PSNR vs. Eavesdropping Distance.
+ (c) WER vs. Eavesdropping Distance.
+Fig. 20. Impact of Distance on Speech Recovery Performance.
+6.5.2.7 Impact of Slight Movements on Speech Recovery Performance. In our threat model, we assume the victim
+remains stationary or semi-static, with high-speed movements like walking or running not expected during
+typical headset use. Our research focuses on minor, involuntary movements common in static or semi-static
+conditions. The experimental setup (Fig. 22) involved mounting the headset on an adjustable-speed rail, with the
+left earmuff oriented towards the mmWave radar. The headset was moved at constant velocities between 0.01 m/s
+and 0.06 m/s, in increments of 0.01 m/s, over a fixed distance of 20 cm to ensure stable detection. This velocity
+range represents typical head movements in everyday activities, such as sitting or standing. The results (Fig. 21)
+show that as movement velocity increases, speech recovery quality declines. Specifically, PSNR decreases from
+28.83 dB to 18.6 dB, MCD increases from 4.11 to 7.51, and WER rises from 15.00% to 24.39%. This decline is due to
+challenges in tracking diaphragm movement at higher velocities. However, the recovered speech still meets basic
+quality standards, as confirmed by both subjective and objective evaluations. The increased velocity also caused
+a greater distance between the headset and radar, contributing to the decline in quality. Overall, the mmHSE
+system ensures speech recovery that meets basic quality standards despite slight involuntary movements, such
+as head shifts or minor adjustments. These results demonstrate the system’s resilience in maintaining intelligible
+speech under typical daily conditions, even with minor variations in velocity and distance.
+(a) MCD vs. Slight Movements.
+ (b) PSNR vs. Slight Movements.
+ (c) WER vs. Slight Movements.
+Fig. 21. Impact of Slight Movements on Speech Recovery Performance.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:21
+6.5.2.8 Impact of Posture on Speech Recovery Performance. To simulate more complex headset speech eaves-
+dropping scenarios, a volunteer wore a headset in three distinct postures: “sitting”, “standing”, and “walking”.
+Initially, the volunteer maintained a distance of approximately 1 meters from the mmWave radar sensor, within a
+15° orientation angle. This configuration minimized external variables, enabling a focused evaluation of how
+posture affects speech recovery quality. The experimental setup is depicted in Fig. 23.
+The results, depicted in Fig. 24, show that the mmHSE system performs optimally when the volunteer remains
+in relatively static postures, such as “sitting” or “standing”. In these scenarios, the system successfully recovers
+speech and meets the evaluation criteria for speech quality. This aligns with our threat model, which assumes
+the victim remains stationary or quasi-static. However, when the volunteer adopts a “walking” posture, moving
+at approximately 1 m/s, the system experiences instability. The increased motion results in a noticeable decline
+in speech recovery quality, with some speech information lost. During walking, both the distance and angle
+relative to the radar fluctuate significantly—within one second, the angle may change by 45°, and the distance
+by 0.414 meters. These variations in velocity, distance, and angle introduce uncertainty, hindering the radar’s
+ability to consistently capture and reconstruct the audio signal. Thus, while the mmHSE system performs well in
+stationary or quasi-static scenarios, it struggles with dynamic motion, highlighting its effectiveness primarily
+under stationary conditions as outlined in our threat model.
+Fig. 22. Slight Movement Setup.
+Sit Stand Move Fig. 23. Headset Subject Postures: Sit, Stand and Move.
+(a) MCD vs. Distinct Postures.
+ (b) PSNR vs. Distinct Postures.
+ (c) WER vs. Distinct Postures.
+Fig. 24. Impact of Posture on Speech Recovery Performance.
+6.5.2.9 Performance Effectiveness of the cGAN Model. Fig. 25 displays the original and processed Mel Spec-
+trograms of a test speech sample, which features a segment from former U.S. President Barack Obama’s virtual
+commencement speech in 2020, specifically his opening address to high school graduates nationwide. The excerpt
+from this segment is as follows: “Hello, everyone. Thank you for that wonderful introduction. I could not be prouder
+of all that you have accomplished during your time with the Obama Foundation. ” The results demonstrate that
+our developed mmHSE system effectively extracts and preserves essential speech information within the 0 to
+2 𝑘𝐻𝑧 frequency range, thereby facilitating the recovery of high-frequency details. This capability significantly
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:22 • Wang et al.
+enhances the clarity and intelligibility of the reconstructed speech, leading to improved accuracy in speech
+recovery. The cGAN framework conditions the generator on input spectrogram features, guiding it to produce
+realistic, high-quality speech. The adversarial loss ensures the output is indistinguishable from real data, while the
+LI reconstruction loss preserves fidelity to the original input. In summary, the cGAN-based enhancement model
+successfully mitigates harmonic noise, reconstructs high-quality Mel Spectrograms, and recovers critical speech
+features. The integration of the U-Net architecture, multi-head self-attention mechanism, and the Griffin-Lim
+algorithm ensures that both low- and high-frequency speech components are faithfully reproduced, resulting in
+enhanced audio fidelity for headset applications.
+(a) Original Spectrogram Diagram of Test Audio.
+ (b) Mel Spectrogram Diagram of Reconstructed Audio.
+Fig. 25. Performance Effectiveness of the cGAN Model.
+6.5.2.10 Cross-Target Generalization Study. To evaluate the generalization of the mmHSE system under cross-
+target conditions, we tested three external speech samples, i.e., Target 11, Target 12, and Target 13, none of which
+were included in the training set (Table 1), with the radar positioned 1.0 meters from the headset at a 15° angle.
+Target 11, from the Harvard Speech Repository, features rhythmic speech from both male and female speakers,
+suitable for gender adaptation analysis. Target 12, from the Open Speech Repository, includes natural variations
+in speech speed, pronunciation, and emotional tone. Target 13 consists of two recordings from the same speaker:
+Target 13-1, a fast-paced, neutral speech sample, and Target 13-2, a slower, more emotionally expressive sample.
+As shown in Fig. 26, the system performs consistently across these targets. For Target 11, it achieves a PSNR of
+25.98 dB, an MCD of 5.31, and a WER of 17.44%, demonstrating effective gender-adaptive recovery. Target 12
+yields a PSNR of 26.36 dB, an MCD of 5.36, and a WER of 16.84%, reflecting successful reconstruction of natural
+speech variations. For Target 13, performance differs slightly: Target 13-1 (fast-paced, neutral speech) results in a
+PSNR of 26.08 dB, an MCD of 5.53, and a WER of 17.82%, while Target 13-2 (slow, expressive speech) achieves a
+PSNR of 26.18 dB, an MCD of 5.49, and a WER of 16.92%. These results demonstrate the system’s ability to handle
+variations in speed and emotional tone while maintaining high recovery quality. Overall, the findings confirm
+the mmHSE system’s strong generalization across gender, speech speed, and emotional tone, ensuring reliable
+speech recovery in diverse real-world conditions.
+6.5.2.11 Ablation Study. This experiment evaluates the contribution of key modules—STSF, MVDR, and
+cGAN—to the performance of the mmHSE speech recovery system, with the radar positioned 1.0 meters from the
+headset at a 15° orientation angle. As shown in Fig. 27, the complete system, integrating MVDR, STSF, and cGAN,
+achieves optimal performance with an MCD of 4.8, a PSNR of 25.3 dB, and a WER of 15.29%. The MVDR module
+is crucial for suppressing noise and multipath interference through beamforming, enhancing the speech signal’s
+directionality. Removing MVDR results in a performance drop, with MCD increasing to 5.35, PSNR decreasing to
+23.4 dB, and WER rising to 15.8%. The STSF module refines the directionality and intensity of the target signal,
+improving input for downstream processing. Omitting STSF leads to further degradation, with MCD increasing
+to 5.75, PSNR dropping to 22.6 dB, and WER rising to 18.9%. The cGAN module models the nonlinear relationship
+between mmWave signals and speech, critical for high-quality recovery. Replacing cGAN with traditional spectral
+processing results in the most significant decline, with MCD rising to 6.02, PSNR dropping to 21.8 dB, and WER
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:23
+(a) MCD vs. External Samples.
+ (b) PSNR vs. External Samples.
+ (c) WER vs. External Samples.
+Fig. 26. Performance Evaluation of Cross-Target Generalization.
+increasing to 19.8%. In conclusion, the ablation study highlights the crucial roles of MVDR, STSF, and cGAN
+modules, particularly STSF and cGAN, in noise suppression and high-quality speech reconstruction.
+(a) MCD vs. Key Modules.
+ (b) PSNR vs. Key Modules.
+ (c) WER vs. Key Modules.
+Fig. 27. Performance Evaluation of Ablation Study.
+6.5.2.12 Impact of Fitting Threshold on Speech Recovery Performance. To evaluate the impact of the fitting
+threshold on speech recovery quality, we use both PSNR and MCD as complementary metrics. PSNR increases,
+while both MCD and WER decrease, as speech recovery quality improves, reflecting consistent trends across
+these metrics. Since PSNR and MCD capture both positive and negative changes in recovery quality, they serve
+as reliable indicators for identifying the optimal fitting threshold . Here, we systematically adjust the threshold
+from 0° to 90° and conduct multiple experiments, analyzing the resulting variations in speech quality. As shown
+in Fig. 28, a fitting threshold of 0° results in clustering failure, preventing differentiation between the two clusters
+of data points and leading to suboptimal recovery performance. Notably, within the range of 60° to 90°, PSNR
+shows a linear decline, while MCD plateaus; both metrics converge to the values observed at the 0° threshold.
+This decline in performance can be attributed to reduced clustering resolution at higher thresholds, hindering
+the system’s ability to capture subtle variations in the speech data. The optimal performance for both PSNR and
+MCD occurs at a fitting threshold between 35° and 40°, with the best performance specifically at 35°. Therefore,
+35° is designated as the optimal threshold for distinguishing between the two clusters in the speech segments.
+6.5.3 Comparison with State-Of-The-Art (SOTA) Approach. Finally, we compare the proposedmmHSE system with
+the state-of-the-art mmEar solution [41]. The mmEar system utilizes Faint Vibration Emphasis (FVE) technology
+to amplify subtle surface vibrations on the headset, coupled with a deep denoising network to enhance SNR. In
+contrast, mmHSE focuses on reducing signal distortion by leveraging temporal and spatial information in the IQ
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:24 • Wang et al.
+Fig. 28. Impact of Fitting Threshold on Speech Recovery Performance.
+plane, ensuring precise signal preservation. While both systems address the challenge of capturing weak vibration
+signals, mmEar primarily amplifies faint vibrations through geometric transformations, whereasmmHSE employs
+MVDR adaptive beamforming and CZT technology to improve resolution, segmenting the vibration signal based
+on spatiotemporal features for enhanced signal quality and audio clarity.
+(a) Likert Score Comparison.
+ (b) MCD Comparison.
+ (c) PSNR Comparison.
+ (d) WER Comparison.
+Fig. 29. Comparison of Speech Recovery Performance: mmHSE vs. mmEar
+To ensure a rigorous comparison of speech recovery quality between mmHSE and mmEar, we evaluate both
+systems using a carefully curated test set, with the radar positioned 1.0 meters away from the headset and within a
+15° orientation angle. This includes two public speech samples (Target 1 and Target 2) from individuals previously
+used in training, with unseen portions of their speech data reserved for testing. Additionally, we incorporate
+speech samples from the Harvard Speech Repository (Target 11) and the Open Speech Repository (Target 12)
+to assess performance under diverse conditions. As shown in Fig. 29, mmHSE outperforms mmEar across both
+subjective and objective metrics. Subjective evaluations from fifteen participants yield an average Likert score of
+6.37 for mmHSE, a 15.1% improvement over mmEar’s 5.53. Objectively, mmHSE achieves a PSNR of 25.96 dB and
+an MCD of 5.14, compared to mmEar’s 22.51 dB PSNR and 5.73 MCD, reflecting a 15.4% increase in PSNR and an
+11.4% reduction in MCD. Additionally, mmHSE attains a lower WER of 16.12%, compared to mmEar’s 18.85%,
+marking a 14.5% improvement in speech accuracy. These results highlight mmHSE’s superior performance in
+high-fidelity speech audio recovery and speech recognition.
+7 DISCUSSION
+Influence of Eavesdropping Distance and Angle : mmWave eavesdropping effectiveness is strongly influ-
+enced by both distance and target orientation. Experimental results show that as the distance between the radar
+and headset increases, speech recovery quality declines. Beyond a critical distance (e.g., 3 meters), the radar’s
+ability to isolate faint vibrations from environmental noise diminishes, leading to degraded speech reconstruc-
+tion. Additionally, target orientation affects signal quality: diaphragms facing the radar produce stronger, more
+detectable signals, while side or rear orientations result in weaker signals prone to interference.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:25
+High-Frequency Information Loss : The loss of high-frequency information in mmWave speech recovery
+stems from the limited frequency response of current radar systems and signal processing algorithms. This
+limitation reduces audio quality, affecting both speech clarity and musical detail. Advancing radar technology and
+developing more advanced signal processing techniques will improve the capture of high-frequency vibrations
+and minimize information loss, enhancing audio fidelity in recovered speech and sound.
+Simultaneous Eavesdropping on Multiple Targets : The mmHSE system isolates headset vibration signals
+using target localization and advanced signal separation techniques, such as beamforming and Chirp-Z transform.
+However, in environments like conference rooms or public transit, where multiple headset signals overlap with
+ambient noise, speech recovery quality can degrade. In close proximity scenarios, radar waveform confusion
+may occur, hindering accurate signal differentiation and reducing the system’s ability to capture distinct audio
+sources.
+Defenses Against mmWave Eavesdropping : While mmWave technology enables effective audio reconstruc-
+tion, it also poses privacy risks. Defenses against mmWave eavesdropping include advanced signal encryption
+and anonymization, as well as physical shielding materials in headset shells to prevent vibration detection. These
+measures must be optimized to avoid compromising user experience or device performance.
+Future Directions: While experiments with the mmHSE system have been conducted in controlled real-world
+environments, its practical deployment introduces additional challenges, particularly in dynamic physical en-
+vironments. Future research will focus on enhancing the system’s adaptability to such conditions, specifically
+by quantifying the impact of weather factors (e.g., rain, fog attenuation, and wind disturbances) and urban
+obstacles (e.g., buildings and vehicle-induced multipath effects) on system performance. Addressing these chal-
+lenges will contribute to the development of more sophisticated eavesdropping techniques and more effective
+countermeasures.
+8 CONCLUSION
+This study presents an advanced eavesdropping attack systemmmHSE for headsets using COTS mmWave devices,
+addressing two key challenges: refining the vibration signal model and improving capture resolution. To tackle
+these issues, we propose the STSF method, which isolates diaphragm vibrations from shell vibrations through a
+two-stage process combining MVDR adaptive beamforming and the Chirp-Z Transform, enhancing signal quality
+and clarity. Additionally, we integrate a self-attention mechanism and a conditional GAN-based mel-spectrogram
+generation model to reconstruct missing high-frequency speech components. The mmHSE system outperforms
+existing solutions, as validated by both subjective and objective evaluation metrics, demonstrating its effectiveness
+in improving the accuracy of headset side-channel eavesdropping.
+ACKNOWLEDGMENTS
+This work is supported by the National Natural Science Foundation of China (No. 62332014), and the Natural
+Science Foundation of Shaanxi Province for Distinguished Young Scholars (No. 2023-JC-JQ-54). Liang Wang is
+the corresponding author.
+REFERENCES
+[1] Zhongjie Ba, Tianhang Zheng, Xinyu Zhang, Zhan Qin, Baochun Li, Xue Liu, and Kui Ren. 2020. Learning-based Practical Smartphone
+Eavesdropping with Built-in Accelerometer.. In The Network and Distributed System Security Symposium (NDSS) , Vol. 2020. 1–18.
+[2] Ronald J Baken. 1987. Clinical measurement of speech and voice. (No Title) (1987).
+[3] Suryoday Basak, Abhijeeth Padarthi, and Mahanth Gowda. 2024. mmWave-Whisper: Phone Call Eavesdropping and Transcription
+Using Millimeter-Wave Radar. arXiv preprint arXiv:2410.17457 (2024).
+[4] Akanksha Bhutani, Sören Marahrens, Michael Gehringer, Benjamin Göttel, Mario Pauli, and Thomas Zwick. 2019. The Role of
+Millimeter-Waves in the Distance Measurement Accuracy of an FMCW Radar Sensor. Sensors 19, 18 (2019). doi:10.3390/s19183938
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+51:26 • Wang et al.
+[5] Haoze Chen and Yasaman Ghasempour. 2022. Malicious mmWave reconfigurable surface: eavesdropping through harmonic steering. In
+Proceedings of the 23rd Annual International Workshop on Mobile Computing Systems and Applications (Tempe, Arizona) (HotMobile ’22) .
+Association for Computing Machinery, New York, NY, USA, 54–60. doi:10.1145/3508396.3512879
+[6] Huiling Chen, Wenqiang Jin, Yupeng Hu, Zhenyu Ning, Kenli Li, Zheng Qin, Mingxing Duan, Yong Xie, Daibo Liu, and Ming Li. 2024.
+Eavesdropping on Black-box Mobile Devices via Audio Amplifier’s EMR. 2024 (2024).
+[7] Yunzhong Chen, Jiadi Yu, Yingying Chen, Linghe Kong, Yanmin Zhu, and Yi-Chao Chen. 2024. RFSpy: Eavesdropping on Online
+Conversations with Out-of-Vocabulary Words by Sensing Metal Coil Vibration of Headsets Leveraging RFID. InProceedings of the 22nd
+Annual International Conference on Mobile Systems, Applications and Services (Minato-ku, Tokyo, Japan) (MOBISYS ’24) . Association for
+Computing Machinery, New York, NY, USA, 169–182. doi:10.1145/3643832.3661887
+[8] Terrance DeVries, Adriana Romero, Luis Pineda, Graham W. Taylor, and Michal Drozdzal. 2019. On the Evaluation of Conditional GANs.
+arXiv:1907.08175 [cs.CV] https://arxiv.org/abs/1907.08175
+[9] Lei Ding, Murtaza Ali, Sujeet Patole, and Anand Dabak. 2016. Vibration parameter estimation using FMCW radar. In 2016 IEEE
+International Conference on Acoustics, Speech and Signal Processing (ICASSP) . 2224–2228. doi:10.1109/ICASSP.2016.7472072
+[10] Yiwen Feng, Kai Zhang, Chuyu Wang, Lei Xie, Jingyi Ning, and Shijia Chen. 2023. mmEavesdropper: Signal Augmentation-based
+Directional Eavesdropping with mmWave Radar. In IEEE INFOCOM 2023 - IEEE Conference on Computer Communications . 1–10.
+doi:10.1109/INFOCOM53939.2023.10229095
+[11] Ming Gao, Yike Chen, Yajie Liu, Jie Xiong, Jinsong Han, and Kui Ren. 2023. Cancelling Speech Signals for Speech Privacy Protection
+against Microphone Eavesdropping. In Proceedings of the 29th Annual International Conference on Mobile Computing and Networking
+(ACM MobiCom ’23) . Association for Computing Machinery, 1–16. doi:10.1145/3570361.3592502
+[12] Pengfei Hu, Wenhao Li, Riccardo Spolaor, and Xiuzhen Cheng. 2023. mmEcho: A mmWave-based Acoustic Eavesdropping Method. In
+Proceedings of the ACM Turing Award Celebration Conference - China 2023 (Wuhan, China) (ACM TURC ’23) . Association for Computing
+Machinery, New York, NY, USA, 138–140. doi:10.1145/3603165.3607440
+[13] Pengfei Hu, Yifan Ma, Panneer Selvam Santhalingam, Parth H Pathak, and Xiuzhen Cheng. 2022. MILLIEAR: Millimeter-wave
+Acoustic Eavesdropping with Unconstrained Vocabulary. In IEEE INFOCOM 2022 - IEEE Conference on Computer Communications . 11–20.
+doi:10.1109/INFOCOM48880.2022.9796940
+[14] Pengfei Hu, Hui Zhuang, Panneer Selvam Santhalingam, Riccardo Spolaor, Parth Pathak, Guoming Zhang, and Xiuzhen Cheng. 2022.
+Accear: Accelerometer acoustic eavesdropping with unconstrained vocabulary. In 2022 IEEE Symposium on Security and Privacy (SP) .
+IEEE, 1757–1773. doi:10.1109/SP46214.2022.9833716
+[15] Andrew T Jebb, Vincent Ng, and Louis Tay. 2021. A review of key Likert scale development advances: 1995–2019.Frontiers in psychology
+12 (2021), 637547.
+[16] R. Kubichek. 1993. Mel-cepstral distance measure for objective speech quality assessment. In Proceedings of IEEE Pacific Rim Conference
+on Communications Computers and Signal Processing , Vol. 1. 125–128 vol.1. doi:10.1109/PACRIM.1993.407206
+[17] Andrew Kwong, Wenyuan Xu, and Kevin Fu. 2019. Hard drive of hearing: Disks that eavesdrop with a synthesized microphone. In 2019
+IEEE symposium on security and privacy (SP) . IEEE, 905–919. doi:10.1109/SP.2019.00008
+[18] Jian Li, P. Stoica, and Zhisong Wang. 2003. On robust Capon beamforming and diagonal loading. 5 (April 2003), V–337. doi:10.1109/
+ICASSP.2003.1199947
+[19] Yunji Liang, Yuchen Qin, Qi Li, Xiaokai Yan, Zhiwen Yu, Bin Guo, Sagar Samtani, and Yanyong Zhang. 2022. AccMyrinx: Speech
+Synthesis with Non-Acoustic Sensor. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 6, 3, Article 127 (Sept. 2022), 24 pages.
+doi:10.1145/3550338
+[20] Qianru Liao, Yongzhi Huang, Yandao Huang, Yuheng Zhong, Huitong Jin, and Kaishun Wu. 2022. MagEar: eavesdropping via audio
+recovery using magnetic side channel. In Proceedings of the 20th Annual International Conference on Mobile Systems, Applications and
+Services (MobiSys ’22) . Association for Computing Machinery, New York, NY, USA, 371–383. doi:10.1145/3498361.3538921
+[21] Tiantian Liu, Ming Gao, Feng Lin, Chao Wang, Zhongjie Ba, Jinsong Han, Wenyao Xu, and Kui Ren. 2021. Wavoice: A Noise-resistant
+Multi-modal Speech Recognition System Fusing mmWave and Audio Signals. In Proceedings of the 19th ACM Conference on Embedded
+Networked Sensor Systems (Coimbra, Portugal) (SenSys ’21) . Association for Computing Machinery, New York, NY, USA, 97–110.
+doi:10.1145/3485730.3485945
+[22] Yan Long, Pirouz Naghavi, Blas Kojusner, Kevin Butler, Sara Rampazzi, and Kevin Fu. 2023. Side eye: Characterizing the limits of pov
+acoustic eavesdropping from smartphone cameras with rolling shutters and movable lenses. In 2023 IEEE Symposium on Security and
+Privacy (SP) . IEEE, 1857–1874. doi:10.1109/SP46215.2023.10179313
+[23] Yan Michalevsky, Dan Boneh, and Gabi Nakibly. 2014. Gyrophone: Recognizing Speech from Gyroscope Signals. In 23rd USENIX
+Security Symposium (USENIX Security 14) . USENIX Association, San Diego, CA, 1053–1067. https://www.usenix.org/conference/
+usenixsecurity14/technical-sessions/presentation/michalevsky
+[24] Ben Nassi, Yaron Pirutin, Tomer Galor, Yuval Elovici, and Boris Zadov. 2021. Glowworm Attack: Optical TEMPEST Sound Recovery via
+a Device’s Power Indicator LED. In Proceedings of the 2021 ACM SIGSAC Conference on Computer and Communications Security (Virtual
+Event, Republic of Korea)(CCS ’21). Association for Computing Machinery, New York, NY, USA, 1900–1914. doi:10.1145/3460120.3484775
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.
+mmHSE: Enhanced Eavesdropping Attack on Headsets Leveraging COTS mmWave Radar • 51:27
+[25] Nathanaël Perraudin, Peter Balazs, and Peter L. Søndergaard. 2013. A fast Griffin-Lim algorithm. In 2013 IEEE Workshop on Applications
+of Signal Processing to Audio and Acoustics . 1–4. doi:10.1109/WASPAA.2013.6701851
+[26] Yi Ren, Yangjun Ruan, Xu Tan, Tao Qin, Sheng Zhao, Zhou Zhao, and Tie-Yan Liu. 2019. FastSpeech: Fast, Robust and Control-
+lable Text to Speech. In Advances in Neural Information Processing Systems , H. Wallach, H. Larochelle, A. Beygelzimer, F. d 'Alché-
+Buc, E. Fox, and R. Garnett (Eds.), Vol. 32. Curran Associates, Inc. https://proceedings.neurips.cc/paper_files/paper/2019/file/
+f63f65b503e22cb970527f23c9ad7db1-Paper.pdf
+[27] Nirupam Roy and Romit Roy Choudhury. 2016. Listening through a Vibration Motor. In Proceedings of the 14th Annual International
+Conference on Mobile Systems, Applications, and Services (Singapore, Singapore) (MobiSys ’16) . Association for Computing Machinery,
+New York, NY, USA, 57–69. doi:10.1145/2906388.2906415
+[28] Sriram Sami, Yimin Dai, Sean Rui Xiang Tan, Nirupam Roy, and Jun Han. 2020. Spying with your robot vacuum cleaner: eavesdropping
+via lidar sensors. In Proceedings of the 18th Conference on Embedded Networked Sensor Systems (Virtual Event, Japan) (SenSys ’20) .
+Association for Computing Machinery, New York, NY, USA, 354–367. doi:10.1145/3384419.3430781
+[29] Sriram Sami, Sean Rui Xiang Tan, Yimin Dai, Nirupam Roy, and Jun Han. 2020. LidarPhone: acoustic eavesdropping using a lidar
+sensor: poster abstract. In Proceedings of the 18th Conference on Embedded Networked Sensor Systems (Virtual Event, Japan) (SenSys ’20) .
+Association for Computing Machinery, New York, NY, USA, 701–702. doi:10.1145/3384419.3430430
+[30] A. Soumya, C. Krishna Mohan, and Linga Reddy Cenkeramaddi. 2023. Recent Advances in mmWave-Radar-Based Sensing, Its
+Applications, and Machine Learning Techniques: A Review. Sensors 23, 21 (2023). doi:10.3390/s23218901
+[31] Inc. Statista. 2024. Speaker market statistics from statista . Retrieved Jun, 2024 from https://www.statista.com/outlook/cmo/consumer-
+electronics/tv-radio-multimedia/speakers/worldwide
+[32] Nicolas Sturmel, Laurent Daudet, et al. 2011. Signal reconstruction from STFT magnitude: A state of the art. In International conference
+on digital audio effects (DAFx) . 375–386.
+[33] A Vaswani. 2017. Attention is all you need. Advances in Neural Information Processing Systems (2017).
+[34] Chao Wang, Feng Lin, Zhongjie Ba, Fan Zhang, Wenyao Xu, and Kui Ren. 2022. Wavesdropper: Through-wall Word Detection of Human
+Speech via Commercial mmWave Devices. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 6, 2, Article 77 (July 2022), 26 pages.
+doi:10.1145/3534592
+[35] Chao Wang, Feng Lin, Tiantian Liu, Ziwei Liu, Yijie Shen, Zhongjie Ba, Li Lu, Wenyao Xu, and Kui Ren. 2022. mmPhone: Acoustic
+Eavesdropping on Loudspeakers via mmWave-characterized Piezoelectric Effect. In IEEE INFOCOM 2022 - IEEE Conference on Computer
+Communications. 820–829. doi:10.1109/INFOCOM48880.2022.9796806
+[36] Chao Wang, Feng Lin, Tiantian Liu, Kaidi Zheng, Zhibo Wang, Zhengxiong Li, Ming-Chun Huang, Wenyao Xu, and Kui Ren. 2022.
+mmEve: eavesdropping on smartphone’s earpiece via COTS mmWave device(MobiCom ’22) . Association for Computing Machinery,
+New York, NY, USA, 338–351. doi:10.1145/3495243.3560543
+[37] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping
+on Loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182
+(Dec. 2022), 25 pages. doi:10.1145/3494975
+[38] Shaoying Wang and Xiaonan Zhang. 2024. A Vibration Signal Enhancement Scheme for mmWave-Based Sound Eavesdropping. InIEEE IN-
+FOCOM 2024 - IEEE Conference on Computer Communications Workshops (INFOCOM WKSHPS) . 1–6. doi:10.1109/INFOCOMWKSHPS61880.
+2024.10620704
+[39] Ziqi Wang, Zhe Chen, Akash Deep Singh, Luis Garcia, Jun Luo, and Mani B. Srivastava. 2020. UWHear: through-wall extraction and
+separation of audio vibrations using wireless signals. In Proceedings of the 18th Conference on Embedded Networked Sensor Systems
+(Virtual Event, Japan) (SenSys ’20) . Association for Computing Machinery, New York, NY, USA, 1–14. doi:10.1145/3384419.3430772
+[40] Qinyi Xu, Chunxiao Jiang, Yi Han, Beibei Wang, and K. J. Ray Liu. 2018. Waveforming: An Overview With Beamforming. IEEE
+Communications Surveys & Tutorials 20, 1 (2018), 132–149. doi:10.1109/COMST.2017.2750201
+[41] Xiangyu Xu, Yu Chen, Zhen Ling, Li Lu, Junzhou Luo, and Xinwen Fu. 2024. mmEar: Push the Limit of COTS mmWave Eavesdropping
+on Headphones. In IEEE INFOCOM 2024 - IEEE Conference on Computer Communications . 351–360. doi:10.1109/INFOCOM52122.2024.
+10621229
+[42] Yanni Yang, Genglin Wang, Zhenlin An, Guoming Zhang, Xiuzhen Cheng, and Pengfei Hu. 2024. RF-Parrot: Wireless Eavesdropping
+on Wired Audio. In IEEE INFOCOM 2024 - IEEE Conference on Computer Communications . 701–710. doi:10.1109/INFOCOM52122.2024.
+10621385
+[43] Guoming Zhang, Heqiang Fu, Zhijie Xiang, Xinyan Zhou, Pengfei Hu, Xiuzhen Cheng, and Yanni Yang. 2024. Ambient Light Reflection-
+Based Eavesdropping Enhanced with cGAN. IEEE Transactions on Mobile Computing (2024), 1–15. doi:10.1109/TMC.2024.3460392
+[44] Jia Zhang, Yinian Zhou, Rui Xi, Shuai Li, Junchen Guo, and Yuan He. 2022. AmbiEar: mmWave Based Voice Recognition in NLoS
+Scenarios. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 6, 3, Article 151 (Sept. 2022), 25 pages. doi:10.1145/3550320
+[45] Tao Zhang, Guoqing Feng, Jinhua Liang, and Tong An. 2021. Acoustic scene classification based on Mel spectrogram decomposition and
+model merging. Applied Acoustics 182 (2021), 108258. doi:10.1016/j.apacoust.2021.108258
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 9, No. 2, Article 51. Publication date: June 2025.

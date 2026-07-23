@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact., Mob., Wearable Ubiquitous Technol. 5 (4) (2021) 1–25.",
+  "paper_level_summary_zh": "引用论文将目标论文作为RFID语音窃听领域的一项代表性工作，在相关工作部分（第6.1.3节）中描述其实现了穿墙窃听能力。同时，在引言中引用[19-23]作为RFID在窃听应用中探测微弱振动的证据。未涉及sub-mm精度或开创性表述。",
+  "evidences": [
+    {
+      "recommendation": "include",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping.",
+      "evidence_context": "TagMic [22], built with COTS devices, was the first to show RFID tags could be used for eavesdropping. Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping. RF-Mic [20] uses RFID tags to create a low-cost, hidden, and flexible voice monitoring system, marking an early application of RFID in voice surveillance.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact., Mob., Wearable Ubiquitous Technol. 5 (4) (2021) 1–25.",
+      "why_this_judgment_zh": "引用论文正文明确说明目标论文[23]实现了穿墙窃听，直接对应claim_type中的through_wall_eavesdropping能力。原文使用'extended RFID sensing to enable through-wall eavesdropping'，明确锚定目标论文。",
+      "copy_ready_zh": "引用论文在相关工作第6.1.3节中确认，目标论文[23]（Wang等人）将RFID感知扩展到实现穿墙窃听。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "include",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "These studies collectively illustrate that RFID signals are capable of detecting subtle changes induced by vibrations, offering an innovative solution for the security monitoring of smart cabinets.",
+      "evidence_context": "Compared to other approaches, RFID stands out due to its compact size, lightweight design, low cost, and ease of deployment, which contribute to its widespread application in industrial monitoring [8–16], healthcare [17,18], and eavesdropping [19–23]. These studies collectively illustrate that RFID signals are capable of detecting subtle changes induced by vibrations, offering an innovative solution for the security monitoring of smart cabinets.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration, Proc. ACM Interact., Mob., Wearable Ubiquitous Technol. 5 (4) (2021) 1–25.",
+      "why_this_judgment_zh": "此处[19-23]为群组引用，目标论文作为其中之一被引用以支持RFID能检测微振动这一普遍观点，没有单独描述目标论文的具体贡献，属于普通相关工作引用。",
+      "copy_ready_zh": "引用论文在引言中将目标论文作为RFID在窃听应用中的代表性工作之一，说明RFID信号能够检测振动引起的细微变化。",
+      "confidence": "high"
+    }
+  ]
+}

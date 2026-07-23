@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}引用论文 {{ citing_paper.id }}{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">引用论文</div>
+      <h1>引用论文 {{ citing_paper.id }}</h1>
+      <p>上传引用论文 PDF 后，系统可抽取文本并执行引用证据分析。</p>
+    </div>
+  </header>
+  <section class="card">
+    {% include "components/pdf_status.html" %}
+  </section>
+  <section class="card">
+    <h2>分析状态</h2>
+    <p>{{ analysis_readiness }}</p>
+    {% if analysis_readiness == "ready" %}
+      <form action="/citing-papers/{{ citing_paper.id }}/analyze" method="post">
+        <button class="button button-primary" type="submit">创建 analyze_citation 任务</button>
+      </form>
+    {% else %}
+      <p>需要可用 PDF 文本后才能创建 analyze_citation 任务。</p>
+    {% endif %}
+  </section>
+  <section class="card">
+    <h2>强证据</h2>
+    {% if strong_evidence %}
+      {% for evidence in strong_evidence %}
+        <article class="evidence-card">
+          <blockquote class="quote">{{ evidence.citation_text }}</blockquote>
+          <dl class="meta-grid">
+            <div><dt>标签</dt><dd>{{ evidence.aspect }}</dd></div>
+            <div><dt>倾向</dt><dd>{{ evidence.stance }}</dd></div>
+            <div><dt>提及类型</dt><dd>{{ evidence.mention_type }}<span class="sr-only">Mention Type: {{ evidence.mention_type }}</span></dd></div>
+            <div><dt>分数</dt><dd>{{ evidence.score }}</dd></div>
+            <div><dt>强度</dt><dd>{{ evidence.evidence_strength }}</dd></div>
+          </dl>
+          <p>关键词高亮：{{ evidence.highlight_keywords_json }}</p>
+          <p>判断依据：{{ evidence.reason }}<span class="sr-only">Reason: {{ evidence.reason }}</span></p>
+        </article>
+      {% endfor %}
+    {% else %}
+      <p>暂无 strong evidence。</p>
+    {% endif %}
+  </section>
+  <section class="card">
+    <form action="/citing-papers/{{ citing_paper.id }}/pdf" method="post" enctype="multipart/form-data" class="inline-form">
+      <label class="form-label" for="file">上传 PDF</label>
+      <input class="form-control" id="file" name="file" type="file" accept=".pdf,application/pdf" required>
+      <button class="button button-primary" type="submit">上传并抽取文本</button>
+    </form>
+  </section>
+{% endblock %}

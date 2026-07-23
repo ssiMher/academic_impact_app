@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}导入重要引用作者 CSV{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">重要引用作者</div>
+      <h1>导入荣誉引用 CSV</h1>
+      <p>导入 ACM Fellow、IEEE Fellow、院士等荣誉身份列表，并匹配当前学者会话中的引用论文。</p>
+    </div>
+    <nav class="quick-links">
+      <a href="/scholar-sessions/{{ session_id }}/queue">返回队列</a>
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace">报告工作台</a>
+    </nav>
+  </header>
+
+  {% if error_message %}
+    <section class="notice notice-warning">{{ error_message }}</section>
+  {% endif %}
+
+  <section class="card">
+    <form action="/scholar-sessions/{{ session_id }}/import-honor-csv" method="post" enctype="multipart/form-data">
+      <label class="form-label">
+        选择 CSV 文件
+        <input class="form-control" type="file" name="file" accept=".csv,text/csv" required>
+      </label>
+      <button class="button button-primary" type="submit">导入重要引用作者 CSV</button>
+    </form>
+    <form action="/scholar-sessions/{{ session_id }}/import-honor-csv/rematch" method="post">
+      <button class="button button-secondary" type="submit">构建深度分析队列后重新匹配 CSV</button>
+    </form>
+    {% if summary and summary.no_queue_items %}
+      <p class="notice notice-warning">当前尚未构建深度分析队列，CSV 可以先导入作者信息，但无法标记 queue item。请先构建深度分析队列后重新匹配。</p>
+    {% endif %}
+  </section>
+
+  {% if summary %}
+    <section class="stat-grid">
+      <article class="stat-card"><h2>{{ summary.total_rows }}</h2><p>总行数</p></article>
+      <article class="stat-card"><h2>{{ summary.matched_count }}</h2><p>成功匹配</p></article>
+      <article class="stat-card"><h2>{{ summary.ambiguous_count }}</h2><p>模糊匹配</p></article>
+      <article class="stat-card"><h2>{{ summary.unmatched_count }}</h2><p>未匹配</p></article>
+      <article class="stat-card"><h2>{{ summary.created_notable_authors }}</h2><p>重要作者数量</p></article>
+      <article class="stat-card"><h2>{{ summary.important_queue_items_count }}</h2><p>重要 queue items 数量</p></article>
+    </section>
+  {% endif %}
+
+  <section class="card">
+    <h2>导入结果</h2>
+    {% if annotations %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>作者</th>
+              <th>荣誉</th>
+              <th>机构</th>
+              <th>引用论文</th>
+              <th>被引论文 / 目标论文</th>
+              <th>CSV 原始 Citing Paper Info</th>
+              <th>CSV 原始 My Cited Paper Title</th>
+              <th>匹配状态</th>
+              <th>匹配方法</th>
+              <th>分数</th>
+              <th>Queue Item</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for annotation in annotations %}
+              <tr>
+                <td>{{ annotation.citing_author_name }}</td>
+                <td>{{ annotation.honor_category }}</td>
+                <td>{{ annotation.citing_author_affiliation or "" }}</td>
+                <td>{{ annotation.matched_citing_paper_title or annotation.parsed_citing_paper_title or "未解析" }}</td>
+                <td>{{ annotation.matched_cited_paper_title or annotation.my_cited_paper_title or "未解析" }}</td>
+                <td>{{ annotation.citing_paper_info or "" }}</td>
+                <td>{{ annotation.my_cited_paper_title or "" }}</td>
+                <td>{{ annotation.match_status }}</td>
+                <td>{{ annotation.match_method }}</td>
+                <td>{{ annotation.match_score }}</td>
+                <td>{{ annotation.queue_item_id or "未绑定" }}</td>
+                <td>{{ annotation.unmatched_reason or "" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>尚未导入任何重要引用作者 CSV。</p>
+    {% endif %}
+  </section>
+{% endblock %}

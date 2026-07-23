@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[44]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "引用论文将目标论文作为通过RFID标签捕获扬声器亚毫米级振动的相关工作提及，但明确指出RFID由于波长较长（33 cm）不适合跟踪毫米级手部运动，因此对其能力进行了限制性评价。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44].",
+      "evidence_context": "Through-Wall Detection using RFID. Through-wall detection is also possible by using RFID systems. ... RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文确认RFID标签可测量扬声器振动模式，但紧接着指出RFID波长较长不适合毫米级运动跟踪，属于能力认可但有限制性评价。",
+      "copy_ready_zh": "引用论文指出RFID标签可测量扬声器振动模式，但因其波长较长（33 cm）不适合毫米级运动跟踪。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "include",
+      "claim_type": "submm_precision_claim",
+      "evidence_quote": "Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration",
+      "evidence_context": "Reference [44] is the target paper title: 'Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration'.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "目标论文标题包含'Sub-mm Level Vibration'，但引用正文中未显式提及'sub-mm'或'millimeter-level'等词；标题本身可作为亚毫米级声明的间接证据，但引用正文未锚定，因此归为'include'而非高置信度。",
+      "copy_ready_zh": "目标论文标题明确提及'Sub-mm Level Vibration'，但引用正文未对亚毫米精度进行显式描述或确认。",
+      "confidence": "medium"
+    }
+  ]
+}

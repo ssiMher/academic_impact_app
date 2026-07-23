@@ -1,0 +1,265 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "UHF RFID [24, 25, 26] Int/Ext mm∼cm <2 MHz Distance",
+      "reasoning": "The target reference [26] appears in a table listing side-channel key factors, including UHF RFID. It is a grouped citation without detailed discussion; the table serves as a summary of related work. The mention is a neutral factual listing of capabilities. Template 73 (rfid_submm_capability) is not satisfied because there is no explicit mention of sub-mm or millimeter-level vibration sensing in the body text; the table only lists 'mm∼cm' resolution which is coarse and not the sub-mm capability claimed by the target paper. Template 74 (first_or_pioneering_claim) is not satisfied because no first/pioneering expression is present.",
+      "keywords": [
+        "UHF RFID",
+        "[24, 25, 26]",
+        "mm∼cm",
+        "<2 MHz"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "citation_text does not anchor to target paper",
+          "matched_terms": [
+            "sub-mm",
+            "millimeter-level",
+            "rfid",
+            "vibration sensing"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RF signals, including WiFi [23], UHF RFID [24, 41, 25, 26], UWB [27], mmWave signals [29, 31, 32, 28, 42, 7], can be considered as a wireless vibrometry to measure the RF signal changes caused by the sound source vibration.",
+      "reasoning": "Target [26] is cited in a sentence describing RF-based SSEA as a category. The mention is a grouped citation in a background/survey context, listing various RF technologies. No detailed technical discussion of [26] is provided. Template 73 is not satisfied because sub-mm capability is not mentioned; the context only refers to 'wireless vibrometry' in general. Template 74 is not satisfied because there is no first/pioneering claim.",
+      "keywords": [
+        "UHF RFID",
+        "[24, 41, 25, 26]",
+        "wireless vibrometry"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "citation_text does not anchor to target paper",
+          "matched_terms": [
+            "sub-mm",
+            "rfid",
+            "measure"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Tag-bug [26] LS Standalone RFID On objects 2 MHz VA WC 4 10/26 W",
+      "reasoning": "In a table summarizing existing works, target [26] is listed as 'Tag-bug' with specifications. This is a typical related work enumeration. No evaluation or detailed use of the target paper's method is provided. Template 73 is not satisfied because sub-mm capability is not mentioned in the row; the table shows high sampling rate (2 MHz) and resolution not specified. Template 74 is not satisfied because there is no first/pioneering expression.",
+      "keywords": [
+        "Tag-bug",
+        "[26]",
+        "LS Standalone",
+        "RFID"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "sub-mm",
+            "rfid"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Word classification is the most frequently task that is evaluated in existing works [1, 13, 14, 8, 23, 26] because this task is relatively easy than the tasks above.",
+      "reasoning": "Target [26] is one of several references cited as examples of works evaluating word classification. The context is about the prevalence of the task, not about the target paper's specific contribution. Templates 73 and 74 are not satisfied as no sub-mm capability or first/pioneering claim appears.",
+      "keywords": [
+        "word classification",
+        "[1, 13, 14, 8, 23, 26]"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "citation_text does not anchor to target paper",
+          "matched_terms": [
+            "sub-mm"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "UHF RFID [24, 25, 26] Int/Ext mm∼cm <2 MHz Distance",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[26]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": true,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target reference [26] appears in a table listing side-channel key factors, including UHF RFID. It is a grouped citation without detailed discussion; the table serves as a summary of related work. The mention is a neutral factual listing of capabilities. Template 73 (rfid_submm_capability) is not satisfied because there is no explicit mention of sub-mm or millimeter-level vibration sensing in the body text; the table only lists 'mm∼cm' resolution which is coarse and not the sub-mm capability claimed by the target paper. Template 74 (first_or_pioneering_claim) is not satisfied because no first/pioneering expression is present.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "RF signals, including WiFi [23], UHF RFID [24, 41, 25, 26], UWB [27], mmWave signals [29, 31, 32, 28, 42, 7], can be considered as a wireless vibrometry to measure the RF signal changes caused by the sound source vibration.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[26]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Target [26] is cited in a sentence describing RF-based SSEA as a category. The mention is a grouped citation in a background/survey context, listing various RF technologies. No detailed technical discussion of [26] is provided. Template 73 is not satisfied because sub-mm capability is not mentioned; the context only refers to 'wireless vibrometry' in general. Template 74 is not satisfied because there is no first/pioneering claim.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Tag-bug [26] LS Standalone RFID On objects 2 MHz VA WC 4 10/26 W",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[26]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": true,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "In a table summarizing existing works, target [26] is listed as 'Tag-bug' with specifications. This is a typical related work enumeration. No evaluation or detailed use of the target paper's method is provided. Template 73 is not satisfied because sub-mm capability is not mentioned in the row; the table shows high sampling rate (2 MHz) and resolution not specified. Template 74 is not satisfied because there is no first/pioneering expression.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 3,
+      "citation_text_preview": "Word classification is the most frequently task that is evaluated in existing works [1, 13, 14, 8, 23, 26] because this task is relatively easy than the tasks above.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[26]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Target [26] is one of several references cited as examples of works evaluating word classification. The context is about the prevalence of the task, not about the target paper's specific contribution. Templates 73 and 74 are not satisfied as no sub-mm capability or first/pioneering claim appears.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: citation_text does not anchor to target paper; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

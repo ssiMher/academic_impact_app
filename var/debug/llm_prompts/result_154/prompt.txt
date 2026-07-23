@@ -1,0 +1,1336 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: TWLip: Exploring Through-Wall Word-Level Lip Reading Based on Coherent SISO Radar
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: 
+TARGET_REFERENCE_ENTRY: 
+TARGET_REFERENCE_CONTEXTS:
+(none)
+TARGET_ALIAS_CONTEXTS:
+[Context 1] section_heading=Most lip-reading recognition work is performed based on; context_type=alias_context; contains_formula=True
+s and subsequently used support
+vector machines as the traditional classiﬁers to translate these
+features into text [11], [12]. With the advancement of deep
+learning in recent years, neural networks have been widely
+applied in lip-reading recognition tasks for both the auto-
+matic feature extraction and classiﬁcation. Assael et al. [13]
+introduced a spatiotemporal neural network composed of
+convolutional neural network (CNN) and gated recurrent unit
+networks aimed at sentence-level lip reading. Wang et al. [14]
+developed a lip-reading method based on a 3-D convolutional
+visual transformer, which effectively extracts spatial and tem-
+poral features from continuous images, signiﬁcantly enhancing
+lip-reading performance. Feng et al. [15] incorporated an
+audio modality that allowed the lip-reading model to learn
+speech-related information from the audio signals, improving
+the performance of visual speech recognition. Despite the
+excellent performance of vision-based lip-reading recogni-
+tion, it requ
+
+[Context 2] section_heading=RF-based lip-reading recognition technology has shown; context_type=alias_context; contains_formula=False
+er, similar to the visual-
+based lip-reading techniques, the acoustic methods cannot
+function effectively under obstructed conditions.
+C. RF-Based Lip-Reading Recognition
+RF-based lip-reading recognition technology has shown
+great potential, especially in environments with obstructions
+and insufﬁcient lighting. RF signals can penetrate obstacles,
+providing new scenarios for the application of lip-reading
+recognition. Table I compares the TWLip and other RF-based
+lip-reading recognition systems. Wang et al. [9] introduced
+WiHear, which uses Wi-Fi channel state information to rec-
+ognize 33 words. Additionally, Hameed et al. [4] utilized
+Wi-Fi and UWB radar technologies as sensors for RF-based
+lip-reading recognition, and collected a data set, including
+ﬁve vowels and closed-lip (silent) states. In scenarios where
+the subject wore a mask, the average accuracies for the
+Wi-Fi and radar data were 61.01% and 73.44%, respectively.
+Zhang et al. [5] developed HearMe, employing masks with
+attached RFID ta
+
+[Context 3] section_heading=[18] C.; context_type=alias_context; contains_formula=False
+vol. 4, no. 3, p. 80,
+pp. 1–27, 2020.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32323
+[17] Q. Zhang, D. Wang, R. Zhao, and Y . Yu, “SoundLip: Enabling word and
+sentence-level lip interaction for smart devices,” Proc. ACM Interact.,
+Mobile, Wearable Ubiquitous Technol., vol. 5, no. 1, pp. 1–28, 2021.
+[18] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” Proc. ACM Interact., Mobile,
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+[19] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava,
+“UWHear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” in Proc. 18th Conf. Embed. Netw. Sensor Syst. ,
+2020, pp. 1–14.
+[20] P. Hu et al., “Towards unconstrained vocabulary eavesdropping with
+mmWave rad
+
+ACTIVE_EVIDENCE_TEMPLATES:
+- RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。
+- 首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。
+FULL_EXTRACTED_TEXT:
+32310 IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 19, 1 OCTOBER 2024
+TWLip: Exploring Through-Wall Word-Level Lip
+Reading Based on Coherent SISO Radar
+Dongsheng Zhu , Chong Han , Member, IEEE,J i a nG u o , and Lijuan Sun
+Abstract—Recently emerged radio frequency-based lip-reading
+recognition technologies leverage their independence from light-
+ing and penetration capabilities to expand the applications
+of lip-reading. Unlike visual-based lip-reading, this technology
+penetrates barriers, such as masks, glass, and wood to detect
+lip movements. However, the previous studies utilizing devices
+like millimeter-wave radar face limitations due to frequency
+and power consumption, which restrict the types of penetrable
+materials and application scenarios. Although low-frequency
+through-wall radar offers signiﬁcant penetration capabilities, it
+has reduced sensitivity to small movements, posing a challenge
+for lip-reading recognition. Moreover, the high cost of radar
+equipment and the scarcity of commercially available devices
+hinder the technology’s development. To address these challenges,
+we propose TWLip, a word-level lip-reading recognition system
+utilizing coherent single-input and single-output through-wall
+radar to detect tiny lip movements behind walls. We utilize
+I/Q 3-D curves derived from the radar signals corresponding
+to lip movements as the network input. These curves reﬂect
+the amplitude, frequency, and rotational characteristics of lip
+movements in the complex plane. Furthermore, we designed
+the IQResNet, built with 1-D preactivation residual bottleneck
+units, to extract and classify lip-movement features from I/Q
+3-D curves. We propose a data-augmentation method for radar
+lip-reading to enhance model efﬁcacy and generalizability. We
+created a through-wall radar lip-reading data set containing 20
+words from eight volunteers, totaling 9583 samples. The TWLip
+demonstrated the ability to recognize these words through a
+24 cm brick wall from two meters away with 88.51% accuracy,
+validating the algorithm’s superiority through detailed compar-
+ative studies.
+Index Terms—Coherent radar, lip-reading recognition, neural
+networks, through-wall sensing.
+I. I NTRODUCTION
+L
+IP-READING recognition technology identiﬁes spoken
+content by analysing the movements of a speaker’s lips.
+Manuscript received 27 March 2024; revised 3 July 2024; accepted 8
+July 2024. Date of publication 12 July 2024; date of current version
+25 September 2024. This work was supported in part by the Postgraduate
+Research and Practice Innovation Program of Jiangsu Province under
+Grant KYCX20_0766; in part by the National Natural Science Foundation
+of China under Grant 62272242; and in part by the Key Research
+and Promotion Projects of Henan Province under Grant 232102240023.
+(Corresponding author: Lijuan Sun.)
+This work involved human subjects or animals in its research. Approval
+of all ethical and experimental procedures and protocols was granted by
+Academic Morality and Ethics Committee of Nanjing University of Posts and
+Telecommunications.
+Dongsheng Zhu is with the College of Computer, Nanjing University of
+Posts and Telecommunications, Nanjing 210003, China.
+Chong Han, Jian Guo, and Lijuan Sun are with the College of
+Computer, Nanjing University of Posts and Telecommunications, Nanjing
+210003, China, and also with the Jiangsu High Technology Research
+Key Laboratory for Wireless Sensor Networks, Nanjing University
+of Posts and Telecommunications, Nanjing 210023, China (e-mail:
+sunlijuan_nupt@163.com).
+Digital Object Identiﬁer 10.1109/JIOT.2024.3427329
+Fig. 1. Diagram of through-wall lip-reading recognition.
+This technology does not rely on the acoustic signals and
+can work in environments where sounds are inaccessible or
+noisy. Lip-reading recognition can effectively complement
+sign language for people with impaired hearing and listening
+abilities, signiﬁcantly improving their quality of life and
+ability to participate in society. Moreover, this technology has
+a wide range of application scenarios in human–computer
+interaction, public safety, and counterterrorism [1], [2].I n
+human–computer interaction, lip-reading recognition offers a
+more natural and intuitive way of interaction especially in
+environments, where silence is required or speech recognition
+is limited. In public safety and counterterrorism, lip-reading
+recognition can be used as a powerful tool for surveillance
+and intelligence gathering, helping to analyse and under-
+stand the content of conversations when audio information is
+unavailable.
+With the development of deep learning and wireless sensing
+technologies, RF-ID, acoustic wave, WI-FI, and millimeter-
+wave radar [7], [8], [9], [10] sensors are now being applied
+in lip-reading recognition. The utilization of these sensors
+signiﬁcantly extends the application of traditional camera-
+based lip-reading recognition. Radio frequency (RF) signals,
+in particular, enable through-wall lip-reading recognition even
+under conditions with limited lighting or obstructions, as
+illustrated in Fig. 1. In human–computer interactions, this
+implies that people can silently control smart devices through
+walls, and in extreme situations, they can use lip-reading to
+call for help without being detected by criminals. Through-
+wall lip-reading recognition can also be further expanded into
+postdisaster rescue, where lip-reading complements life sign
+detection, potentially enhancing the rescue success rate.
+Nevertheless, through-wall lip-reading recognition is still
+in its preliminary stage of development and faces many
+challenges. First, commercial hardware platforms for the
+2327-4662 c⃝ 2024 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32311
+through-wall radar are relatively scarce, meaning related
+research and experiments are difﬁcult, which in turn hin-
+ders the development and popularization of this technology.
+Second, through-wall lip-reading recognition is more complex
+than the other coarse-grained through-wall sensing tech-
+nologies. A through-wall radar needs to capture weak and
+nonperiodic signals, which are often affected by wall materials,
+thickness, and environmental factors, thereby increasing the
+complexity of the data processing and recognition algorithms.
+In addition, due to the lack of large amounts of the experi-
+mental data and specialized data sets, it is difﬁcult for tthe
+researchers to train efﬁcient deep learning models for accurate
+recognition.
+In this article, we present TWLip, a through-wall word-level
+lip-reading system, which is based on the coherent SISO radar
+designed to detect and recognize the lip-reading of a target
+behind a wall. The TWLip utilizes coherent radar to enhance
+the sensing capability of small lip movements. It employs
+IQResNet to extract and recognize lip movement features from
+the I/Q data of the target’s lip movements. The experimental
+results show that the TWLip can penetrate a 24 cm brick wall
+to detect a target 2 m behind the wall and recognize 20 lip-
+reading words with an accuracy of 88.51%.
+The research contributions of this article are summarized as
+follows.
+1) We propose TWLip, a through-wall lip-reading recog-
+nition system based on the SISO coherent radar. It can
+recognize word-level lip movements from the targets
+located 2 M behind a wall. To the best of our knowledge,
+this is the ﬁrst lip-reading recognition work based on
+the through-wall radar.
+2) We propose a radar signal processing method for the
+radar signals to detect the range bins of the lip movement
+targets in the range proﬁle. The temporal I/Q data
+of these range bins serve as the input data for the
+network. Additionally, we introduce corresponding data
+augmentation methods.
+3) We design IQResNet, a network consisting of 1-D PARB
+units, to extract the lip movement features from the
+I/Q data and classify lip-reading words. The experimen-
+tal results demonstrate that the network achieves high
+recognition accuracy.
+4) We implement a coherent SISO radar and create a data
+set for through-wall lip-reading recognition. We invited
+eight volunteers to collect a word-level radar lip-reading
+data set in through-wall and free-space scenarios, cover-
+ing ten Chinese and ten English words in two adjacent
+rooms. This data set ﬁlls the gap in through-wall lip-
+reading recognition.
+This article is structured as follows. Section II reviews
+the related work on the lip-reading recognition. Section III
+presents the overall architecture of the TWLip system.
+Section IV summarizes some aspects of radar signal pro-
+cessing, including the radar lip movement I/Q 3-D curve,
+lip movement target detection, and data augmentation. The
+design of IQResNet is detailed in Section V. Section VI
+describes the system’s implementation, including the SISO
+radar system and the through-wall lip-reading data set followed
+by its evaluation in Section VII. Finally, conclusions and future
+research directions are discussed in Section VIII.
+II. R
+ELATED WORK
+Lip-reading recognition aims to infer spoken content by
+analysing lip movements. Researchers have developed vari-
+ous methods to capture lip movement signals, encompassing
+different signal acquisition methods, such as cameras, sound
+waves, and RF. Among these, camera-based visual lip-reading
+recognition dominates. However, the introduction of the RF
+technology has made through-wall lip-reading recognition pos-
+sible. This section primarily introduces the current mainstream
+technologies for lip-reading recognition based on the vision-,
+acoustic-, and RF-based methods.
+A. Visual-Based Lip-Reading Recognition
+Most lip-reading recognition work is performed based on
+the vision. In the initial stages, researchers mainly employed
+manual feature extraction techniques to identify lip movements
+from the videos or images and subsequently used support
+vector machines as the traditional classiﬁers to translate these
+features into text [11], [12]. With the advancement of deep
+learning in recent years, neural networks have been widely
+applied in lip-reading recognition tasks for both the auto-
+matic feature extraction and classiﬁcation. Assael et al. [13]
+introduced a spatiotemporal neural network composed of
+convolutional neural network (CNN) and gated recurrent unit
+networks aimed at sentence-level lip reading. Wang et al. [14]
+developed a lip-reading method based on a 3-D convolutional
+visual transformer, which effectively extracts spatial and tem-
+poral features from continuous images, signiﬁcantly enhancing
+lip-reading performance. Feng et al. [15] incorporated an
+audio modality that allowed the lip-reading model to learn
+speech-related information from the audio signals, improving
+the performance of visual speech recognition. Despite the
+excellent performance of vision-based lip-reading recogni-
+tion, it requires high-quality lighting conditions and cannot
+work effectively with occlusions, which limits its application
+scenarios.
+B. Acoustic-Based Lip-Reading Recognition
+Acoustic-based lip-reading recognition has emerged as a
+novel research area in recent years and is predominantly uti-
+lized for the human–computer interactions on the smartphones.
+Gao et al. [16] introduced EchoWhisper, a silent speech
+interface for smartphones that analyses the micro-Doppler
+effects generated by mouth and tongue movements. The
+smartphone microphone and speaker capture the acoustic char-
+acteristics of the reﬂected echoes to recognize silent speech
+content, identifying more than 45 different words with a word
+error rate of 8.33%. Similarly, Zhang et al. [17] proposed
+SoundLip, which leverages the built-in speaker and micro-
+phone of smart devices to emit and capture inaudible sound
+waves, capturing the user’s lip movements. They designed a
+hierarchical CNN (HCNN) and a multitask encoder-decoder
+network to achieve lip-reading recognition at both the word
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+32312 IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 19, 1 OCTOBER 2024
+TABLE I
+COMPARE TWL IP WITH EXISTING RF-B ASED LIP-READING RECOGNITION SYSTEMS
+Fig. 2. Overview of the TWLip system. The left side is a collection of through-wall lip movement data; the middle part is the radar signal processing,
+covering range FFT, direct wave and wall clutter cancelation, lip movement target detection, and data augmentation; and the right side is the IQResNe t, which
+includes the extraction of the lip movement features and the classiﬁcation of lip movements.
+and sentence levels. Yin et al. [8] released a large-scale lip-
+reading data set named LIPCMD, containing 30 000 acoustic
+recordings, and introduced LipReader, a self-distillation
+method that enhances the classiﬁcation performance by distill-
+ing probability distributions and attention maps within a CNN.
+The detection range for acoustic signal-based lip-reading
+recognition is typically limited, requiring the smartphone to be
+kept close to the user’s lips. Moreover, similar to the visual-
+based lip-reading techniques, the acoustic methods cannot
+function effectively under obstructed conditions.
+C. RF-Based Lip-Reading Recognition
+RF-based lip-reading recognition technology has shown
+great potential, especially in environments with obstructions
+and insufﬁcient lighting. RF signals can penetrate obstacles,
+providing new scenarios for the application of lip-reading
+recognition. Table I compares the TWLip and other RF-based
+lip-reading recognition systems. Wang et al. [9] introduced
+WiHear, which uses Wi-Fi channel state information to rec-
+ognize 33 words. Additionally, Hameed et al. [4] utilized
+Wi-Fi and UWB radar technologies as sensors for RF-based
+lip-reading recognition, and collected a data set, including
+ﬁve vowels and closed-lip (silent) states. In scenarios where
+the subject wore a mask, the average accuracies for the
+Wi-Fi and radar data were 61.01% and 73.44%, respectively.
+Zhang et al. [5] developed HearMe, employing masks with
+attached RFID tags to recognize 20 lip-reading words, achiev-
+ing an average recognition accuracy of 88%. Zeng et al. [6]
+proposed mSilent, a millimeter-wave-based silent speech
+recognition system. This method involved designing a signal
+preprocessing procedure to extract lip movement features and
+generate multiscale-depotentiated spectra, as well as a neural
+network with a multibranch convolution front end and a
+transformer-based sequence-to-sequence back end, achieving
+lip-reading recognition at close range with an average error
+rate of 9.5%. Research on through-wall lip-reading recognition
+is limited; Khanna et al. [3] achieved a high accuracy of 94%
+in classifying 26 letters using Doppler radar to penetrate a
+0.6 cm thick wooden board by employing deep CNNs. Most
+related studies utilized millimeter waves to penetrate low-
+loss wall materials (such as wood, glass, and soundprooﬁng
+materials) to directly or indirectly detect the content played
+in speakers behind walls [18], [19], [20] rather than the lip
+movements. Millimeter-wave radar, characterized by its short
+wavelength and high sensitivity can detect the minute vibra-
+tions of a speaker. However, its sensing capability is limited,
+and it cannot penetrate through the thicker brick walls.
+The longer the wavelength of RF signals is, the stronger
+their ability to penetrate walls, however their capacity to
+perceive small targets diminishes. This poses greater demands
+for the low-frequency through-wall radar systems that capture
+lip movements. This article proposes TWLip, which uses
+1-2 GHz low-frequency through-wall radar. Comprehensive
+experiments were conducted in unobstructed, free space, and
+through 24-cm brick walls, realizing the detection of lip
+movements of targets 2 M away from the radar and achieving
+a classiﬁcation accuracy of 88.51% for 20 words.
+III. S
+YSTEM DESIGN
+The system architecture of TWLip is shown in Fig. 2.T h e
+TWLip consists of three major components, data acquisition
+from the through-wall radar, the radar signal processing, and
+the IQResNet model. Initially, the SISO radar penetrates walls
+with low-frequency electromagnetic waves to capture the echo
+signals from the movement of the target’s lips. Subsequently,
+these signals are processed to eliminate interference, such as
+direct waves, wall clutter, and static backgrounds before the
+temporal I/Q data are the outputs. This article also speciﬁcally
+designs data augmentation for the radar lip movement data
+to enhance the system’s robustness. Finally, we developed
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32313
+IQResNet to extract the lip-reading features from the temporal
+I/Q data for the word-level lip-reading recognition.
+IV . RADAR SIGNAL PROCESSING
+This section introduces the process of radar signal process-
+ing, which includes the processing of the radar lip movement
+I/Q 3-D curves, lip movement target detection, and data
+augmentation methods.
+A. FMCW Radar Principle
+The radar used in this article employs a sawtooth frequency
+modulated continuous wave (FMCW). Given a starting
+frequency f0, the frequency of the FMCW chirp increases
+from f0 to f0 + B over a time range of 0 ≤ t ≤ T so that
+the transmitted signal of the FMCW can be expressed as a
+complex exponential
+Tx(t) = e
+j2π
+(
+f0t+1
+2 kt2
+)
+(1)
+where f0 is the starting frequency of the FMCW, k is the slope
+of the chirp, k = B/T, T is the sweep time, and B is the signal
+bandwidth.
+During the complex propagation process, signals undergo
+multiple instances of direct transmission, reﬂection, refraction,
+and scattering before ﬁnally reaching the receiving antenna.
+These include direct waves, wall reﬂections, static object
+reﬂections, and faint lip movement reﬂections. Assuming that
+there are N distinct paths for the signal to reach the receiving
+antenna, and that the propagation delay remains ﬁxed in each
+chirp, the propagation delay of the nth path is denoted as τ
+n.
+The signal received at the antenna can be represented as
+Rx(t) =
+N∑
+n=1
+anTx(t − τn) (2)
+where τn = (2rn/c), c is the speed of the light, rn is half
+the length of the nth propagation path, and an represents the
+amplitude of the nth propagation path. When the target is far
+from the radar, rn represents the distance from the target to
+the radar. After the received signal and the transmitted signal
+are processed through mixing and a low-pass ﬁlter, the beat
+signal b(t) is obtained
+b(t) = Tx(t) · Rx∗(t) =
+N∑
+n=1
+anej
+(
+2πkτnt+2πf0τn−πkτ2
+n
+)
+=
+N∑
+n=1
+anej(2πfnt+φn). (3)
+According to the above equation, the difference frequency
+for each propagation path is fn = kτn, with the corresponding
+initial phase being φn = 2πf0τn − πkτ2
+n .
+B. Radar Lip Movement I/Q 3-D Curve
+As illustrated in Fig. 3, assume that the dynamic path in the
+scene consists solely of the lip movements, vlip, and that the
+other propagation paths, including the direct path, reﬂections
+Fig. 3. Through-wall radar propagation path.
+Fig. 4. Lip movement signal rotation in the I/Q plane.
+from walls, and furniture are considered static clutter, vs.T h e
+beat signal can thus be simpliﬁed as
+b(t) = vs + vlip = vs + alipej(2πflipt+φlip). (4)
+This formula indicates that removing the static clutter is
+necessary only for extracting tiny lip movement changes. In
+the signal processing of an FMCW radar, an FFT is applied
+to the beat signal of an FMCW chirp to extract the distance
+of the target, rlip = (cflip/2k), where flip is the frequency.
+Therefore, the spectral component of the lip movement can be
+represented as
+Blip =
+∫ ∞
+−∞
+b(t)e−j2πfliptdt = Vs + Vlip = Vs + alipejφlip (5)
+where Vs denotes the static spectral component when the
+lengths of the other propagation paths are consistent with the
+lip movement propagation path. Ideally, this value is constant.
+V
+lip = alipejφlip represents the lip movement vector, which is
+composed of the amplitude alip and the phase φlip.
+Further analysis of Blip.T h e Blip of a single chirp cycle
+comprises static and lip movement components, which can be
+represented on the I/Q plane as depicted in Fig. 4. When the
+lips move, Vlip rotates based on Vs, and over consecutive Tc
+chirp cycles, and Blip forms a 3-D curve BTc
+lip in the 3-D space
+composed of the I/Q plane and the time axis. Fig. 5 shows the
+I/Q 3-D curves for the words ambulance, and message.
+Unlike the mmWave radar sensing task, this article uses the
+I/Q 3-D curves instead of spectrograms as the input data for
+the neural network. There are several primary considerations.
+First, the 1-2 GHz signals used in this article are far less
+sensitive to lip reading than the mmWave signals above
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+32314 IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 19, 1 OCTOBER 2024
+Fig. 5. Three types of characterization data for lip movement signals: I/Q
+3-D curves, I/Q planes, and spectrograms.
+30 GHz. Millimeter waves can even detect vibrations of vocal
+cords, a capability beyond the reach of through-wall radar. The
+frequency component of the spectrum plot of the through-wall
+radar primarily contains minor lip movement information as
+shown in Fig. 5, where it is difﬁcult to observe high-frequency
+vocal cord vibrations. Second, spectrograms primarily reﬂect
+time and frequency information but overlook the spatial
+rotation information of I/Q 3-D curves. As shown in Fig. 5,
+the 3-D curves in the I/Q space exhibit more pronounced
+characteristics than the IQ plane and spectrograms. Therefore,
+we choose the I/Q 3-D curves as the input data for the lip-
+reading classiﬁcation network.
+C. Lip Movement Target Detection
+Following the analysis of lip movement signals, the prereq-
+uisite for detecting the lip movement signals is to determine
+the range of the lip movement target, i.e., to solve for
+f
+lip. Unlike coarse-grained sensing (positioning and behavior
+recognition), a lip movement is more subtle and lacks the
+periodic patterns of vital signs. Therefore, the lip movement
+signals are easily overwhelmed by limb movements, which
+increases the difﬁculty of detecting lip movements. The lip
+movement target detection process will be detailed next.
+1) Range FFT: The data acquired by the SISO radar
+consist of a 2-D real matrix A made up of beat signal sampling
+points with dimensions T
+c × Sa, where Tc represents the
+number of chirps in FMCW corresponding to the slow time,
+and Sa represents the sampling points of the beat signal in
+an FMCW chirp, i.e., the fast time. By performing an 1-D
+fast Fourier transform (FFT) along the fast time dimension
+of the matrix A, we obtain the distance matrix W, with
+dimensions T
+c × Rw, where Rw is the frequency index after
+the FFT, which also serves as the index for the range bin
+representing the distance. Given the length of the coaxial line
+in the radar design of this study, it is imperative not to neglect
+Fig. 6. Range proﬁle.
+the electromagnetic wave propagation delay within the coaxial
+line. Therefore, when the range bin index R
+w equals 0, it does
+not correspond to the zero distance point detected by the radar.
+Therefore, it is necessary to trim the distance dimension of the
+distance matrix W to clearly deﬁne the detection range and
+reduce the computational load.
+2) Direct Wave and Wall Clutter Removal: Among the
+n propagation paths, the direct wave represents the shortest
+path and thus experiences minimal path attenuation. Thus,
+within the distance matrix W, the amplitude of the range bin
+occupied by the direct wave is the largest. The modulus of
+the distance matrix W is averaged cumulatively along the slow
+time dimension to obtain the range proﬁle curve D
+D(r) =
+∑
+t
+|W(t,r)|
+Tc
+. (6)
+As illustrated in Fig. 6, the index of the range bin cor-
+responding to the direct wave is denoted as begin, with the
+red region indicating the maximum frequency component,
+representing the area for the direct wave and wall clutter. The
+area indicated in the green corresponds to the target location.
+Assuming that end is the index for maximum detection, the
+sensing region is segmented, W(t,r),begin ≤ r ≤ end. The
+direct wave and wall reﬂections can be removed by setting the
+region in the distance matrix W associated with the direct wave
+and wall reﬂections to zero. Due to the short distance between
+the receiving and transmitting antennas of the SISO radar used
+in this study, the starting point of the distance dimension in
+the trimmed distance matrix W is considered the zero distance
+point of the radar.
+3) Target Detection: When people speak, they often exhibit
+slight head or body movements. Additionally, due to the limi-
+tations of the radar antenna array used in this study, it cannot
+detect the azimuth, which introduces motion interference at
+closely spaced range indices, such as breathing and heartbeats.
+The typical breathing frequency of humans is approximately
+10 to 20 breaths per minute, i.e., 0.16–0.33 Hz, while at
+remainder, the heart rate range of an adult is approximately
+60 to 100 beats per minute (approximately 1–1.67 Hz).
+According to the research of Poeppel and Assaneo [21] and
+Pedersen et al. [22], the frequency of mouth movements during
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32315
+speech is 2–8 Hz. We can utilize this difference to extract lip
+movement targets.
+A bandpass ﬁlter is applied to the slow-time dimension
+of matrix W, retaining only the frequency components of
+2–8 Hz to suppress low-frequency interferences, such as limb
+movements, heartbeats, and breathing. Then, the FFT is
+performed on the ﬁltered matrix W
+f (t,r) along the slow-time
+axis, yielding a range-Doppler map Df (doppler,r)
+Df (doppler,r) = FFT
+(
+Wf (t,r)
+)
+. (7)
+To further determine the target’s location, we accumulate
+the Doppler components in the range-Doppler map to ﬁnd the
+range bin with the greatest energy. When the detected scene
+involves only lip movements and no signiﬁcant head displace-
+ments during speech, the range bin with the highest energy
+corresponds to the lip movement target. Mathematically, this
+can be represented as
+r
+lip = arg max
+r
+∑
+doppler
+⏐⏐Df (doppler,r)
+⏐⏐ (8)
+where rlip represents the distance index with the highest
+Doppler energy, indicating the position of the lip movement
+target. The 3-D curve of lip movement, denoted as W
+lip(t) =
+W(t,rlip) is derived for each lip reading word. The feature
+input to the network is obtained by performing the mean
+subtraction on these 3-D lip movement curves.
+The through-wall radar designed in this study has a distance
+resolution of 15 cm, meaning that each range bin represents
+a length of 15 cm. The range bin of the lip movement
+signal depends on the position of the human body. Given the
+randomness of the human body’s position, the lip movement
+signal may not precisely fall within a single range bin but
+might lie at the boundary between the two range bins. In such
+cases, the lip movement information will be distributed across
+adjacent range bins. Therefore, this study uses the 3-D lip
+movement curves of the target r
+lip and its adjacent three range
+bins as the input for the IQResNet.
+D. Data Augmentation
+Many deep learning tasks rely on the large data sets to
+ensure the practical training and generalizability of the models.
+For instance, there are numerous open-source data sets for
+the video-based lip-reading recognition, and a vast amount of
+video data can be easily obtained from the Internet. However,
+the data acquisition is relatively more challenging in the
+through-wall radar domain. Due to the high equipment cost
+and the expensive data collection process, acquiring sufﬁcient
+radar data poses a signiﬁcant challenge.
+Therefore, the data augmentation becomes particularly cru-
+cial in radar signal processing. Unlike video and image data
+augmentation methods, radar signal data augmentation must
+be designed to match unique signal characteristics. To address
+this challenge, we designed the following data augmentation
+methods based on the radar signal model.
+1) I/Q Rotation: Analysis of the spectral component of lip
+movement B
+lip = Vs + alipejφlip indicates that it comprises
+a static vector and a lip movement vector. The static vector
+consists of multipaths with identical propagation path lengths,
+including paths through furniture, ﬂoors, and bodies. Fig. 4
+shows that the static vector consists of the amplitude and
+angle. Since, the lip movement component is relatively weak
+and signiﬁcantly smaller than the static component, mean
+subtraction is performed on the 3-D lip reading curve to negate
+the inﬂuence of V
+s. This operation removes the magnitude of
+the static vector Vs and sets the mean of the lip-reading curve
+to 0, effectively isolating the lip movement component Vlip.
+However, the mean subtraction does not eliminate the angle
+of the static vector Vs.
+When the scene changes or there is body movement, the
+angle of the static vector also changes. Based on this, we set a
+random rotation angle θ ∈ [−π,π) to rotate the lip movement
+3-D curve as shown in Fig. 4, simulating the lip movements
+in different scenes
+B′
+lip = Blipejθ. (9)
+2) Time Scaling: People speak at varying rates, resulting
+in different lip movement signals across individuals. We
+introduced a time-scaling factor β ∈ [0.8,1.2], applied to
+stretch or compress the 3-D lip movement curves, thereby
+increasing the diversity of the data across different speaking
+speeds.
+3) Amplitude Scaling: We observed that the amplitude
+of mouth movements varied signiﬁcantly among different
+subjects when speaking. Therefore, we introduced a scaling
+factor α ∈ [0.5,2], which is used to amplify or reduce the
+magnitude of the 3-D lip movement curves
+B′
+lip = αBlip. (10)
+4) Gaussian Noise: To enhance the robustness of the
+model, we introduced the Gaussian noise with a standard
+deviation of 0.005.
+V. I Q RES NET MODEL DESIGN
+In the research on applying deep learning to radar sensing,
+image datas, such as radar heatmaps [23], spectrograms [24],
+and range-Doppler maps [25] are commonly used as the input
+data for the neural network models. These data types can
+express features well in some coarse-grained sensing tasks or
+high-sensitivity mmWave radar sensing. However, in scenarios
+of through-wall lip-reading sensing due to the lower signal
+frequency, there is insufﬁcient sensitivity to perceive minor
+movements, leading to weak image features in the heatmaps
+or Doppler images. To extract the faint lip movement features
+of targets behind walls, we propose a lip-reading recognition
+model based on an 1-D CNN, IQResNet, to extract and classify
+the 3-D lip movement curve features.
+The IQResNet model consists of multiple stacked 1-D
+PARB units as shown in Fig. 7. The model is divided into
+two parts: 1) the I/Q fusion and 2) the fusion of multiple
+range bins. The input to the model is three lip movement
+curves. First, three independent I/Q fusion parts each extract
+lip movement features within a range bin; then, the features
+from the three range bins are fused and further extracted;
+and ﬁnally, lip-reading classiﬁcation is performed through a
+multilayer perceptron and a softmax layer.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+32316 IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 19, 1 OCTOBER 2024
+Fig. 7. IQResNet model structure.
+Fig. 8. PARB unit.
+A. PARB Unit
+The core component of the IQResNet model is the PARB
+unit as shown in Fig. 8, which consists of three 1-D con-
+volutional layers with the kernel sizes of 1, 3, and 1. The
+preactivation residual bottleneck block concept was initially
+proposed by He et al. [26]. The distinctive design feature
+of this module is the placement of the activation function
+before the convolutional layers within the residual block,
+which can improve the ﬂow of gradients in deep networks
+and is suitable for deeper network architectures. Moreover, the
+bottleneck structure reduces the number of parameters in the
+network. Considering the differences between the I/Q data and
+images, especially the positive and negative characteristics of
+the I/Q data, we replace the ReLU activation function in the
+standard residual block with a parametric rectiﬁed linear unit
+(PReLU) [27].
+PReLU is deﬁned as follows:
+f (y
+i) =
+{ yi, yi > 0
+αi · yi, yi ≤ 0 (11)
+where yi represents the input to the neuron and αi is a
+learnable parameter for determining the activation strength
+for the negative input values. In the standard ReLU, all the
+negative inputs are directly set to zero, whereas in PReLU, the
+negative inputs are scaled by this learnable parameter. This
+allows the network to adaptively adjust its response to the
+negative inputs during training. This approach is particularly
+suitable for processing the I/Q signals that contain the negative
+values.
+B. I/Q Fusion
+Speciﬁcally, this section ﬁrst independently processes the
+I/Q signals of the lip movement curve through the two
+branches, each containing an 1-D CNN with a stride of 2 and
+a kernel size of 30, a batch normalization (BN) layer, PReLU,
+and two PARB units with a stride of 2. A stride-2 PARB unit
+refers to a residual structure where the stride of the ﬁrst-layer
+1-D CNN is 2. Unless speciﬁcally mentioned, the stride for
+the 1-D CNNs within a PARB is uniformly 1. Considering
+the temporal correlation of the I/Q signals, which jointly
+represent the impact of lip movements on the radar signals,
+these two branches share weights. These two branches are
+then concatenated along the channel dimension, merging the
+features learned from the I/Q channels individually. The fused
+features subsequently pass through the two PARB units with
+a stride of 2, and two PARB units for feature dimensionality
+increase.
+C. Multiple Range Bins Fusion
+The lip movement curves in different range bins exhibit dis-
+tinct patterns, and the features fused from the I/Q components
+vary accordingly. Therefore, it is necessary to integrate the
+features fused from the I/Q components further across different
+range bins. This part initially performs element wise addition
+of the features outputted by the three I/Q fusion components,
+thereby effectively consolidating and enhancing the lip-reading
+features across various range bins. Subsequently, the features
+are dimensionally reduced through the multiple PARB units.
+In IQResNet, the activation function for each layer employs
+PReLU and utilizes a BN layer. Finally, in the MLP, two fully
+connected layers are used with dropout to prevent overﬁtting.
+VI. S
+YSTEM IMPLEMENTATION
+A. Coherent SISO Radar
+Most of the operating frequency bands of the through-
+wall radars operate at 500 MHz–10 GHz, and the signal in
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32317
+Fig. 9. Coherent SISO radar.
+TABLE II
+RADAR PARAMETER LIST
+this band is signiﬁcantly less sensitive than the mmWave
+radar signals. Therefore, for the through-wall ﬁne-grained
+sensing, the phase coherence of the radar system faces higher
+requirements. In our previous research [28], [29], we designed
+a noncoherent through-wall radar used for coarse-grained
+sensing, such as localization and behavioral recognition of
+people behind a wall. We further optimized the radar system
+to capture the ﬁne-grained lip-reading movements behind the
+walls. A synchronous clock was introduced on the existing
+basis to ensure that the same clock drove both the FMCW
+signal source and the ﬁeld programmable gate array (FPGA)
+development board. The coherent SISO radar structure as
+shown in Fig. 9, includes the RF front-end and digital signal
+processing (DSP) with speciﬁc parameters detailed in Table II.
+The FMCW signal source generates a linear sawtooth-
+waveform FMCW signal with a bandwidth of 1 GHz, a
+sweep time of 100 us, and a pulse repetition frequency of
+1000 Hz. The signal, ampliﬁed by a power ampliﬁer (PA), is
+transmitted through the transmitting antenna, reﬂected off the
+lips, and then captured by the receiving antenna. After being
+ampliﬁed by a low noise ampliﬁer (LNA), the captured RF
+signal is mixed with the local oscillator signal from the signal
+generator, producing an intermediate frequency (IF) signal.
+The DSP part processes this IF signal and outputs it through
+a low-pass ﬁlter, producing a beat signal containing target
+information. An FPGA and an analog-to-digital converter
+(ADC) collect and process the beat signal. Similar to the
+previous works [28], [29], the FMCW signal generator outputs
+a trigger signal, the rising edge of which is synchronized
+with the start of the sweep of the signal source. This signal
+triggers the ADC to start sampling, thus segmenting the beat
+signals of different cycles. However, as the clock driving the
+sampling part differs from the clock driving the signal source,
+this method introduces a slight phase shift in the beat signals
+Fig. 10. TWLip system.
+of different cycles. While this phase shift can be ignored in
+coarse-grained sensing tasks, it causes signiﬁcant interference
+in ﬁne-grained sensing tasks. To solve this problem, we
+introduce a reference clock, which is used to synchronously
+drive the FMCW signal source, ADC, and FPGA, ensuring
+that the phase information of the IF signal across different
+sweep cycles can be accurately synchronized and processed.
+The coherent SISO radar system is equipped with two
+broadband horn antennas, each with a gain of 11 dB, manu-
+factured by A-INFO, Inc., designated as model LB-1080-SF.
+The AX7020 development board and AN9238 ADC mod-
+ule acquire the radar’s IF signal, both of which are from
+ALINX, Inc. The AX7020 development board incorporates
+the XC7Z020 chip from Xilinx, which integrates an ARM
+processor and an FPGA. The AN9238 ADC module is
+equipped with an AD9238 analog-to-digital conversion chip
+from Analog Devices, Inc. In tandem, the FPGA and ADC
+are responsible for acquiring, segmenting, and storing the IF
+signals. The ARM processor manages interaction control and
+data transmission with the PC, facilitating the transfer of the IF
+signals stored in the FPGA to the PC via a network interface.
+Signal processing is then executed on the PC side utilizing
+Python.
+The LWLip system is illustrated in Fig. 10, where the
+transmitting and receiving antennas of the radar are placed
+adjacent to each other at a height of 1.2 m above the ground.
+The equipment captures radar data at a frame rate of 1000
+FPS, where one frame corresponds to a single chirp of the
+FMCW signal.
+B. Through-Wall Radar Lip-Reading Recognition Data Set
+1) Corpus: We created a corpus containing ten English and
+ten Chinese (Mandarin) words. The English words vary from
+disyllabic to tetrasyllabic, and the Chinese words consist of
+two or three characters directly corresponding to their syllable
+count.
+1) English Vocabulary: Order, assist, emergency, ambu-
+lance, help, message, email, computer, camera, and
+radar.
+2) Chinese Vocabulary:
+2) Experimental Scenario: To comprehensively evaluate
+the performance of the TWLip system, we conducted indepth
+experiments in two adjacent rooms across four different
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+32318 IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 19, 1 OCTOBER 2024
+(a)
+(c) (d)
+(b)
+Fig. 11. Diagram of the experimental scene. (a) FS Scene 1. (b) FS Scene
+2. (c) TW Scene 1. (d) TW Scene 2.
+TABLE III
+VOLUNTEER INFORMATION
+scenarios. These experimental scenarios are shown in Fig. 11
+and are categorized into two main categories: 1) free space
+and 2) through-wall. Room 1 is an ofﬁce equipped with
+computers, ofﬁce desks, chairs, and sofas, while Room 2 is a
+laboratory containing experimental equipment, tables, chairs,
+and computers. The radar and target are in the same room
+without obstacles in the free space scenarios. For the through-
+wall scenarios, the radar and target are located in two different
+rooms, with the radar device placed close to the wall to detect
+the target in the other room. These four scenarios are labeled
+FS Scene 1, FS Scene 2, TW Scene 1, and TW Scene 2. FS
+Scenes 1 and 2 refer to free space detection within Rooms 1
+and 2, respectively, where there are no obstacles between the
+radar and the target. In TW Scene 1, the radar is located inside
+Room 1, penetrating the wall to detect a target in Room 2.
+Correspondingly, for TW Scene 2, the radar is in Room 2,
+which detects a target in Room 1 through the wall. The walls
+are made of brick and concrete, a typical construction in China
+with a thickness of 24 cm.
+3) Data Collection: We invited eight volunteers, including
+three males and ﬁve females aged 22–30 years, to participate
+in the data set collection. All the volunteers were native
+Chinese speakers. Table III presents the speciﬁc physiological
+information of the volunteers, including gender, age, height,
+and weight. The volunteers faced the radar at approximately
+2 m in the free space and through-wall scenarios. To facilitate
+recording, we developed voice interaction software, which uses
+voice prompts and a recording button to segment the lip-
+reading data. When a volunteer pressed the recording button,
+the system recorded the radar data for 3 s. The volunteers
+were required to speak the word to be recorded within
+this 3-s window, maintaining a normal speaking speed and
+volume. A total of 9583 samples were recorded, amounting to
+approximately 8 h of the data.
+To enhance the transparency and reproducibility of this
+study, we will soon make the data set and code available
+to the public in the following repository: https://github.com/
+simon2413/TWLip.
+C. Implementation Details
+In this study, to train and evaluate the proposed model, we
+initially partitioned the data set at a ratio of 9:1, i.e., 90%
+of the data were used as the training set with the remaining
+10% served as the test set. For the training set, we employed
+a k-fold cross-validation strategy, where the value of k was set
+to 10. This implies that the training set was evenly divided
+into ten subsets, with one subset being used as the validation
+set in each iteration and the remaining nine subsets being used
+for training. This method makes full use of the training set
+and reduces the risk of overﬁtting by repeatedly training and
+validating on different subsets. Furthermore, evaluations across
+multiple iterations make the results more robust, minimizing
+the bias caused by randomness in the data division and
+thus providing a more accurate assessment of the model’s
+performance.
+The parameter size of IQResNet is 7.16 M. During the
+training process, a batch size of 256 is utilized on the GPU,
+and Adam [30] with a learning rate of 1 e
+−4 is the optimizer.
+In our experiments, the same random seed, set to 15, is used
+for all the instances involving randomness.
+VII. E XPERIMENTAL EVA L UAT I O N
+We conducted many experiments to evaluate the
+performance of the TWLip system. This section describes the
+system’s overall performance and then analyses the different
+inﬂuencing factors through the comparative experiments.
+A. Overall Performance
+In this section, all the training data were used for training,
+and the average results were obtained on the test set, and four
+different scenarios and all the test targets were covered. Fig.12
+shows the confusion matrix for a word classiﬁcation of the
+TWLip system. In the ﬁgure, the numbers EW01-10 represent
+the following English words in order: “order,” “assist,”
+“emergency,” “ambulance,” “help,” “message,” “email,”
+“computer,” “camera,” and “radar.” The numbers CW01-10
+represent the Chinese words in the following sequence:
+The TWLip showed high recognition accuracy, reaching
+88.51%. The accuracy for each word ranged from 68.6%
+to 97.9%, reﬂecting the system’s performance variance in
+recognizing different words. Notably, the lowest accuracy was
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32319
+Fig. 12. TWLip confusion matrix.
+Fig. 13. Accuracy of TWLip under different targets and environment.
+observed for the word order (EW01), with an accuracy of only
+68.6%. The primary reason is that the word is pronounced
+with minimal mouth movement, making it challenging for the
+through-wall radar signals to adequately capture lip movement
+information.
+Furthermore, for the words
+(CW01) and
+(CW08), their recognition accuracies were 75% and 83%,
+respectively. Notably, the words had a 9.5% probability
+of being misidentiﬁed as , and h a da5 . 1 %
+probability of being misidentiﬁed as . The reason for
+this confusion is that the lip movements of the two words are
+similar. This confusion phenomenon highlights the challenges
+the through-wall lip-reading recognition systems face when
+two words have similar mouth movement patterns.
+We conducted an in-depth analysis of TWLip performance
+across different targets and environments, as shown in Fig. 13.
+The recognition accuracies for FS Scene 1, FS Scene 2, TW
+Scene 1, and TW Scene 2 were 93.05%, 91.45%, 88.93%,
+and 80.59%, respectively. Notably, the recognition accuracy
+in through-wall scenarios was signiﬁcantly lower than that
+in free-space scenarios. This is mainly due to the substantial
+signal attenuation during the through-wall detection, which
+results in weaker lip movement signals affecting recognition
+effectiveness. Among the eight tested users, most achieved
+a recognition accuracy of over 86%, but User 3 had a rela-
+tively lower average precision of only 74.96%. Particularly in
+through-wall scenarios, this user’s accuracy was signiﬁcantly
+lower than that of the other users. The primary reason for this
+is the relatively small amplitude of lip movement when this
+user speaks.
+B. Impact of Chinese and English Vocabulary
+We trained the model separately on the Chinese and English
+vocabularies to test the recognition accuracy across different
+languages as shown in Figs. 14 and 15.
+The recognition accuracies for the Chinese and English
+vocabularies improved, reaching 89.71% and 90.75%, respec-
+tively. This improvement is attributed to reduced vocabulary
+size, leading to increased precision in the classiﬁcation task.
+Instances of word confusion still exist, such as between CW01
+and CW08 .
+C. Impact of Different Data Augmentation Methods
+In this study, we employed various data augmentation
+methods to enhance the performance of deep learning models.
+To gain insight into the contribution of each method, we indi-
+vidually examined a number of data augmentation methods,
+which are, no data augmentation, Gaussian noise, amplitude
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+32320 IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 19, 1 OCTOBER 2024
+Fig. 14. Confusion matrix for Chinese words.
+Fig. 15. Confusion matrix of English words.
+TABLE IV
+IMPACT OF DIFFERENT DATA AUGMENTATION METHODS ON ACCURACY
+scaling, I/Q rotation, time scaling, and a combination of all
+these methods. Table IV presents the speciﬁc impact of these
+techniques on the model accuracy.
+When no data augmentation methods are employed, the
+model’s accuracy is the lowest at 17.01%. The introduction of
+Fig. 16. Comparison of the recognition accuracy for different numbers of
+range bins.
+Gaussian noise, the most basic form of the data perturbation,
+and scaling the amplitude of the I/Q signals improved the
+accuracy to 28.68% and 30.77%, respectively, demonstrat-
+ing that noise and simple scaling can enhance the model’s
+adaptability to the data. Complex data augmentation methods,
+such as I/Q rotation and time scaling further increased the
+accuracy to 68.1% and 84.43%, respectively. This indicates
+that simulating different positional variations and modulating
+the speed of speech can signiﬁcantly enhance the model’s
+recognition capabilities. By integrating all these data augmen-
+tation methods, the model achieved the highest accuracy at
+88.51%. This result underscores the importance of employing
+a comprehensive range of data augmentation techniques to
+improve the performance of the deep learning models.
+D. Impact of Different Numbers of Range Bins
+We investigated the impact of the number of range bins
+on the recognition accuracy of IQResNet. Speciﬁcally, we
+examined the changes in the recognition accuracy of TWLip
+when using 1, 3, and 5 range bins as shown in Fig. 16.
+The recognition rates were 82.03%, 88.51%, and 88.88%,
+respectively.
+The experimental results show that the recognition accuracy
+improves with an increase in the number of range bins.
+This phenomenon suggests that the lip movement signals
+are dispersed across different range bins due to the radar
+resolution limitations. Therefore, a signiﬁcant improvement in
+the recognition rate is observed when the number of range
+bins increases to 3. However, the increase in the recognition
+rate is marginal when the number of range bins increases
+to 5. This may be attributed to the typical adult human head
+diameter ranging between 15 and 20 cm, implying that the
+signals from lip movements are unlikely to be dispersed over
+a range exceeding 75 cm (i.e., 5 range bins).
+In practical applications, as the number of range bins
+increases, the model’s parameter count also increases lead-
+ing to increased resource consumption. Therefore, minor
+improvements in accuracy require higher computational costs.
+Selecting an appropriate number of range bins can balance the
+recognition performance with the model’s complexity.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32321
+TABLE V
+COMPARISON OF THE ACCURACY OF DIFFERENT METHODS
+E. Comparison With Other Methods
+In the TWLip study, the IQResNet network was constructed
+to extract the 3-D curve features of lip movements. In the
+ﬁeld of lip-reading recognition based on the wireless signals,
+some studies have shown excellent recognition effects, such as
+for SoundLip [17] and mSlient [6]. Although the application
+scenarios and sensing devices differ, the core of these two
+studies lies in extracting wireless signal features through
+deep learning for lip-reading recognition. SoundLip utilizes
+acoustics for silent lip-reading recognition and uses an HCNN
+to extract lip movement features from the acoustic amplitude
+and phase signals. mSlient is a silent speech recognition study
+based on the mmWave radar that involves constructing a multi-
+branch convolutional network (MCN) to extract articulatory
+gestures from the multiscale detrended spectrogram (MSDS)
+of the mmWave radar. Additionally, in ﬁelds, such as image
+recognition and speech recognition, some mature CNNs, such
+as VGG [31] and ResNet [32], have been developed.
+In this section, we compare IQResNet with these methods
+on our data set. Moreover, the input to IQResNet is switched
+between the amplitude and phase to evaluate the impact of
+different inputs on the recognition performance. Likewise, I/Q
+data and amplitude and phase are used as the inputs to the
+HCNN to compare the performances of different networks
+with the same input data. The experimental results as shown
+in Table V, indicate that the IQResNet achieves a recognition
+accuracy of 88.51%, outperforming all the other methods. In
+IQResNet and HCNN, the accuracy is signiﬁcantly greater
+when the input data are I/Q than when the amplitude and
+phase are used. This demonstrates the superior performance
+of IQResNet in extracting the 3-D curve features of lip
+movements. Furthermore, we prove that the I/Q data, as a
+network input can provide richer lip movements features than
+the amplitude and phase data, thereby enhancing the accuracy
+of lip-reading recognition. When spectrogram data are used
+as the input, models with more parameters, such as VGG19
+and ResNet18 outperform the MCN. In contrast, IQResNet
+achieves an optimal performance with a moderate number of
+parameters.
+F . Cross-Environment Performance
+To test the model’s performance in different environments,
+we selected the data from one to two scenes out of four
+for testing, with the remaining scene data used for training.
+Fig. 17 shows that the prediction accuracy varies between the
+scenes. In the single-scene testing, the recognition accuracies
+of FS Scene 1, FS Scene 2, TW Scene 1, and TW Scene 2 were
+Fig. 17. Recognition accuracy of the cross-environment.
+Fig. 18. Transfer learning for cross-environment.
+66.36%, 65.5%, 63.18%, and 57.25%, respectively. In the free
+space scenarios FS Scene 1 and 2 and through-wall scenarios
+TW Scenes 1 and 2, the overall recognition accuracies were
+39.76% and 23.14%, respectively. These results indicate that
+the TWLip system performs better in free space scenarios
+but struggles in the more challenging through-wall scenarios,
+reﬂecting the variance of the model’s performance in different
+environments.
+Building on this foundation, we employed transfer learning
+on the trained model with a subset of samples from the test
+scenarios to adapt to the test scenes. Fig. 18 illustrates the
+relationship between the different quantities of test samples
+involved in ﬁne tuning and the recognition accuracy. The
+results indicate that increasing the amount of ﬁne-tuning data
+enhances the recognition accuracy across various scenes. In
+FS Scene 1, as the volume of the ﬁne-tuning data increased, so
+did the recognition accuracy, reaching 85.09% when the ﬁne-
+tuning data amounted to 30%. A similar trend was observed
+for other scenarios. Notably, when the ﬁne-tuning data reached
+30%, the recognition accuracy approached the level of full
+data ﬁne tuning, demonstrating a signiﬁcant performance
+improvement.
+G. Cross-Target Performance
+As with the cross-scene testing, we evaluated the model’s
+performance across different targets. We trained the model
+with seven out of eight users and tested it on the eighth.
+Transfer learning was also applied to the test target. The
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+32322 IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 19, 1 OCTOBER 2024
+Fig. 19. Transfer learning for cross-target.
+experimental results as shown in Fig. 19, indicate that when
+the trained model was directly used for testing, the recog-
+nition accuracy for all the users was below 45%, with User
+7 having the lowest accuracy at 17.52%. This demonstrates the
+signiﬁcant differences in lip movement patterns between the
+individuals. However, the recognition accuracy substantially
+increased when 10% of the test samples were used to ﬁne
+tune the model. When this proportion was increased to 30%
+(approximately 16 samples per word), the recognition accuracy
+for most users approached that of training with all the samples.
+This suggests that the TWLip can effectively extract lip
+movement features from different users from the 3-D lip
+movement curves. Moreover, when applied to a new user, only
+a small amount of data is required for ﬁne tuning to achieve
+reasonable recognition rates, signiﬁcantly reducing the cost of
+sample collection.
+VIII. C
+ONCLUSION
+This article introduces the TWLip system, an innovative
+through-wall, word-level lip-reading system based on the
+coherent SISO radar. The TWLip system has demonstrated
+its signiﬁcant efﬁcacy in through-wall lip reading through the
+extensive research and experimental validation, indicating its
+potential applications in smart homes, security surveillance,
+and postdisaster rescue. The IQResNet neural network model
+we developed is designed to process lip movement features in
+radar signals and shows superior recognition accuracy com-
+pared to the traditional methods. Moreover, the adoption of
+various data augmentation methods has enhanced the model’s
+robustness and generalizability in different environments. The
+experimental results show that the TWLip can achieve a
+recognition accuracy of up to 88.51%. The system exhibits
+adaptability to new environments and individuals, and effec-
+tively reduces the cost of data collection through the transfer
+learning strategies, thus achieving improved performances.
+However, this research also has several limitations. First,
+environmental interference and individual differences remain
+the primary challenges affecting the recognition accuracy.
+Although data augmentation methods can improve the model’s
+adaptability, the system’s performance may still be limited in
+extreme or complex environments. Second, the current system
+designs and experiments mainly focus on a limited set of
+words and environments, which might not be directly extrapo-
+lated to sentence recognition or more complex environmental
+conditions.
+The primary task for the future research will be to further
+optimize and improve radar signal processing algorithms
+and deep learning models, which will be key to enhancing
+the system performances. Speciﬁcally, researching how to
+more effectively process and reduce the impact of envi-
+ronmental noise and other interferences may signiﬁcantly
+increase the system’s accuracy and reliability. Expanding
+the data set to include more corpora and a comprehen-
+sive range of environmental conditions will help improve
+the system’s generalization capability. Although TWLip has
+already demonstrated its potential in through-wall lip-reading
+recognition, the future research still holds considerable room
+for further development and expanded possibilities.
+R
+EFERENCES
+[1] S. J. Preethi and B. Niranjana Krupa, “Analyzing lower half facial
+gestures for lip reading applications: Survey on vision techniques,”
+Comput. Vis. Image Understand., vol. 233, Aug. 2023, Art. no. 103738.
+[2] S. Fenghour, D. Chen, K. Guo, B. Li, and P. Xiao, “Deep
+learning-based automated lip-reading: A survey,” IEEE Access ,v o l .9 ,
+pp. 121184–121205, 2021.
+[3] R. Khanna, D. Oh, and Y . Kim, “Through-wall remote human voice
+recognition using doppler radar with transfer learning,” IEEE Sensors
+J., vol. 19, no. 12, pp. 4571–4576, Jun. 2019.
+[4] H. Hameed et al., “Pushing the limits of remote RF sensing by reading
+lips under the face mask,” Nat. Commun., vol. 13, no. 1, p. 5168, 2022.
+[5] S. Zhang et al., “HearMe: Accurate and real-time lip reading based
+on commercial RFID devices,” IEEE Trans. Mobile Comput. , vol. 22,
+no. 12, pp. 7266–7278, Dec. 2023.
+[6] S. Zeng, H. Wan, S. Shi, and W. Wang, “mSilent: Towards general
+corpus silent speech recognition using COTS mmWave radar,” Proc.
+ACM Interact., Mobile, Wearable Ubiquitous Technol. , vol. 7, no. 1,
+pp. 1–28, 2022.
+[7] Y . Chen, J. Yu, L. Kong, H. Kong, Y . Zhu, and Y .-C. Chen, “RF-Mic:
+live voice eavesdropping via capturing subtle facial speech dynamics
+leveraging RFID,” Proc. ACM Interact., Mobile, Wearable Ubiquitous
+Technol., vol. 7, no. 2, pp. 1–25, 2023.
+[8] Y . Yin, Z. Wang, K. Xia, L. Xie, and S. Lu, “Acoustic-based lip reading
+for mobile devices: Dataset, benchmark and a self distillation-based
+approach,” IEEE Trans. Mobile Comput., vol. 23, no. 5, pp. 4548–4565,
+May 2024.
+[9] G. Wang, Y . Zou, Z. Zhou, K. Wu, and L. M. Ni, “We can hear you with
+Wi-Fi!” IEEE Trans. Mobile Comput. , vol. 15, no. 11, pp. 2907–2920,
+Nov. 2016.
+[10] D. Ferreira, S. Silva, F. Curado, and A. Teixeira, “Exploring silent
+speech interfaces based on frequency-modulated continuous-wave
+radar,” Sensors, vol. 22, no. 2, p. 649, 2022.
+[11] P. Sujatha and M. R. Krishnan, “Lip feature extraction for visual speech
+recognition using hidden Markov model,” in Proc. Int. Conf. Comput.,
+Commun. Appl., 2012, pp. 1–5.
+[12] X. Ma, L. Yan, and Q. Zhong, “Lip feature extraction based on improved
+jumping-snake model,” in Proc. 35th Chin. Control Conf. (CCC) , 2016,
+pp. 6928–6933.
+[13] Y . M. Assael, B. Shillingford, S. Whiteson, and N. De Freitas, “LipNet:
+End-to-end sentence-level lipreading,” 2016, arXiv:1611.01599.
+[14] H. Wang, G. Pu, and T. Chen, “A lip reading method based on 3D con-
+volutional vision transformer,” IEEE Access, vol. 10, pp. 77205–77212,
+2022.
+[15] D. Feng, S. Yang, S. Shan, and X. Chen, “Audio-driven deformation
+ﬂow for effective lip reading,” in Proc. 26th Int. Conf. Pattern Recognit.
+(ICPR), 2022, pp. 274–280.
+[16] Y . Gao, Y . Jin, J. Li, S. Choi, and Z. Jin, “EchoWhisper: Exploring an
+acoustic-based silent speech interface for smartphone users,” Proc. ACM
+Interact., Mobile, Wearable Ubiquitous Technol. , vol. 4, no. 3, p. 80,
+pp. 1–27, 2020.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: TWLip: EXPLORING THROUGH-W ALL WORD-LEVEL LIP READING BASED ON COHERENT SISO RADAR 32323
+[17] Q. Zhang, D. Wang, R. Zhao, and Y . Yu, “SoundLip: Enabling word and
+sentence-level lip interaction for smart devices,” Proc. ACM Interact.,
+Mobile, Wearable Ubiquitous Technol., vol. 5, no. 1, pp. 1–28, 2021.
+[18] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” Proc. ACM Interact., Mobile,
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+[19] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava,
+“UWHear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” in Proc. 18th Conf. Embed. Netw. Sensor Syst. ,
+2020, pp. 1–14.
+[20] P. Hu et al., “Towards unconstrained vocabulary eavesdropping with
+mmWave radar using GAN,” IEEE Trans. Mobile Comput. , vol. 23,
+no. 1, pp. 941–954, Jan. 2024.
+[21] D. Poeppel and M. F. Assaneo, “Speech rhythms and their neural
+foundations,” Nat. Rev. Neurosci., vol. 21, no. 6, pp. 322–334, 2020.
+[22] N. F. Pedersen, T. Dau, L. K. Hansen, and J. Hjortkjær, “Modulation
+transfer functions for audiovisual speech,” PLoS Comput. Biol. , vol. 18,
+no. 7, 2022, Art. no. e1010273.
+[23] M. Zhao et al., “Through-wall human pose estimation using radio
+signals,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit., 2018,
+pp. 7356–7365.
+[24] L. Fan, L. Xie, X. Lu, Y . Li, C. Wang, and S. Lu, “mmMIC: Multi-
+modal speech recognition based on mmWave radar,” in Proc. 42nd Int.
+IEEE Conf. Comput. Commun. (INFOCOM) , 2023, pp. 1–10.
+[25] C. Ma and Z. Liu, “mDS-PCGR: A bi-modal gait recognition framework
+with the fusion of 4D radar point cloud sequences and micro-doppler
+signatures,” IEEE Sensors J., vol. 24, no. 6, pp. 8227–8240, Mar. 2024.
+[26] K. He, X. Zhang, S. Ren, and J. Sun, “Identity mappings in deep residual
+networks,” in Proc. 14th ECCV , 2016, pp. 630–645.
+[27] K. He, X. Zhang, S. Ren, and J. Sun, “Delving deep into rectiﬁers:
+Surpassing human-level performance on ImageNet classiﬁcation,” in
+Proc. IEEE Int. Conf. Comput. Vis. (ICCV) , 2015, pp. 1026–1034.
+[28] D. Zhu, C. Wang, C. Han, J. Guo, and L. Sun, “TWLBR: Multi-human
+through-wall localization and behavior recognition based on MIMO
+radar,” in Proc. IEEE Glob. Commun. Conf. , 2022, pp. 3186–3191.
+[29] C. Wang, D. Zhu, L. Sun, C. Han, and J. Guo, “Real-time through-
+wall multihuman localization and behavior recognition based on
+MIMO radar,” IEEE Trans. Geosci. Remote Sens. , vol. 61, 2023,
+Art. no. 5104312.
+[30] D. P. Kingma and J. Ba, “Adam: A method for stochastic optimization,”
+in Proc. Int. Conf. Learn. Represent. , 2015, pp. 1–15.
+[31] K. Simonyan and A. Zisserman, “Very deep convolutional networks for
+large-scale image recognition,” 2015, arXiv:1409.1556.
+[32] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for
+image recognition,” in Proc. IEEE Conf. Comput. Vis. Pattern Recognit.
+(CVPR), 2016, pp. 770–778.
+Dongsheng Zhu received the B.E. degree in com-
+munication engineering and the M.S. degree in
+computer technology from Nanjing University of
+Posts and Telecommunications, Nanjing, China, in
+2016 and 2019, respectively, where he is currently
+pursuing the Ph.D. degree.
+His research interests encompass wireless signal
+processing, wireless sensing, and machine learning.
+Chong Han (Member, IEEE) received the M.S.
+degree in computer application from Henan
+University, Kaifeng, China, in 2010, and the
+Ph.D. degree in information network from Nanjing
+University of Posts and Telecommunications,
+Nanjing, China, in 2013.
+He is currently an Associate Professor
+with Nanjing University of Posts and
+Telecommunications. His research interests include
+wireless sensing and RF information processing.
+Jian Guo received the B.S. and M.S. degrees
+in computer science and the Ph.D. degree in
+information network from Nanjing University of
+Posts and Telecommunications, Nanjing, China, in
+2000, 2007, and 2013, respectively.
+He is currently an Associate Professor
+with Nanjing University of Posts and
+Telecommunications. His research interests cover
+biometrics, wireless sensing, and pattern recognition.
+Lijuan Sun received the B.S. degree in radio engi-
+neering from Southeast University, Nanjing, China,
+in 1985, and the M.S. degree in signal, circuit,
+and system and the Ph.D. degree in communication
+and information system from Nanjing University of
+Posts and Telecommunications, Nanjing, in 1988 and
+2007, respectively.
+She is currently a Professor and a Ph.D.
+Supervisor with the School of Computer Science and
+Technology and the School of Software, Nanjing
+University of Posts and Telecommunications. Her
+main research interests include biometrics, sensor networks, and machine
+learning.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:46:37 UTC from IEEE Xplore.  Restrictions apply.

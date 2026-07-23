@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "Additionally, [22], [23] transforms a robotic vacuum cleaner\u2019s lidar radar into a laser microphone, and RFID [30] is also utilized for eavesdropping.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper groups RFID [30] with other methods as an example of an eavesdropping technique, without specific claims about sub-mm capability or vibration sensing. The context is a related work survey listing approaches. No explicit description of sub-mm precision or vibration sensing is present. Attribution uncertainty exists because the citation is grouped with others, and the method is not described in detail.",
+      "highlight_keywords": ["RFID", "eavesdropping"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Quote contains 'RFID' and 'eavesdropping', but lacks explicit wording about sub-mm/millimeter-level precision or vibration sensing. The grouping and lack of detail make it insufficient for precision_claim or capability_recognition. It qualifies only as an ordinary_citation or background mention, not satisfying the template's strict rules.",
+      "template_satisfied": false,
+      "template_failure_reason": "The template rfid_submm_capability requires explicit body wording of sub-mm precision or target title Sub-mm plus anchored RFID/vibration body context. The quote only mentions RFID for eavesdropping without any precision or vibration details, and the grouped citation lacks attribution clarity."
+    }
+  ]
+}

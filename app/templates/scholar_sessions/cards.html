@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}{% if report_workspace %}报告工作台{% else %}高亮卡片{% endif %}{% endblock %}
+
+{% block content %}
+  {% set is_formal_report_view = report_workspace and view == "all" and not card_type and formal_report_markdown %}
+  <header class="page-header page-header--workspace">
+    <div>
+      <div class="eyebrow">报告素材</div>
+      <h1>{% if report_workspace %}报告工作台{% else %}高亮卡片{% endif %}</h1>
+      <p>{% if report_workspace %}管理可纳入报告/PPT的证据卡片{% else %}当前筛选：{{ card_type or "全部" }}{% endif %}</p>
+    </div>
+    <nav class="quick-links action-bar">
+      <a href="/scholar-sessions/{{ session_id }}/evidence">返回证据</a>
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace">报告工作台</a>
+      <a href="/scholar-sessions/{{ session_id }}/import-honor-csv">导入重要引用作者 CSV</a>
+      <a href="/scholar-sessions/{{ session_id }}/exports/report.md">report.md</a>
+      <a href="/scholar-sessions/{{ session_id }}/exports/report.pptx">report.pptx</a>
+      <a href="/scholar-sessions/{{ session_id }}/exports/structured.json">structured.json</a>
+      <a href="/scholar-sessions/{{ session_id }}/exports/highlight_cards.csv">highlight_cards.csv</a>
+      <a href="/scholar-sessions/{{ session_id }}/exports/highlight_cards.md">highlight_cards.md</a>
+    </nav>
+  </header>
+  <section class="card">
+    <h2>导出文件说明</h2>
+    <ul class="feature-list">
+      <li><strong>highlight_cards.md：</strong>结构化证据卡片，适合人工整理、复制到 Word 或交给导师审阅。</li>
+      <li><strong>report.md：</strong>综合报告，包含学者会话摘要和结构化高亮卡片。</li>
+      <li><strong>report.pptx：</strong>汇报幻灯片。</li>
+      <li><strong>structured.json：</strong>机器可读数据，适合后续程序处理或复核。</li>
+    </ul>
+  </section>
+  {% if workspace_stats %}
+    <section class="stat-grid">
+      <article class="stat-card"><h2>{{ workspace_stats.report_card_count }}</h2><p>报告卡片数</p></article>
+      <article class="stat-card"><h2>{{ workspace_stats.include_in_report_count }}</h2><p>已纳入报告</p></article>
+      <article class="stat-card"><h2>{{ workspace_stats.strong_evidence_card_count }}</h2><p>强证据卡片</p></article>
+      <article class="stat-card"><h2>{{ workspace_stats.ordinary_citation_card_count }}</h2><p>普通引用卡片</p></article>
+      <article class="stat-card"><h2>{{ workspace_stats.important_author_count }}</h2><p>重要作者引用</p></article>
+      <article class="stat-card"><h2>{{ workspace_stats.needs_review_count }}</h2><p>需要复核</p></article>
+    </section>
+  {% endif %}
+  <nav class="filter-buttons">
+    {% if is_formal_report_view %}
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace">正式报告视图</a>
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace?view=debug">展开调试信息</a>
+    {% else %}
+      <a href="/scholar-sessions/{{ session_id }}/cards">全部</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=strong_evidence">强证据</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=ordinary_citation">普通引用</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=representative_work">重要作者 / 代表性</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=background_reference">背景引用</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=weak_mention">弱证据</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=method_foundation">方法来源</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=first_or_seminal_claim">首次/开创性</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=detailed_comparison">详细对比</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=baseline_or_benchmark">基线/Benchmark</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards?card_type=theoretical_foundation">理论基础</a>
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace?view=template_satisfied">命中模板</a>
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace?view=template_unsatisfied">未满足模板</a>
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace?view=false_positive">误报</a>
+      <a href="/scholar-sessions/{{ session_id }}/report-workspace?view=invalid_anchor">锚点不匹配</a>
+    {% endif %}
+    <a href="/scholar-sessions/{{ session_id }}/report-workspace?view=debug">调试</a>
+  </nav>
+
+  {% if is_formal_report_view %}
+    <article class="card formal-report-preview">
+      <h2>正式报告预览</h2>
+      <p class="muted">该视图与导出的 Markdown 报告共用同一套 fulltext_template_direct renderer。调试字段、模板命中、锚点状态和编辑表单请进入“调试”视图查看。</p>
+      <section class="diagnostics-panel formal-report-section">
+        <h3>报告摘要</h3>
+        <ul class="feature-list">
+          <li><strong>学者会话：</strong>{{ formal_report_view.summary.session_label }}</li>
+          <li><strong>推荐纳入证据数：</strong>{{ formal_report_view.summary.include_count }}</li>
+          <li><strong>候选复核证据数：</strong>{{ formal_report_view.summary.review_count }}</li>
+          <li><strong>局限性/不宜作为亮点证据数：</strong>{{ formal_report_view.summary.limitation_count }}</li>
+          <li><strong>不纳入证据数：</strong>{{ formal_report_view.summary.exclude_count }}</li>
+        </ul>
+      </section>
+      <section class="diagnostics-panel formal-report-section">
+        <h3>结论摘要</h3>
+        <ul class="feature-list">
+          <li><strong>是否发现第三方明确亚毫米级佐证：</strong>{{ formal_report_view.conclusion.submm }}</li>
+          <li><strong>是否发现 first / pioneering 评价：</strong>{{ formal_report_view.conclusion.first }}</li>
+          <li><strong>是否发现能力认可：</strong>{{ formal_report_view.conclusion.capability }}</li>
+          <li><strong>不宜过度解读：</strong>{{ formal_report_view.conclusion.caution }}</li>
+        </ul>
+      </section>
+      {% for section in formal_report_view.sections %}
+        <section class="formal-report-section">
+          <h3>{{ section.title }}</h3>
+          {% if section.summary_text %}
+            <p>{{ section.summary_text }}</p>
+          {% elif section["items"] %}
+            {% for item in section["items"] %}
+              {% set formal_item = item %}
+              {% set evidence_page = false %}
+              {% include "components/formal_evidence_card.html" %}
+            {% endfor %}
+          {% else %}
+            <p class="muted">暂无。</p>
+          {% endif %}
+        </section>
+      {% endfor %}
+      <details class="compact-details">
+        <summary>查看原始 Markdown</summary>
+        <pre class="report-markdown-preview">{{ formal_report_markdown }}</pre>
+      </details>
+    </article>
+  {% else %}
+    <form action="/scholar-sessions/{{ session_id }}/cards/generate" method="post">
+      <button class="button button-primary" type="submit">从 selected / accepted / important evidence 生成卡片</button>
+    </form>
+    {% if workspace_rows %}
+      {% for row in workspace_rows %}
+        {% set card = row.card %}
+        {% set grouped_warning = row.grouped_warning %}
+        {% set context_preview = row.context_preview %}
+        {% set narrative_meta = row.narrative_meta %}
+        {% include "components/highlight_card.html" %}
+      {% endfor %}
+    {% else %}
+      {% if view in ["false_positive", "debug", "invalid_anchor"] %}
+        {{ empty_state("暂无误报候选", "当前没有引用编号不匹配或已标记误报的卡片。") }}
+      {% else %}
+        {{ empty_state("暂无亮点评价卡片", "请先生成或复核强证据，再生成亮点评价卡片。部分候选因引用编号不匹配已被归为误报，可在误报视图查看。") }}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endblock %}

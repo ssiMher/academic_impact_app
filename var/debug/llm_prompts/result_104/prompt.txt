@@ -1,0 +1,1658 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Acoustic Eavesdropping From Sound-Induced Vibrations With Multi-Antenna mmWave Radar
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [23]
+TARGET_REFERENCE_ENTRY: [23] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” inProc. ACM Interactive Mobile
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=Recently, a noticeable trend considers launching eavesdrop; context_type=formula_nearby; contains_formula=True
+vesdropping
+Recently, a noticeable trend considers launching eavesdrop
+attacks employing WiFi, RFID, and mmWave technologies. The
+authors in [15] and [14] have demonstrated that the channel
+state information and received signal strength from WiFi can
+be used to identify limited words. The ultra-wideband impulse
+radio technology used in[21] enables the separation of multiple
+audio sources by detecting vibrations. Similarly,[22] employs
+the same wireless-based technology to capture audio with fre-
+quencies below 400 Hz. These methods cannot recover human
+speech due to the low frequency response.[23] utilizes RFID
+tags and cGAN to perform acoustic eavesdropping, but this
+approach is less practical as it requires pre-installing RFID tags
+near the target. Overall, these methods based on WiFi signals
+and impulse radio [14], [15], [21], [22], [23] are limited by
+the inadequate vibration resolution caused by low packet rates
+and long wavelengths. Moreover, they require larger antenna
+conﬁgurations than portable mmWave radars, resulting in a more
+visible presence of the attacker.
+In mmWave-based eavesdropping research, MILLIEAR[17]
+utilizes coarse-grained phase estimates to detect millimeter-le
+
+[Context 2] section_heading=Recently, a noticeable trend considers launching eavesdrop; context_type=formula_nearby; contains_formula=True
+nal strength from WiFi can
+be used to identify limited words. The ultra-wideband impulse
+radio technology used in[21] enables the separation of multiple
+audio sources by detecting vibrations. Similarly,[22] employs
+the same wireless-based technology to capture audio with fre-
+quencies below 400 Hz. These methods cannot recover human
+speech due to the low frequency response.[23] utilizes RFID
+tags and cGAN to perform acoustic eavesdropping, but this
+approach is less practical as it requires pre-installing RFID tags
+near the target. Overall, these methods based on WiFi signals
+and impulse radio [14], [15], [21], [22], [23] are limited by
+the inadequate vibration resolution caused by low packet rates
+and long wavelengths. Moreover, they require larger antenna
+conﬁgurations than portable mmWave radars, resulting in a more
+visible presence of the attacker.
+In mmWave-based eavesdropping research, MILLIEAR[17]
+utilizes coarse-grained phase estimates to detect millimeter-level
+amplitude vibrations [24]. However, these methods based on
+inter-chirp are limited by low-frequency response and accuracy
+issues, which are mitigated using cGAN. The authors in[18],
+[25] employ millimeter waves to eavesdrop on audio from phone
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- Template goal (custom): 判断引用论文是否明确承认、概括、使用或评价目标论文实现了 RFID 亚毫米级 / sub-mm level / millimeter-level 振动感知能力，尤其关注 loudspeaker vibration、through-wall eavesdropping、voice/acoustic vibration sensing、fine-grained RFID sensing 等语境。必须给出原文证据，并解释为什么该原文能支持“亚毫米级精度佐证”。. Prioritize evidence matching these terms: sub-mm, submillimeter, sub-millimeter, sub millimeter, millimeter-level, mm-level, fine-grained vibration, tiny vibration, micro-vibration, vibration sensing, RFID sensing, RFID tag, loudspeaker vibration, speaker vibration, through-wall, eavesdropping, acoustic sensing, voice sensing, audio sensing, high-precision sensing. Still require original citation_text and avoid promoting grouped citation or weak mention.
+- Template goal (custom): 判断引用论文是否明确称目标论文是 first / pioneering / early / seminal / first-of-its-kind / the first to achieve 等首次、早期或开创性工作。只能在原文明确出现相关表述时给出该判断，不能根据年份或系统推断自动生成。. Prioritize evidence matching these terms: first, the first, first-of-its-kind, pioneering, early work, seminal, earliest, for the first time, 首次, 开创性, 率先, 最早. Still require original citation_text and avoid promoting grouped citation or weak mention.
+FULL_EXTRACTED_TEXT:
+IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025 7693
+Acoustic Eavesdropping From Sound-Induced
+Vibrations With Multi-Antenna mmWave Radar
+Wenhao Li , Riccardo Spolaor , Chuanwen Luo , Yuchao Sun, Huashan Chen, Guoming Zhang,
+Yanni Yang , Xiuzhen Cheng , Fellow, IEEE, and Pengfei Hu
+Abstract—Acoustic eavesdropping against private or conﬁden-
+tial spaces is a signiﬁcant threat in the realm of privacy protection.
+While the presence of soundproof material would weaken such an
+attack, current eavesdropping technology may be able to bypass
+these protections. Fortunately, existing studies either inadequately
+cover the full spectrum of human speech due to low-frequency
+responses or rely heavily on the prior knowledge used to train a
+model. To address these challenges, this paper introduces mmEcho,
+a new acoustic eavesdropping method that utilizes millimeter-wave
+signals to sense vibration induced by sound precisely. Through
+signal processing techniques such as the intra-chirp scheme and
+phase calibration algorithm, mmEcho achieves micrometer-level
+vibration extraction without requiring target-related data. To im-
+prove the range of eavesdropping attacks while reducing noise, we
+optimize radar signals by leveraging the widespread availability of
+multiple antennas on commercial off-the-shelf radars. We com-
+prehensively evaluate the performance of mmEcho in different
+real-world settings. Experimental results demonstrate that, with
+the aid of multi-antenna technology, mmEcho can more effectively
+reconstruct the audio from the target at various distances, direc-
+tions, sound insulators, reverberating objects, sound levels, and
+languages. Compared to existing methods, our approach provides
+better effectiveness without prior knowledge, such as the speech
+data from the target.
+Index Terms—Audio eavesdropping, mmWave radar, vibration
+sensing, signal processing, multiple antennas.
+Received 13 April 2024; revised 6 March 2025; accepted 11 March 2025.
+Date of publication 13 March 2025; date of current version 3 July 2025.
+This work was supported in part by the National Natural Science Foundation
+of China under Grant 62422208, Grant 62202276, Grant 62302274, Grant
+62232010, Grant 62202274, and Grant 62350410480, in part by the Shandong
+Science Fund for Excellent Young Scholars under Grant 2022HWYQ-038 and
+Grant 2024HWYQ-021, and in part by Shandong Science Fund under Grant
+2023TSGC0105 and Grant ZR2023QF113. Recommended for acceptance by
+Y. L i u .(Corresponding authors: Riccardo Spolaor; Guoming Zhang.)
+Wenhao Li, Riccardo Spolaor, Guoming Zhang, Yanni Yang, Xiuzhen Cheng,
+and Pengfei Hu are with the School of Computer Science and Technology, Shan-
+dong University, Qingdao 266237, China (e-mail: li_wenhao@mail.sdu.edu.cn;
+rspolaor@sdu.edu.cn; guomingzhang@sdu.edu.cn; yanniyang@sdu.edu.cn;
+xzcheng@sdu.edu.cn; phu@sdu.edu.cn).
+Chuanwen Luo is with the School of Information Science and Technology,
+Beijing Forestry University, Beijing 100107, China, and also with the Engineer-
+ing Research Center for Forestry-Oriented Intelligent Information Processing of
+National Forestry and Grassland Administration, Beijing 100083, China (e-mail:
+chuanwenluo@bjfu.edu.cn).
+Yuchao Sun is with the 3rd Research Institute, China Electronics Technology
+Group Corporation, Beijing 100846, China (e-mail: huagongchao@163.com).
+Huashan Chen is with the Institute of Information Engineering, Chinese
+Academy of Sciences, Beijing 100045, China (e-mail: huashanchen@iie.ac.cn).
+This article has supplementary downloadable material available at
+https://doi.org/10.1109/TMC.2025.3551317, provided by the authors.
+Digital Object Identiﬁer 10.1109/TMC.2025.3551317
+I. INTRODUCTION
+T
+HE threat of acoustic eavesdropping has long been a
+concern for protecting users’ privacy or conﬁdential infor-
+mation. Despite soundprooﬁng materials being widely used in
+modern buildings to mitigate non-effort eavesdropping attacks,
+the continuous advancement of technology has led to increas-
+ingly sophisticated eavesdropping methods, posing a continuing
+challenge to user’s information security.
+In recent years, acoustic eavesdropping has emerged as a
+subject of extensive research aimed at recovering sound utilizing
+various types of signals. These eavesdropping techniques can be
+classiﬁed into two main categories: intrusive and non-intrusive
+attacks. Intrusive attacks employ motion sensors, such as ac-
+celerometers and gyroscopes[1], [2], [3], [4], [5], [6], [7], [8],
+[9], to achieve near-ﬁeld eavesdropping. These attacks suppose
+that an adversary can have access to sensor data on the victim’s
+device or be in close proximity to an audio source in the
+same room. On the other hand, non-intrusive eavesdropping
+attacks do not require such unrealistic assumptions. Instead,
+such attacks utilize devices such as high-speed cameras[10],
+laser transceivers [11], [12], and photodiodes [13] to recover
+speech from vibrations induced by sound waves. Addition-
+ally, researchers have utilized WiFi[14], [15] and millimeter
+wave [16], [17], [18] signals to extract these vibrations and
+intercept audio. However, from a practical standpoint, these
+methods have the following limitations:
+(i) Rely on machine learning or prior knowledge:Numerous
+eavesdropping schemes utilize machine learning (ML) meth-
+ods to obtain satisfactory results[16], [17], [18]. Nevertheless,
+ML-based approaches typically require extensive labeled data
+for training, incurring signiﬁcant time and computational costs.
+Moreover, the effectiveness of ML is contingent on data quality;
+it might require data speciﬁc to the intended user to perform
+optimally. Acquiring such user-speciﬁc data is frequently chal-
+lenging or unfeasible.
+(ii) Constrained vocabulary and low frequency response:
+Most current approaches treat the eavesdropping attack as a
+classiﬁcation task, identifying known individual phonemes or
+a limited selection of hot words by segmenting audio[1], [2],
+[3], [4], [5], [14], [15], [18]. Consequently, they fail to grasp the
+meaning and intent of the speech. Furthermore, most existing
+techniques are only capable of reconstructing low-frequency
+audio, such as below 1kHz[10], [13], which does not encompass
+the full spectrum of human speech.
+1536-1233 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and similar technologies.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7694 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+(iii) High cost, non-portable, and low resolution:Previous
+works have utilized sensors such as laser transceivers[11], [12],
+high-speed cameras [10], and telescopes [13]. These devices
+either require specialized customization or come with a high
+cost, with most being unwieldy and inconvenient to carry. Addi-
+tionally, most of these solutions suffer from inadequate vibration
+resolution and usually only provide vibration measurements at
+the millimeter level and above.
+(iv) Single-target eavesdropping only:Most recent eavesdrop-
+ping methods recover speech from a single audio source. For
+instance, the methods described in[1], [2], [3], [4], [5] utilize
+inertial measurement unit (IMU) to capture the audio vibrations
+emitted by a smartphone’s internal speaker. However, there are
+usually multiple targets in a room, and eavesdropping from only
+a single source cannot capture the full content of a conversation.
+To reconstruct audio covering the spectrum of human
+speech without prior knowledge, we propose mmEcho, a non-
+invasive acoustic eavesdropping method utilizing millimeter-
+wave (mmWave) radar signals. To implement mmEcho, we must
+address three primary challenges:
+r How to improve frequency response to cover the spectrum
+of human speech?
+r How to measure micrometer-level vibration accurately?
+r How to utilize multiple antennas to optimize the audio
+reconstruction performance?
+First, mmWave radars utilize ”chirps” to measure the distance.
+In the best case, each chirp is measured independently and
+results in a distance value. However, the traditional method of
+measuring distance every few chirps (inter-chirp) dramatically
+limits the frequency response of the reconstructed audio (below
+1 kHz), which results in the loss of most of the spectral infor-
+mation of human speech. Therefore, to enhance the frequency
+response, it is essential to improve the utilization of chirps.
+To address this challenge, we achieve high-precision distance
+measurements by measuring and calculating the phase of a single
+chirp (intra-chirp). This approach provides a faster distance
+estimation while maximizing the use of the chirp rate. Thus,
+using a radar with 10 k chirp rate, the frequency of the audio
+reconstructed by mmEcho can be up to 5 kHz.
+Second, existing schemes can only reconstruct vibrations at
+the millimeter level and above, hence typically targeting large
+speakers. However, when audio sources lack distinct reﬂective
+surfaces and are in motion, previous methods become inef-
+fective. Therefore, utilizing surrounding objects (reverberating
+objects) to reconstruct the original audio becomes a feasible
+solution, while requiring us to achieve micrometer-level vi-
+bration measurements. To tackle this challenge, we propose a
+phase calibration algorithm. It calibrates the signal phase with
+frequency and phase interpolation, enabling distance estimation
+with micrometer-level precision. By leveraging the advantage of
+the mmWave radar’s high chirp rate, we merge all distance data
+from chirps to reconstruct the amplitude of the audio signal.
+Finally, single-antenna-based vibration sensing is limited
+in high-precision application scenarios due to the insufﬁcient
+transmit power of commercial mmWave radars. Multiple-input
+multiple-output (MIMO) designs for mmWave radars have the
+potential to solve this problem, however, it is a challenge to
+increase the vibration sensing range using optimized radar sig-
+nals from multiple antennas. To address this, we combine the
+data from multiple antennas according to their weights to form
+an optimized signal by modeling the radar signal and proposing
+a weighting algorithm. This optimized signal not only contains
+all the signals that are beneﬁcial to sensing but also enhances the
+strength of the target’s reﬂected signal. Using multiple antennas
+on the radar to complete beamforming, we can break through
+the original power limitations to achieve a wider sensing range.
+The main contributions of the work in this paper are summa-
+rized as follows:
+r We present mmEcho, a mmWave-based acoustic eaves-
+dropping system that reconstructs audio information from
+sound-induced vibrations on reverberating objects without
+any training dataset and prior knowledge.
+r We propose intra-chirp scheme and phase calibration algo-
+rithms to provide micrometer-level sound vibration sensing
+without sacriﬁcing the chirp rate, which enables mmEcho
+to penetrate sound-insulating materials to eavesdrop on
+reverberating objects made of everyday materials.
+r We propose a multi-antenna combination technique for
+implementing beamforming. The algorithm enhances the
+strength of the target reﬂected signal by combining signals
+from multiple antennas according to optimized weights
+while reducing the effect of noise interference.
+r Extensive evaluation of mmEcho across diverse environ-
+ments demonstrated its effectiveness in audio reconstruc-
+tion, achieving a Mel-Cepstral Distortion average of 2.76,
+a Mean Opinion Score average of 4.22, and a Word Error
+Rate average of 10.81% .
+The remaining sections of the paper are structured as follows.
+Section II reviews existing research on acoustic eavesdropping.
+Our attack scenario is deﬁned in SectionIII. An introduction to
+FMCW radar, vibration measurement principles, and an attack
+feasibility study are presented in Section IV. The design of
+mmEcho is detailed in SectionV, followed by its experimental
+validation in SectionVI. Section VII explores mmEcho’s po-
+tential applications, insights, and constraints. Conclusions are
+provided in SectionVIII.
+II. RELATED WORK
+In this section, we offer a comprehensive review of the pre-
+vious acoustic eavesdropping methods and contrast them with
+our proposed scheme.
+A. Motion and Optical Sensor-Based Acoustic Eavesdropping
+Researchers have shown that it is possible to intercept conver-
+sations by employing motion sensors[1], [2], [3], [4] to recon-
+struct spoken words or determine the speaker’s gender. Sensor
+fusion [5] (i.e., accelerometer, gyroscopes, and geophones) can
+be used to capture sounds within a room. Other methods involve
+using built-in accelerometers to rebuild the audio output of the
+loudspeaker [19] or leveraging a vibration motor and a magnetic
+hard drive to recreate sound[6], [7]. Additionally, converting
+computer-connected speakers into microphones[9] or deploying
+the vibration sensors on the glasses [8] have been used for
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+LI et al.: ACOUSTIC EA VESDROPPING FROM SOUND-INDUCED VIBRATIONS WITH MULTI-ANTENNAMMWAVE RADAR 7695
+eavesdropping. However, these methods are considered intrusive
+because they require proximity to the target device, making such
+attacks easy to thwart.
+Acoustic eavesdropping has also been attempted using cam-
+eras, lasers, and telescopes. A high-speed camera is employed
+to capture the vibrations on the surface of objects, allowing
+reconstruction of the original audio[10]. Laser sensors have been
+utilized for similar purposes[11], [12], [12] pointing the laser
+sensor of a robotic vacuum cleaner at a sound source to recover
+vibrations. An electro-optical sensor has been used remotely to
+detect vibrations in light bulbs caused by sound waves, recon-
+structing the audio from these observations[13]. The primary
+drawbacks of these methods include lower frequency response,
+constrained vocabulary, and easy to defense, such as blocking
+the line-of-sight, for instance, with a curtain. Moreover, a recent
+SoK paper[20] has indicated that previous techniques[1], [2],
+[4], [5], [6], [8], [10], [12], [13] are ineffective for eavesdropping
+on human speech under actual conditions.
+B. Wireless-Based Acoustic Eavesdropping
+Recently, a noticeable trend considers launching eavesdrop
+attacks employing WiFi, RFID, and mmWave technologies. The
+authors in [15] and [14] have demonstrated that the channel
+state information and received signal strength from WiFi can
+be used to identify limited words. The ultra-wideband impulse
+radio technology used in[21] enables the separation of multiple
+audio sources by detecting vibrations. Similarly,[22] employs
+the same wireless-based technology to capture audio with fre-
+quencies below 400 Hz. These methods cannot recover human
+speech due to the low frequency response.[23] utilizes RFID
+tags and cGAN to perform acoustic eavesdropping, but this
+approach is less practical as it requires pre-installing RFID tags
+near the target. Overall, these methods based on WiFi signals
+and impulse radio [14], [15], [21], [22], [23] are limited by
+the inadequate vibration resolution caused by low packet rates
+and long wavelengths. Moreover, they require larger antenna
+conﬁgurations than portable mmWave radars, resulting in a more
+visible presence of the attacker.
+In mmWave-based eavesdropping research, MILLIEAR[17]
+utilizes coarse-grained phase estimates to detect millimeter-level
+amplitude vibrations [24]. However, these methods based on
+inter-chirp are limited by low-frequency response and accuracy
+issues, which are mitigated using cGAN. The authors in[18],
+[25] employ millimeter waves to eavesdrop on audio from phone
+calls, but[18] approach eavesdropping as a classiﬁcation task,
+restricting its detection to speciﬁc words or numbers. Simi-
+larly, [26], [27] also propose millimeter-wave eavesdropping
+schemes based on the word or number classiﬁcation. The authors
+in [26] enable directional beam formation by applying additional
+phases to different transmitting antennas to enable resultful
+remote detection of small vibrations, but the additional resource
+consumption of deep learning and a limited vocabulary leaves
+speech eavesdropping constrained. Both studies[17], [24], [25],
+[26], [27] and [18] depend on machine learning, necessitating
+extensive labeled datasets that are difﬁcult to acquire for eaves-
+dropping objectives.
+Fig. 1. The attack model of mmEcho.
+C. Other Wireless-Based Methods not Used for Eavesdropping
+There are several other methods based on wireless signals but
+not suitable for eavesdropping,[28] utilizes Doppler radar for
+keyword recognition, limited to frequencies below 200 Hz.[29]
+introduces a method to recover the view of an LCD screen
+through millimeter-wave radar. In industrial scenarios, the au-
+thors of [30], [31] achieve mechanical vibration sensing by
+using mmWave and WiFi COTS devices, respectively, yet these
+schemes are restricted to sub-500 Hz frequencies. Notably,
+the approach in[30], which capitalizes on the non-parallelism
+of multiple antenna beams for geometric angle calculation, is
+highly effective in near-ﬁeld scenarios. However, in far-ﬁeld
+conditions, where beams tend to be parallel, this method may
+lead to inaccurate angle estimations. The approach in[32] em-
+ploys millimeter-wave radar for vibration sensing below 1 kHz,
+requiring proximity to the audio source within 5 cm to eavesdrop.
+Instead of focusing on speech reconstruction,[33] develops a
+user veriﬁcation system using a mmWave radar.[34] leverages
+FMCW radar to reconstruct audio below 1 kHz, although it
+lacks comprehensive experimental validation.[16] reconstructs
+high-quality sounds using mmWave radar, requiring the target
+to remain still and close to the radar (within 2 m). In[35],
+a custom-made millimeter-wave radar is used for vibration
+detection, while [36] enhances speech signals captured by a
+similar radar with speech enhancement algorithms.[37] presents
+a noise-resistant speech recognition system that merges millime-
+ter wave technology with microphones, using machine learning.
+However, the frequency response of the works in[28], [30],
+[32], [34], [37] cannot fully encompass the human speech
+spectrum range from 300 Hz to 3.4kHz[38]. Furthermore, the
+machine learning-dependent methods in[16], [28], [29], [33],
+[37] require extensive datasets for training, limiting them to a
+ﬁxed vocabulary and thus cannot eavesdrop on the entire speech.
+The methods proposed in[35], [36] depend on custom hardware
+and are only effective in line-of-sight scenarios, making them
+impractical for cost-effective, non-line-of-sight eavesdropping.
+Consequently, none of the previous methods satisfy all the
+demands for acoustic eavesdropping in practical situations.
+III. ATTACK MODEL
+Soundprooﬁng is a conventional approach to safeguard
+against eavesdropping, utilizing materials such as glass, wood,
+plasterboard, and acoustic wool. In this work, we present the
+threat model illustrated in Fig.1, where the target is separated
+from the outside by soundproof material. Sound waves generated
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7696 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 2. Simpliﬁed structure demonstration of the FMCW radar.
+by an audio source (such as a human or a loudspeaker) can
+cause surrounding objects to vibrate, referred to asreverberating
+objects. These vibrations can be measured by an mmWave radar
+outside the room, operated by an attacker, to reconstruct the
+original audio.
+In these setups, the adversary’s goal is to attempt to eavesdrop
+on sounds from a room with soundprooﬁng. The scenario and
+capabilities assumed for the attacker are:
+r The radar can only be placed outdoors and no devices or
+sensors are allowed indoors;
+r audio sources exist within the room, such as speakers,
+humans, or phones;
+r there is a partial aperture on the wall composed of mmWave
+penetrable sound insulation material;
+r reverberating objects present in the room, such as chip
+bags. These objects can vibrate induced by sound waves
+but their positions are unknown to the attacker;
+r the adversary lacks prior information on the target’s sound,
+yet has to reconstruct intelligible audio;
+r the device utilized by the adversary must be portable and
+cost-efﬁcient.
+IV . PRELIMINARIES
+We describe the fundamental concepts of FMCW radar for
+displacement calculation in this section. Subsequently, the fea-
+sibility of employing our approach for eavesdropping attack is
+evaluated.
+A. FMCW Radar
+Frequency Modulated Continuous Wave (FMCW) radar uti-
+lizes a unique signal calledchirp, which consists of a sine wave
+that increases in frequency linearly over time. FMCW radar
+accurately determines both the distance to an object and its
+relative velocity. In Fig.2, the simpliﬁed structure of FMCW
+radar is illustrated.
+Let the round-trip delay asτ =2 d/c, wherec and d are the
+speed of the mmWave signal and the object-to-radar distance
+respectively. The mmWave radar transmitting and receiving
+signals are deﬁned as follows.
+STx(t)=e x p
+[
+j
+(
+2πf0t+πkt2)]
+, (1)
+SRx(t)= α·STx (t−τ), (2)
+where f0 is the start frequency,k = B/Tc is the chirp slope,
+where Tc is the chirp duration and B is the bandwidth. As
+illustrated in Fig. 2, a mmWave radar transmits and receives
+chirp signals, then these signals are combined by a mixer. After
+this process, we get an Intermediate Frequency (IF) signal shown
+below,
+S(t)= STx(t)·SRx
+∗(t) (3)
+= α·exp
+[
+j
+(
+2πkτt +2πf0τ −πkτ2)]
+. (4)
+B. FMCW-Based Vibration Measurement
+As sound waves are mechanical waves in nature, they in-
+duce tiny vibrations on surrounding objects. Our eavesdropping
+method seeks to measure these minute vibrations on reverber-
+ating objects to deduce the sound that prompts such vibrations.
+With a precise measurement of these vibrations, we can indi-
+rectly reconstruct the original audio, similar to how the eardrum
+facilitates sound perception.
+The traditional formula for distance calculation in FMCW
+radar system is as follows:
+d = fIF
+k · c
+2. (5)
+However, the above equation fails to provide micrometer-level
+vibration measurements.
+The precise distance estimation is a precondition for extrac-
+tion of vibration data. By employing the intra-chirp technique,
+we calculate the distance to the target using a single chirp. This
+method, coupled with the radar’s high rate of chirp emission,
+enhances system performance by allowing for a greater number
+of measurements within a given time frame. For instance, the
+system can perform 10,000 distance estimations in just one
+second at10k chirp rate. Consequently, the difference between
+consecutive measurements indicates the displacement as a result
+of vibration. The IF signal’s phase can be deduced from(3):
+φ =2 πf0τ −πkτ2 +φd. (6)
+With (6) and τ =2 d/c, the accurate distance measurement[39]
+is derived as:
+d =
+(
+f0
+k +
+√
+f2
+0
+k2 − φ−φd
+πk
+)
+· c
+2. (7)
+In addition, the phase calibration algorithm provided in Sec-
+tion V is utilized to calculate the signal phase, reﬁning the
+accuracy of distance measurements. Subsequently, these data
+facilitate the extraction of vibration details from the variations
+observed between successive chirps.
+V. MMECHO SYSTEM
+This section describes the methodology for the implementa-
+tion of mmEcho. An overview of our system and its constituent
+modules is depicted in Fig.3. We present each of the three
+modules that make up mmEcho and their role in reconstruct-
+ing high-quality audio from raw ADC data acquired from the
+mmWave radar. In addition, we explicitly link key equations to
+their corresponding processing steps in the data ﬂow.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+LI et al.: ACOUSTIC EA VESDROPPING FROM SOUND-INDUCED VIBRATIONS WITH MULTI-ANTENNAMMWAVE RADAR 7697
+Fig. 3. The mmEcho system mainly comprises a mmWave radar, a reverberating objects detection module to locate the target, a multi-antenna data combination
+module to optimize signal, and a vibration extraction and audio reconstruction module to recover the speech.
+Fig. 4. The Range Gate identiﬁes the target and the Speed Gate separates the
+reverberators in the Doppler-FFT spectrum.
+A. Reverberating Object Location (ROL)
+The ROL module analyzes radar data to locate reverberant
+objects in the victim’s room. It identiﬁes objects with sound-
+induced vibrations and ﬁlters out objects with insufﬁcient vibra-
+tions for processing in subsequent modules.
+For facilitating signal processing, our approach starts with
+the collection of raw ADC data from the radar, which is then
+transformed into multi-dimensional IQ arrays. Subsequently,
+the acquired IF signal will be windowed (Hanning) to avoid
+spectrum leakage. Then, a Fast Fourier Transform (FFT) is per-
+formed to generate the spectrum of the Range-FFT,SpecIF(f)
+and Specφ(f), containing the range bins of one single chirp.
+By utilizing the results of Range-FFT, IF-based differentiation
+of multiple targets can be achieved. Peaks in the Range-FFT
+spectrum are identiﬁed using a peak detection algorithm, namely
+the Continuous Wavelet Transform[40].
+In the radar scope, each frequency peak in the spectrum
+represents an object. Although Range-FFT provides the distance
+of the target, the reverberating object cannot be localized by it
+alone. Based on the results of Range-FFT, we employ Doppler-
+FFT to achieve the purpose of localization. Fig.4 illustrates a
+Doppler-FFT spectrum, where objects within the radar scope are
+identiﬁable, with vibrating objects exhibiting signiﬁcant lateral
+velocity. By establishing a threshold on the velocity direction
+(i.e., speed gate), we can distinguish vibrating objects from
+others along the range direction (i.e.,range gate). Through this
+process, we can detect potential reverberating objects and ﬁlter
+out stationary objects for our eavesdropping attacks.
+B. Multi-Antenna Data Combination (MDC)
+The MDC module utilizes the radar MIMO feature to combine
+data from multiple antennas. Compared to data measurement
+Fig. 5. Phase difference elimination using multiple antennas.
+methods that use only a single receiving antenna, combining
+data from multiple antennas can improve both accuracy and
+sensing range. We ﬁrst eliminate the phase differences caused
+by varying arrival times at the antennas, aligning the signals
+from all antennas as closely as possible in the same direction.
+After removing the phase differences, we model the signals from
+different antennas as static, dynamic, and noise components. To
+enhance the signal-to-noise ratio of the dynamic signals, we
+combine the data from all antennas using optimized weights.
+As depicted in Fig.5, all antennas have different propagation
+distances (i.e., ΔLi =( i−1)La ·sinθ), leading to a phase
+difference between the antennas. In order to prevent the loss
+of the target signal due to phase differences when combining
+multi-antenna signals, we align the phases of the other antennas
+as follows:
+si(t)= sIF_i(t)·exp
+[
+−j2π(i−1)La
+λ ·sinθ
+]
+, (8)
+where si(t) represents the signal from thei-th antenna after
+phase difference elimination,sIF_i(t)represents the intermedi-
+ate frequency signal from thei-th antenna, La is the distance
+between antennas, θ is the incidence angle of the receiving
+signal, andλ is the wavelength.
+After eliminating the phase difference, signals from all anten-
+nas need to be combined to maximize the effective information.
+Radar reﬂection signals consist of dynamic reﬂections, static
+reﬂections, and noise, with the dynamic reﬂections carrying
+most of the relevant information related to target vibrations.
+A common approach is to sum the signals from all antennas
+directly; however, this would also amplify the static components
+and noise, negatively impacting the results. To optimize the sig-
+nal from the target object, we ﬁrst model the radar intermediate
+frequency signal in(3) as:
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7698 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+s(t)= sstatic(t)+ sdynamic(t)+ snoise(t)
+= sstatic +αej(2πkτt+2πf0τ−πkτ2) +snoise. (9)
+When there are two antennas receiving signals simultaneously,
+the amplitude of the dynamic reﬂected signal from the second
+antenna can be represented by the signal from the ﬁrst as
+sdynamic,2 = α2ejyej(2πkτ1t+2πf0τ1−πkτ12), where we denote the
+amplitude of the second antenna byA2 = α2ejy, y denotes a
+given expression containingτ1 and τ2. Therefore, the signals
+from different antennas can be expressed as:
+⎧
+⎪⎪⎨
+⎪⎪⎩
+s1(t)= sstatic,1 +A1ej(2πkτ1t+2πf0τ1−πkτ12) +snoise,1
+s2(t)= sstatic,2 +A2ej(2πkτ1t+2πf0τ1−πkτ12) +snoise,2
+···
+sn(t)= sstatic,n +Anej(2πkτ1t+2πf0τ1−πkτ12) +snoise,n,
+where n represents the number of antennas. Hence, the matrix
+representation of the radar signal is as follows:
+S = Sstatic +A·ej(2πkτ1t+2πf0τ1−πkτ12) +Snoise, (10)
+where Sstatic, A, andSnoise denote the matrices of static signal,
+dynamic signal amplitude, and noise respectively. Then, we let
+W be the weights, which are normalized complex matrices.
+Therefore, the optimized radar signal is as follows,
+Sopt = WTSstatic +WTSdynamic +WTSnoise, (11)
+Our intention is to have the strongest signal-to-noise ratio for
+the dynamic reﬂected signal from the target, i.e.,
+maximize E(|WTSdynamic|2)
+E(|Snoise|2) = |WT ·A|2
+σ2 = β. (12)
+By the Cauchy inequality[41],w eh a v e|WT ·A| ⩽ ||W||2 ·
+||A||2, and the condition for the equation to hold isW= η ·A,
+where η is non-zero complex value and can be represented as
+r·ejω, wherer is the length andω is angle ofη. Typically, the
+values ofr and ω are taken as 1 and 0 respectively[42]. Since
+Wis a normalized matrix, we obtain|η| = ||A||−1
+2 . Therefore,
+to maximizeβ, Wcan be calculated by the following equation:
+W= r·ejω A
+||A||2
+. (13)
+C. Vibration Extraction and Audio Reconstruction (VA)
+The V A module stands at the heart of our methodology, as it
+focuses on reconstructing audio from passive vibrations induced
+by sound waves on reverberating objects. The main goal of the
+V A is to quantify these vibrations as a time-ordered arrangement
+of radar-to-object distances.
+In particular, after obtaining the optimized signal from mul-
+tiple antennas, we utilize the peak detection algorithm based
+on CWT [40] to analyze the frequency spectrum. All peaks
+identiﬁed in the Range-FFT correspond to different objects and
+can be used to calculate their distances. However, due to the
+limited number of sample points in a single chirp (e.g., up
+to 400 sample points per chirp on our mmWave radar), the
+resulting peak frequencyfin has limited resolution. To enhance
+precision, we employ the parabolic interpolation algorithm. This
+Fig. 6. The phase value restarts from−π when π is reached.
+involves selecting multiple points near the frequency peaks for
+interpolation. We select the three-point parabolic interpolation
+method because of its high accuracy and low computational
+complexity. We indicate asˆfin the peak frequency produced by
+the interpolation process.
+Using the intermediate frequencyˆfin allows us to measure the
+distance of objects with millimeter-level accuracy. However, this
+level of precision falls short of capturing micrometer-level vibra-
+tions on reverberating objects. To overcome this limitation, we
+develop the potential phase of IF signals. Given our utilization
+of the intra-chirp method, accurate phase estimation becomes
+crucial for the minute displacement assessment. Unfortunately,
+Fig. 6 highlights a common issue with phase measurements
+known as phase wrapping. In practical measurements, IQ data
+include both in-phase (I) and quadrature (Q) data, as shown in
+Fig. 6(a), and the phase is typically conﬁned within [−π, π].
+However, if the actual phase exceeds this range, it is adjusted
+by adding or subtracting multiples of2π to ensure that it falls in
+[−π, π].
+To our knowledge, even with phase unwrapping, the exact
+number of phase jumps remains uncertain. To address this uncer-
+tainty, we introduce a phase calibration algorithm that combines
+phase calculation with phase measurement.
+(i) Calculation-Based Phase (CBP):Utilizing the frequencies
+ˆfin estimated previously in(5), we compute a distance estimation
+based on frequency, along with the round-trip delay i.e.,τ.T h e
+phase φCBP can be computed from the frequency according
+to (6). While the frequency-based phase calculation provides
+information on the number of wraps, it may not provide accurate
+phase values due to the inherent limitations of the frequency-
+based approach.
+(ii) Measurement-Based Phase (MBP): Another approach
+involves utilizing the precise peak frequencyˆfin to derive an
+accurate measurement-based phase value. This necessitates in-
+terpolation within the phase spectrum to obtain the desired value.
+However, direct interpolation typically leads to errors attributed
+to the phase wrapping issue. To mitigate this, we implement the
+phase unwrapping around ˆfin in the phase spectrumSpecφ(f)
+as follows:
+φ(⌊ˆfin⌋)=
+⎧
+⎨
+⎩
+φ(⌊ˆfin⌋)+2 π, φ (⌈ˆfin⌉)−φ(⌊ˆfin⌋) >π
+φ(⌊ˆfin⌋)−2π, φ (⌊ˆfin⌋)−φ(⌈ˆfin⌉) >π
+φ(⌊ˆfin⌋), otherwise
+(14)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+LI et al.: ACOUSTIC EA VESDROPPING FROM SOUND-INDUCED VIBRATIONS WITH MULTI-ANTENNAMMWAVE RADAR 7699
+Fig. 7. Vibrational extraction from time-domain distances.
+where φ(⌊ˆfin⌋)and φ(⌈ˆfin⌉)represent the nearest phase integer
+values from the left and from the right to ˆfin in Specφ(f),
+respectively. Subsequently, linear interpolation is applied to the
+phase spectrum to deriveφMBP with our interpolation algorithm.
+However, it is notable that the determination of the number of
+phase wrappings solely based on the measurement-based phase
+remains unknown.
+(iii) Phase Calibration:It’s important to highlight thatφCBP
+includes the phase wrapping information, whereasφMBP offers
+a more precise phase value. Consequently, we conduct the phase
+calibration by merging the φCBP and φMBP in the following
+manner:
+ˆφ = φMBP +2π ·round
+(⏐⏐⏐⏐
+φCBP −φMBP
+2π
+⏐⏐⏐⏐
+)
+. (15)
+Although φCBP provides a coarse estimate of the phase, it
+conveys the times of phase wrappings. In an optimal scenario,
+φCBP = φMBP +2π ·n, wherenrepresents the number of phase
+wrappings. Therefore, we utilizeφCBP to deduce n and inte-
+grate φMBP for a more accurate phase estimate. In real-world
+scenarios, discrepancies between theoretical computations and
+practical measurements are inevitable, but typically conﬁned
+within one phase period. Hence, we compute the number of
+wrappings using (φCBP −φMBP)/2π. Given the limitations of
+the frequency-based method in terms of accuracy, we employ
+φMBP for calibration. Therefore, ˆφ encompasses both the pre-
+cision of the phase based on measurement and the wrapping
+numbers inherent in the phase based on calculation.
+(iv) Audio Reconstruction: Utilizing the method based on
+intra-chirp outlined in SectionsV-A and V-C, we can achieve
+micron-level distances for every chirp using(7). Leveraging
+these precise distance measurements, we can straightforwardly
+compute the reverberator’s displacement (i.e., vibration) be-
+tween consecutive chirps. mmEcho’s objective is to produce an
+audio signal that accurately mirrors the original speech, utilizing
+a time series of amplitudes extracted from the vibrations of a re-
+verberating object. As depicted in Fig.7, every single chirp offers
+a precise distancedi, allowing the calculation of displacement
+between consecutive chirpsΔd = di+1 −di, representing the
+vibration amplitude. By computing the displacement across all
+chirps, we can acquire information about the amplitude in the
+time domain. Notably, the chirp rate (measured in chirps/second)
+imposes a constraint on the maximal frequency at which the
+audio can be reconstructed. For example, a chirp rate of 10 kHz
+enables audio reconstruction up to 5 kHz. Subsequently, these
+vibrations are normalized and ampliﬁed to acquire interme-
+diate signals. These intermediate signals are converted into a
+monophonic audio signal using a 16-bit depth for each sample.
+Eventually, the intermediate signal is rescaled to fall within the
+interval [−215 +1,215 −1], resulting in reconstructed diatonic
+audio.
+VI. EVA L UAT I O N
+The ﬁndings of the experimental evaluation carried out on
+mmEcho are provided in this section. More speciﬁcally, we de-
+scribe experimental settings, dataset, metrics, and performance
+across a variety of scenarios and conﬁgurations.
+A. Experiment Setup
+Hardware: The mmEcho consists of the IWR1642BOOST,
+which is a millimeter wave sensor, and the DCA1000EVM,
+which is a data acquisition adapter, both manufactured by Texas
+Instruments. Operating in the 76-81 GHz band, the IWR1642
+BOOST has a MIMO structure and is equipped with two transmit
+and four receive antennas, while the DCA1000EVM offers
+real-time data acquisition. The mmWave sensors have a chirp
+rate up to 10 kHz. The laptop (Lenovo Legend Y7000P) is used
+for radar data processing and is conﬁgured with 2.60 GHz of
+CPU (i7-10750H) and 16 GB of RAM. As an audio source, a
+Philips SPA311 loudspeaker is utilized. All audio samples in our
+experiments maintain a sampling rate of 44.1 kHz.
+Software: The mmWave Studio v.02.01.01.00 is utilized to
+conﬁgure the millimeter wave sensor module. The mmWave
+SDK has also been used to provide basic processing and visual-
+ization of ADC data.
+Material: The goal of mmEcho is to measure the sound-
+induced vibrations on a reverberating object. The reﬂected
+signal and vibration intensity are greatly inﬂuenced by the
+material properties of these objects which are referred to as
+reverberators, we examine such properties in various common
+materials encountered in everyday life. These materials include
+chip bags, poly bags, tinfoil, leather, plastic, cartons, projector
+cloth, paper, and laptop lids (MacBook Pro 2021). As described
+in the attack scenario in SectionIII, in the victim’s room, there
+is a soundprooﬁng material between millimeter-wave sensors
+and a reverberator. We select several typical acoustic insulation
+materials which are referred to asinsulators commonly found in
+modern buildings, such as drywall, glass, cotton, frosted glass,
+polyester, and wood.
+Attack Setup: In our experimental conﬁguration, the
+millimeter-wave sensors are placed outside to the victim’s room.
+Within the room, a reverberator consisting of various materials
+(such as chip bags, plastic, and tinfoil) is placed on a desk. In
+addition, the loudspeaker serves as the audio source and we vary
+its distance from the reverberator. As the loudspeaker-played
+audio generates sound waves that induce subtle vibrations on
+the reverberator, we utilize the millimeter-wave radar pointed
+towards the reverberator to capture these vibrations and recreate
+the original audio. Fig.8 illustrates a meeting room scenario
+used in our experiments.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7700 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 8. Experimental settings of mmEcho.
+TABLE I
+SPEECH DATASETFROM VARIOUS USERS
+B. Dataset
+A ss h o w ni nT a b l eI, we gather audio recordings of ﬁve widely
+spoken languages including English, Italian, Chinese, French,
+and Spanish. The English speech data from the IELTS listening
+test1,2, consisting of two female (User2 and User4) and two male
+(User1 and User3). The Chinese speech data from the audio
+exercises for Chinese pronunciation.3 For others, we utilize
+instructional audio to practice Italian4, Spanish5, and French.6
+C. Metrics
+We utilize the subjective and objective metrics below to
+evaluate the performance of the reconstructed audio.
+Mel-Cepstral Distortion (MCD) [43] serves as an objective
+measure of the difference between two spectral sequences, typi-
+cally used to compare the original speech with the target speech.
+When the MCD of the two spectral sequences is lower, the target
+speech is closer to natural speech. It is widely used to evaluate the
+performance of reconstructed or generated speech. It is generally
+accepted that an MCD lower than 8 is recognizable by speech
+recognition systems[44].
+Word Error Rate(WER) [45] functions as an objective mea-
+sure to assess speech intelligibility. Original and reconstructed
+audio inputs are fed into the Google Speech-To-Text system7,
+and accuracy is computed as WER=( Del +Ins +Subs)/N,
+where Ins, Del, and Subs denote the number of insertions,
+deletions, and substitutions, respectively, andN represents the
+original audio’s total word count. A higher word recognition
+1 IELTS Listening 21.8, www.youtube.com/watch?v=OW AjEPFqmVY
+2 IELTS Listening 21.9, www.youtube.com/watch?v=5cG3VcPRYhM
+3 Spoken Mandarin training, https://music.163.com/song?id=29808867
+4 Italian Children’s Stories, www.theitalianexperiment.com/stories
+5 One Hour Spanish Mini, www.youtube.com/watch?v=gBJMt1_xjTM
+6 Super easy French, www.youtube.com/watch?v=fq_4V-Ia1z0
+7 Google Speech-To-Text, https://cloud.google.com/speech-to-text
+accuracy is indicated by a lower WER, which denotes a better
+performance of mmEcho.
+Mean Opinion Score (MOS) serves as a measure to sub-
+jectively assess audio quality, represented by a number that
+typically varies from 1 to 5, where 5 denotes the highest com-
+prehensible quality and 1 denotes the lowest. For the user study
+conducted to evaluate subjective perception, 30 participants8
+were recruited from university faculty and students via mailing
+lists and group chats. These participants, between 20 and 30
+years of age, encompass native and non-native speakers. V olun-
+teering without any reward or conﬂict of interest, participants
+received experiment instructions beforehand and could choose
+a convenient time and location. They were also free to interrupt,
+take breaks, or terminate the evaluation at any point, with an
+entire duration spanning approximately 5 minutes.
+D. Experimental Results
+We analyze the performance of mmEcho under various set-
+tings in this section based on experimental results.
+1) Effect of Distance and Direction on Performance: In
+practice, an adversary may reposition the mmWave radar to
+target the reverberator, and the reverberator may be moved to
+another location. Both affect the distance and direction be-
+tween the millimeter-wave radar and the reverberator (radar-
+to-reverberator). The purpose of this subsection is to evaluate
+the effect of distance and orientation on mmEcho performance.
+Speciﬁcally, we ﬁrst ﬁx the angle at0◦ and adjust the distance
+from 0.5mto 10m; then we ﬁx the distance at1mand adjust the
+direction angle from0◦ to 60◦. At each distance and direction
+setting, English speeches from different users are played by the
+loudspeaker. In addition, tinfoil is selected as the reverberator,
+and frosted glass as sound insulator penetrable by millimeter
+waves.
+The results of these experiments, depicted in Fig.9, reveal
+that mmEcho performs well even when the distance is 10 m.
+The WER ranges from 4.05% at 0.5 m to 36.72% at 10 m.
+Fig. 9(a) and (c) illustrate that increasing distance and angle
+lead to attenuation of the mmWave signal, resulting in decreased
+reconstruction performance, which is more pronounced with
+increasing angle compared to distance. However, mmEcho still
+demonstrates good performance up to a45◦ angle (with average
+MCD and WER values of 3.54 and 27.01% , respectively) and
+still exposes a signiﬁcant risk of speech information leakage
+even at a substantial60◦ angle (with mean MCD and WER values
+of 4.08 and 41.23% , respectively).
+We further evaluate the effect of different distances between
+the reverberator and the audio source (reverberator-to-source)
+on the performance of mmEcho. For this experiment, we adjust
+the reverberator-to-source distance ranging from 0.5 to 8 meters,
+while maintaining the radar-to-reverberator distance at 1 meter.
+The frosted glass is selected as the sound insulator, and English
+audios from different users are played for each distance setting.
+As shown in Fig. 10, with the larger distance between the
+8 Ethical approval has been granted by the corresponding organization.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+LI et al.: ACOUSTIC EA VESDROPPING FROM SOUND-INDUCED VIBRATIONS WITH MULTI-ANTENNAMMWAVE RADAR 7701
+Fig. 9. MCD and WER of reconstructed audio at various (a)-(b) distances and
+(c)-(d) angles from the radar to the reverberator.
+Fig. 10. MCD and WER of reconstructed audio at various distances from the
+reverberator to the audio source.
+loudspeaker and the reverberator, the WER and MCD of the
+audio reconstruction increase correspondingly. This trend can be
+explained by the fact that the relationship between the distanced
+and the amplitudeAof a sound wave follows the inverse-square
+law (A ∝ 1/d2) in terms of the physical properties of sound.
+Consequently, when the amplitude of the sound wave is reduced
+with distance, the strength of the vibrations produced on the
+reverberator is also reduced. Even in the most unfavorable
+distance settings (i.e., the reverberator-to-source distance is
+8 m), mmEcho still exhibits the performance to expose sensitive
+speech information, averaging 4.11 MCD and 44.56% WER.
+To summarize, our experimental ﬁndings indicate that even
+with a wide range of distance and angle settings, the MCD shows
+no signiﬁcant deterioration and the WER remains within human
+intelligible range, which highlights the ability of mmEcho to
+effectively launch eavesdropping attacks.
+2) Effect of V arious Reverberating Materials:Different re-
+verberators can produce vibrations of different intensities from
+the same sound wave. This experiment assesses the effect of
+different materials of reverberators on the performance of mmE-
+cho. The distance from the radar to the reverberator and from
+the reverberator to the sound source is ﬁxed at 1 meter. Frosted
+glass is utilized as an insulator. English audio is played from the
+loudspeaker.
+As shown in Fig.11, we demonstrate the reconstructed audio
+of different reverberating materials evaluated using the WER,
+MCD, and MOS metrics. Chip bags and tinfoil exhibit the
+lowest MCD values of 3.42 and 3.18, respectively, along with
+the average WER of 13.91% and 11.52% . These materials
+generate strong vibrations due to their high elasticity, low
+stiffness, and thinness, coupled with their high reﬂectivity for
+millimeter waves, allowing mmWave radar antennas to receive
+strong signals. Conversely, cardboard boxes (cartons) and paper
+yield higher WER and MCD values due to their weak reﬂectiv-
+ity, allowing most mmWave signals to penetrate with minimal
+reﬂection. Plastic materials (plastic and polybags) exhibit higher
+MCD and WER than tinfoil due to their lower reﬂectivity and
+higher stiffness. The face of the projector screen is typically
+used to scatter light, with the back side being more likely to
+reﬂect light due to the lack of projection considerations. In an
+actual attack, the millimeter wave radar is placed outside the
+room and probably passes through the sound insulator and then
+is reﬂected by the back side of the projector screen. Hence, in this
+experiment, we select the back side for performance evaluation.
+In this case, the WER and MCD of the reconstruction are up
+to 25.95 and 4.01, respectively. The audio reconstruction of the
+leather is slightly lower than that of the projector screen, since
+the leather surface is smoother and therefore has a higher signal
+reﬂectivity.
+The experimental outcomes reveal that the average WER and
+MCD of the reconstructed audio from various reverberating ma-
+terials are less than 34.29% and 4.12, respectively. This suggests
+that the reconstruction has a high similarity to the original audio
+while being easily comprehensible to humans.
+We additionally assess mmEcho’s performance using the met-
+ric of MOS. Fig.11(c) illustrates the MOS ratings provided by
+thirty volunteers for various reconstructed audio samples across
+the above-mentioned reverberators. Each type of reverberator
+demonstrates an average MOS exceeding 3 across all recon-
+structions. These ﬁndings highlight the ability of mmEcho to
+reconstruct intelligible audio.
+3) Effect of V arious Sound Insulators:In our proposed attack
+scenario, it is hypothesized that the victim employs various
+soundprooﬁng materials (such as acoustic glass, wood, and
+acoustic foam) to thwart eavesdropping attempts. Our experi-
+ment aims to explore to what extent these different single-layer
+soundprooﬁng materials may affect mmEcho’s performance. To
+this end, a tinfoil reverberator is placed 1 meter away from both
+the sound insulator and the radar. Meanwhile, a loudspeaker,
+located 1 meter from the reverberator, broadcasts English audio
+clips from various users. The study investigates ﬁve commonly
+used sound insulation materials in modern construction—wood,
+frosted glass, standard glass, polyester, and cotton—to assess
+their individual effects on the performance of mmEcho.
+Fig. 12 presents the MCD and WER metrics for audio
+reconstruction using various insulating materials. Among the
+materials tested, standard glass exhibits the highest MCD and
+WER, attributed to its signiﬁcant reﬂectivity, as noted in previous
+studies [46], [47]. Conversely, frosted glass, with its modiﬁed
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7702 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 11. Audio reconstruction performance on different reverberating materials.
+Fig. 12. The effect of using different sound insulators.
+surface, demonstrates improved performance over its clear coun-
+terpart. Notably, due to the minimal mmWave reﬂectivity, both
+polyester and cotton present the best results in terms of MCD
+and WER. The results also reveal a disparity in reconstruction
+quality between male and female speech, with lower frequencies
+in male voices contributing to more accurate results[48].A s
+depicted in Fig. 12, the material properties of the insulators
+directly affect the accuracy of audio reconstruction. Despite
+these variations, mmEcho consistently achieved an MCD below
+3.52 and a WER below 12.35% in all settings. This suggests that
+mmEcho can effectively bypass typical single-layer soundproof
+barriers, thereby enabling effective eavesdropping.
+4) Effect of Sound V olume:This experiment further investi-
+gates the effect of the volume of the audio source on reverberator
+vibrations. Maintaining the setup from SectionVI-D3,f o rt h e
+insulator we select frosted glass, and for the reverberator we
+select tinfoil. The loudspeaker positioned one meter away emits
+sound levels ranging from 65 to 80 dB.
+Fig. 13 illustrates mmEcho’s performance varying the vol-
+umes. In particular, as the volume decreases, both the MCD and
+WER metrics for audio reconstruction tend to increase. How-
+ever, even at a typical conversational volume of approximately
+65dB [49], [50], [51], mmEcho maintains an average MCD
+below 3.77 and a WER below 22.6% , showcasing its ability
+in reconstructing speech effectively enough for eavesdropping.
+5) Effect of V arious Languages:The linguistic character-
+istics of speech, particularly phoneme combinations (phono-
+tactics), can inﬂuence reconstruction quality due to language-
+speciﬁc phonological features[52], [53]. To quantify this effect,
+Fig. 13. The effect of different volumes on reconstruction performance.
+Fig. 14. Performance of audio reconstruction in different languages.
+we evaluate the performance of mmEcho in ﬁve languages:
+English, Italian, Chinese, French, and Spanish. User1’s English
+recordings are utilized, while Users 5 through 8 provide samples
+in the remaining languages, respectively.
+Using the setup in Section VI-D4,F i g .14(b) details the
+outcomes of MCD, WER, and MOS for each language. The
+MCD remains under 3.32 for all languages. Variations in WER
+are minimal, reﬂecting the distinct phonetic structures inherent
+to each language, which affect the accuracy of the speech recog-
+nition system processing. Despite these variances, the average
+WER remains below 12.57% , as depicted in Fig.14(b).T o
+mitigate speech recognition system biases, the MOS metric
+was also employed. As shown in Fig.14(c), evaluations from
+30 volunteers indicate a median MOS exceeding 4.52 for all
+tested languages, underscoring mmEcho’s robust multilingual
+reconstruction capability.
+6) Ablation Studies for Multi-Antenna Optimization: To
+evaluate the optimization of multi-antenna techniques for eaves-
+dropping, we conduct ablation experiments. In particular, we
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+LI et al.: ACOUSTIC EA VESDROPPING FROM SOUND-INDUCED VIBRATIONS WITH MULTI-ANTENNAMMWAVE RADAR 7703
+Fig. 15. Reconstructed audio spectrum at ﬁve meters using (a) single antenna
+and (b) multiple antennas, respectively.
+Fig. 16. Performance of reconstructed audio by using a single antenna and
+multiple antennas among various insulators.
+compare the eavesdropping performance of mmEcho using a
+single antenna and multiple antennas. We ﬁx the reverberator-
+to-source distance at one meter, the radar-to-reverberator dis-
+tance at 5 m, and frosted glass as the insulator. We use the
+loudspeaker as an audio source and play an English speech. As
+shown in Fig.15(a), at a radar-to-reverberator distance of 5 m,
+the reconstruction ability of mmEcho using a single antenna
+is limited due to the presence of white noise and weak radar
+signals. Consequently, only the low-frequency segment of the
+audio can be effectively reconstructed. In contrast, Fig.15(b)
+shows that when data from multiple antenna data are combined,
+the high-frequency components of the audio are reconstructed
+with notable clarity, thus improving overall intelligibility. Fur-
+thermore, the reconstructed audio exhibits relatively lower levels
+of noise compared to the single-antenna scenario.
+Furthermore, we further evaluate the effectiveness of eaves-
+dropping using a single antenna and using multiple antennas on
+different insulators. As shown in Fig.16 both mmEcho using
+multiple antennas achieve better reconstruction performance
+compared to using a single antenna. In particular, MCD and
+WER improve on average from 3.48 and 11.72% to 3.15 and
+7.19% , respectively. This indicates that our method to combine
+multi-antenna data improves the audio reconstruction perfor-
+mance of mmEcho.
+7) Impact of a Moving Audio Source:Our study extends to
+scenarios where the audio source is not stationary, such as a
+person moving while on a call. We examine how mmEcho copes
+with dynamic audio sources by conducting an experiment with
+a tinfoil reverberator, keeping the radar at a ﬁxed 1 m distance.
+The loudspeaker, simulating the moving audio source, is set to
+traverse back and forth at 0.5 m/s, altering its distance from
+Fig. 17. The performance of mmEcho when the audio source is moving.
+Fig. 18. The impact of various noises includes White noise (N1), Pure music
+(N2), Water Sounds (N3), Trafﬁc noise (N4), and no noise (B).
+the reverberator between 1 m and 3 m. English audio speeches
+from User1 to User4 are played during this process. As shown
+in Fig. 17, the MCD slightly increases when compared to a
+static source as detailed in Fig.9(a). However, the average MCD
+remains under 3.5, and the WER average is 16.98% . These
+results prove that mmEcho has the capability to reconstruct audio
+from moving sources.
+8) Impact of Background Noise: The presence of back-
+ground noise due to music, noisy environments, or working
+electronic equipment (e.g., PC, air conditioning) could affect
+the quality of audio eavesdropping. Therefore, we conduct fur-
+ther experiments to evaluate the eavesdropping performance of
+mmEcho in the presence of background noise. We consider
+four different types of background noise that interfere with
+the original audio, which are white noise9, pure music10, water
+sounds11, and trafﬁc noise.12 For reference, we add baseline, i.e.,
+no background noise. We set both the reverberator-to-source and
+the radar-to-reverberator distances to one meter and use frosted
+glass as an insulator. The loudspeaker plays the English speech
+of User1.
+Fig. 18 shows the MCD and WER of the reconstructed audio
+under different noises, respectively. As shown in Fig.18(a) and
+(b), the MCD and WER for each user exhibit minimal variations
+between different noise scenarios compared to the baseline.
+Notably, all MCD values remain below 3.53, while WER values
+remain below 13.27% . These results underscore mmEcho’s ca-
+pability in audio reconstruction across diverse real-world noise
+environments.
+9 White Noise, https://www.youtube.com/watch?v=nMfPqeZjc2c
+10 Sunny Mornings, https://www.youtube.com/watch?v=hlWiI4xVXKY
+11 Water Sounds, https://www.youtube.com/watch?v=jkLRith2wcc
+12 Trafﬁc Sounds, https://www.youtube.com/watch?v=fh3EdeGNKus&t=5s
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7704 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Fig. 19. Performance comparison of mmEcho and mmSpy[18].
+Fig. 20. Performance comparison of mmEcho and MILLIEAR[17].
+Fig. 21. Performance in complex ofﬁce scenarios.
+9) Comparison With State-of-the-Art Eavesdropping
+Schemes: In this evaluation, we evaluate mmEcho’s audio
+reconstruction capabilities against two state-of-the-art
+methodologies based on machine learning: mmSpy [18]
+and MILLIEAR[17]. The performance of mmEcho is assessed
+using the same evaluation metrics as those employed in the
+referenced works. To ensure an equitable comparison, mmEcho
+is applied to the experimental scenarios utilized by MILLIEAR
+and mmSpy, respectively.
+mmEcho compared to mmSpy:This experiment evaluates the
+reconstruction accuracy of mmEcho under the attack model
+outlined in mmSpy [18]. mmSpy tries to capture the remote
+caller’s speech during a phone call by monitoring the vibrations
+generated by the earpiece of a phone. Following mmSpy’s
+attack scenario, we adjust the millimeter-wave radar sensor to
+target the rear of the phone, which simultaneously plays audio
+from the same dataset (AudioMNIST [54]). We use Google
+Speech Recognition to calculate the accuracy of mmEcho’s
+audio reconstruction since mmEcho does not analyze individual
+words as mmSpy does. As illustrated in Fig.19, mmSpy and
+mmEcho exhibit different performance at different distances
+(from 1 ft. to 6 ft., i.e., from 30.48 cm. to 182.88 cm.). mmSpy
+has an average accuracy of 61.89% . In contrast, mmEcho shows
+an average accuracy of 90.16% (WER 9.84% ), marking an
+improvement of 28.27% . Notably, as the distance increases,
+mmSpy’s performance deteriorates rapidly, while our method
+maintains a reasonable level of accuracy.
+mmEcho compared to MILLIEAR: This section evaluates
+mmEcho’s reconstruction accuracy in the context of the attack
+scenario proposed by MILLIEAR[17], which aims to recon-
+struct audio from a loudspeaker by capturing vibrations on the
+speaker’s drive using millimeter-wave radar. Speciﬁcally, we
+place a Philips SPA311 loudspeaker as an audio source, which
+is 1.5 m away from the mmWave radar. A glass is selected as an
+insulator. The radar is directly aimed at the loudspeaker’s drive.
+Using the same audio dataset considered by MILLIEAR, we
+play audio from four different users on the loudspeaker: Usera
+(Barack Obama), Userb (Taylor Swift), Userc (Bill Gates), and
+Userd (Anne Hathaway). Fig.20 presents the performance of
+the reconstructed audio measured in terms of MCD for both
+MILLIEAR and mmEcho. MILLIEAR achieves an average
+MCD value of 3.71, whereas mmEcho achieves an average MCD
+of 2.49, representing a notable improvement of 32.88% .
+10) Performance in Realistic Ofﬁce Scenarios:To demon-
+strate mmEcho’s capabilities in complex real-world environ-
+ments, we conduct experimental evaluations in a typical ofﬁce
+setting. In this scenario, the attacker uses a mmWave radar
+outside the room, employing the glass on the door as an aperture
+for the eavesdropping attack. The indoor environment featured
+three WiFi routers and several RF devices used by various users.
+A tinfoil is placed indoors as a reverberator. The ambient noise
+level inside the ofﬁce is around 55 dB. We place a tinfoil as a
+reverberator in the indoor setting. We demonstrate mmEcho’s
+performance by adjusting the distance between the radar and
+the reverberator.
+Fig. 21 shows the performance of speech reconstruction at
+different distances in complex environments, compared to the
+performance in controlled environments (see SectionVI-D1).
+It is evident from the ﬁgure that as the distance increases, the
+WER gradually increases. Furthermore, under the same distance
+conditions, the WER in complex environments is slightly higher
+than in controlled environments, with an average increase of
+3.26% . In contrast, the performance difference in MCD is more
+pronounced, as the accurate capture of background noise affects
+the calculation of spectral similarity. In particular, even at a
+distance of 5 meters, mmEcho still achieves an average WER of
+28.3% and an average MCD of 3.63, indicating that the system
+maintains its audio reconstruction capability even in complex
+environments.
+11) Impact of Temperature and Humidity:To evaluate mmE-
+cho’s performance under varying temperature and humidity
+conditions, we conduct experiments in a conﬁned space. A
+humidiﬁer is used to adjust relative humidity levels between
+20% and 80% , while an air conditioner controls the temperature
+range from70◦F to 85◦F. A hygrometer and thermometer are
+used to measure these changes. Tinfoil and a speaker are selected
+as the reverberator and sound source, respectively, with a ﬁxed
+distance of 5 meters between them.
+Fig. 22 illustrates the performance of mmEcho under var-
+ious conditions. It can be observed that the WER for audio
+reconstruction with mmEcho shows minimal variation across
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+LI et al.: ACOUSTIC EA VESDROPPING FROM SOUND-INDUCED VIBRATIONS WITH MULTI-ANTENNAMMWAVE RADAR 7705
+Fig. 22. Performance in various temperatures and humidity.
+Fig. 23. Performance of mmEcho with different number of antennas.
+different temperatures and humidity levels. This stability may
+be attributed to the relatively minor impact of temperature and
+humidity on sound wave energy over short distances. Addi-
+tionally, in the millimeter-wave frequency band, air absorption
+and scattering effects are typically limited over short indoor
+distances. Thus, ﬂuctuations in temperature and humidity within
+a certain range are unlikely to signiﬁcantly alter the propagation
+characteristics of both RF and acoustic signals, resulting in a
+relatively stable audio reconstruction performance.
+12) Impact of Number of Antennas:To evaluate the effec-
+tiveness of the Multi-antenna Data Combination algorithm, we
+conduct an experiment on the number of antennas to examine
+its impact on audio reconstruction. In this experiment, we use a
+single antenna, two antennas, three antennas, and four antennas.
+When selecting multiple antennas, we prioritize those with the
+greatest separation to enhance spatial diversity and minimize
+signal correlation. The sound source (speaker) is placed1m
+from the reverberating object (aluminum foil), and the radar is
+positioned 2m from the reverberator, with glass selected as the
+insulator. Additionally, we quantify the computational overhead
+associated with different antenna conﬁgurations to evaluate the
+implementation cost of multi-antenna optimization.
+Fig. 23 illustrates the variations in MCD and WER for
+mmEcho under different antenna conﬁgurations. As shown in
+Fig. 23(a) and (b), both MCD and WER decrease as the number
+of antennas increases from one to four, indicating that multi-
+antenna optimization improves speech reconstruction accuracy.
+Since this study optimizes data processing on commercial radar
+without hardware modiﬁcations, performance beyond four an-
+tennas remains unknown. However, the results suggest a positive
+correlation between antenna count and reconstruction accuracy.
+Notably, the performance gain diminishes when increasing from
+three to four antennas compared to the jump from one to two.
+This may be because the transition from a single to dual antennas
+Fig. 24. Performance comparison of Intra-Chirp method and Inter-Chirp
+method.
+signiﬁcantly enhances signal acquisition and angular resolution.
+However, radar resolution has physical limitations, and beyond
+a certain point, additional antennas may no longer yield substan-
+tial improvements in signal optimization.
+13) Ablation Study: To evaluate the effectiveness of the
+Intra-Chirp scheme compared to the Inter-Chirp approach, we
+conduct an ablation study. In the Inter-Chirp method, we calcu-
+late displacement differences based on phase differences using
+the formula: Δd = λΔφ
+4π . We then arrange the computed dis-
+placement differences as amplitudes and convert them into an
+audio ﬁle. Other than that, the other processing steps remain
+consistent with mmEcho. Due to the lower measurement accu-
+racy of Inter-Chirp, this experiment does not use an insulator.
+Instead, the radar directly faces a speaker placed 1 meter away,
+ensuring that the signal is measured without obstruction.
+Fig. 24 presents the MCD results for the Intra-Chirp scheme
+and the Inter-Chirp method at different distances. The re-
+sults show that across all distances, the Intra-Chirp scheme
+consistently achieves lower MCD values than the Inter-Chirp
+method, indicating superior speech reconstruction performance.
+As the distance increases, MCD slightly rises for the Intra-
+Chirp scheme, but the variation remains small, demonstrating
+its robustness. In contrast, the Inter-Chirp method exhibits a
+signiﬁcant increase in MCD with distance, suggesting higher
+signal degradation and reduced reconstruction quality.
+VII. DISCUSSION
+This section discusses some capabilities of mmEcho and
+potential defenses against our attack.
+Near-Real-Time Eavesdropping:Our methodology for signal
+processing is implemented in Python v3.10, augmented by Scipy
+v1.9.0, Numpy v1.23, and Cython v0.29.32. The signals are
+gathered from the radar sensor and organized into 4-second
+data batches. Both the processing duration and memory foot-
+print scale with the batch length, d. For a 4-second batch, the
+memory allocation peaks at 400 MB. Currently, processing and
+reconstructing audio from a single batch on a single CPU core
+takes approximately 2.58 seconds, as detailed in SectionVI.
+With the processing interval falling below the batch period, we
+achieve an uninterrupted audio feed, albeit with a total latency
+of about 6 seconds from the initial signal capture.
+Signal Processing Unaided by Machine Learning:Our system
+utilizes signal processing methodologies to sidestep the limita-
+tions commonly associated with machine learning approaches.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7706 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Unlike machine learning, which leans heavily on large datasets
+and extensive training phases, signal processing equips mmEcho
+with the capability to conduct effective eavesdropping free from
+data reliance. This design ensures that mmEcho can accurately
+reconstruct audio without the need for any pre-acquired target in-
+formation, such as voice samples or the audio source’s position.
+Consequently, our system is adept at practical eavesdropping,
+unrestricted by vocabulary constraints or the necessity for prior
+target knowledge.
+Vibration Direction of the Target Object:To further improve
+attack performance, the adversary can detect the vibration di-
+rection of the target object to adjust the direction of mmWave
+radar. One solution is to analyze phase shifts between mul-
+tiple antennas and estimate the vibration direction based on
+phase variations. However, this presents challenges. First, due
+to the small vibration amplitudes, accurately identifying the
+direction requires high phase measurement precision and a good
+signal-to-noise ratio, as noise can interfere with the extraction
+of vibrations. Second, detecting vibration direction depends on
+antenna conﬁguration; estimating it through phase differences
+requires complex signal processing, and the spacing and ar-
+rangement of the antenna affect the accuracy. To overcome these
+challenges, a high-power MIMO mmWave radar with increased
+antenna spacing could be customized to capture the trend of
+the target’s vibration direction, and the radar angle can then be
+adjusted based on this trend.
+Impact of Environmental Complexity: During our experi-
+ments, we observe that mmEcho performs slightly less effec-
+tively in complex environments compared to controlled settings,
+especially concerning MCD. This slight degradation is partly
+due to background noise in complex environments, where the
+spectral energy distribution can affect overall similarity to the
+original spectrum. In addition, multipath reﬂections and Doppler
+effects add complexity to the target audio components in the
+spectrum, reducing spectral similarity. However, these factors
+have a limited impact on mmEcho in indoor settings, as the pri-
+mary audio components remain detectable within the spectrum.
+Thus, advanced speech recognition algorithms can still extract
+sensitive audio information.
+Defenses against mmWave-Based Eavesdropping:To miti-
+gate the risks posed by our eavesdropping attack, we discuss
+multiple defensive strategies: jamming, intelligent reﬂecting sur-
+face, and RF shielding. 1) Jamming disrupts the radio frequency
+environment by introducing additional or false signals to radar,
+distorting echo signals, and hindering the acquisition of sensitive
+voice information. Key strategies include suppression jamming,
+which emits high-power noise to mask genuine echoes; targeting
+jamming, which conﬂicts the jamming signal’s frequency with
+the radar; and sweeping jamming, which periodically scans a
+frequency band to suppress enemy signals. Nevertheless, these
+techniques require substantial resources and can consume sig-
+niﬁcant energy. 2) Intelligent Reﬂecting Surface (IRS) is an
+emerging technology that can be used to effectively prevent
+eavesdropping by dynamically adjusting the phase, amplitude,
+and polarization of reﬂected signals to redirect wireless commu-
+nications. By controlling the signal path, IRS reduces the likeli-
+hood that radar signals are reﬂected back to eavesdroppers and
+diminishes the quality of the signal reception at their location,
+making it difﬁcult to obtain clear audio reconstructions. How-
+ever, implementing IRS requires substantial time, resources, and
+expensive hardware. 3) RF shielding is an effective deterrent
+against RF signal penetration. While encasing a room entirely
+within a Faraday cage[55] is the most comprehensive approach,
+it is impractical for everyday use. A more feasible alternative is
+the application of an RF shielding mesh, which signiﬁcantly
+reduces the intrusion of RF signals into the victim’s space[56].
+In our experiments, we assess the impact of RF shielding on
+mmEcho’s audio reconstruction capabilities. We introduced a
+stainless steel mesh with a 0.5 mm wire diameter and 5 mm
+aperture as a barrier. This resulted in a notable reduction of the
+radar signal’s SNR from 29.52 dB to 18.93 dB. Concurrently,
+the MCD values of the audio reconstruction change from 3.12
+to 10.90, exceeding the threshold of 8 beyond which speech
+recognition systems fail to decipher the audio content [44].
+These ﬁndings conﬁrm the effectiveness of RF shielding as a
+countermeasure.
+Improved mmEcho:First, to enhance mmEcho, we introduced
+a Multi-antenna Data Combination (MDC) module into the
+mmEcho system, enabling more efﬁcient extraction of useful
+information. In addition, we evaluated the impact of the MDC
+module on mmEcho’s performance and conducted comprehen-
+sive tests under various background noise, temperature, and
+humidity conditions. The system was also validated in a real of-
+ﬁce environment, demonstrating its potential to handle complex
+scenarios. Furthermore, we discussed three potential defense
+strategies to counteract RF-based eavesdropping attacks.
+VIII. CONCLUSION
+In this paper, we introduce a millimeter-wave-based acoustic
+eavesdropping attack scheme that captures and reconstructs
+audio through signal processing. This approach circumvents
+the need for machine learning algorithms and pre-existing data
+about the target. Our comprehensive evaluation demonstrates the
+robustness of mmEcho in various real-life conditions, including
+variations in distance, direction, reverberating material, sound
+insulator, sound volume, and spoken language. With the aid of
+multi-antenna technology, our system enables more distant and
+more effective eavesdropping. Additionally, our technique is
+capable of intercepting sounds from both stationary and moving
+sources, enhancing the overall efﬁcacy of the eavesdropping
+process.
+REFERENCES
+[1] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” inProc. USENIX Secur . Symp., 2014,
+pp. 1053–1067.
+[2] Z. Ba et al., “Learning-based practical smartphone eavesdropping with
+built-in accelerometer,” in Proc. Netw. Distrib. Syst. Secur . Symp.,
+2020, pp. 1–18.
+[3] S. A. Anand and N. Saxena, “Speechless: Analyzing the threat to speech
+privacy from smartphone motion sensors,” inProc. IEEE Symp. Secur .
+Privacy, 2018, pp. 1000–1017.
+[4] L. Zhang, P. H. Pathak, M. Wu, Y . Zhao, and P. Mohapatra, “AccelWord:
+Energy efﬁcient hotword detection through accelerometer,” inProc. ACM
+SIGMobile Annu. Int. Conf. Mobile Syst. Appl. Serv., 2015, pp. 301–315.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+LI et al.: ACOUSTIC EA VESDROPPING FROM SOUND-INDUCED VIBRATIONS WITH MULTI-ANTENNAMMWAVE RADAR 7707
+[5] J. Han, A. J. Chung, and P. Tague, “Pitchln: Eavesdropping via intelli-
+gible speech reconstruction using non-acoustic sensor fusion,” inProc.
+ACM/IEEE Int. Conf. Inf. Process. Sensor Netw., 2017, pp. 181–192.
+[6] A. Kwong, W. Xu, and K. Fu, “Hard drive of hearing: Disks that eavesdrop
+with a synthesized microphone,” inProc. IEEE Symp. Secur . Privacy,
+2019, pp. 905–919.
+[7] N. Roy and R. R. Choudhury, “Listening through a vibration motor,” in
+Proc. ACM SIGMobile Annu. Int. Conf. Mobile Syst. Appl. Serv., 2016,
+pp. 57–69.
+[8] H. A. C. Maruri, P. Lopez-Meyer, J. Huang, W. M. Beltman, L. Nachman,
+and H. Lu, “V-Speech: Noise-robust speech capturing glasses using vi-
+bration sensors,” inProc. ACM Interactive Mobile Wearable Ubiquitous
+Technol., vol. 2, no. 4, pp. 1–23, 2018.
+[9] M. Guri, Y . Solewicz, A. Daidakulov, and Y . Elovici, “SPEAKE(a)R: Turn
+speakers to microphones for fun and proﬁt,” inProc. USENIX Workshop
+Offensive Technol., 2017, Art. no. 13.
+[10] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and W. T.
+Freeman, “The visual microphone: Passive recovery of sound from video,”
+ACM Trans. Graph., vol. 33, no. 4, 2014, Art. no. 79.
+[11] R. P. Muscatell, “Laser microphone,”J. Acoustical Soc. Amer ., vol. 76,
+no. 4, pp. 1284–1284, 1984.
+[12] S. Sami, Y . Dai, S. R. X. Tan, N. Roy, and J. Han, “Spying with your robot
+vacuum cleaner: Eavesdropping via LiDAR sensors,” inProc. ACM Conf.
+Embedded Netw. Sensor Syst., 2020, pp. 354–367.
+[13] B. Nassi, Y . Pirutin, A. Shamir, Y . Elovici, and B. Zadov, “Lamphone:
+Real-time passive sound recovery from light bulb vibrations,” inProc.
+USENIX Secur . Symp., 2022, pp. 4401–4417.
+[14] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping through
+wireless vibrometry,” inProc. ACM SIGMobile Annu. Int. Conf. Mobile
+Comput. Netw., 2015, pp. 130–141.
+[15] G. Wang, Y . Zou, Z. Zhou, K. Wu, and L. M. Ni, “We can hear you with
+Wi-Fi!,” IEEE Trans. Mobile Comput., vol. 15, no. 11, pp. 2907–2920,
+Nov. 2016.
+[16] C. Xu et al., “WaveEar: Exploring a mmWave-based noise-resistant speech
+sensing for voice-user interface,” inProc. ACM SIGMobile Annu. Int. Conf.
+Mobile Syst. Appl. Serv., 2019, pp. 14–26.
+[17] P. Hu, Y . Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng, “MILLIEAR:
+Millimeter-wave acoustic eavesdropping with unconstrained vocabulary,”
+in Proc. IEEE Conf. Comput. Commun., 2022, pp. 11–20.
+[18] S. Basak and M. Gowda, “mmSpy: Spying phone calls using mmWave
+radars,” inProc. IEEE Symp. Secur . Privacy, 2022, pp. 995–1012.
+[19] P. Hu et al., “AccEar: Accelerometer acoustic eavesdropping with un-
+constrained vocabulary,” in Proc. IEEE Symp. Secur . Privacy, 2022,
+pp. 1530–1530.
+[20] P. Walker and N. Saxena, “SoK: Assessing the threat potential of vibration-
+based attacks against live speech using mobile sensors,” inProc. ACM
+Conf. Secur . Privacy Wireless Mobile Netw., 2021, pp. 273–287.
+[21] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava,
+“UWHear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” inProc. ACM Conf. Embedded Netw. Sensor Syst.,
+2020, pp. 1–14.
+[22] Y . Rong, S. Srinivas, A. Venkataramani, and D. W. Bliss, “UWB radar
+vibrometry: An RF microphone,” inProc. IEEE Asilomar Conf. Signals
+Syst. Comput., 2019, pp. 1066–1070.
+[23] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” inProc. ACM Interactive Mobile
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.
+[24] P. Hu et al., “Towards unconstrained vocabulary eavesdropping with
+mmWave radar using GAN,”IEEE Trans. Mobile Comput., vol. 23, no. 1,
+pp. 941–954, Jan. 2024.
+[25] C. Wang et al., “mmEve: Eavesdropping on smartphone’s earpiece via cots
+mmWave device,” inProc. 28th Annu. Int. Conf. Mobile Comput. Netw.,
+2022, pp. 338–351.
+[26] C. Shi et al., “Privacy leakage via speech-induced vibrations on room
+objects through remote sensing based on phased-MIMO,” in Proc.
+2023 ACM SIGSAC Conf. Comput. Commun. Secur ., 2023, pp. 75–89,
+doi: 10.1145/3576915.3616634.
+[27] Y . Feng, K. Zhang, C. Wang, L. Xie, J. Ning, and S. Chen, “mmEavesdrop-
+per: Signal augmentation-based directional eavesdropping with mmWave
+radar,” inProc. 2023 IEEE Conf. Comput. Commun., 2023, pp. 1–10.
+[28] R. Khanna, D. Oh, and Y . Kim, “Through-wall remote human voice
+recognition using Doppler radar with transfer learning,”IEEE Sensors
+J., vol. 19, no. 12, pp. 4571–4576, Jun. 2019.
+[29] Z. Li et al., “WaveSpy: Remote and through-wall screen attack
+via mmWave sensing,” in Proc. IEEE Symp. Secur . Privacy, 2020,
+pp. 217–232.
+[30] C. Jiang, J. Guo, Y . He, M. Jin, S. Li, and Y . Liu, “mmVib: Micrometer-
+level vibration measurement with mmWave radar,” in Proc. ACM
+SIGMobile Annu. Int. Conf. Mobile Comput. Netw. , 2020, pp. 1–13,
+doi: 10.1145/3372224.3419202.
+[31] Y . Zhang, P. Yang, Y . Feng, Y . Yan, and X.-Y . Li, “Wi-Ear: A contact-free
+vibration sensing and identiﬁcation system based on COTS WiFi,” inProc.
+2023 IEEE Int. Conf. Commun., 2023, pp. 1810–1816.
+[32] L. Wen, Y . Li, Y . Ye, C. Gu, and J.-F. Mao, “Audio recovery via
+noncontact vibration detection with 120 GHz millimeter-wave radar
+sensing,” in Proc. Int. Conf. Microw. Millimeter Wave Technol., 2021,
+pp. 1–3.
+[33] Y . Dong and Y .-D. Yao, “Secure mmWave-radar-based speaker veriﬁ-
+cation for IoT smart home,”IEEE Internet of Things J., vol. 8, no. 5,
+pp. 3500–3511, Mar. 2021.
+[34] E. Guerrero, J. Brugués, J. Verdú, and P. de Paco, “Microwave microphone
+using a general purpose 24-GHz FMCW radar,”IEEE Sens. Lett.,v o l .4 ,
+no. 6, Jun. 2020, Art. no. 3501004.
+[35] L. Piotrowsky, J. Siska, C. Schweer, and N. Pohl, “Using FMCW radar
+for spatially resolved intra-chirp vibrometry in the audio range,” inProc.
+IEEE/MTT-S Int. Microw. Symp., 2020, pp. 791–794.
+[36] F. Chen et al., “A novel method for speech acquisition and enhancement by
+94 GHz millimeter-wave sensor,”Sensors, vol. 16, no. 1, 2015, Art. no. 50.
+[37] T. Liu et al., “Wavoice: A noise-resistant multi-modal speech recognition
+system fusing mmWave and audio signals,” inProc. ACM Conf. Embedded
+Netw. Sensor Syst., 2021, pp. 97–110.
+[38] R. J. Baken and R. F. Orlikoff,Clinical Measurement of Speech and V oice.
+Boston, MA, USA: Cengage Learning, 2000.
+[39] P. Hu, W. Li, R. Spolaor, and X. Cheng, “mmEcho: A mmWave-based
+acoustic eavesdropping method,” inProc. 2023 IEEE Symp. Secur . Pri-
+vacy, 2023, pp. 1840–1856.
+[40] P. Du, W. A. Kibbe, and S. M. Lin, “Improved peak detection in mass
+spectrum by incorporating continuous wavelet transform-based pattern
+matching,” Bioinformatics, vol. 22, no. 17, pp. 2059–2065, 2006.
+[41] F. Kittaneh and H. R. Moradi, “Cauchy—Schwarz type inequalities and
+applications to numerical radius inequalities,”Math. Inequalities Appl.,
+vol. 23, pp. 1117–1125, 2020.
+[42] Y . Zeng, J. Liu, J. Xiong, Z. Liu, D. Wu, and D. Zhang, “Exploring multiple
+antennas for long-range WiFi sensing,” inProc. ACM Interactive Mobile
+Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–30, 2021.
+[43] J. Kominek, T. Schultz, and A. W. Black, “Synthesizer voice quality of new
+languages calibrated with mean mel cepstral distortion,” inProc. Spoken
+Lang. Technol. Under-Resourced Lang., 2008, pp. 63–68.
+[44] C. Yan, G. Zhang, X. Ji, T. Zhang, T. Zhang, and W. Xu, “The feasibility of
+injecting inaudible voice commands to voice assistants,”IEEE Trans. De-
+pendable Secure Comput., vol. 18, no. 3, pp. 1108–1124, May/Jun. 2021.
+[45] Y .-Y . Wang, A. Acero, and C. Chelba, “Is word error rate a good indicator
+for spoken language understanding accuracy,” inProc. IEEE Workshop
+Autom. Speech Recognit. Understanding, 2003, pp. 577–582.
+[46] C. Hoffman and R. Driggers, Encyclopedia of Optical and Photonic
+Engineering (Print)-Five V olume Set. Boca Raton, FL, USA: CRC Press,
+2015.
+[47] J. Kokkoniemi, J. Lehtomäki, and M. Juntti, “Reﬂection coefﬁcients for
+common indoor materials in the terahertz band,” inProc. ACM Int. Conf.
+Nanoscale Comput. Commun., 2018, pp. 1–6.
+[48] T.-W. Lee and G.-J. Jang, “The statistical structures of male and female
+speech signals,” inProc. IEEE Int. Conf. Acoust. Speech Signal Process.,
+2001, pp. 105–108.
+[49] R. T. Sataloff, “The human voice,”Sci. Amer ., vol. 267, no. 6, pp. 108–115,
+1992.
+[50] C. J. Chen and D. A. Miller, “Pitch-synchronous analysis of human voice,”
+J. V oice, vol. 34, no. 4, pp. 494–502, 2020.
+[51] S. Rosen and A. Fourcin, “Frequency selectivity and the perception of
+speech,” Freq. Selectivity Hear ., pp. 373–487, 1986.
+[52] R. Jakobson and M. Halle,Fundamentals of Language. Berlin, Germany:
+De Gruyter Mouton, 2020.
+[53] F.-G. Zeng et al., “Speech recognition with amplitude and frequency
+modulations,” inProc. Nat. Acad. Sci. USA, vol. 102, no. 7, pp. 2293–2298,
+2005.
+[54] S. Becker, M. Ackermann, S. Lapuschkin, K.-R. Müller, and W. Samek,
+“Interpreting and explaining deep neural networks for classiﬁcation of
+audio signals,” 2018,arXiv: 1807.03418.
+[55] S. J. Chapman, D. P. Hewett, and L. N. Trefethen, “Mathematics of the
+faraday cage,”SIAM Rev., vol. 57, no. 3, pp. 398–417, 2015.
+[56] N. Amralah, “Shielding effectiveness of metal mesh and radio frequency
+shielding ﬁlm for optical applications,” inProc. IEEE Antenna Meas.
+Techn. Assoc. Symp., 2021, pp. 1–5.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.
+7708 IEEE TRANSACTIONS ON MOBILE COMPUTING, VOL. 24, NO. 8, AUGUST 2025
+Wenhao Li received the BE degree in computer sci-
+ence and technology from the Beijing Information
+Science and Technology University, China. He is
+currently working toward the PhD degree with the
+School of Computer Science, Shandong University,
+China. His current research interests focus on security
+and privacy for IoT systems, wireless sensing, and
+side-channels analysis.
+Riccardo Spolaor received the master’s degree in
+computer science and the PhD degree in brain, mind,
+and computer science from the University of Padua,
+Italy, in 2014 and 2018. He is an assistant professor
+with Shandong University. He previously worked at
+as a research associate with the University of Oxford,
+U.K. His main research interests include privacy and
+security issues on mobile devices. In particular, he
+investigates possible applications of machine learn-
+ing techniques to infer information via side-channel
+analysis. Most of the research that, he carried out up
+to now is about the application of machine learning classiﬁers to network trafﬁc
+and energy consumption traces of mobile devices.
+Chuanwen Luo received the PhD degree from the
+School of Information, Renmin University of China,
+Beijing, China, in 2020. Currently, he is working as
+an assistant professor with the School of Information
+Science and Technology, Beijing Forestry University,
+Beijing, China. He was a visiting scholar with the De-
+partment of Computer Science, University of Texas
+at Dallas, in 2019. His research interests include edge
+computing, various topics in the application of wire-
+less networks, ad hoc & sensor networks, algorithm
+design and analysis, etc.
+Yuchao Sun is a senior engineer with the Third
+Research Institute of China Electronics Technology
+Group Corporation (CETC), presiding over several
+National Key Research and Development Program of
+China and many military research funds and other
+major topics. He has published one monograph, three
+patents, and more than ten papers. He also partici-
+pated in the preparation of a national standard.
+Huashan Chen received the BS and MS degrees from
+Shandong University, and the Institute of Information
+Engineering, Chinese Academy of Sciences, respec-
+tively, and the PhD degree in computer science from
+the University of Texas at San Antonio, in 2021. He is
+currently a Young associate professor with the Insti-
+tute of Information Engineering, Chinese Academy of
+Sciences. His research interests include cybersecurity
+metrics, automated attack planning, and blockchain
+security.
+Guoming Zhang received the bachelor’s degree from
+the College of Transportation, Ludong University, in
+2013, the master’s degree from the School of Me-
+chanical Engineering, Beijing Institute of Technol-
+ogy, supervised by Prof. Jie Hu, and the PhD degree
+from the Department of Electrical Engineering, Zhe-
+jiang University, supervised by Prof. Wenyuan Xu
+and Donglian Qi. His research interests include IoT
+security and acoustic communication. He won the
+best paper awards of ACM CCS 2017, Qshine 2019.
+Yanni Yang received the BE and MSc degrees from
+the Ocean University of China, Qingdao, in 2014 and
+2017, respectively, and the PhD degree in computer
+science from the Hong Kong Polytechnic University,
+in 2021. She is currently an assistant professor with
+the School of Computing Science and Technology,
+Shandong University. She visited the Media Lab at
+MIT in 2019 as a visiting student. Her research
+interests include wireless human sensing, pervasive
+and mobile computing, and Internet of Things. She
+has published more than 20 papers in top academic
+conferences and journals.
+Xiuzhen Cheng (Fellow, IEEE) received the MS and
+PhD degrees in computer science from the Univer-
+sity of Minnesota – Twin Cities, in 2000 and 2002,
+respectively. She is a professor with the School of
+Computer Science and Technology, Shandong Uni-
+versity. Her current research interests include wireless
+and mobile security, cyber physical systems, wireless
+and mobile computing, sensor networking, and al-
+gorithm design and analysis. She has served on the
+editorial boards of several technical journals and the
+technical program committees of various professional
+conferences/workshops. She also has chaired several international conferences.
+She worked as a program director for the US National Science Foundation (NSF)
+from April to October in 2006 (full time), and from April 2008 to May 2010
+(part time). She received the NSF CAREER Award in 2004. She is a member of
+the ACM.
+Pengfei Hu received the PhD degree in computer sci-
+ence from UC Davis. He is a professor with the School
+of Computer Science and Technology, Shandong Uni-
+versity, China. His research interests include the areas
+of IoT security, AI security, mobile computing. He has
+published more than 30 papers in premier conferences
+and journals on these topics, e.g., IEEE S&P, ACM
+CCS, IEEE INFOCOM, theIEEE Transactions on
+Mobile Computing, etc. He also served as TPC for nu-
+merous prestigious conferences and associate editors
+of IEEE Transactions on Wireless Communications
+and IEEE Internet of Things Journal.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:45:01 UTC from IEEE Xplore.  Restrictions apply.

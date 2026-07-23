@@ -1,0 +1,1722 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: Privacy Leakage via Speech-induced Vibrations on Room Objects through Remote Sensing based on Phased-MIMO
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+Quantum Wireless Sensing: Principle, Design and
+Implementation
+Fusang Zhang†∗, Beihong Jin†∗, Zitong Lan†, Zhaoxin Chang§†, Daqing Zhang§♯,
+Yuechun Jiao¶, Meng Shi♮, Jie Xiong‡
+† Institute of Software, Chinese Academy of Sciences,∗ University of Chinese Academy of Sciences,
+§ Telecom SudParis, Institut Polytechnique de Paris,♯ Peking University,¶ Shanxi University,♮ Technology and
+Engineering Center for Space Utilization, Chinese Academy of Sciences,‡ University of Massachusetts Amherst
+fusang@iscas.ac.cn, Beihong@iscas.ac.cn, zitonglan1@gmail.com, zhaoxin.chang@telecom-sudparis.eu,
+dqzhang@sei.pku.edu.cn, ycjiao@sxu.edu.cn, shimeng@csu.ac.cn, jxiong@cs.umass.edu
+ABSTRACT
+Recent years have witnessed a tremendous amount of in-
+terest in wireless sensing, i.e., instead of employing tradi-
+tionalsensors,wirelesssignalisutilizedforsensingpurposes.
+Contact-free wireless sensing has been successfully demon-
+strated using various RF signals such as WiFi, RFID, LoRa,
+and mmWave, enabling a large range of applications. How-
+ever, limited by hardware thermal noise, the granularity of
+RF sensing is still relatively coarse. In this paper, instead of
+using the macro signal power/phase for sensing, we propose
+thefirstquantumwirelesssensingsystem,whichusesthemi-
+cro energy level of atoms for sensing, improving the sensing
+granularity by an order of magnitude. The proposed quan-
+tum wireless sensing system is capable of utilizing a wide
+spectrum of frequencies (e.g., 2.4 GHz, 5 GHz and 28 GHz)
+for sensing. We demonstrate the superior performance of
+quantum wireless sensing with two widely-used signals, i.e.,
+WiFi and 28 GHz millimeter wave. We show that quantum
+wireless sensing can push the sensing granularity of WiFi
+from millimeter level to sub-millimeter level and push the
+sensing granularity of millimeter wave to micrometer level.
+CCS CONCEPTS
+•Human-centered computing→ Ubiquitous and mo-
+bile computing.
+KEYWORDS
+Quantum wireless sensing, Rydberg atom, Low system noise,
+Fine sensing granularity
+This work is licensed under a Creative Commons Attribution International 
+4.0 License.
+ACM MobiCom ’23, October 2–6, 2023, Madrid, Spain
+© 2023 Copyright held by the owner/author(s).
+ACM ISBN 978-1-4503-9990-6/23/10.
+https://doi.org/10.1145/3570361.3613258
+ACM Reference Format:
+Fusang Zhang†∗, Beihong Jin†∗, Zitong Lan†, Zhaoxin Chang§†,
+DaqingZhang§♯,YuechunJiao ¶,MengShi ♮,JieXiong ‡ .2023.Quan-
+tum Wireless Sensing: Principle, Design and Implementation. In
+The 29th Annual International Conference on Mobile Computing and
+Networking (ACM MobiCom ’23), October 2–6, 2023, Madrid, Spain.
+ACM,NewYork,NY,USA,15pages.https://doi.org/10.1145/3570361.
+3613258
+Figure 1: RF sensing vs. Quantum wireless sensing.
+1 INTRODUCTION
+Wireless technologies have changed our world and become
+an essential part of our everyday life. Besides the main-
+stream data communication function, in recent years, per-
+vasive wireless signals such as WiFi are further exploited
+for sensing purposes [48,62]. Owning to the nature of sen-
+sor free and contact free, wireless sensing has quickly at-
+tracted a lot of research attention with promising progress
+made [7, 36, 57]. A large range of applications have been
+realized including human gesture recognition [12, 42], vital
+sign monitoring [5, 26], vibration tracking [28, 53] and even
+material identification [22, 52]. While promising in many
+aspects, a key limitation associated with wireless sensing is
+the coarse sensing granularity. While WiFi sensing is capa-
+ble of sensing hand gestures (i.e., a few centimeters of hand
+movement) and respiration (i.e., a few millimeters of chest
+displacement), it has difficulties in sensing heartbeat which
+659
+is on the scale of sub-millimeter. To achieve sub-millimeter
+sensing granularity, RF signals of higher frequencies (e.g.,
+mmWave) need to be adopted. This is because the funda-
+mentalprinciplebehindwirelesssensingisthatsignalvaries
+with target movement. For motion sensing, a phase rotation
+of 2𝜋 corresponds to a target movement of half signal wave-
+length. Therefore, sensing granularity is closely related to
+signal wavelength. For a specific target movement, a smaller
+signal wavelength indicates a larger signal phase variation
+which is easier to be detected.
+The minimum phase variation that can be accurately cap-
+tured is limited by the thermal noise of hardware. Conven-
+tional electronic components such as mixers, amplifiers, and
+analog-to-digital converters (ADCs) all unavoidably intro-
+duce thermal noise. Taking WiFi as an example, the widely
+used Intel 5300 WiFi card can report a minimum phase
+changeof15degrees,correspondingtoatargetdisplacement
+of3mm.Therefore,WiFisensingcanhardlybeusedtotrack
+a movement smaller than 3 mm. Although higher-frequency
+signals can be utilized to achieve a finer granularity, higher
+frequency leads to larger signal strength attenuation and
+weaker penetration capability.
+In this paper, as shown in Figure 1, we propose a new
+sensing modality, i.e., quantum wireless sensing for the first
+time. We show that quantum wireless sensing can signifi-
+cantly improve the sensing granularity by an order of mag-
+nitude. Recently, quantum technology has been exploited
+to enable quantum computing [
+37], quantum communica-
+tion [25], quantum sensing [21], quantum routing [46] and
+quantum cryptography [39]. Note that quantum sensing in
+existingliteratureaimsatcapturingtheinformationofmicro
+subjects such as molecules [21, 56]. The typical examples
+are atomic vapor magnetometers and atomic clocks [19]. In
+contrast, the proposed quantum wireless sensing refers to
+sensing macro subjects such as human and daily objects.
+As shown in Figure 2, the basic principle of a quantum re-
+ceiveristhattheelectronsofanatom(e.g.,Cesiumatom)are
+triggered to higher energy levels to receive RF signals. For
+example, to receive 2.4 GHz WiFi signals, the electrons are
+triggered from energy level 6 to energy level 66. In quantum
+systems, an atom with electrons at high energy levels (i.e.,
+abovelevel20)iscalleda Rydberg atom[23].Weobservesev-
+eral unique advantages of applying a quantum receiver [41]
+for sensing, compared to a conventional RF receiver.
+• Quantum wireless sensing can achieve a much finer
+granularity. By using a quantum receiver for signal
+reception at WiFi frequency, the sensing granularity
+can be improved from 3 mm to 0.1 mm.
+• Conventional RF receivers are designed to receive sig-
+nals in a particular frequency range. Even the antenna
+needs to be redesigned in order to efficiently receive
+Figure 2: Quantum receiver. The Rydberg atoms are
+triggered to high energy level to receive RF signals.
+signals of different frequencies. Interestingly, in quan-
+tum wireless sensing, one quantum receiver can re-
+ceive RF signals of different frequencies by simply
+triggering the electrons to different energy levels. One
+quantum receiver can easily cover frequencies from a
+few Megahertz to tens of Terahertz.
+• Even for narrow-band WiFi signals, the frequency
+band still has a size of 20 MHz to 80 MHz. This causes
+interference between adjacent overlapping channels.
+In contrast, quantum wireless sensing only listens to a
+verysmallband,i.e.,0.05MHz ∼0.1MHz,significantly
+reducing interference from adjacent channels.
+The key reason quantum wireless sensing can achieve a
+finergranularityisthataquantumreceiverdoesnotcontain
+electroniccomponentssuchasmixers,amplifiers,andanalog-
+to-digital converters (ADCs) inside a traditional RF receiver.
+A quantum receiver mainly contains atoms with electrons
+at different energy levels. Electrons at a particular level can
+capture signals within a particular frequency range (e.g.,
+Cs atoms with electrons at the 66D
+5/2 energy level1 can
+receiveWiFisignalintherangeof2.39GHzto2.4GHz).One
+observation is used to measure the strength of the received
+RF signal. That is, when RF signals are received at Rydberg
+atoms, the state of Rydberg atoms vary. When a laser beam
+penetrates through the vapor cell filled with Rydberg atoms,
+the change of Rydberg atom state causes the spectrum of
+the laser to vary. A stronger RF signal can cause a larger
+separationofthetwopeaksonthelaserspectrumwhichcan
+be measured by a photodetector [45] .
+Whenatargetmoves,itaffectssignalpropagation,causing
+signal strength variations which can be accurately captured
+atthequantumreceiver.Wetheoreticallymodeltheeffectof
+targetmotiononthemeasuredquantumvariation,revealing
+the principle behind quantum wireless sensing in detecting
+subtle signal change and accordingly subtle target motions.
+To further improve the sensing granularity, we adopt a ref-
+erence signal design. Specifically, we leverage an interesting
+observationatquantumreceiver,i.e.,thelaserspectrumpeak
+1Here, 66 indicates the main energy level and D5/2 depicts the sub-level.
+660
+separation caused by RF signal reception is not linearly re-
+lated to the signal strength [38]. The amount of separation
+is larger in the higher strength region. We therefore employ
+areferenceRFsignaltotriggertheatomtoahigherstrength
+state.Withthisoperation,theamountoftarget-inducedpeak
+separationchangebecomesmuchlargerandaccordinglythe
+sensing granularity is significantly improved.
+We implemented the first quantum wireless sensing pro-
+totype using a 2.5 cm atomic vapor cell filled with Cs atoms
+as a quantum receiver. This vapor cell filled with Cs atoms
+costs around $150 and the price can be significantly reduced
+under mass production. Experiment results show that the
+proposed quantum wireless sensing system can increase the
+sensing granularity by more than 10 times. We showcase
+that with such a high sensing granularity, 2.4 GHz RF sig-
+nal can be used to capture the subtle vibration of a speaker
+on the sub-millimeter scale, which originally could only be
+achievedusinghigh-frequency60GHzmmWavesignals.We
+alsoshowthatwithjustonereceiver,quantumwirelesssens-
+ingcanfacilitatesensingwithsignalsofdifferentfrequencies.
+For millimeter wave (28 GHz) signal, we demonstrate that
+quantum wireless sensing is able to sense micrometer-level
+vibration, enabling exciting applications such as recovering
+sound from the extremely subtle vibrations of a bottle in-
+ducedbyasmall-sizespeaker.Themaincontributionsofthis
+paper are summarized as follows.
+• We propose the concept of quantum wireless sensing
+for the first time. We introduce the underlying princi-
+plebehindquantumwirelesssensing,morespecifically,
+whyaquantumreceiveriscapableofachievingafiner
+granularity and how to leverage it for macro motion
+sensing.
+• We design the first end-to-end quantum wireless sens-
+ing system including both the hardware design and
+the signal processing pipeline.
+• Wecomprehensivelyevaluatethesystemperformance
+withwirelesssignalsofdifferentfrequencies.Weshow
+thatcomparedwithconventionalRFsensing,quantum
+wireless sensing improves sensing granularity by an
+order of magnitude.
+2 PRELIMINARY OF QUANTUM
+WIRELESS SENSING
+In this section, we first introduce the basics related to quan-
+tum wireless sensing including the Rydberg atom and its
+electron transition with RF signals. Then we briefly present
+the RF sensing methodology.
+2.1 Rydberg atom
+Atoms are the smallest unit of matter, consisting of one nu-
+cleus and multiple electrons bound to the nucleus as shown
+in Figure 3. Electrons are bound to a specific set of orbits by
+the electromagnetic force of the nucleus. The electrons in
+each orbit have different energy levels.
+澾
+n=2
+n=1
+n=m
+Nucleus
+Transition
+…
+Transiti n
+ransitio
+T
+Emitting
+T
+T
+Electrons
+Absorbing
+Figure 3: Illustration of atom structure and electron
+transition.
+An electron that is further away from the nucleus has a
+higher energy. In physics, the principal quantum number𝑛
+is used to represent the orbit index of an electron. At each
+orbit, the electron can also be in different energy levels. The
+energy level of an electron is determined by three quantum
+numbers.Forexample, 𝑙 = 66𝐷5/2 representsanenergylevel,
+where 𝑛 = 66 is the principal quantum number, D is the
+orbital angular momentum quantum number and 5/2 is the
+electron spin quantum number. The energy of an electron at
+an energy level𝑙 can be expressed as
+𝐸𝑙 = − ℎ𝑐𝑅𝑦
+(𝑛 −𝛿𝑙 )2, (1)
+whereℎ,𝑐 and𝑅𝑦 are Planck’s constant, the speed of light
+and the Rydberg constant, respectively.𝛿𝑙 is the quantum
+defect, which is a constant for each energy level.
+An electron can “jump” between different energy levels,
+which is calledatomic electron transition[3]. As shown in
+Figure 3, an electron can absorb energy to transit to higher
+energy levels, or it can release energy to transit to lower
+energy levels. Electronsabsorb orrelease energyinthe form
+ofreceiving or emitting electromagnetic waves.Notethatboth
+lightsignalsandRFsignalsareelectromagneticwaves.Since
+the energy of each energy level is determined, the frequency
+of electromagnetic waves absorbed (or emitted) due to the
+transition between two energy levels (e.g.,𝑙1 and𝑙2) is deter-
+mined as
+𝑓𝑙1→𝑙2 = |𝐸𝑙1 −𝐸𝑙2 |
+ℎ , (2)
+where 𝐸𝑙1 and 𝐸𝑙2 are the values of two energy levels, re-
+spectively. Based on this equation, for electrons at𝑙1 energy
+level, irradiating the atoms with electromagnetic waves of
+frequency 𝑓𝑙1→𝑙2 causes electrons to transit to𝑙2 energy level.
+A Rydberg atom is an atom with one or more electrons
+at high energy levels (i.e., above level 20). Rydberg atoms
+are created from ordinary alkali metal atoms (e.g., Rb and Cs
+661
+澾 Laser
+Visible Lightݖܪ
+THzGHzMHz
+Microwave
+(n>20)
+…
+Figure 4: Illustration of energy levels.
+atoms).Thereasonwhyalkalimetalatomsarechosenisthat
+theycontainonlyoneelectronontheoutermostlevel,which
+is easier to be triggered to higher energy levels. According
+to Equation 1, the energy of each level𝐸𝑙 is proportional
+to − 1
+𝑛2 . The larger𝑛 is, the denser the energy levels are as
+shown in Figure 4. When𝑛 is large, the energy difference
+betweennearbyenergylevelsaresmallwhichcorrespondsto
+low-frequency wave according to Equation 2. The frequency
+can be on the scale of Megahertz to Terahertz. For example,
+the transition between energy levels𝑙1 = 66D5/2 and 𝑙2 =
+67P3/2 ofCsatomcorrespondstoRFsignalsat2.4GHz.Soan
+absorption of WiFi signal of frequency 2.4 GHz can trigger
+the outermost electron to move from energy level 66D5/2 to
+67P3/2. The calculation process is as follows
+𝑓𝑙1→𝑙2 = |𝐸𝑙2 −𝐸𝑙1 |
+ℎ
+= 𝑐𝑅𝑦| 1
+(67−𝛿𝑙2)2 − 1
+(66−𝛿𝑙1)2 |
+= 2.4𝐺𝐻𝑧,
+(3)
+where𝑅𝑦 = 1.097×107𝑚−1,𝑐 = 3×108𝑚/𝑠,𝛿𝑙1 = 2.466 and
+𝛿𝑙2 = 3.559. The list of quantum defects [35] with various
+quantumnumbersisattachedasAppendixA.1.Wealsoshow
+how other signal frequencies such as 5 GHz and 28 GHz can
+be obtained with energy level transitions in Appendix A.2.
+In contrast, ordinary atoms have all the electrons located
+at low energy levels. The transition between low energy
+levels correspond to visible light signals, whose frequency is
+much larger (i.e., larger than 1014 Hz). Note that the energy
+difference between low energy levels is much larger.
+Static 
+paths
+Wall
+Receiver
+Transmitter
+Static
+vector
+I
+Q
+Dynamic
+vector
+Phase
+variation
+Target
+vibrationDynamic
+path
+Target
+O
+Figure 5: Principle of conventional RF sensing.
+2.2 Conventional RF sensing
+The basic principle of RF sensing is that target movement
+induces signal variations and we can therefore extract target
+context such as moving speed anddistance through ana-
+lyzing variations of the signal reflected from the target. As
+shown in Figure 5, an RF signal (e.g., WiFi signal) is emitted
+byatransmitterandthenpropagatesthroughmultiplepaths
+to reach the receiver. Static paths denote those signal paths
+reflectedfromstaticobjects(e.g.,awall).Incontrast,dynamic
+path represents the path reflected from the target with mo-
+tions. Both signal amplitude and phase variations can be
+usedforsensing.AsshowninFigure5,signalamplitudeand
+phase variations can be used to sense object vibration. On
+the I-Q plane, the static path vector is in blue color and the
+dynamic path vector is in red color. The composite signal at
+the receiver is the superposition of the two signal vectors.
+Duringthesensingprocess,thestaticvectordoesnotchange
+while the dynamic vector changes with target movements.
+The target vibration causes clear amplitude and phase varia-
+tions of the dynamic vector. If we visualize the process on
+the I-Q plane shown in Figure 5, the dynamic vector rotates
+with respect to the static vector. The increase and decrease
+on the amplitude/phase of the composite vector correspond
+to target motions.
+3 SYSTEM DESIGN OF QUANTUM
+WIRELESS SENSING
+In this section, we present the detailed design of quantum
+wireless sensing.
+3.1 System overview
+As shown in Figure 6, the key difference between quantum
+wireless sensing and conventional RF sensing is that quan-
+tum wireless sensing uses a quantum receiver instead of an
+RF receiver to receive RF signals. RF transmitter first gener-
+atesthebasebandsignal 𝑒𝑗2𝜋𝑓 0𝑡 andthenmixesitwithcarrier
+frequency 𝑓𝑐 . The transmitted signal can be represented as
+𝑆𝑇 (𝑡) = 𝑒𝑗2𝜋 (𝑓𝑐 +𝑓0)𝑡 . (4)
+Note that the transmitted signal arrives at the target and is
+Baseband signal
+Carrier signal
+Mixer
+Tx
+Target
+Receiver
+Figure 6: Illustration of quantum wireless sensing.
+thenreflectedtothequantumreceiver.Ourgoalistoquantify
+the effect of target motion on atoms at the quantum receiver
+and use the fine-grained atom state change for sensing.
+662
+3.2 Principle of quantum wireless sensing
+Conventional RF sensing uses RF circuits to receive and
+demodulate signals. Specifically, the antenna captures RF
+signals and a mixer is used to demodulate the signal to base-
+band.Then,anADCisusedtosamplethesignal.Incontrast,
+quantum wireless sensing exploits Rydberg atoms to receive
+the signal. Based on Section 2.1, to receive RF signals, the
+outermost electron needs to be triggered to high energy lev-
+elsandtheatomiscalledaRydbergatom.Weintroducehow
+to generate Rydberg atoms next.
+3.2.1 Rydberg atom preparation. Rydberg atoms are made
+fromalkalimetalatoms.Thealkalimetalatoms(i.e.,Li,Na,K,
+Rb and Cs) contain only one electron at the outermost level,
+which is easier to be triggered to higher energy levels (e.g.,
+from n = 6 to n = 66 for Cs) to reach the Rydberg state. As
+shown in Figure 7, a vapor cell is filled with Cs atoms with
+the outermost electrons at the ground state (i.e., 6S1/2). To
+excitetheatomstoRydbergstate,twolaserbeamsofdifferent
+frequencies penetrate through the vapor cell from opposite
+directions [21]. The first laser beam triggers the outermost
+electron to the excitation state (i.e., from 6S1/2 to 6P1/2) and
+the second laser beam further triggers the electron to higher
+levels (i.e., from 6P1/2 to 66D5/2) and now the ordinary atom
+becomes a Rydberg atom. Besides the triggering function,
+the first laser serves another function, i.e., to be received by
+the photodetector to generate the laser spectrum which is
+used to measure the strength of the received RF signal.
+Vapor cell
+First 
+trigger laser
+Second
+trigger laser
+澾
+Ground state
+Rydberg state
+Co-excitation
+Figure 7: Exciting atoms to a Rydberg state.
+3.2.2 Receive RF signals using Rydberg atoms.The energy
+levels of the Rydberg states are so dense that transitions
+betweentwostatescaninduceRFsignalswithafine-grained
+frequencyresolution[ 3].Forexample,thetransitionbetween
+66D5/2 and 67P3/2 induces a 2.4 GHz RF signal, while the
+transition between 67D5/2 and 68P3/2 leads to a 2.3 GHz RF
+signal. Therefore, to use a Rydberg atom to receive an RF
+signal of frequency𝑓𝑐 , we need to find two energy levels (𝑙1
+and𝑙2) between which the transition corresponds to an RF
+signal of frequency𝑓𝑐 . This can be obtained by traversing
+Equation 2. The atom will first be excited to energy level𝑙1
+with laser beams. At𝑙1, the Rydberg atoms can absorb the
+energy of RF signals to transit to another energy level𝑙2 as
+shown in Figure 8 (left). Based on𝑙1 and 𝑙2, we know the
+frequency (𝑓𝑐 ) of the received RF signal. Another important
+parameter of the RF signal is the signal strength. To obtain
+this parameter, we leverage an interesting observation [45],
+i.e., the reception of RF signal results in a split of spectrum
+of the trigger laser beam and the signal strength is linearly
+related to the amount of split (Δ𝑓). The spectrum of the
+laser beam can be obtained using a photodetector. As shown
+in Figure 8 (right), the spectrum of laser beam shows one
+peak when there is no RF signal. When RF signal is captured
+at the quantum receiver, the peak of the spectrum is split
+into two. The quantitative relationship between the peak
+difference (
+Δ𝑓) of the spectrum and the strength of the RF
+signal is expressed as [45]
+𝐸 = 2𝜋ℎ
+𝜇
+𝜆𝑝
+𝜆𝑐
+Δ𝑓, (5)
+where 𝜆𝑝 and 𝜆𝑐 are the wavelengths of two laser beams
+and 𝜇 is a constant. Therefore, by measuring the amount
+of split of the two peaks on the spectrum, the strength of
+the RF signal can be calculated. The frequency range of the
+RF signal a Rydberg atom can receive at this energy level is
+[𝑓𝑐 −𝐵
+2,𝑓𝑐 +𝐵
+2 ].𝐵isaround100kHz,implyingthataquantum
+receiver has a much lower chance of being interfered with
+other signal sources due to the much smaller band.
+澾
+Rydberg state
+t
+RF signal of frequency ௖
+݂
+Figure 8: Left: receive RF signals; Right: the spectrum
+of first trigger laser beam w/ and w/o RF signals.
+3.3 Sensing granularity enhancement with
+a reference signal
+As illustrated in Section 3.2.2, the strength of the RF signal
+can be measured by the separation of the spectrum peaks.
+When signal strength varies, the amount of peak separation
+onthespectrumvariesaccordingly.Wecanthereforeusethe
+amountofpeakseparationtosensetargetmotions.Notethat
+the sensing granularity is now related to the amount of peak
+separation.Forthesamemovement,alargerpeakseparation
+indicates a higher sensing granularity. To achieve a higher
+sensing granularity, we leverage an interesting observation
+of quantum receiver, i.e., the amount of separation is not
+linearly related to the signal strength [38]. We observe that
+the amount of separation is larger in the higher strength
+region.Therefore,weemployareferenceRFsignaltotrigger
+theatomtothehigherstrengthstate.Withthisoperation,the
+amountofpeakseparationchangebecomesmuchlargerand
+accordinglythesensinggranularityissignificantlyincreased.
+As shown in Figure 9a, without a reference signal to trig-
+gertheatomtoahighstrengthstate,theamountofspectrum
+663
+-30 -15 0 15 30
+Relative Frequency (MHz)
+0   
+0.05
+0.1 
+0.15
+0.2 Signal Intensity 
+W/O sensing signal
+W/ sensing signal
+(a) w/o reference signal
+-30 -15 0 15 30
+Relative Frequency (MHz)
+0   
+0.05
+0.1 
+0.15
+0.2 Signal Intensity 
+W/O sensing signal
+W/ sensing signal
+(b) w/ reference signal
+Figure9:Employareferencesignaltoenhancesensing
+granularity.
+peakseparationchangeisprettysmall.Aftertheatomistrig-
+gered by a reference signal, the amount of peak separation
+change becomes larger for the same sensing signal change.
+We therefore employ a reference signal to increase the effect
+of target motion on spectrum peak separation to improve
+the sensing granularity.
+3.4 Quantify the relationship between
+quantum effect and target motion
+We have shown the relationship between target motion and
+the spectrum peak separation in Section 3.3. In Figure 10,
+we plot the peak separation induced by the displacement
+of subtle target vibration. The variation frequency of the
+peak separation matches the vibration cycle and we can
+therefore obtain the vibration frequency. However, in some
+applications,wecareaboutnotjustthefrequencybutalsothe
+amount of vibration displacement, i.e., vibration amplitude.
+To further obtain the amount of vibration displacement, we
+need to mathematically quantify the rigorous relationship
+between target movement distance and the amount of peak
+separation change. We derive the relationship as below.
+Target vibration
+Vibration displacement
+݀߂
+Time
+Vibration
+Figure 10: Illustration of relationship between target
+vibration (Left) and spectrum peak motion (Right).
+Thequantumreceiveremploysaphotodetectortomeasure
+the amount of spectrum split (Δ𝑓) to obtain the strength of
+the received RF signal (𝐸). Because the sensing signal𝑆𝑇 (𝑡)
+variesovertime,thestrengthofdetectedsensingsignal 𝐸(𝑡)
+also varies with time and can thus be represented as
+𝐸(𝑡) = 𝐸𝑠𝑐𝑜𝑠(𝜔𝑠𝑡 +𝜑𝑠 ), (6)
+where𝜔𝑠 = 2𝜋(𝑓𝑐 + 𝑓0). It can be seen that the strength of
+the detected signal fluctuates over time at the frequency of
+𝑓𝑐 +𝑓0.AccordingtoEquation5,themeasuredpeakdifference
+would also change over time at the frequency of𝑓𝑐 + 𝑓0.I n
+reality, the state of the Rydberg atom can not change that
+quicklyandinterestinglythisinabilityservesthefunctionof
+a mixer in a conventional RF receiver to remove the carrier
+frequency (𝑓𝑐 ) and only keep the baseband (𝑓0) part. The
+actual signal strength detected at the quantum receiver can
+thus be expressed as
+𝐸(𝑡) = 𝐸𝑠𝑐𝑜𝑠(𝜔0𝑡 +𝜑𝑠 ), (7)
+where𝜔0 = 2𝜋𝑓0.BasedonEquation7,whenatargetmoves,
+𝐸𝑠 and𝜑𝑠 change accordingly.
+Toaccuratelymeasuretargetmovementdistance,weneed
+to obtain both values of𝐸𝑠 and𝜑𝑠 . Existing works mainly
+extract phase information for quantum communication. For
+communication, accurate absolute phase information is re-
+quired and an expensive reference oscillator is usually used.
+In contrast, in sensing, we only care about the relative phase
+change induced by target motions. In this case, the oscillator
+is not required and we now introduce the signal processing
+method to extract the phase change for sensing. To obtain
+𝜑𝑠 , we multiply𝐸(𝑡) by𝑐𝑜𝑠(𝜔0𝑡) and its phase-shifted ver-
+sion𝑠𝑖𝑛(𝜔0𝑡),respectivelytoformacomplexvalue.Wethen
+use a low-pass filter (LPF) to remove the high-frequency
+component (𝜔0𝑡)
+𝐸′(𝑡) = 𝐿𝑃𝐹 {𝐸(𝑡)𝑐𝑜𝑠(𝜔0𝑡)+ 𝑗 ·𝐸(𝑡)𝑠𝑖𝑛(𝜔0𝑡)} = 𝐸𝑠𝑒𝑗𝜑𝑠 . (8)
+Now 𝜑𝑠 can be calculated as the angle of𝐸′(𝑡): 𝜑𝑠 =
+∠(𝐸𝑠𝑒𝑗𝜑𝑠 ).Let Δ𝜑𝑠 denotethephasechangecausedbytarget
+movement. From a macroscopic perspective, conventional
+receivers receive RF signals using antennas. From the mi-
+croscopic perspective, quantum receiver received RF signals
+using the electron energy transition of atoms. Based on the
+Schrödinger equation [23], 𝐸′(𝑡) can be measured in both
+macroscopic and microscopic perspectives. The difference
+is the measurement precision. Therefore, at the quantum
+receiver, the phase information of𝐸′(𝑡) is also related to the
+path length of the received RF signal. We can thus convert
+the phase change to target displacementΔ𝑑 as
+Δ𝑑 = 𝑐Δ𝜑𝑠
+2𝜔𝑠
+. (9)
+Note that Equation 9 quantifies the relationship between
+phase change of the target-reflection signal and target dis-
+placement. In real-world scenarios, static objects in the envi-
+ronment such as walls also reflect signals. Thus, the signal
+strength detected at the quantum receiver also contains the
+strengthofothersignals.Todealwiththenon-targetsignals,
+we apply circle fitting [24] to remove those components in
+𝐸′(𝑡).
+664
+3.5 Time-domain beamforming
+In this section, we present a signal processing scheme to
+further improve the sensing granularity. It is known that the
+sensinggranularitycanbeenhancedbyincreasingtheSignal-
+to-Noise Ratio (SNR) [33]. One approach to improve SNR
+is spatial-domain beamforming [50], which constructively
+combines signals received at different antennas. Inspired
+by spatial-domain beamforming, we exploit time-domain
+“beamforming” [
+11, 20] to help increase sensing granular-
+ity in quantum wireless sensing. This is because the target
+moves at much lower frequencies (a few Hertz) compared to
+the signal sampling rate of photodetector (10 MHz). There-
+fore,adjacentsamplescontainverysimilartargetmovements
+butdifferentnoises.Wecanthusdownsamplethesignalinto
+multiple groups and combine them to increase the SNR.
+As shown in Figure 11, we down-sample the collected
+signals𝐸′(𝑡) into 𝑁 groups. After performing time domain
+“beamforming”, the fluctuation of the signal is more obvi-
+ous. Based on our experiments, time domain beamforming
+can improve sensing granularity by around 20%. We next
+introduce the implementation of the quantum system.
+
+
+	
+
+
+
+
+	
+
+
+
+	
+ 
+
+!
+
+
+Figure 11: Time-domain “beamforming”.
+4 IMPLEMENTATION
+Hardware Implementation.As shown in Figure 12a, one
+key component of the proposed quantum wireless sensing
+system is a cylindrical atomic vapor cell. The size of the
+vapor cell can vary and is usually small. In our experiment,
+the size of the cell is 2.5 cm×5.0 cm, and it is filled with Cs
+atoms.Thefilledcellcosts$150.Thelasergenerator(Wavicle
+Laser ECDL852) used in our experiment costs $27,000. Note
+thatthislasergeneratoriscapableofemittinglaserinalarge
+wavelength range, and it is thus expensive. For RF sensing
+with WiFi, UWB and millimeter wave, a cheaper laser gener-
+ator suffices. For signals at 2.4 GHz frequency, two lasers of
+wavelength 510 nm and 852 nm are used to excite Cs atoms
+to the Rydberg state (66D5/2) as shown in Figure 12b. Note
+thattoreceivesignalsat5GHzor28GHz,thecorresponding
+Rydberg states are 52D5/2 and 61D5/2, respectively.2 A pho-
+todetector (Thorlabs PDB210 A/M) is used to measure the
+laser intensity. Note that the photodetector does not need to
+be changed when the quantum receiver listens to different
+2We present the details of calculation in the Appendix.
+RF frequency bands. The detected light spectrum informa-
+tion is stored in a data acquisition board (NI USB-6363). We
+extract the frequency difference between the two peaks on
+the spectrum to calculate the strength of the received signal.
+(a) Cs atoms at ground state
+ (b) Cs atoms at Rydberg state
+Figure 12: Two states of Cs atoms.
+To generate RF signals over a large frequency range (e.g.,
+2.4 GHz, 5 GHz and 28 GHz), we employ a signal generator
+KEYSIGHTE8257Dsupportingfrequenciesupto40GHz.We
+also use commodity WiFi card as the transmitter to demon-
+strate quantum wireless sensing works with WiFi packets.
+The Intel 5300 WiFi card costs $18 and it was connected to a
+miniPC(GIGABYTEGB-BXi5-4570R)tocontrolsignaltrans-
+mission. In the benchmark experiment, we use a vibration
+calibrator as the sensing target, which can generate vibra-
+tions with frequencies ranging from 15 Hz to 250 Hz and
+vibration amplitudes from 0.05 mm to 1 mm. For movement
+larger than 1 mm, we use a sliding track to precisely move a
+metal plate to serve as the target.
+Software Implementations.We implement the signal
+processing part with Matlab. After the data acquisition card
+receives the raw signal samples, it forwards them to a lap-
+topthroughWiFiconnection.Thenweemploytheproposed
+signalprocessingandsensinggranularityenhancementtech-
+niques to process the signal for sensing.
+5 EVALUATION
+In this section, we evaluate the performance of the proposed
+quantum wireless sensing system with both benchmark ex-
+periments and real-world applications. Benchmark experi-
+ments are employed to verify the feasibility of the proposed
+quantumwirelesssensingsystemandinvestigatetheimpact
+of varying parameters and conditions. We further showcase
+two applications with the proposed quantum wireless sens-
+ing system: i) using a 2.4 GHz centimeter-wavelength signal
+to sense sub-millimeter level vibration of a speaker to “hear”
+themusicplay,andii)usinga28GHzmillimeter-wavelength
+signal to sense micrometer-level subtle vibration of a water
+bottle induced by human walking.
+5.1 Benchmark experiments
+We evaluate the system performance in terms of vibration
+amplitude and frequency estimation accuracy. We compare
+665
+(a) Illustration of experiment setup
+ƐǀĂƉŽƌĐĞůů
+sŝďƌĂƚŝŽŶ
+sŝďƌĂƚŝŽŶ
+ĐĂůŝďƌĂƚŽƌ
+ZĞĨĞƌĞŶĐĞ
+Ğ
+ƐŝŐŶĂů
+ĨĞƌĞŶĐĞ
+Ğ
+ ŐŶ
+ƐŝŐ
+ĂŶƚĞŶŶĂ
+^ĞŶƐŝŶŐ
+Ő
+ƐŝŐŶĂů
+ĞŶƐŝŶŐ
+Ő
+ƐŝŐ
+ĂŶƚĞŶŶ
+ŶĂ
+ŐŶ
+ƐŝŐ
+ŶŶĂ
+>ĂƐĞƌ
+ǀĂƉŽƌ ĐĞůů
+>ĂƐĞƌ
+ĞƋƵŝƉŵĞŶ
+Ŷ
+ĞŶ
+ĞŶ
+ĞŶƚ
+(b) Experiment setup in a real environment
+Figure 13: Experiment setup.
+the performance of the proposed quantum wireless sens-
+ing system with that of two state-of-the-art RF sensing sys-
+tems [1][2]. We also evaluate the system performance in
+non-line-of-sight (NLoS) scenarios and in the presence of
+interference.
+Experiment Setting:The experiment setup is shown
+in Figure 13. To fully control the target in the benchmark
+experiment, we use a small metal plate as the target. Real-
+life targets such as humans and speakers are adopted in
+the application evaluation section. The size of the metal
+plate is 10 cm
+× 15 cm. We employ a sliding track of 2 m
+controlled by Raspberry Pi 3 Model to precisely move the
+metal plate. The sliding track can move a target on a scale
+larger than 1 mm. For subtle vibration motions smaller than
+1 mm, we employ a VEC-12 Portable Vibration Calibrator.
+The vibration displacement can be varied in the range of 10
+- 2000𝜇m, and the frequency can be varied in the range of
+10 - 800 Hz. By default, the target is placed 1 m away from
+the line-of-sight (LoS) path between the RF transmitter and
+quantum receiver. The RF transmitter and quantum receiver
+are separated by 2 m.
+Ground Truth:For movement larger than 1 mm, we
+move the target with a high-precision sliding track (Mjunit
+MJ45N) which is capable of reporting the displacement at
+an accuracy of 0.01 mm. For subtle vibration, we obtain the
+ground truth readings from the vibration calibrator at an
+accuracy of±1 𝜇m.
+Performance metric:The sensing metrics we focused
+on are displacement error and frequency error. We calculate
+the mean absolute error between the estimated values and
+the ground truths. For music recovery, vibration frequency
+is more important than the vibration amplitude.
+(a) USRP B210
+ (b) LimeSDR
+ (c) Intel 5300
+Figure14:TwoSDRdevicesandMiniPCwithIntel5300
+WiFi card for conventional RF sensing.
+1 0 8531 0 . 5
+Displacement (mm)
+0
+1
+2
+3Displacement error (mm)
+Quantum sensing
+USRP
+LimeSDR
+(a) Displacement error
+10 5 3 1 0.5 0.1
+Displacement (mm)
+0
+0.2
+0.4
+0.6
+0.8Frequency error (Hz)
+Quantum sensing
+USRP
+LimeSDR
+(b) Frequency error
+Figure 15: Comparison of the sensing limits between
+quantumsensingsystemandconventionalRFsystems.
+5.1.1 Comparison with conventional RF sensing systems.To
+compare the performance of the proposed quantum sens-
+ing with RF sensing, we adopt three different RF receivers
+commonlyusedinRFsensing,i.e.,USRPB210,LimeSDRand
+Intel 5300 commodity WiFi card, which cost $3000, $400 and
+$10, respectively, as shown in Figure 14.
+We first study the performance of RF sensing using USRP
+B210 and LimeSDR as the receiver at 2.4 GHz. For vibration
+666
+(a) Vibration displacement of 20 mm
+ (b) Vibration displacement of 10 mm
+ (c) Vibration displacement of 5 mm
+Figure 16: Raw signal waveform comparison of quantum receiver, USRP, LimdSDR and Intel 5300 WiFi card when
+vibration displacement is 20 mm, 10 mm, and 5 mm.
+10 8 5 3 1 0.8 0.5
+Displacement (mm)
+0
+20%
+40%
+60%
+80%Error percentage
+Quantum sensing
+Conventional RF sensing-USRP
+(a) Displacement error of 2.4 GHz
+1 0 8531 0 . 5 0 . 2 5
+Displacement (mm)
+0
+20%
+40%
+60%
+80%Error percentage
+Quantum sensing
+Conventional RF sensing-USRP
+(b) Displacement error of 5 GHz
+2 1.5 1 0.5 0.2 0.1 0.05
+Displacement (mm)
+0
+10%
+20%
+30%Error percentage
+Quantum sensing
+(c) Displacement error of 28 GHz
+Figure 17: Evaluation of sensing limit using 2.4 GHz, 5 GHz and 28 GHz frequencies.
+displacement under 1 mm, the vibration frequency is set as
+30 Hz. For displacement larger than 1 mm, the vibration fre-
+quencyissetas5Hz.AsshowninFigure15a,foravibration
+displacementof5mm,quantumsensing,RFsensingbasedon
+USRP and LimeSDR achieve a displacement estimation error
+of 0.28 mm, 1.2 mm and 1.6 mm, respectively. As shown in
+Figure 15b, the frequency estimation errors of the proposed
+quantum sensing, RF sensing based on USRP and LimeSDR
+are 0.09 Hz, 0.24 Hz and 0.28 Hz, respectively. For vibrations
+smaller than 1 mm, RF sensing can no longer work, whereas
+the proposed quantum sensing stillworks well with an error
+less than 0.1 mm.
+Next, we present a comparison of the raw signal captured
+at the quantum receiver, two SDR RF receivers and the com-
+modity RF receiver (Intel 5300). The target vibration am-
+plitude is set as 20 mm, 10 mm and 5 mm. As shown in
+Figure 16a, when the vibration amplitude is 20 mm, a clear
+vibrationpatterncanbeobservedatallfourreceivers.When
+the vibration amplitude is decreased to 5 mm in Figure 16c,
+we cannot see clear target vibration patterns at RF receivers.
+In contrast, a clear vibration pattern can still be observed at
+the quantum receiver. Note that all the signals presented are
+raw data without applying any filters.
+We gradually decrease the vibration amplitude to obtain
+the sensing granularity, i.e., the minimum vibration ampli-
+tude when the error is still less than 30%. For amplitude
+sensing, the sensing granularity for commodity WiFi card
+and USRP B210 are both around 5 mm. In contrast, the gran-
+ularity of quantum sensing can reach 0.5 mm which is much
+finer. For frequency sensing, the granularity of RF sensing is
+around 3 mm while the granularity of quantum sensing can
+reach 0.1 mm. We can thus conclude that quantum wireless
+sensing can improve the sensing granularity by more than
+10 times at the frequency of 2.4 GHz.
+5.1.2 Sensing granularity at different signal frequencies.In
+this section, we study if quantum sensing can work at other
+frequencies (e.g., 5 GHz and 28 GHz). The target vibration is
+varied from one centimeter to a few micrometers.
+For displacement measurement, we show the estimation
+error at three frequencies in Figure 17a-17c. We can see
+that the sensing granularity of quantum wireless sensing for
+2.4 GHz, 5 GHz, and 28 GHz signals is 0.5 mm, 0.25 mm, and
+0.05 mm, respectively. In contrast, the sensing granularity of
+conventional RF sensing at 2.4 GHz and 5 GHz is 5 mm and
+3 mm. Note that our USRP B210 platform can only support
+receiving signals in the frequency range of 70 MHz - 6 GHz.
+While it is difficult for one RF receiver to effectively capture
+RF signals in a large frequency range, one quantum receiver
+can cover frequencies from Megahertz to Terahertz due to
+completely different signal reception mechanism.
+For frequency measurement, better performance can be
+achieved with quantum wireless sensing. The sensing gran-
+ularity is further pushed to 0.1 mm, 0.05 mm and 0.01 mm
+for 2.4 GHz, 5 GHz, and 28 GHz signals, achieving 20 times
+granularity improvement. Based on this benchmark experi-
+ment, we show that even centimeter-wavelength signal (e.g.,
+667
+Tx
+Target
+Receiver
+Distance
+(a) Setup
+50 100 150 200 250 300
+Measurement distances (cm)
+0
+0.1
+0.2
+0.3
+0.4
+0.5Displacement error (mm) 0
+5%
+10%
+Error percentage
+(b) Impact of distance
+Figure 18: Experiment setup and impact of distance.
+WiFi) can be used to sense subtle sub-millimeter vibration
+of a speaker to “sense” music in Section 5.2.1.
+5.1.3 Impact of distance. We further investigate the impact
+of distance between transmitter and receiver on sensing
+accuracy. We show the experiment setup in Figure 18a. The
+vibration displacement and frequency are set to 5 mm and
+20 Hz. We vary the distance between the signal transmitter
+andthevaporcellfrom50cmto300cmatastepsizeof50cm.
+The target is placed 1 m away from the LoS path. Figure 18b
+shows that our system is able to achieve an average error of
+0.3 mm at a distance of 3 m. For a distance within 2 m, the
+average error is 0.25 mm.
+5.1.4 Impact of obstacle on signal propagation path.In this
+experiment, we study the impact of obstacle on quantum
+wireless sensing. The vibration frequency and displacement
+oftargetaresetas20Hzand0.8mm.Weplaceobstaclesmade
+of four different materials, i.e., cardboard, wood, plastic and
+glass as shown in Figure 19 to block the signal propagation
+path between the transmitter antenna and target. As shown
+in Figure 20, the obstacle only causes a small increase of
+0.01𝑚𝑚 - 0.05𝑚𝑚 (corresponding to a percentage of 1.25%
+- 6.25%) on displacement errors. This is because although
+the obstacle causes signal attenuation, owing to the high
+sensitivity of quantum wireless sensing, the performance is
+only slightly affected.
+Glass
+Plastic
+Card-
+board
+Wood
+Figure 19: Sensing in the
+presence of obstacles.
+0.05 0.1 0.15 0.2 0.25
+Displacement error (mm)
+0
+0.5
+1
+CDF
+LOS
+Wood
+Plastic
+Glass
+Cardboard
+Figure 20: Impact of ob-
+stacles.
+5.1.5 SensingwithcommodityWiFiastransmitter. Notethat
+asWiFichannelis20MHzandquantumreceiveronlylistens
+to a much smaller frequency band, the amount of power
+captured at the quantum receiver is much smaller than the
+total WiFi power available. In this section, we want to see if
+thequantumreceivercanusetheverysmallportionofpower
+captured from real WiFi packets for sensing. We conduct
+experiment using Intel 5300 WiFi card as the transmitter.
+Intel5300cardissettooperateatchannel1(2.412GHz)with
+a bandwidth of 20 MHz. The interval of packet transmission
+is set as 10 ms. The small metal plate serves as the target.
+AsshowninFigure21,wecanseethatevenbyjustcaptur-
+ing a very small portion of power from WiFi transmissions,
+wecanstillachieveaccuratevibrationsensing.Theachieved
+averageerrorforvibrationfrequencysensingis0.3Hz(1.5%)
+which is still lower than the performance achieved with con-
+ventional WiFi sensing (3.5%). We want to point out that the
+channel size a quantum receiver is capable of listening to is
+being progressively increased in the last few years [10,41]
+and we expect an even better sensing performance in the
+future with this trend.
+Packets
+Interval
+Figure 21: Sensing signal variation pattern and WiFi
+packets (zoomed in).
+5.1.6 Impact of ambient RF interference.We further study
+the impact of ambient RF interference. We let our quantum
+receiver listen to RF signal at 2.412 GHz. As shown in Fig-
+ure22,weplacetwoRFsignaltransmitters(oneWiFiandone
+Bluetooth) near the vapor cell to create RF interference. The
+WiFiandBluetoothinterferencearetransmittedat2.427GHz
+and 2.402 GHz, respectively. The vibration displacement and
+frequency are set as 0.8 mm and 20 Hz.
+WiFiBluetooth
+Figure 22: Sensing in the pres-
+ence of interference signals.
+0.05 0.1 0.15 0.2 0.25
+Displacement error (mm)
+0
+0.5
+1
+CDF
+None
+Channel 3 WiFi
+Bluetooth
+Figure 23: Impact of RF
+interference signals.
+As shown in Figure 23, even though the frequency of
+the ambient RF signal is close to the sensing frequency, our
+system is affected very little. This is because Rydberg atoms
+are only sensitive to the electromagnetic wave in a small
+668
+^ƉĞĂŬĞƌ
+ƌ
+ ŶƚĞŶŶĂ
+YƵĂŶƚƵŵ
+YƵĂŶƚƵŵƌĞĐĞŝǀĞƌ
+(a) Experiment setup
+ (b) Spectrum of sound and recovered sound by quantum sensing and USRP
+Lyric 1Lyric 2Lyric 3Lyric 4Lyric 5
+0
+0.2
+0.4
+0.6
+0.8
+1
+Similarity
+(c) Similarity between ground
+truth and recovered sound
+Figure 24: Experiment setup and results of sound sensing.
+frequency range. Therefore, the chance of being interfered
+is small. Quantum receiver can thus resist interference in
+complex electromagnetic environments.
+5.2 Case studies
+In this section, we evaluate the performance of quantum
+wireless sensing in real-life applications.
+5.2.1 Using centimeter wave to sense sub-millimeter vibra-
+tion of a speaker.In RF sensing, a 2.4 GHz signal with a
+wavelength of 12 cm is capable of sensing millimeter-level
+motions. In this application, we show that quantum wireless
+sensing is capable of breaking this limit and pushing the
+sensing granularity to sub-millimeter level. Leveraging this
+finer granularity, we show that quantum wireless sensing
+can capture the subtle vibration of the speaker to “listen to”
+music. Previously this could only be achieved with higher-
+frequency millimeter wave signals [28, 32].
+AsshowninFigure24a,aPhilipsSPA20USBspeakerwith
+a small power of 3.5 W is placed on the desk. We employ
+2.4 GHz signals for sensing, and Cs atoms in a vapor cell as
+the receiver. We play the seven basic music notes (i.e., do,
+re, mi, fa, so, la, and si) in the frequency range of 261 Hz
+to 494 Hz and the other four lyrics (Twinkle twinkle little
+star, For Elise, London bridge and Bingo). We plot the time-
+frequency spectrum of the speaker vibration when playing
+seven notes and Twinkle twinkle little star in Figure 24b
+(left: ground truth). We can see that our system can recover
+the sound the speaker is playing accurately purely through
+quantum wireless sensing. This can be used to record sound
+inanoisyenvironment.Incontrast,conventionalRFsensing
+using USRP B210 fails to sense the speaker vibration under
+the same setup as quantum wireless sensing, as shown in
+Figure 24b (right).
+To quantify the performance of audio recovery of the five
+lyrics,wecalculatethesimilaritybetweentheoriginalsound
+and recovered sound using cross-correlation of audio fre-
+quencies [49]. Figure 24c shows the results. Compared with
+direct recording using a microphone (93.7%), the achieved
+averagesimilarityusingtheproposedquantumwirelesssens-
+ing is only slightly worse (88.8%). The demo video for music
+sound recovery through quantum vibration sensing can be
+found at https://youtu.be/Do45Pa2fD6c.
+5.2.2 Using millimeter wave to sense micrometer-level vibra-
+tion. In this section, we further push the sensing granularity
+to micrometer level using millimeter-wave signals. One ex-
+ampleofmicrometer-levelmotionisthevibrationofabottle
+of water induced by a low-power USB speaker or human
+walking.
+As shown in Figure 25a, a plastic bottle with water is
+placed on the table, and the speaker is placed 0.7 m from
+the bottle. We employ a Philips SPA20 USB speaker with
+a power of 3.5 W for our experiment. The volume level of
+the speaker is set as 50%. We play English words (i.e., one,
+two, three) using the speaker. In this experiment, we use
+28 GHz RF signals for quantum wireless sensing. We extract
+the time-frequency spectrum of the signal captured at the
+quantum receiver, as shown in Figure 25b. By capturing the
+extremely subtle𝜇m-level vibration of the bottle, we are
+able to restore the sound of the words from the speaker.
+As shown in Figure 25b, the recovered words match the
+ground truth well. The recovered sound can also be found at
+https://youtu.be/e4ALp8iYiTc.
+Weemployanotherinterestingapplicationtodemonstrate
+the fine granularity of quantum wireless sensing. We use
+quantum wireless sensing to detect whether a person enters
+the room based on the subtle vibration induced at a water
+bottleonatableintheroom.Inthisexperiment,weletaper-
+sonwalkintotheroom.One500mlplasticbottlewithwater
+is placed on the desk. The desk is around 1 m from the door.
+When the person enters the room, human walking induces
+very subtle vibration (micrometer level) of the bottle. We
+extract the time-frequency spectrum of the signal captured
+at the quantum receiver, as shown in Figure 26b. We can see
+that the person enters the room at timestamp 1.8 s and stops
+669
+ŽƚƚůĞ
+ ^ƉĞĂŬĞƌ
+YƵĂŶƚƵŵ
+YƵĂŶƚƵŵƌĞĐĞŝǀĞƌ
+ŶƚĞŶŶĂ
+(a) Experiment setup
+Ground truth Recoved
+One
+Two
+Three
+(b) Spectrum results
+Figure 25: Sense subtle micrometer-level vibration induced
+by speaker to recover words (i.e., one, two and three).
+ŽƚƚůĞ
+YƵĂŶƚƵŵ
+YƵĂŶƚƵŵƌĞĐĞŝǀĞƌ
+ŶƚĞŶŶĂ
+(a) Experiment setup
+Signal spectrum
+Entering
+room
+End
+moving
+(b) Spectrum result
+Figure 26: Sense object’ micrometer-level subtle vi-
+bration induced by human walking.
+walking at 6.4 s. These timestamps match the ground truth
+captured using a video camera well. It can also be seen that
+human walking-induced bottle vibration contains multiple
+low-frequency components. We recruited 5 volunteers (2
+females and 3 males) with a weight in the range of 50 kg to
+85 kg. 100% detection accuracy can be achieved for all the
+5 volunteers. Even for the female with the lightest weight
+of 50 kg, the induced vibration can still be accurately de-
+tected, demonstrating the superior performance of quantum
+wireless sensing. We believe more information such as the
+material of the floor and walking pattern may be extracted
+from the spectrum if proper machine learning models are
+applied.
+6 RELATED WORK
+ConventionalRFsensing. Alotofresearchefforthasbeen
+devoted to sensing humans and objects using RF signals.
+A large range of RF sensing applications have been devel-
+oped, ranging from fine-grained vibration sensing [28,54]
+and human vital sign monitoring [5, 61] to coarse-grained
+gesture tracking [42,47] and daily activity recognition [34,
+51]. A large variety of wireless technologies are utilized
+for sensing, including WiFi [4, 42, 61], bluetooth [40, 43],
+RFID [12,15,27], LoRa [13,14,54,58], UWB [16,59,60] and
+FMCWradar[ 6,7,26,55].Thesignalfrequencyrangesfrom
+hundreds of megahertzs to tens of gigahertzs. However, the
+sensing granularity is fundamentally limited by hardware
+thermalnoisegeneratedatelectroniccomponents.Forexam-
+ple, low-frequency WiFi signals cannot sense sub-millimeter
+motions. High-frequency signals are employed to achieve
+higher sensing granularity. However, the penetration capa-
+bility of high frequency signals is weaker and the hardware
+cost is usually higher.
+Quantum technology.Quantum technology is based on
+quantum mechanics and is new compared to RF technolo-
+gies. In 1980, Paul Benioff proposed a quantum mechanical
+model of the Turing machine [8]. In 1998, the first two-qubit
+quantum computer which could perform computations was
+created [17]. Wiesner et. al introduced the concept of quan-
+tum conjugate coding showing the potential of quantum
+cryptography in 1992 [
+9]. Quantum technology was also
+used to design quantum network stack and link layer pro-
+tocols [30][18][31]. In addition to these works, researchers
+discoveredthatRydbergatomscouldbeusedforcommunica-
+tionandsensinginrecentyears[
+21,29,38,56].Forquantum
+communication [44], it needs to send qubits from one quan-
+tum node to another. By creating quantum entangled qubits,
+information can be transmitted between remote quantum
+nodes.Forquantumsensing,existingworksaimatcapturing
+the information of micro subjects such as molecules [
+21, 56].
+The typical examples are atomic vapor magnetometers and
+atomic clocks [19]. Different from these works, this paper
+is the first to utilize quantum receiver and RF signals for
+sensing macro subjects such as human and daily objects.
+7 DISCUSSIONS
+In this section, we discuss the advantages and disadvan-
+tages of quantum wireless sensing. We compare it with con-
+ventional wireless sensing on the following aspects: size of
+frequency band, system noise, sensing sensitivity, system
+working frequency, and device cost/size.
+Size of frequency band.The quantum receiver only
+listens to a narrow band once at a time and there are both
+advantage and disadvantage for this small band. The clear
+advantage is that as the quantum receiver only listens to a
+small band, it will not be interfered by adjacent channels.
+The disadvantage is that listening to a narrower band leads
+to lower received signal power and accordingly a smaller
+sensing range.
+Systemnoise. Forconventionalwirelesssensingsystems,
+electroniccomponentssuchasmixers,amplifiers,andanalog-
+to-digital converters (ADCs) all unavoidably introduce ther-
+mal noise. In contrast, a quantum receiver induces much
+smaller noise. The major source of noise comes from the
+photodetector adopted. The noise of a photodector consists
+670
+of thermal noise and shot noise. The thermal noise of a pho-
+todector is usually orders of magnitude smaller than the
+thermal noise of an RF amplifier. The shot noise is even
+smaller than the thermal noise.
+Sensing granularity.Owing to smaller noise, quantum
+wireless sensing can improve the sensing granularity of
+conventional RF sensing by more than 10 times. On the
+other hand, higher sensing granularity also means quan-
+tum wireless sensing can be more easily interfered by non-
+targetmovements.Confiningquantumwirelesssensingonly
+within the area of interest is an exciting direction to explore.
+System working frequency.Conventional RF receivers
+are designed to receive signals in a particular frequency
+range. Even the antenna needs to be redesigned in order to
+efficiently receive signals in different frequency ranges. For
+example,whileWiFiadoptsdipoleantennas,coilantennasis
+usedtoreceivelowerfrequencysignals.Inquantumwireless
+sensing, one quantum receiver can receive RF signals of
+different frequencies by simply triggering the electrons to
+different energy levels. One quantum receiver can cover the
+frequency from a few Megahertz to tens of Terahertz.
+Device cost and size.Quantum systems are still in the
+early stage of research and development. It is predicted that
+withfurtheradvancesinlaserminiaturizationandintegrated
+photonics, the size of the quantum receiver could be made
+much smaller [21]. We believe the price of quantum systems
+will also decrease dramatically. Take cesium clocks which
+contain lasers and Cs atoms in a vapor cell as an example.
+The size of today’s cesium clocks is just 1% of the size of the
+first-generation design. The cost has been decreased from
+tens of thousands dollars to a few hundred dollars.
+Futurework: Wedemonstratethatquantumreceivercan
+achieve a much finer granularity compared to conventional
+wirelesssensing.Webelievethisfinergranularitycanenable
+exciting new applications. For example, while conventional
+WiFisensingcanonlysupporthandtracking,quantumWiFi
+sensingmaybeusedforfingertracking.Webelievequantum
+wireless sensing has the potential to move one step forward
+to enable extremely fine-grained sweat and urine tests when
+high-frequency signals (e.g., Terahertz) are used.
+8 CONCLUSION
+In this paper, we present a new sensing modality, i.e., quan-
+tum wireless sensing for the first time. We reveal the under-
+lyingprincipleanddesignthefirstquantumwirelesssensing
+system in the world. We show the superior performance of
+quantumwirelesssensingcomparedtoconventionalRFsens-
+ing. We envision quantum wireless sensing can significantly
+improve the sensing performance in every aspect and also
+enable exciting new applications.
+ACKNOWLEDGMENTS
+This work is partially supported by the Beijing Nova Pro-
+gram (20220484138), the Beijing Natural Science Founda-
+tion (L223034), the National Natural Science Foundation of
+China (No. 62172394, No. 62072450), the Youth Innovation
+Promotion Association, Chinese Academy of Sciences (No.
+2020109), the National Natural Science Foundation of China
+A3 Foresight Program (No.62061146001), the EU Horizon
+2020 research and innovation programme IDEA-FAST (No.
+853981).
+A APPENDIX
+A.1 Quantum defect
+Table 1 below lists quantum defects with different angular
+momentum quantum numbers (i.e., S, P, D, F) and electron
+spin quantum numbers (i.e.,1/2, 3/2, 5/2, 7/2).
+Table 1: Quantum defect of Cs atoms.
+Energy level 𝛿𝑙
+𝑛𝑆1/2 4.04935665
+𝑛𝑃1/2 3.59158950
+𝑛𝑃3/2 3.559058
+𝑛𝐷3/2 2.475365
+𝑛𝐷5/2 2.46631524
+𝑛𝐹5/2 0.03341424
+𝑛𝐹7/2 0.033537
+A.2 Calculation of energy level difference
+corresponding to RF signal frequency.
+For 5 GHz frequency signal, the transition between energy
+levels𝑙1 = 52𝐷5/2 and𝑙2 = 53𝑃3/2 of Cs atom can be calcu-
+lated as:
+𝑓𝑙1→𝑙2 = |𝐸𝑙2 −𝐸𝑙1 |
+ℎ = 𝑐𝑅𝑦| 1
+(53−𝛿𝑙2)2 − 1
+(52−𝛿𝑙1)2 |
+= 3×108 ·1.097×107 ·| 1
+(53−3.559)2 − 1
+(52−2.466)2 |
+= 5𝐺𝐻𝑧,
+(10)
+For 28 GHz frequency signal, the transition between en-
+ergy levels𝑙1 = 61𝐷5/2 and𝑙2 = 63𝑃1/2 of Cs atom can be
+calculated as:
+𝑓𝑙1→𝑙2 = |𝐸𝑙2 −𝐸𝑙1 |
+ℎ = 𝑐𝑅𝑦| 1
+(63−𝛿𝑙2)2 − 1
+(61−𝛿𝑙1)2 |
+= 3×108 ·1.097×107 ·| 1
+(63−3.592)2 − 1
+(61−2.466)2 |
+= 28𝐺𝐻𝑧.
+(11)
+671
+REFERENCES
+[1] 2011. WiFiIntel5300CSItool. https://dhalperi.github.io/linux-80211n-
+csitool/.
+[2] 2022. USRP B210. https://www.ettus.com/all-products/UB210-KIT/
+.Accessed:2022-09-20.
+[3] CSAdams,JDPritchard,andJPShaffer.2019. Rydbergatomquantum
+technologies. Journal of Physics B: Atomic, Molecular and Optical
+Physics 53, 1 (dec 2019), 012002.
+[4] Fadel Adib and Dina Katabi. 2013. See through Walls with WiFi!. In
+Proceedings of the ACM SIGCOMM 2013 Conference on SIGCOMM(Hong
+Kong, China)(SIGCOMM ’13). Association for Computing Machinery,
+New York, NY, USA, 75–86.
+[5] Fadel Adib, Hongzi Mao, Zachary Kabelac, Dina Katabi, and Robert C
+Miller. 2015. Smart homes that monitor breathing and heart rate. In
+Proceedings of the 33rd annual ACM conference on human factors in
+computing systems. 837–846.
+[6] Fadel M. Adib, Chen-Yu Hsu, Hongzi Mao, Dina Katabi, and Frédo
+Durand. 2015. Capturing the human figure through a wall.ACM
+Transactions on Graphics (TOG)34 (2015),1–1 3 .
+[7] Fadel M. Adib, Zachary Kabelac, and Dina Katabi. 2015. Multi-Person
+Localization via RF Body Reflections. InNSDI.
+[8] Paul Benioff. 1980. The computer as a physical system: A microscopic
+quantum mechanical Hamiltonian model of computers as represented
+byTuringmachines. Journal of statistical physics22,5(1980),563–591.
+[9] Charles H Bennett, François Bessette, Gilles Brassard, Louis Salvail,
+and John Smolin. 1992. Experimental quantum cryptography.Journal
+of cryptology5, 1 (1992), 3–28.
+[10] StephanieMBohaichuk,DonaldBooth,KentNickerson,HarryTai,and
+James P Shaffer. 2022. Origins of rydberg-atom electrometer transient
+response and its impact on radio-frequency pulse sensing.Physical
+Review Applied18, 3 (2022), 034030.
+[11] Julien Bourgeois and Wolfgang Minker. 2009.Time-domain beamform-
+ing and blind source separation: speech inputin the car environment.
+Springer.
+[12] Yanling Bu, Lei Xie, Yinyin Gong, Chuyu Wang, Lei Yang, Jia Liu, and
+Sanglu Lu. 2022. RF-Dial: Rigid Motion Tracking and Touch Gesture
+Detection for Interaction via RFID Tags.IEEE Transactions on Mobile
+Computing 21, 3 (2022), 1061–1080.
+[13] Zhaoxin Chang, Fusang Zhang, Jie Xiong, Junqi Ma, Beihong Jin, and
+Daqing Zhang. 2022. Sensor-free Soil Moisture Sensing Using LoRa
+Signals. Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies6, 2 (2022), 1–27.
+[14] Lili Chen, Jie Xiong, Xiaojiang Chen, Sunghoon Ivan Lee, Kai Chen,
+Dianhe Han, Dingyi Fang, Zhanyong Tang, and Zongge Wang. 2019.
+WideSee: towards wide-area contactless wireless sensing.Proceedings
+of the 17th Conference on Embedded Networked Sensor Systems(2019).
+[15] Lili Chen, Jie Xiong, Xiaojiang Chen, Sunghoon Ivan Lee, Daqing
+Zhang, Tao Yan, and Dingyi Fang. 2019. LungTrack: Towards Contact-
+less and Zero Dead-Zone Respiration Monitoring with Commodity
+RFIDs. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.3 (2019),
+79:1–79:22.
+[16] Weiyan Chen, Fusang Zhang, Tao Gu, Kexing Zhou, Zixuan Huo, and
+Daqing Zhang. 2022. Constructing Floor Plan through Smoke Using
+Ultra Wideband Radar.Proc. ACM Interact. Mob. Wearable Ubiquitous
+Technol. 5, 4, Article 147 (dec 2022), 29 pages.
+[17] Isaac L Chuang, Neil Gershenfeld, and Mark Kubinec. 1998. Exper-
+imental implementation of fast quantum searching.Physical review
+letters 80, 15 (1998), 3408.
+[18] Axel Dahlberg, Matthew Skrzypczyk, Tim Coopmans, Leon Wubben,
+Filip Rozpundefineddek, Matteo Pompili, Arian Stolk, Przemysław
+Pawełczak, Robert Knegjens, Julio de Oliveira Filho, Ronald Hanson,
+and Stephanie Wehner. 2019. A Link Layer Protocol for Quantum
+Networks. InProceedings of the ACM Special Interest Group on Data
+Communication (Beijing, China)(SIGCOMM ’19). Association for Com-
+puting Machinery, New York, NY, USA, 159–173.
+[19] C. L. Degen, F. Reinhard, and P. Cappellaro. 2017. Quantum sensing.
+Rev. Mod. Phys.89 (Jul 2017), 39 pages. Issue 3.
+[20] Robert Dougherty. 2004. Advanced time-domain beamforming tech-
+niques. In10th AIAA/CEAS Aeroacoustics Conference. 2955.
+[21] Charles T. Fancher, David R. Scherer, Marc C. St. John, and Bonnie
+L. Schmittberger Marlow. 2021. Rydberg Atom Electric Field Sensors
+for Communications and Sensing.IEEE Transactions on Quantum
+Engineering 2 (2021), 1–13. https://doi.org/10.1109/TQE.2021.3065227
+[22] ChaoFeng,JieXiong,LiqiongChang,JuWang,XiaojiangChen,Dingyi
+Fang, and Zhanyong Tang. 2019. Wimi: Target material identifica-
+tion with commodity wi-fi devices. In2019 IEEE 39th International
+Conference on Distributed Computing Systems (ICDCS). IEEE, 700–710.
+[23] Thomas Gallagher. 2006.Rydberg Atoms. Springer New York, New
+York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14
+[24] Walter Gander, Gene H. Golub, and Rolf Strebel. 1994. Least-squares
+fitting of circles and ellipses.BIT Numerical Mathematics34, 4 (1994),
+558–578.
+[25] Nicolas Gisin and Rob Thew. 2007. Quantum communication.Nature
+photonics 1, 3 (2007), 165–171.
+[26] Unsoo Ha, Salah Assana, and Fadel Adib. 2020. Contactless Seismo-
+cardiography via Deep Learning Radars. InProceedings of the 26th
+Annual International Conference on Mobile Computing and Network-
+ing (MobiCom ’20). Association for Computing Machinery, Article 62,
+14 pages.
+[27] Unsoo Ha, Junshan Leng, Alaa Khaddaj, and Fadel Adib. 2020. Food
+and Liquid Sensing in Practical Environments using RFIDs. In17th
+USENIX Symposium on Networked Systems Design and Implementation
+(NSDI 20). USENIX Association, Santa Clara, CA, 1083–1100. https:
+//www.usenix.org/conference/nsdi20/presentation/ha
+[28] Chengkun Jiang, Junchen Guo, Yuan He, Meng Jin, Shuai Li, and
+Yunhao Liu. 2020. MmVib: Micrometer-Level Vibration Measurement
+with Mmwave Radar. InProceedings of the 26th Annual International
+Conference on Mobile Computing and Networking(London, United
+Kingdom)(MobiCom ’20). Association for Computing Machinery, New
+York, NY, USA, Article 45, 13 pages.
+[29] YuechunJiao,XiaoxuanHan,JiabeiFan,GeorgRaithel,JianmingZhao,
+and Suotang Jia. 2019. Atom-based receiver for amplitude-modulated
+baseband signals in high-frequency radio communication.Applied
+Physics Express12, 12 (2019), 126002.
+[30] Minsung Kim, Davide Venturelli, and Kyle Jamieson. 2019. Leveraging
+Quantum Annealing for Large MIMO Processing in Centralized Radio
+Access Networks. InProceedings of the ACM Special Interest Group on
+Data Communication(Beijing, China)(SIGCOMM ’19). Association for
+Computing Machinery, New York, NY, USA, 241–255.
+[31] Minsung Kim, Davide Venturelli, John Kaewell, and Kyle Jamieson.
+2022. Warm-StartedQuantumSphereDecodingviaReverseAnnealing
+forMassiveIoTConnectivity.In Proceedings of the 28th Annual Interna-
+tional Conference on Mobile Computing And Networking(Sydney, NSW,
+Australia)(MobiCom ’22). Association for Computing Machinery, New
+York, NY, USA, 1–14. https://doi.org/10.1145/3495243.3560516
+[32] Huining Li, Chenhan Xu, Aditya Singh Rathore, Zhengxiong Li, Han-
+bin Zhang, Chen Song, Kun Wang, Lu Su, Feng Lin, Kui Ren, and
+Wenyao Xu. 2020. VocalPrint: exploring a resilient and secure voice
+authentication via mmWave biometric interrogation.Proceedings of
+the 18th Conference on Embedded Networked Sensor Systems(2020).
+[33] Yang Li, Dan Wu, Jie Zhang, Xuhai Xu, Yaxiong Xie, Tao Gu, and
+Daqing Zhang. 2022. DiverSense: Maximizing Wi-Fi Sensing Range
+Leveraging Signal Diversity.Proc. ACM Interact. Mob. Wearable Ubiq-
+uitous Technol.6, 2, Article 94 (jul 2022), 28 pages. https://doi.org/10.
+672
+1145/3536393
+[34] JianLiu,HongboLiu,YingyingChen,YanWang,andChenWang.2020.
+WirelessSensingforHumanActivity:ASurvey. IEEE Communications
+Surveys Tutorials 22, 3 (2020), 1629–1645. https://doi.org/10.1109/
+COMST.2019.2934489
+[35] C.J. Lorenzen and K. Niemax. 1984. Precise quantum defects of nS, nP
+and nD Levels in Cs I.Zeitschrift für Physik A Atoms and Nuclei315
+(1984), 127–133.
+[36] Yongsen Ma, Gang Zhou, and Shuangquan Wang. 2019. WiFi Sensing
+with Channel State Information: A Survey.ACM Comput. Surv.52, 3,
+Article 46 (jun 2019), 36 pages.
+[37] N David Mermin. 2007.Quantum computer science: an introduction.
+Cambridge University Press.
+[38] DavidHMeyer,KevinCCox,FredrikKFatemi,andPaulDKunz.2018.
+DigitalcommunicationwithRydbergatomsandamplitude-modulated
+microwave fields.Applied Physics Letters112, 21 (2018), 211108.
+[39] Moritz Müller, Jins de Jong, Maran van Heesch, Benno Overeinder,
+and Roland van Rijswijk-Deij. 2020. Retrofitting Post-Quantum Cryp-
+tography in Internet Protocols: A Case Study of DNSSEC.SIGCOMM
+Comput. Commun. Rev.50, 4 (oct 2020), 49–57.
+[40] F. Naya, H. Noma, R. Ohmura, and K. Kogure. 2005. Bluetooth-based
+indoorproximitysensingfornursingcontextawareness.In Ninth IEEE
+International Symposium on Wearable Computers (ISWC’05). 212–213.
+[41] Nikunjkumar Prajapati, Andrew P Rotunno, Samuel Berweger,
+Matthew T Simons, Alexandra B Artusio-Glimpse, Stephen D Voran,
+and Christopher L Holloway. 2022. TV and video game streaming
+with a quantum receiver: A study on a Rydberg atom-based receiver’s
+bandwidth and reception clarity.AVS Quantum Science4, 3 (2022),
+035001.
+[42] Qifan Pu, Sidhant Gupta, Shyamnath Gollakota, and Shwetak Patel.
+2013. Whole-Home Gesture Recognition Using Wireless Signals. In
+Proceedings of the 19th Annual International Conference on Mobile Com-
+puting and Networking (MobiCom ’13). Association for Computing
+Machinery, 27–38.
+[43] Ziyuan Pu, Meixin Zhu, Wenxiang Li, Zhiyong Cui, Xiaoyu Guo, and
+Yinhai Wang. 2021. Monitoring Public Transit Ridership Flow by
+Passively Sensing Wi-Fi and Bluetooth Mobile Devices.IEEE Internet
+of Things Journal8, 1 (2021), 474–486.
+[44] Ji-Gang Ren, Ping Xu, Hai-Lin Yong, Liang Zhang, Sheng-Kai Liao,
+Juan Yin, Wei-Yue Liu, Wen-Qi Cai, Meng Yang, Li Li, et al. 2017.
+Ground-to-satellite quantum teleportation.Nature 549, 7670 (2017),
+70–73.
+[45] Jonathon A Sedlacek, Arne Schwettmann, Harald Kübler, Robert Löw,
+Tilman Pfau, and James P Shaffer. 2012. Microwave electrometry with
+Rydbergatomsinavapourcellusingbrightatomicresonances. Nature
+Physics 8, 11 (2012), 819–824.
+[46] Shouqian Shi and Chen Qian. 2020. Concurrent Entanglement Rout-
+ing for Quantum Networks: Model and Designs. InProceedings of the
+Annual Conference of the ACM Special Interest Group on Data Communi-
+cation on the Applications, Technologies, Architectures, and Protocols for
+Computer Communication (SIGCOMM ’20). Association for Computing
+Machinery, New York, NY, USA, 62–75.
+[47] Li Sun, Souvik Sen, Dimitrios Koutsonikolas, and Kyu-Han Kim. 2015.
+WiDraw: Enabling Hands-Free Drawing in the Air on Commodity
+WiFiDevices.In Proceedings of the 21st Annual International Conference
+on Mobile Computing and Networking(Paris, France)(MobiCom ’15).
+Association for Computing Machinery, New York, NY, USA, 77–89.
+[48] Sheng Tan, Yili Ren, Jie Yang, and Yingying Chen. 2022. Commodity
+WiFiSensinginTenYears:Status,Challenges,andOpportunities. IEEE
+Internet of Things Journal9, 18 (2022), 17832–17843.
+[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling
+Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping
+on Loudspeakers via RFID by Capturing Sub-mm Level Vibration.
+Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies 5, 4 (Dec. 2022), 182:1–182:25.
+[50] Jingxian Wang, Junbo Zhang, Rajarshi Saha, Haojian Jin, and Swarun
+Kumar. 2019. Pushing the Range Limits of Commercial Passive RFIDs.
+In16th USENIX Symposium on Networked Systems Design and Imple-
+mentation (NSDI 19). USENIX Association, Boston, MA, 301–316.
+[51] WeiWang,AlexX.Liu,MuhammadShahzad,KangLing,andSangluLu.
+2015. UnderstandingandModelingofWiFiSignalBasedHumanActiv-
+ity Recognition(MobiCom ’15). Association for Computing Machinery,
+New York, NY, USA, 65–76. https://doi.org/10.1145/2789168.2790093
+[52] Binbin Xie, Jie Xiong, Xiaojiang Chen, Eugene Chai, Liyao Li, Zhany-
+ong Tang, and Dingyi Fang. 2019. Tagtag: material sensing with
+commodity rfid. InProceedings of the 17th Conference on Embedded
+Networked Sensor Systems. 338–350.
+[53] Binbin Xie, Jie Xiong, Xiaojiang Chen, and Dingyi Fang. 2020. Ex-
+ploring Commodity RFID for Contactless Sub-Millimeter Vibration
+Sensing. InProceedings of the 18th Conference on Embedded Networked
+Sensor Systems (SenSys ’20). Association for Computing Machinery,
+15–27.
+[54] Binbin Xie, Yuqing Yin, and Jie Xiong. 2021. Pushing the Limits of
+Long Range Wireless Sensing with LoRa.Proceedings of the ACM on
+Interactive, Mobile, Wearable and Ubiquitous Technologies5 (2021), 1 –
+21.
+[55] Chenhan Xu, Zhengxiong Li, Hanbin Zhang, Aditya Singh Rathore,
+Huining Li, Chen Song, Kun Wang, and Wenyao Xu. 2019. WaveEar:
+Exploring a mmWave-based Noise-resistantSpeech Sensing for Voice-
+User Interface.Proceedings of the 17th Annual International Conference
+on Mobile Systems, Applications, and Services(2019).
+[56] Chung-Jui Yu, Stephen von Kugelgen, Daniel W. Laorenza, and
+Danna E. Freedman. 2021. A Molecular Approach to Quantum Sens-
+ing. ACS Central Science7, 5 (2021), 712–723. https://doi.org/10.1021/
+acscentsci.0c00737 arXiv:https://doi.org/10.1021/acscentsci.0c00737
+PMID: 34079892.
+[57] Daqing Zhang, Fusang Zhang, Dan Wu, Jie Xiong, and Kai Niu. 2021.
+Fresnel Zone Based Theories for Contactless Sensing. Springer Interna-
+tional Publishing, Cham, 145–164.
+[58] FusangZhang,ZhaoxinChang,KaiNiu,JieXiong,BeihongJin,QinLv,
+and Daqing Zhang. 2020. Exploring LoRa for Long-Range Through-
+Wall Sensing.Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.4,
+2, Article 68 (June 2020), 27 pages.
+[59] Fusang Zhang, Zhaoxin Chang, Jie Xiong, Junqi Ma, Jiazhi Ni, Wenbo
+Zhang, Beihong Jin, and Daqing Zhang. 2023. Embracing Consumer-
+level UWB-equipped Devices for Fine-grained Wireless Sensing.Pro-
+ceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies 6, 4 (2023), 1–27.
+[60] FusangZhang,JieXiong,ZhaoxinChang,JunqiMa,andDaqingZhang.
+2022. Mobi2Sense: Empowering Wireless Sensing with Mobility. In
+Proceedings of the 28th Annual International Conference on Mobile Com-
+puting and Networking.
+[61] Fusang Zhang, Daqing Zhang, Jie Xiong, Hao Wang, Kai Niu, Beihong
+Jin, and Yuxiang Wang. 2018. From Fresnel Diffraction Model to Fine-
+Grained Human Respiration Sensing with Commodity Wi-Fi Devices.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.2, 1, Article 53
+(mar 2018), 23 pages. https://doi.org/10.1145/3191785
+[62] MingminZhao,YonglongTian,HangZhao,MohammadAbuAlsheikh,
+Tianhong Li, Rumen Hristov, Zachary Kabelac, Dina Katabi, and Anto-
+nio Torralba. 2018. RF-Based 3D Skeletons. InProceedings of the 2018
+Conference of the ACM Special Interest Group on Data Communication
+(SIGCOMM ’18).AssociationforComputingMachinery,NewYork,NY,
+USA, 267–281.
+673

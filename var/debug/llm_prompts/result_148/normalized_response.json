@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Wang et al. [12] utilized radio-frequency identification (RFID) to receive the speaker's vibration signal in the environment. This approach requires a preinstalled tag in the victim's room.",
+      "reasoning": "The citing paper cites [12] as an example of passive sensing, describing its use of RFID to capture speaker vibrations. The text categorizes the work and notes a requirement (preinstalled tag), but does not evaluate its quality or use it as a foundation for the current work.",
+      "keywords": [
+        "Wang et al. [12]",
+        "passive sensing",
+        "RFID"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Wang et al. [12] utilized radio-frequency identification (RFID) to receive the speaker's vibration signal in the environment. This approach requires a preinstalled tag in the victim's room.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[12]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper cites [12] as an example of passive sensing, describing its use of RFID to capture speaker vibrations. The text categorizes the work and notes a requirement (preinstalled tag), but does not evaluate its quality or use it as a foundation for the current work.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

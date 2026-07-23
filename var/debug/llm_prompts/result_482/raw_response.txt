@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang et al., \"mmPhone: Acoustic eavesdropping on loudspeakers via mmWave-characterized piezoelectric effect,\" in Proc. IEEE Conf. Comput. Commun., 2022, pp. 820–829.",
+  "paper_level_summary_zh": "该引用论文在相关工作部分将目标论文[23]列为使用mmWave进行语音窃听的代表性工作之一，但未展开描述其具体贡献或能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Authors in [17] used mmWave to acquire high-quality voice from user's vocal vibrations from near-throat region. [23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals.",
+      "evidence_context": "Authors in [17] used mmWave to acquire high-quality voice from user's vocal vibrations from near-throat region. [23] proposed a speech eavesdropping approach by leveraging the piezoelectric films and mmWave signals. [24] proposed a remote and through-wall screen attack that used mmWave to remotely collect information from LCD screens.",
+      "reference_entry": "C. Wang et al., \"mmPhone: Acoustic eavesdropping on loudspeakers via mmWave-characterized piezoelectric effect,\" in Proc. IEEE Conf. Comput. Commun., 2022, pp. 820–829.",
+      "why_this_judgment_zh": "证据中[23]对应的引用条目是'C. Wang et al., \"mmPhone: Acoustic eavesdropping on loudspeakers via mmWave-characterized piezoelectric effect,\"'，但目标论文是'Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration'，两者标题不同。该引用条目错误地关联了不同的论文，因此属于假阳性。",
+      "copy_ready_zh": "引用论文将目标论文[23]误作为另一篇mmPhone论文引用，实际目标论文未在正文中被直接引用。",
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed for undetectable attacks outside the room. For example, attaching battery-less commercial off-the-shelf RFID tags on everyday objects can achieve through-the-wall sound eavesdropping [37].",
+      "reasoning": "This context groups the target paper [37] with other RFID works [38] and mmWave works. It uses 'for example' to illustrate RF-based sound eavesdropping, but does not single out the target paper for detailed analysis or evaluation. The target paper is cited as a representative example of RFID-based through-the-wall eavesdropping, but the context is general, not method or theoretical foundation. The mention is within a related work section listing RF approaches. The group includes the target, so attribution is shared; the paper is not explicitly discussed individually. This is background with a neutral stance.",
+      "keywords": [
+        "RFID",
+        "through-the-wall sound eavesdropping",
+        "attaching battery-less commercial off-the-shelf RFID tags"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RF-based sound eavesdropping.Radio frequency signals, such as WiFi [35], [36], RFID [37], [38], and mmWave [2], [8], [15], [39], [40], are popular in sound eavesdropping. Due to the penetrating capabilities of RF signals, they are deployed ...",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[37]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This context groups the target paper [37] with other RFID works [38] and mmWave works. It uses 'for example' to illustrate RF-based sound eavesdropping, but does not single out the target paper for detailed analysis or evaluation. The target paper is cited as a representative example of RFID-based through-the-wall eavesdropping, but the context is general, not method or theoretical foundation. The mention is within a related work section listing RF approaches. The group includes the target, so attribution is shared; the paper is not explicitly discussed individually. This is background with a neutral stance.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

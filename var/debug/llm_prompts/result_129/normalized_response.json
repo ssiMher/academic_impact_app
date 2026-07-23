@@ -1,0 +1,34 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Low-frequency radio signals have been widely leveraged for fine-grained human activity recognition (HAR), such as Wi-Fi sensing [9, 15, 19, 20, 36, 37], RFID sensing [35, 43], and 4G/5G sensing [7, 40].",
+      "reasoning": "The citing paper lists RFID sensing as one of several categories of low-frequency radio signals used for HAR, with [35] as a representative work. The citation is in a grouped context without distinguishing the specific contribution of [35]. Therefore, it is classified as background with grouped citation mention.",
+      "keywords": [
+        "RFID sensing",
+        "fine-grained human activity recognition"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Low-frequency radio signals have been widely leveraged for fine-grained human activity recognition (HAR), such as Wi-Fi sensing [9, 15, 19, 20, 36, 37], RFID sensing [35, 43], and 4G/5G sensing [7, 40].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[35]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper lists RFID sensing as one of several categories of low-frequency radio signals used for HAR, with [35] as a representative work. The citation is in a grouped context without distinguishing the specific contribution of [35]. Therefore, it is classified as background with grouped citation mention.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "As for RFID-based methods, researchers have explored the possibility of using COTS RFID tags to perform the thru-the-wall eavesdropping on the loudspeaker [50].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The citing paper places [50] as a representative RFID-based work for thru-the-wall eavesdropping on loudspeakers, in a related work section categorizing RF-based methods. No sub-mm precision is explicitly mentioned.",
+      "highlight_keywords": ["RFID-based methods", "COTS RFID tags", "thru-the-wall eavesdropping", "loudspeaker"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID for eavesdropping on loudspeakers but does not explicitly state sub-mm or millimeter-level sensing. It is a plain RFID/eavesdropping mention, classified as representative_work per template rules.",
+      "template_satisfied": false,
+      "template_failure_reason": "Does not contain explicit sub-mm precision wording (e.g., 'sub-mm', 'millimeter-level') as required by strict_rules for template 73."
+    }
+  ]
+}

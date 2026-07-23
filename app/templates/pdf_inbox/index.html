@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}PDF 导入目录{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">受限 PDF 下载助手</div>
+      <h1>PDF 导入目录</h1>
+      <p>用户通过浏览器下载 PDF 后放入 inbox，系统扫描、识别并匹配深度分析队列条目。</p>
+    </div>
+    <div class="quick-links">
+      <form action="/pdf-inbox/rescan" method="post">
+        <button class="button button-secondary" type="submit">创建扫描任务</button>
+      </form>
+      <form action="/pdf-inbox/scan-now" method="post">
+        <button class="button button-primary" type="submit">立即重新扫描</button>
+      </form>
+      <a class="button button-secondary" href="/">返回首页</a>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>合规说明</h2>
+    <p>系统不会保存账号密码或 Cookie，也不会绕过 ACM / IEEE / Springer / Elsevier 等平台的访问限制。</p>
+    <p>请在自己的浏览器中通过个人或机构权限下载 PDF，然后将文件放入配置的导入目录。页面只显示目录名：{{ inbox_dir }}。</p>
+    <p>匹配阈值：{{ match_threshold }}</p>
+  </section>
+
+  {% if entries %}
+    <section class="card">
+      <h2>Inbox PDF</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>文件名</th>
+              <th>识别标题</th>
+              <th>识别 DOI</th>
+              <th>大小</th>
+              <th>匹配状态</th>
+              <th>候选</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in entries %}
+              <tr>
+                <td>{{ entry.filename }}</td>
+                <td>{{ entry.detected_title or "未识别" }}</td>
+                <td>{{ entry.detected_doi or "无" }}</td>
+                <td>{{ entry.size_bytes }}</td>
+                <td>{{ entry.match_status }} / {{ entry.match_reason }} / {{ entry.match_score }}</td>
+                <td>
+                  {% if entry.candidates %}
+                    {% for candidate in entry.candidates %}
+                      <p>Queue #{{ candidate.queue_item_id }}：{{ candidate.citing_paper_title }}（{{ candidate.match_score }}）</p>
+                    {% endfor %}
+                  {% elif entry.matched_queue_item_id %}
+                    Queue #{{ entry.matched_queue_item_id }}
+                  {% else %}
+                    无
+                  {% endif %}
+                </td>
+                <td>
+                  {% if entry.candidates %}
+                    {% for candidate in entry.candidates %}
+                      <form action="/pdf-inbox/{{ entry.id }}/bind" method="post">
+                        <input type="hidden" name="queue_item_id" value="{{ candidate.queue_item_id }}">
+                        <button class="button button-primary" type="submit">绑定到该条目</button>
+                      </form>
+                    {% endfor %}
+                  {% endif %}
+                  {% if not entry.ignored %}
+                    <form action="/pdf-inbox/{{ entry.id }}/ignore" method="post">
+                      <button class="button button-secondary" type="submit">忽略该 PDF</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% else %}
+    {{ empty_state("尚未发现 inbox PDF", "请把通过浏览器合法下载的 PDF 放入导入目录，然后点击重新扫描。") }}
+  {% endif %}
+{% endblock %}

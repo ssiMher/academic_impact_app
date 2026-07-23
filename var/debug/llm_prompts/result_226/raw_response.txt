@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim's proximity, which reduces its practicality.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "explicit_target",
+      "reasoning": "The citing paper mentions [21] (Tag-Bug) as a related work that uses RFID tags and cGAN for eavesdropping, but criticizes its need for pre-installation, reducing practicality. The context is a related work section discussing limitations.",
+      "highlight_keywords": ["relies on RFID tags", "cGAN", "acoustic eavesdropping", "pre-install RFID tags", "reduces practicality"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID tags and acoustic eavesdropping, but does not explicitly state sub-mm capability. It is a background mention that acknowledges the method but highlights a limitation.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73 requires explicit sub-mm precision claim. The quote does not mention sub-mm, millimeter-level, or fine-grained vibration. It only says 'RFID tags in combination with cGAN for acoustic eavesdropping', which is a general description without precision detail."
+    },
+    {
+      "citation_text": "these WiFi signal- and impulse radio-based methods [14], [15], [21], [22], [24] suffer a insufficient vibration resolution due to long wavelength and low packet rate.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper groups [21] with other RF methods and states they suffer from insufficient vibration resolution. This is a limitation critique of the whole category including [21].",
+      "highlight_keywords": ["insufficient vibration resolution", "long wavelength", "low packet rate", "WiFi signal- and impulse radio-based methods"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote discusses vibration resolution but does not confirm sub-mm capability. It criticizes the methods for insufficient resolution, which is opposite to the template's goal of confirming sub-mm capability.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73 expects explicit sub-mm capability recognition. The quote states 'insufficient vibration resolution', which is a negative critique, not a confirmation of sub-mm precision."
+    }
+  ]
+}

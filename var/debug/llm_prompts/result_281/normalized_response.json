@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[95]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "本文在相关工作（Section X）中将目标论文归类为利用RFID进行声学窃听的代表性工作，指出其能在1米距离达到高准确率，但未提及亚毫米级精度，且整体上将其与其它RF/Wi-Fi方法并列。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96].",
+      "evidence_context": "RF.Wi-Fi signals, for example, have been utilized to profile mouth movements [85] and detect loudspeakers’ vibrations [86], where the distance between the sound source and the signal transmitter is around 2 m and the accuracy is above 0.8. More recent work has focused on millimeter-wave (mmWave) radar [87], [88], [89], [90], [91], [92], [93], [94], Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96]. Across these studies, the average source-to-attacker distance is about 3.6 m, with some systems reaching up to 8 m [88], [92]. The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文明确提到RFID [95]并引用目标论文作为RFID窃听的代表性工作，同时引用了其1米处准确率0.94的性能数据，说明目标论文被认可具有高精度语音识别能力。但未明确提及亚毫米级振动感知，因此判定为capability_recognition而非submm_precision_claim。",
+      "copy_ready_zh": "引用论文将目标论文作为RFID声学窃听的代表性工作，并引用其1米距离语音识别准确率达0.94的性能数据，认可其高精度能力。",
+      "confidence": "high"
+    }
+  ]
+}

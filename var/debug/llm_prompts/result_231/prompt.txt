@@ -1,0 +1,873 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Evaluate ACTIVE_EVIDENCE_TEMPLATES for every finding. Include matched_template_ids, template_match_reason, template_satisfied, and template_failure_reason. If a template is relevant but not satisfied, explain why.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true,
+      "matched_template_ids": [1],
+      "template_match_reason": "why this quote satisfies an active template",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: A Vibration Signal Enhancement Scheme for mmWave-Based Sound Eavesdropping
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: [9]
+TARGET_REFERENCE_ENTRY: [9] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rﬁd by capturing sub-
+mm level vibration,” Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=These techniques typically require either direct attachment to; context_type=formula_nearby; contains_formula=True
+These techniques typically require either direct attachment to
+the victim’s device or have to be placed in the same room
+as the sound source. As the second type of method, vision-
+based approaches [7] employ high-speed cameras to detect
+sound-induced vibration. However, it is highly susceptible to
+light conditions and, thus, can be easily obscured. Recently,
+wireless-based methods have gained signiﬁcant attention ow-
+ing to their ability to penetrate barriers and operate indepen-
+dently of light conditions. These techniques leverage changes
+in reﬂected wireless signals, such as WiFi [8], RFID [9], and
+mmWave [10], to infer sound-induced vibrations, enabling the
+recreation of sound information.
+Nowadays, leveraging a millimeter wave (mmWave) sensor
+for sound eavesdropping has been popularized due to its
+capabilities of measuring vibrations at the micrometer level.
+The mmWave-based sound eavesdropping generally begins
+with a range FFT (Fast Fourier Transform) of the reﬂected
+signals to locate the vibrating target and obtain its reﬂected
+signal. Subsequently, the phase change of the reﬂected signal
+from the vibrating object is extracted to reconstruct the sound
+information. Accurately ex
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+A Vibration Signal Enhancement Scheme for
+mmWave-based Sound Eavesdropping
+Shaoying Wang, Xiaonan Zhang
+Department of Computer Science, Florida State University, USA
+Email: sw22bh@fsu.edu, xzhang@cs.fsu.edu
+Abstract—The emergence of millimeter wave (mmWave) sens-
+ing in sound eavesdropping poses a signiﬁcant threat to speech
+privacy. It exploits the fact that speech can induce vibrations in
+objects, which in turn changes the phase of the reﬂected mmWave
+signal. Through extracting the phase change, the attacker is able
+to rebuild the speech. Conventional methods of phase change
+extraction, mainly based on circle ﬁtting, often fail to consider the
+phase distortion caused by speech, which decreases the quality
+of reconstructed speech. T o ﬁll this gap, this paper proposes
+an innovative mmWave-based sound eavesdropping framework.
+The novelty lies in a vibration signal enhancement scheme to
+calibrate the phase distortion, which consists of the speech
+activity detection and the constrained circle ﬁtting. In particular ,
+speech activity detection divides the signal into speech segment
+and non-speech segment. Subsequently, the constrained circle
+ﬁtting utilizes the ﬁtted circle radius of the non-speech segment
+to determine the circle center of the speech segment, enabling
+precise phase change extraction. Our experimental results reveal
+that our proposed framework is able to recover speech with a
+similarity of 0.44 to the original speech and boost the signal-
+to-noise ratio (SNR) for sound-induced vibration signal by 13%.
+Index T erms—mmWave sensing, Sound eavesdropping, Signal
+enhancement, Phase distortion
+I. I NTRODUCTION
+Sound eavesdropping is considered a very serious problem
+in real life because of the unencrypted nature of sound, leading
+it to be one of the main sources of information leakage.
+With the development of smart homes, voice assistants have
+been popularized in many users’ homes. When users leverage
+voice assistants for authentication or conversation, private
+information such as personal information and passwords are
+highly likely to be leaked. In addition, the convenience of
+online meetings, i.e., meetings that are not restricted by
+location, has led to an increasing number of people choosing
+to meet on online meeting applications such as Zoom, Skype,
+etc. Conversations in a meeting will be transmitted over a
+loudspeaker. They may contain some commercially sensitive
+information, such as bid prices or important information about
+the type of decisions that the company is making. All the above
+information leakage causes indelible damage to individuals
+and businesses. To preserve speech privacy, a soundproof room
+is a promising solution for speakers [1].
+Nevertheless, sound waves cause vibrations in the speaker
+itself or surrounding objects. By detecting those sound-induced
+vibrations, attackers are able to reconstruct the sound. One
+type of sound eavesdropping method [2]–[6] uses motion sen-
+sors, e.g., gyroscope and accelerometer, to sense the vibration.
+These techniques typically require either direct attachment to
+the victim’s device or have to be placed in the same room
+as the sound source. As the second type of method, vision-
+based approaches [7] employ high-speed cameras to detect
+sound-induced vibration. However, it is highly susceptible to
+light conditions and, thus, can be easily obscured. Recently,
+wireless-based methods have gained signiﬁcant attention ow-
+ing to their ability to penetrate barriers and operate indepen-
+dently of light conditions. These techniques leverage changes
+in reﬂected wireless signals, such as WiFi [8], RFID [9], and
+mmWave [10], to infer sound-induced vibrations, enabling the
+recreation of sound information.
+Nowadays, leveraging a millimeter wave (mmWave) sensor
+for sound eavesdropping has been popularized due to its
+capabilities of measuring vibrations at the micrometer level.
+The mmWave-based sound eavesdropping generally begins
+with a range FFT (Fast Fourier Transform) of the reﬂected
+signals to locate the vibrating target and obtain its reﬂected
+signal. Subsequently, the phase change of the reﬂected signal
+from the vibrating object is extracted to reconstruct the sound
+information. Accurately extracting the phase change of the
+reﬂected signal plays a critical role in sound restoration.
+AmbiEar [11] and mmEve [12] both employ a technique of
+ﬁtting circles to all data samples in the IQ plane to ﬁnd
+the center of the circle and then transform the coordinates
+to remove static clutter, enabling the accurate extraction of
+phase changes. Nevertheless, the above circle ﬁtting approach
+fails to account for phase distortion, causing inaccurate phase
+change extraction. Upon analyzing phase distortion in the IQ
+plane, mmEavesdropper [10] explores a segmentation-based
+ﬁtting method to calibrate the vibration signal. Despite this
+innovative approach, mmEavesdropper supposes that the phase
+distortion is caused mainly by FFT calculation but ignores the
+environmental factors, such as speech activity.
+In this paper, we propose a novel mmWave-based speech
+eavesdropping framework. Our main novelty lies in designing
+a vibration signal enhancement scheme to correct phase dis-
+tortions resulting from the speech activity. The enhancement
+scheme includes speech activity detection and constrained
+circle ﬁtting. The former method divides the signal into speech
+and non-speech segments, whereas the latter method calibrates
+the phase distortions in the IQ phase. In particular, based on
+our ﬁndings that the phase changes of the speech and non-
+speech segments share the same radius but have different circle
+centers, we ﬁrst apply the conventional circle ﬁtting to ﬁnd the
+IEEE INFOCOM WKSHPS: DeepWireless 2024: Deep Learning for Wireless Communications, Sensing, and Security
+979-8-3503-8447-5/24/$31.00 ©2024 IEEE
+IEEE INFOCOM 2024 - IEEE Conference on Computer Communications Workshops (INFOCOM WKSHPS) | 979-8-3503-8447-5/24/$31.00 ©2024 IEEE | DOI: 10.1109/INFOCOMWKSHPS61880.2024.10620704
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:18 UTC from IEEE Xplore.  Restrictions apply.
+circle center of the non-speech segment, which is then used
+to determine that of the speech segment and extract its phase
+change. However, the phase change of the speech segment
+contains the self-noise caused by the mmWave hardware,
+making it hard to rebuild the speech that can be understood.
+As a remedy, we further deploy the deep learning network,
+the U-Net [13], to remove the noise. Our major contributions
+are summarized as follows:
+• We present a mmWave-based sound eavesdropping
+framework that reconstructs the speech from the sound-
+induced vibrations on the objects. Our framework is capa-
+ble of recovering the speech from real-life conversations.
+• We propose a vibration signal enhancement scheme by
+calibrating phase distortion in the IQ plane. This scheme
+deploys a constrained circle ﬁtting method for precisely
+extracting phase changes from the mmWave signal cor-
+responding to the speech.
+• Our evaluation results demonstrate that our proposed
+signal enhancement scheme improves the signal-to-noise
+ratio (SNR) of sound-induced vibrations signal by 13%
+on average. Our framework is also capable of effectively
+reconstructing speech, evidenced by a frequency spec-
+trum correlation coefﬁcient of 0.44, which is adequate
+for the intelligible comprehension of speech content.
+II. P RELIMINARIES
+A. mmWave-based Vibration Sensing
+The mmWave sensor deploys the frequency-modulated
+continuous-wave (FMCW) technology to accurately measure
+the distance, velocity, and angle of various objects. By trans-
+mitting a series of FMCW signals, called chirps, the mmWave
+sensor receives and demodulates the reﬂected FCMW signals.
+The transmitted and received signals, denoted assTX (t) and
+sRX (t), are mathematically formulated as
+sTX (t)=e x p
+[
+j
+(
+2πfct+πKt2)]
+,
+sRX (t)= αsTX [t−2R(t)/c], (1)
+where fc and K are the start frequency and the slope of the
+chirp, respectively.R(t)denotes the distance between the radar
+and the object. α represents the pass loss. The radar receiver
+mixes the received signalsRX with the transmitted signalsTX
+and then applies a low-pass ﬁlter, ultimately generating the
+intermediate frequency (IF) signalsIF as:
+sIF(t)= αexp[j(2πfIFt+φIF)], (2)
+with the frequency fIF and phase φIF
+fIF =2 KR(t)/c,
+φIF =2 πfcR(t)/c+πKR(t)2/c2
+≈ 2πfcR(t)/c.
+(3)
+Eq. 3 describes that the frequency of IF signal fIF is as-
+sociated with the distance between the radar and the object
+R(t). Therefore, the Fourier Transform is an effective method
+to locate objects. After the range Fast Fourier Transform
+(FFT), the reﬂected signal extracted from a speciﬁc range bin
+corresponding to the located object is
+SIF (t)= F{sIF (t)} = αexp[j4πfcR(t)/c]. (4)
+When the object vibrates, the distance between the object itself
+and mmWave radar is written as R(t)= R0 + d(t) with
+R0 the constant distance and d(t) the time-varying vibration
+displacement. Eq. 6 then becomes,
+SIF (t)= αexp[j4πfc(R0 +d(t))/c]. (5)
+The phase change of Eq. 5 is denoted asΔφ =4 πd(t)fc/c.
+By extracting the vibration displacementd(t) from this phase
+change, we are able to infer the original sound [14].
+B. Conventional Circle Fitting Method
+As Eq. 5 indicates, d(t) causes phase changes in the
+reﬂected signal, leading the vibration signal in the IQ plane
+to move along an arc. In real-world scenarios, both static and
+vibrating objects often exist within the same range bin. As a
+result, the extracted IF signal of this range bin will contain the
+reﬂected signal from both the vibrating and static objects. It is
+represented as a superposition of the vibration signalSvibrate
+from the vibrating object and the signal of the static objects
+Sstatic
+SIF = Svibrate +Sstatic. (6)
+In order to accurately extract the phase change of a vibrating
+object, existing studies [11], [12] use the conventional circle
+ﬁtting method. This method applies a circle ﬁtting on the entire
+signal to remove the static component Sstatic to obtain the
+phase change of the object.
+III. S YSTEM OVERVIEW AND ATTACK MODEL
+Surrounding Objects Vibration
+Target 
+Localization
+Speech Activity 
+Detection
+Constrained Circle 
+Fitting Method
+U-Net Denoising 
+Network 
+Attacker
+mmWave Sensor
+Fig. 1: mmWave-based speech eavesdropping overview.
+A. Problem Deﬁnition
+We consider a scenario where an online meeting is being
+held in a soundproof conference room as described in Fig.
+1. The speech in the meeting, emitted by individuals or loud-
+speakers, produces sound waves that interact with surrounding
+objects in the room, leading to surface vibrations on these
+objects. These vibrations contain sensitive information about
+the meeting, such as a password or bid price, by detecting
+which the attacker is able to rebuild the speech content. To
+IEEE INFOCOM WKSHPS: DeepWireless 2024: Deep Learning for Wireless Communications, Sensing, and Security
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:18 UTC from IEEE Xplore.  Restrictions apply.
+0 0.2 0.4 0.6 0.8 1
+Time (s)
+-1.75
+-1.7
+-1.65
+-1.6
+Phase
+Fig. 2: Offset and drift effect.
+-2 -1.5 -1 -0.5
+In-Phase (I) 105
+0.5
+1
+1.5
+2
+Quadrature (Q)
+105
+Speech
+Pattern
+Non-speech
+Pattern
+Fig. 3: Signal patterns.
+-1.35 -1.3 -1.25 -1.2
+In-Phase (I) 105
+6.5
+7
+7.5Quadrature (Q)
+104
+Fig. 4: Circle ﬁtting.
+achieve it, the attacker deploys a commercial mmWave sensor.
+This sensor emits signals that are reﬂected upon encountering
+objects within the room. The attacker then rebuilds the speech
+content by extracting and analyzing the speech-induced vibra-
+tions from the received signals.
+B. Attack Model
+Given the above scenario, the attacker aims to eavesdrop
+on the speech happening in a soundproof conference room.
+Speciﬁcally, we assume that the attacker has the following
+capabilities:
+• The attacker is restricted to placing the mmWave sensor
+outside the soundproof conference room without the
+ability to deploy any internal equipment.
+• The attacker can exploit the penetrating capability of
+mmWave signals to detect sound-induced vibrations in-
+side a soundproof conference room.
+• The attacker has no initial information about the speech
+within the room. It seeks to recover audio that is intelli-
+gible to humans.
+IV . EMPIRICAL STUDY
+A. Feasibility of mmWave-based Speech Eavesdropping
+We conducted an empirical study to show that the mmWave
+sensor is capable of recreating sound information from vibra-
+tions on objects in a soundproof room. In our experiment,
+we utilize tinfoil as a reﬂector and a commercial loudspeaker
+as the audio source. The mmWave sensor, loudspeaker, and
+reﬂector are placed on the same table, with their layout
+depicted in Fig. 5. We placed the loudspeaker 20cm away
+from the reﬂector and investigated the frequency response of
+the reﬂector by playing sweep audio (0-2kHz) through the
+loudspeaker. From our experimental result in Fig. 6, it is
+obvious that the frequency response covers almost the entire
+0-2kHz range, sufﬁcient to identify a speech’s main content.
+Such observation demonstrates that the mmWave sensor is
+capable of capturing the vibration spectrum induced by human
+speech, enabling the attacker to rebuild the speech content
+from the eavesdropped signals.
+ZĞĨůĞĐƚŽƌ
+ŵŵtĂǀĞ
+^ĞŶƐŽƌ
+^ƉĞĂŬĞƌ
+Fig. 5: Experimental setup.
+123456
+Time (s)
+0
+500
+1000
+1500
+2000Frequency (Hz)
+Fig. 6: Sweep audio recovery.
+B. Phase Distortion
+We played some one-second-long utterances of spoken
+digits by a commercial loudspeaker and captured the vibrations
+via a mmWave sensor. A representative signal in the IQ plane
+is shown in Fig. 3. It is observed that the signal’s trajectory in
+the IQ plane does not consistently follow an arc. The signal
+shows different patterns in the presence and absence of speech.
+Employing the conventional circle ﬁtting method on the entire
+signal results in an inaccurate estimation of the circle center.
+This means Sstatic in Eq. 6 cannot be correctly removed,
+leading to phase distortion. We then proceed to analyze the
+speech and non-speech segments separately.
+In the absence of speech, the object doesn’t vibrate,d(t)=
+0; thus, there is no phase change in the reﬂected signal. How-
+ever, due to inherent hardware imperfections, carrier frequency
+offset (CFO) and clock drift (CD) invariably arise between
+the transmitter and receiver. Additionally, the discrete nature
+of the sampling process means that sample time offset (STO)
+also unpredictably affects the phase extraction [15]. The CFO,
+STO, and CD collectively inﬂuence each other and eventually
+change the phase of the received signal to the following:
+ϕhardware(t)= ϕCFO (t)+ϕ STO(t)+ϕ CD(t). (7)
+Eq. 7 depicts that the hardware imperfection introduces time-
+dependent phase changes, as evidenced in Fig. 2, where the
+phase progressively increases over time. With Eq. 7, the signal
+SIF becomes:
+SIF = Svibrate +Sstatic
+= αexp[j(4πfcR0/c+ϕhardware(t))]+ Sstatic. (8)
+IEEE INFOCOM WKSHPS: DeepWireless 2024: Deep Learning for Wireless Communications, Sensing, and Security
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:18 UTC from IEEE Xplore.  Restrictions apply.
+In the presence of speech, the arc trajectory of the speech
+segment signal is different from that of the non-speech seg-
+ment signal, exhibiting an offset in the circle center of the
+signal in the IQ plane. This offset indicates that the static
+component of the signal, Sstatic, has changed. The speech
+segment signal is expressed as
+SIF = Svibrate +S
+′
+static
+= αexp[j(4πfc(R0 +d(t))/c+ϕhardware(t))]+ S
+′
+static.
+(9)
+We analyze the reasons for the shift in the circle’s center from
+Sstatic to S
+′
+static. The static reﬂection signalSstatic, typically
+originating from static objects like walls and furniture, is gen-
+erally stable in the absence of external disturbances. However,
+the presence of sound can subtly alter the physical state of
+these objects, such as inducing minute vibrations in surfaces.
+These alterations result in a modiﬁedSstatic, thereby affecting
+the arc’s center position in the IQ plane. Therefore, it is crucial
+to explore an effective strategy to handle the above phase
+distortion and accurately extract the signal phase.
+0.5 1 1.5 2 2.5
+Time (s)
+0
+1000
+2000
+3000
+4000Frequency (Hz)
+(a) Vibration signal spectrogram.
+0 0.5 1 1.5 2 2.5
+Time (s)
+-4
+-2
+0
+2
+4Amplitude
+10-7
+Signal
+Envelope
+Speech Part
+(b) Phase change after ﬁlter.
+Fig. 7: Speech activity detection.
+V. VIBRA TION SIGNAL ENHANCEMENT SCHEME
+In this paper, we propose a sound eavesdropping framework
+with the main focus on the design of the signal enhancement
+scheme. The attacker utilizes an FMCW radar to emit a
+mmWave signal. By analyzing the signals reﬂected from a
+target object within the room, the attacker can reconstruct the
+speech content. Our framework is shown in Fig. 1. Initially,
+a range FFT is applied to detect the target object. Once the
+target object is localized, the attacker extracts the reﬂected
+signal and deploys the speech activity detection to differentiate
+between speech segment and non-speech segment signals. A
+circle ﬁtting method is then applied to the non-speech segment
+signal to determine a reference radius. This reference radius
+serves as a crucial constraint for subsequent circle ﬁtting on
+the speech segment signal. Finally, we adopt the U-Net neural
+network on the extracted signals to denoise the audio ﬁle.
+A. Target Localization
+The mmWave sensor captures reﬂected signals from var-
+ious objects in the conference room. To accurately localize
+the target object, we conduct a 256-point range FFT on
+the collected signals. FFT aids in identifying the frequency
+domain’s peak, which corresponds to the range bin of the target
+object. Subsequently, we extract and concatenate signals from
+this speciﬁc range bin across consecutive chirps, forming the
+vibration signal SIF .
+B. Speech Activity Detection
+The extracted vibration signal SIF contains the signals
+captured with and without the speech. According to the
+observation in Section IV-B, speech activity causes phase
+distortion. In order to accurately extract the phase of the
+speech segment, it becomes critical to ﬁrst separate the
+speech segment from the non-speech segment and then process
+them respectively. Theoretically, the speech segment exhibits
+signiﬁcant phase changes due to sound-induced vibrations.
+However, it is difﬁcult to distinguish speech segments in the
+time domain since phase changes due to the mmWave sensor
+hardware itself always being present throughout the signal.
+To address this issue, we distinguish speech segments from
+the perspective of the spectrogram. We perform a short-time
+Fourier transform (STFT) on the phase change. From Fig. 7a,
+the speech components concentrate on the low frequency of the
+STFT spectrogram. Hence, we apply a band-pass ﬁlter within
+50-1000 Hz to preserve the speech component and ﬁlter out
+most of the high-frequency noise. After the bandpass ﬁlter,
+the phase changes of the speech segments in the time domain
+become noticeable. Given that the envelope is an important
+parameter in describing the ﬂuctuations of a signal, we employ
+it to detect the speech segment. The effectiveness of this
+speech activity detection approach is depicted in Fig. 7b.
+C. Constrained Circle Fitting Method
+Based on the observation and analysis of the phase dis-
+tortion, we explore phase extraction strategies to improve the
+speech signal recovery quality. From Eq. 9, accurate extraction
+of phase change requires the identiﬁcation of circle center
+S
+′
+static. Intuitively, we can directly employ the conventional
+circle ﬁtting on the speech segment signal, the result of which
+is shown in Fig. 4. The phase change obtained using the
+conventional circle ﬁtting method is approximately 1.5 rad.
+However, the phase changes of speech-induced vibrations are
+about 0.003 to 0.008 rad [11]. Therefore, the phase change
+extracted with the conventional circle ﬁtting method is obvi-
+ously incorrect. The reason is that the phase change caused by
+speech is relatively small, which results in a shorter arc length
+and thus leads to inaccurate circle center estimation. Thus, it
+is critical to ﬁnd an effective strategy to accurately identify
+the circle center S
+′
+static.
+According to Eq. 8 and Eq. 9, both speech and non-speech
+segment signals share the same radius α. In the meantime,
+our observation on phase distortion in Fig. 3 shows that the
+arc length for the non-speech segment is longer than that for
+the speech segment. Therefore, we are able to leverage the
+non-speech segment signal to assist in determining the correct
+circle centerS
+′
+static of the speech segment signal. Speciﬁcally,
+our strategy is composed of the following two steps.
+We ﬁrst apply the circle ﬁtting method to the non-speech
+segment to determine its radius. Let X = {xn},xn ∈ R2
+IEEE INFOCOM WKSHPS: DeepWireless 2024: Deep Learning for Wireless Communications, Sensing, and Security
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:18 UTC from IEEE Xplore.  Restrictions apply.
+denote the IQ sampling points of the non-speech segment,
+where n is the number of sampling points. Our objective is to
+determine the circle centerc0 and radius r0 that can minimize
+the cumulative distance between the sampling points and the
+circle center:
+c∗
+0,r∗
+0 =a r gm i n
+c0,r0
+∑
+xn∈X
+(∥xn −c0∥− r0)2 . (10)
+Subsequently, we leverager0 to decide the circle center of
+the speech segment. However, we cannot directly use r0 as
+the center of the circle of the speech segment becauser0 is a
+coarse estimation obtained by solving an optimization problem
+[16]. Hence, we relax the radius of the speech segment to a
+range [(1−γ)r0,(1+γ)r0], allowing aγ margin on both sides.
+With this constraint, we conduct the constrained circle ﬁtting
+method on the speech segment to determine its circle centercs
+and radius rs. Denote Y = {yk},yk ∈ R2 as the IQ sample
+points of speech segment, and k is the number of sampling
+points. We have
+c∗
+s,r∗
+s =a r gm i n
+cs,rs
+∑
+yk∈Y
+(∥yk −cs∥− rs)2 ,
+s.t. (1−γ)r0 ≤ rs ≤ (1+ γ)r0.
+(11)
+With Eq. 11, we move the coordinate origin in the IQ plane to
+the circle center cs and then extract the corresponding phase
+change to get the ﬁnal vibration-related signal.
+D. U-Net Denoising Network
+After extracting the vibration signal, we convert it directly
+to an audio ﬁle. However, the mixture of self-noise from
+mmWave hardware with the vibration signal makes it difﬁcult
+to understand the speech content in the audio ﬁle. Traditional
+denoising methods can’t effectively remove the self-noise, so
+we turn to deep learning for a solution. U-Net [13], as a
+deep convolutional autoencoder, was originally designed for
+biomedical image segmentation because it can accurately cap-
+ture and reconstruct complex image details. This characteristic
+makes it suitable for processing sound spectrograms with ﬁne
+features. Therefore, we apply U-Net to estimate and remove
+the noise component from the sound spectrogram in order to
+enhance the speech recovery quality further.
+VI. EXPERIMENTAL EV ALUA TION
+A. Experiment Setting
+Implementation: We implement our system using the
+mmWave sensor AWR1843 and a data-capture adapter
+DCA1000EVM. We enable one transmitter and four receiver
+antennas of the mmWave sensor. Our experimental setup is
+shown in Fig. 5, where we use tinfoil as the reﬂector to
+capture sound-induced vibrations caused by the loudspeaker.
+The captured data are transmitted to the laptop, and Matlab
+is used for signal processing. The U-Net model is trained on
+an NVIDIA GeForce RTX 3070 GPU with TensorFlow. The
+γ for the constrained circle ﬁtting method is set to 0.1.
+Training Dataset: We use synthetic data to train the U-Net
+network. To generate the synthetic training data, we select the
+LibriSpeech corpus [17] as the clean audio and mix them with
+the mmWave signal in the absence of the speech every second.
+The mixed data is then converted into a spectrogram matrix of
+the size128×128. In total, we generated 40,000 spectrograms
+of mixed data for training purposes.
+T est Dataset:We select the audio clips in the LibriSpeech
+corpus as the test data (non-overlapping with the training data).
+These selected audio clips were played using a commercial
+loudspeaker at varying volume levels (75 dB, 65 dB, and
+55 dB, respectively). To capture the corresponding vibration
+signals, we deploy an mmWave sensor to receive signals
+reﬂected from the reﬂector mentioned in Section IV-A. We
+collect signals with a duration exceeding 2000 seconds, which
+will be made publicly available to support further research in
+mmWave-based eavesdropping.
+B. Evaluation Metrics
+Signal-to-Noise Ratio (SNR): a key measure in speech
+quality assessment [18]. SNR compares signal strength to
+background noise in decibels (dB). Mathematically, we have
+SNR (dB) =1 0·log10
+( Psignal
+Pnoise
+)
+, (12)
+where Psignal and Pnoise represent the power of the signal and
+the noise, respectively.
+Frequency Spectrum Correlation Coefﬁcient (ρ): an
+amplitude correlation coefﬁcient of the frequency spectrum.
+It indicates the correlation between the original and recovered
+speech signals. A higher correlation coefﬁcient indicates better
+speech recovery quality. It can be expressed as
+ρ(a,b)= 1
+N −1
+N∑
+i=1
+( ai −μa
+σa
+)( bi −μb
+σb
+)
+, (13)
+where a and b are amplitude signals of the discrete frequency
+spectrum with equal sampling points, N is the total sample
+count, μa and μb are the respective means, andσa, σb are the
+corresponding standard deviations.
+C. Overall Performance
+We ﬁrst evaluate the performance of our designed con-
+strained circle ﬁtting method. Fig. 8 compares the SNRs of the
+extracted vibration-related signals before the U-Net denoising,
+where the speaker volume is set to 55 dB, 65 dB, and 75
+dB, respectively. With the conventional circle ﬁtting method,
+the corresponding SNRs are 2.6721dB, 3.1213 dB, and 3.6347
+dB. In contrast, our method yields SNRs of 3.1132 dB, 3.4763
+dB, and 4.0906 dB, respectively, which is an average increase
+of 13%. These results imply the precision of our proposed
+method in extracting phase changes, demonstrating its efﬁcacy
+in enhancing signal quality.
+We then explore the performance of our proposed con-
+strained circle ﬁtting method across various window sizes. In
+speech activity detection, the window size sets the slice length
+for dividing and analyzing the signal. We vary the window
+size from 500 to 3000 samples in our experiment. The results,
+depicted in Fig. 9, demonstrate that the SNR of the constrained
+IEEE INFOCOM WKSHPS: DeepWireless 2024: Deep Learning for Wireless Communications, Sensing, and Security
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:18 UTC from IEEE Xplore.  Restrictions apply.
+Fig. 8: Overall performance. Fig. 9: Effect of window size. Fig. 10: Denoising performance.
+circle ﬁtting method is consistently higher than that of the
+conventional method. Interestingly, an increase in window size
+leads to a decrease in SNR. This is mainly because larger
+window sizes fail to capture speech activity with the same
+level of precision. However, even with larger window sizes, the
+constrained method continues to outperform the conventional
+approach.
+In the end, we assess the denoising capabilities of the
+U-Net network across various audio volumes, as illustrated
+in Fig. 10. We ﬁnd that the frequency spectrum correlation
+coefﬁcient ρ between the vibration signal and the original
+audio increases with the volume increase. This behavior can be
+attributed to the fact that higher volume speech induces more
+obvious vibrations, which in turn exhibit more distinctly in the
+frequency spectrum. In addition, after passing the vibration
+signal through our denoising network,ρ increases up to 80%
+for lower volume scenarios. Meanwhile, ρ is stabilized at
+approximately 0.44 for both low and high-volume conditions.
+This observation demonstrates the denoising network’s ability
+to effectively identify and mitigate intrinsic noise within
+mmWave signals, regardless of variations in volume levels.
+VII. CONCLUSION
+In this paper, we achieved sound eavesdropping on speech
+in a soundproof room using a commercial mmWave sensor.
+We enhanced the extracted vibration signal quality by cali-
+brating the phase change distortion caused by the speech. The
+results of our experiments show that our scheme dramatically
+improves the SNR of the speech-induced vibration signal.
+Furthermore, the reconstructed speech exhibits a signiﬁcant
+similarity when compared to the original speech, demonstrat-
+ing the effectiveness of our attack in real life.
+REFERENCES
+[1] C. Wang, F. Lin, T. Liu, Z. Liu, Y . Shen, Z. Ba, L. Lu, W. Xu,
+and K. Ren, “mmphone: Acoustic eavesdropping on loudspeakers via
+mmwave-characterized piezoelectric effect,” inIEEE INFOCOM 2022-
+IEEE Conference on Computer Communications. IEEE, 2022, pp. 820–
+829.
+[2] Z. Ba, T. Zheng, Z. Qin, H. Y u, L. Liu, B. Li, X. Liu, and K. Ren,
+“Accelerometer-based smartphone eavesdropping,” in Proceedings of
+the 26th Annual International Conference on Mobile Computing and
+Networking, 2020, pp. 1–2.
+[3] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” in23rd USENIX Security Symposium
+(USENIX Security 14), 2014, pp. 1053–1067.
+[4] S. A. Anand and N. Saxena, “Speechless: Analyzing the threat to speech
+privacy from smartphone motion sensors,” in2018 IEEE Symposium on
+Security and Privacy (SP). IEEE, 2018, pp. 1000–1017.
+[5] Z. Ba, T. Zheng, X. Zhang, Z. Qin, B. Li, X. Liu, and K. Ren, “Learning-
+based practical smartphone eavesdropping with built-in accelerometer.”
+in NDSS, vol. 2020, 2020, pp. 1–18.
+[6] Y . Cao, F. Li, H. Chen, X. Liu, C. Duan, and Y . Wang, “I can hear you
+without a microphone: Live speech eavesdropping from earphone motion
+sensors,” in IEEE INFOCOM 2023-IEEE Conference on Computer
+Communications. IEEE, 2023, pp. 1–10.
+[7] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and
+W. T. Freeman, “The visual microphone: Passive recovery of sound
+from video,” 2014.
+[8] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” inProceedings of the 21st Annual Inter-
+national Conference on Mobile Computing and Networking, 2015, pp.
+130–141.
+[9] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via rﬁd by capturing sub-
+mm level vibration,” Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+[10] Y . Feng, K. Zhang, C. Wang, L. Xie, J. Ning, and S. Chen, “mmeaves-
+dropper: Signal augmentation-based directional eavesdropping with
+mmwave radar,” in IEEE INFOCOM 2023-IEEE Conference on Com-
+puter Communications. IEEE, 2023, pp. 1–10.
+[11] J. Zhang, Y . Zhou, R. Xi, S. Li, J. Guo, and Y . He, “Ambiear: Mmwave
+based voice recognition in nlos scenarios,” Proceedings of the ACM
+on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 6,
+no. 3, pp. 1–25, 2022.
+[12] C. Wang, F. Lin, T. Liu, K. Zheng, Z. Wang, Z. Li, M.-C. Huang, W. Xu,
+and K. Ren, “mmeve: eavesdropping on smartphone’s earpiece via
+cots mmwave device,” inProceedings of the 28th Annual International
+Conference on Mobile Computing And Networking, 2022, pp. 338–351.
+[13] O. Ronneberger, P . Fischer, and T. Brox, “U-net: Convolutional networks
+for biomedical image segmentation,” in Medical Image Computing
+and Computer-Assisted Intervention–MICCAI 2015: 18th International
+Conference, Munich, Germany, October 5-9, 2015, Proceedings, Part III
+18. Springer, 2015, pp. 234–241.
+[14] C. Iovescu and S. Rao, “The fundamentals of millimeter wave sensors,”
+Texas Instruments, pp. 1–8, 2017.
+[15] H. Jiang, J. Zhang, X. Guo, and Y . He, “Sense me on the ride: Accurate
+mobile sensing over a lora backscatter channel,” inProceedings of the
+19th ACM Conference on Embedded Networked Sensor Systems, 2021,
+pp. 125–137.
+[16] L. Y . Chang and N. S. Pollard, “Constrained least-squares optimization
+for robust estimation of center of rotation,” Journal of biomechanics,
+vol. 40, no. 6, pp. 1392–1400, 2007.
+[17] V . Panayotov, G. Chen, D. Povey, and S.Khudanpur, “Librispeech: an asr
+corpus based on public domain audio books,” in2015 IEEE international
+conference on acoustics, speech and signal processing (ICASSP). IEEE,
+2015, pp. 5206–5210.
+[18] H. G. Latham, “The signal-to-noise ratio for speech intelligibility—an
+auditorium acoustics design index,” Applied Acoustics, vol. 12, no. 4,
+pp. 253–320, 1979.
+IEEE INFOCOM WKSHPS: DeepWireless 2024: Deep Learning for Wireless Communications, Sensing, and Security
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:18 UTC from IEEE Xplore.  Restrictions apply.

@@ -1,0 +1,234 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Recent work, such as MoiréVib and MoiréPose [30, 31], has showcased the power of moiré amplification for motion sensing.",
+      "reasoning": "The citing paper groups MoiréPose [30] with MoiréVib [31] as prior work that demonstrates moiré amplification for motion sensing, establishing background context for the cited paper's contribution.",
+      "keywords": [
+        "MoiréPose",
+        "moiré amplification",
+        "motion sensing"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Based on this characteristic, existing works have exploited moiré patterns for motion sensing [30–32, 45].",
+      "reasoning": "The cited paper is grouped with other works as part of existing moiré-based motion sensing research, serving as background for the proposed system.",
+      "keywords": [
+        "moiré patterns",
+        "motion sensing"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "The spatial frequency of the resulting moiré pattern is given by f_m = |f1 - f2| [1, 30, 31].",
+      "reasoning": "The citing paper uses the formula from MoiréPose [30] to define the spatial frequency of moiré patterns, establishing a theoretical foundation for their model.",
+      "keywords": [
+        "spatial frequency",
+        "moiré pattern"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "its components along the X- and Y-axes can be represented as a spatial frequency vector ®𝐱_1 [1, 30, 31]: ®𝐱_1 = [f1 |cos θ1|, f1 |sin θ1|]^T.",
+      "reasoning": "The citing paper uses the spatial frequency vector representation from MoiréPose [30] as part of its generalized moiré pattern model, indicating theoretical reliance.",
+      "keywords": [
+        "spatial frequency vector",
+        "®𝐱_1"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "the combined optical intensity at position p_m is modeled as the product of their individual intensities [1, 30, 31]: I(p_m, t) = I1(p_m, t) I2(p_m).",
+      "reasoning": "The citing paper uses the multiplicative intensity model from MoiréPose [30] to derive the moiré pattern, showing theoretical foundation.",
+      "keywords": [
+        "optical intensity",
+        "product",
+        "intensities"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "comparison",
+      "citation_text": "Prior work has relied on analyzing video frames [30–32, 45]; however, such methods are limited by low sample rates, which are insufficient for reconstructing audio signals at kilohertz frequencies.",
+      "reasoning": "The citing paper points out that prior moiré-based methods, including MoiréPose, rely on video frames with insufficient sample rates for audio reconstruction, presenting a limitation.",
+      "keywords": [
+        "video frames",
+        "low sample rates",
+        "insufficient"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Building on this idea, Ning et al. [30] introduced MoiréPose, extending the approach to 6-DoF pose estimation in camera-to-screen interaction scenarios.",
+      "reasoning": "The citing paper describes MoiréPose as building on previous work for 6-DoF pose estimation, situating it as a representative work in moiré-based sensing.",
+      "keywords": [
+        "MoiréPose",
+        "6-DoF pose estimation"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "Although these works highlight the strong potential of moiré-based sensing, their performance remains constrained by controlled setups, dedicated gratings, and limited sample rates.",
+      "reasoning": "The citing paper groups MoiréPose with other works and notes constraints (controlled setups, dedicated gratings, limited sample rates) that motivate their new approach.",
+      "keywords": [
+        "constrained",
+        "controlled setups",
+        "dedicated gratings"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Recent work, such as MoiréVib and MoiréPose [30, 31], has showcased the power of moiré amplification for motion sensing.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper groups MoiréPose [30] with MoiréVib [31] as prior work that demonstrates moiré amplification for motion sensing, establishing background context for the cited paper's contribution.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "weak",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Based on this characteristic, existing works have exploited moiré patterns for motion sensing [30–32, 45].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "The cited paper is grouped with other works as part of existing moiré-based motion sensing research, serving as background for the proposed system.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "The spatial frequency of the resulting moiré pattern is given by f_m = |f1 - f2| [1, 30, 31].",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper uses the formula from MoiréPose [30] to define the spatial frequency of moiré patterns, establishing a theoretical foundation for their model.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 3,
+      "citation_text_preview": "its components along the X- and Y-axes can be represented as a spatial frequency vector ®𝐱_1 [1, 30, 31]: ®𝐱_1 = [f1 |cos θ1|, f1 |sin θ1|]^T.",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper uses the spatial frequency vector representation from MoiréPose [30] as part of its generalized moiré pattern model, indicating theoretical reliance.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 4,
+      "citation_text_preview": "the combined optical intensity at position p_m is modeled as the product of their individual intensities [1, 30, 31]: I(p_m, t) = I1(p_m, t) I2(p_m).",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper uses the multiplicative intensity model from MoiréPose [30] to derive the moiré pattern, showing theoretical foundation.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 5,
+      "citation_text_preview": "Prior work has relied on analyzing video frames [30–32, 45]; however, such methods are limited by low sample rates, which are insufficient for reconstructing audio signals at kilohertz frequencies.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "comparison",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper points out that prior moiré-based methods, including MoiréPose, rely on video frames with insufficient sample rates for audio reconstruction, presenting a limitation.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 6,
+      "citation_text_preview": "Building on this idea, Ning et al. [30] introduced MoiréPose, extending the approach to 6-DoF pose estimation in camera-to-screen interaction scenarios.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper describes MoiréPose as building on previous work for 6-DoF pose estimation, situating it as a representative work in moiré-based sensing.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "weak",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 7,
+      "citation_text_preview": "Although these works highlight the strong potential of moiré-based sensing, their performance remains constrained by controlled setups, dedicated gratings, and limited sample rates.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[30]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper groups MoiréPose with other works and notes constraints (controlled setups, dedicated gratings, limited sample rates) that motivate their new approach.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

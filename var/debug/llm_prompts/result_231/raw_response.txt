@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "Recently, wireless-based methods have gained significant attention owing to their ability to penetrate barriers and operate independently of light conditions. These techniques leverage changes in reflected wireless signals, such as WiFi [8], RFID [9], and mmWave [10], to infer sound-induced vibrations, enabling the recreation of sound information.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The cited paper [9] is listed as an example of wireless-based sound eavesdropping methods using RFID. The context is a general related work overview; no specific capability, method, or evaluation of the cited paper is discussed.",
+      "highlight_keywords": ["RFID [9]", "wireless-based methods"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The context mentions RFID in a list of wireless methods but does not explicitly state sub-mm or millimeter-level vibration sensing capability. It is a plain RFID/eavesdropping mention, which according to strict rules is representative_work or ordinary_citation only, not precision_claim.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit wording of sub-mm, millimeter-level, or fine-grained vibration in the body text. The mention is a plain RFID related work, not satisfying the sub-mm precision requirement."
+    }
+  ]
+}

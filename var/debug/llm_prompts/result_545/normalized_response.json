@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[30]",
+  "target_reference_entry": "[30] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "本文在相关工作部分将[23]列为激光麦克风类攻击的一个例子，指出其需要主动发射激光、隐蔽性差、对位置敏感且需要恶意软件安装。属于普通的related work列举，未对目标论文‘Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration’进行任何亚毫米级能力或首次开创性评价。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Laser-based eavesdroppings [20]–[23] are active methods that require the eavesdropper to direct a laser beam directed at a vibrating object and recover sound from the reflected laser beam.",
+      "evidence_context": "Laser-based eavesdroppings [20]–[23] are active methods that require the eavesdropper to direct a laser beam directed at a vibrating object and recover sound from the reflected laser beam. However, it can be easily detected by the victim due to the laser spot.",
+      "reference_entry": "S. Sami, S. R. X. Tan, Y. Dai, N. Roy, and J. Han, \"Lidarphone: acoustic eavesdropping using a lidar sensor,\" in Proceedings of the 18th Conference on Embedded Networked Sensor Systems, 2020, pp. 701–702.",
+      "why_this_judgment_zh": "引用论文正文中[23]被列为激光麦克风方法的参考文献，但[23]实际指向的是Lidarphone（激光雷达传感器窃听），并非目标论文‘Thru-the-wall Eavesdropping on Loudspeakers via RFID’。该引用是虚假阳性。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用文献[23]实际对应的是Lidarphone论文，而非RFID亚毫米振动感知的目标论文，属于错误关联。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[30]",
+      "evidence_reference_marker": "[20]",
+      "evidence_reference_entry_raw": "[20] R. P. Muscatell, “Laser microphone,” The Journal of the Acoustical\nSociety of America, vol. 76, no. 4, pp. 1284–1284, 1984.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[30] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

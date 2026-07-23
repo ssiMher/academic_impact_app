@@ -1,0 +1,13 @@
+{
+  "findings": [
+    {
+      "citation_text": "Interference between a camera CFA and a high-frequency grid background enables ultra-precise pose estimation and tracking [19–21]. MoiréPose targets 6-DoF localization [19], and MoiréVision extends this concept to curvilinear patterns with sub-pixel feature extraction [20]. MoiréVib demodulates periodic fringe motion for micro-vibration sensing [21].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [21] (MoiréVib) is listed alongside [19,20] as an example of Moiré-based sensing using single high-frequency grid × camera CFA interference. The context is a related work overview, not a deep discussion of MoiréVib specifically. The attribution is grouped, so uncertainty exists. However, the target marker appears directly, so it qualifies as grouped_citation.",
+      "highlight_keywords": ["MoiréVib", "micro-vibration sensing", "[21]"],
+      "keep": true
+    }
+  ]
+}

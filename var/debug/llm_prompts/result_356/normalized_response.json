@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[53]",
+  "target_reference_entry": "[53] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-Wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-Mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182\n(dec 2022), 25 pages. https://doi.org/10.1145/3494975\nProc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.\n199:26 • Zhang et al.",
+  "paper_level_summary_zh": "该论文在技术背景和现有工作中引用了[23]作为车载毫米波雷达安装角度自动校准的代表性工作，但引用仅出现在普通文献综述段落，正文未对[23]的具体贡献、性能或能力进行展开描述。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Location attribute calibration of mmWave radar. As mmWave radar is adaptable to various kinds of bad weather, it is first widely used in the field of autonomous driving as a complement to vision and LIDAR [80]. As a result, most of the current location attribute calibration works for mmWave radar are serving for autonomous driving [16, 23, 31, 35, 38–41, 76].",
+      "evidence_context": "Location attribute calibration of mmWave radar. As mmWave radar is adaptable to various kinds of bad weather, it is first widely used in the field of autonomous driving as a complement to vision and LIDAR [80]. As a result, most of the current location attribute calibration works for mmWave radar are serving for autonomous driving [16, 23, 31, 35, 38–41, 76]. The key task of the calibration is to find the point correspondence: the coordinates of one point under two different coordinate systems, for example, the radar coordinate system and the vehicle/camera/LIDAR coordinate system. They typically leverage the designed calibration target, such as a corner reflector, as the reference point to collect point correspondences in an open environment. However, the traditional method of gathering point correspondences no longer works when the scene changes to indoors due to the rich multipath. Besides, manually measuring the coordinates of the reference points in the indoor physical map coordinate system is impractical when mmWave radars are deployed on a large scale.",
+      "reference_entry": "Muhammad Z. Ikram and Adeel Ahmad. 2019. Automated Radar Mount-Angle Calibration in Automotive Applications. In 2019 IEEE Radar Conference (RadarConf). 1–5. https://doi.org/10.1109/RADAR.2019.8835602",
+      "why_this_judgment_zh": "该引用出现在Related Work部分的普通列举中，[23]与其他多篇文献一同被引用作为车载雷达校准的现有工作。文中没有单独描述[23]的任何具体方法、性能或贡献，也没有提及目标论文标题或亚毫米/穿墙/语音窃听等能力。因此属于ordinary_reference，应排除。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该论文在相关工作部分将[23]作为车载毫米波雷达安装角度自动校准的现有工作之一进行列举，但未展开说明其具体方法或性能。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[53]",
+      "evidence_reference_marker": "[16]",
+      "evidence_reference_entry_raw": "[16] Joris Domhof, Julian FP Kooij, and Dariu M Gavrila. 2019. An extrinsic calibration tool for radar, camera and lidar. In 2019 International\nConference on Robotics and Automation (ICRA) . IEEE, 8107–8113.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[53] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-Wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-Mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4, Article 182\n(dec 2022), 25 pages. https://doi.org/10.1145/3494975\nProc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 7, No. 4, Article 199. Publication date: December 2023.\n199:26 • Zhang et al.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

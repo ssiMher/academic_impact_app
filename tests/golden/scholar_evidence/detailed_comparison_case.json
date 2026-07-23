@@ -1,0 +1,32 @@
+{
+  "name": "detailed_comparison_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Detailed Comparison Study",
+    "authors": ["Owen Garcia"],
+    "third_party_status": "third_party",
+    "self_citation_status": "not_self_citation"
+  },
+  "candidate_spans": [
+    "Compared with Cited Scholar Paper, our system uses the same evidence review loop but extends it with stricter citation evidence validation."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "detailed_comparison",
+        "stance": "mixed",
+        "mention_type": "strong",
+        "citation_text": "Compared with Cited Scholar Paper, our system uses the same evidence review loop but extends it with stricter citation evidence validation.",
+        "reasoning": "The citing paper directly compares its method with the target paper.",
+        "keywords": ["Compared with", "evidence review loop", "citation evidence"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": ["detailed_comparison"],
+    "keep": true,
+    "evidence_strength": "strong",
+    "highlight_keywords": ["Compared with", "evidence review loop", "citation evidence"],
+    "must_not_miss": true
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” in Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "引用论文在相关工作部分将目标论文列为基于RFID的声学窃听方法，指出其需要预装RFID标签，实用性较低，未涉及亚毫米级精度或具体能力认可。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "[23] utilizes RFID tags and cGAN to perform acoustic eavesdropping, but this approach is less practical as it requires pre-installing RFID tags near the target.",
+      "evidence_context": "In Wireless-Based Acoustic Eavesdropping section: '...Overall, these methods based on WiFi signals and impulse radio [14], [15], [21], [22], [23] are limited by the inadequate vibration resolution caused by low packet rates and long wavelengths. Moreover, they require larger antenna configurations than portable mmWave radars, resulting in a more visible presence of the attacker.'",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” in Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用论文在正文中提及[23]（目标论文）时，仅描述其使用RFID标签和cGAN进行窃听，但指出其需要预装标签、实用性低，且将[23]归入振动分辨率不足的方法，未认可其亚毫米级能力或通过墙窃听能力。因此该引用为负面评价或普通相关工作，不符合submm_precision_claim或capability_recognition模板的积极认定标准。",
+      "copy_ready_zh": "引用论文将目标论文列为需要预装RFID标签的RFID窃听方法，并指出其实用性有限，未确认其亚毫米级或穿墙窃听能力。",
+      "confidence": "high"
+    }
+  ]
+}

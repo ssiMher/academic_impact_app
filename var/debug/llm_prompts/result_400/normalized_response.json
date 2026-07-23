@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[49]",
+  "target_reference_entry": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+  "paper_level_summary_zh": "该引用论文在正文中提及[23]时，仅将其作为Rydberg原子的通用参考文献，用于解释Rydberg原子的定义或薛定谔方程，并未涉及目标论文《Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration》的任何核心贡献（如RFID亚毫米级振动感知、穿墙窃听等）。因此，[23]在此处并非目标论文，而是一本关于Rydberg原子的书籍参考文献。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "A Rydberg atom is an atom with one or more electrons at high energy levels (i.e., above level 20).",
+      "evidence_context": "A Rydberg atom is an atom with one or more electrons at high energy levels (i.e., above level 20). Rydberg atoms are created from ordinary alkali metal atoms (e.g., Rb and Cs atoms).",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245.",
+      "why_this_judgment_zh": "引用论文在正文中首次出现[23]时，用于定义Rydberg原子，但[23]对应的是Thomas Gallagher的《Rydberg Atoms》一书，并非目标论文《Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration》。目标论文的标题、作者、DOI等信息均与此不符。因此，这是一个误引用，应判定为false_positive。 原文证据句缺少目标引用编号或目标题名锚点。",
+      "copy_ready_zh": "引用论文中的[23]并非目标论文，而是Rydberg原子的通用参考文献。",
+      "confidence": "high",
+      "postprocess_reason": "target_anchor_missing",
+      "target_reference_marker": "[49]",
+      "evidence_reference_marker": "[49]",
+      "evidence_reference_entry_raw": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+      "reference_match_status": "matched",
+      "reference_match_reason": "reference_entry_matches_target",
+      "normalized_target_reference": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": false,
+      "target_reference_entry_matches_target": true
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "evidence_context": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives. The difference is the measurement precision.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245.",
+      "why_this_judgment_zh": "引用论文中第二次出现[23]时，用于引用薛定谔方程，但[23]仍然指代的是Thomas Gallagher的《Rydberg Atoms》一书，而非目标论文。因此，这也是一个误引用。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文中的[23]并非目标论文，而是薛定谔方程的通用参考文献。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[49]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Thomas Gallagher. 2006.Rydberg Atoms. Springer New York, New\nYork, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

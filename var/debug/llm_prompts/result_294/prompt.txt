@@ -1,0 +1,1390 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | method_use | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-wave Tags As "Phase Carriers"
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+Platypus: Sub-mm Micro-Displacement Sensing with Passive
+Millimeter-wave Tags As"Phase Carriers"
+Thomas Horton King
+Carnegie Mellon University
+Pittsburgh, United States
+thortonk@andrew.cmu.edu
+Jizheng He
+University of Illinois
+Urbana-Champaign
+Urbana, United States
+jizheng4@illinois.edu
+Chun-Kai Yao
+University of Illinois
+Urbana-Champaign
+Urbana, United States
+ckyao2@illinois.edu
+Akarsh Prabhakara
+Carnegie Mellon University
+Pittsburgh, United States
+akarsh@cmu.edu
+Mohamad Alipour
+University of Illinois
+Urbana-Champaign
+Urbana, United States
+alipour@illinois.edu
+Swarun Kumar
+Carnegie Mellon University
+Pittsburgh, United States
+swaruk@cmu.edu
+Anthony Rowe
+Carnegie Mellon University
+Pittsburgh, United States
+agr@andrew.cmu.edu
+Elahe Soltanaghai
+University of Illinois
+Urbana-Champaign
+Urbana, United States
+elahe@illinois.edu
+ABSTRACT
+Micro-displacement measurement is a crucial task in industrial sys-
+tems such as structural health monitoring, where millimeter-level
+displacement of specific points on the structure or machinery dis-
+place can jeopardize the integrity of the structure and potentially
+leading to catastrophic damage or collapse. Traditionally, such dis-
+placements on large structures are measured using visual sensing
+platforms or advanced surveying equipment. However, they either
+fall short in varying weather and lighting conditions or require
+installation and maintenance of high-power sensing platforms that
+are expensive to deploy at scale, especially if continuous measure-
+ments are desired.
+In this paper, we explore simultaneous tracking of quasi-static
+micro-displacements of multiple objects or multiple points from a
+single vantage point using millimeter-wave (mmWave) radars. We
+present Platypus, a micro-displacement sensing system that enables
+sub-millimeter level accuracy by using mmWave backscatter tags
+and their reflection as phase carriers to shift the phase changes due
+to tiny displacements to clean frequency bins for precise tracking.
+It then reconstructs the phase changes with sub-millimeter level
+accuracy even from extended ranges (over 100m) or in non-line-
+of-sight (NLoS) situations. While Platypus enables many different
+applications, we demonstrate the proof-of-concept in structural
+health monitoring, where mmWave tags are attached to building
+models and track the structural micro-displacements, achieving a
+median of 0.3 mm accuracy.
+ACM Reference Format:
+Thomas Horton King, Jizheng He, Chun-Kai Yao, Akarsh Prabhakara, Mo-
+hamad Alipour, Swarun Kumar, Anthony Rowe, and Elahe Soltanaghai. 2023.
+Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-
+wave Tags As "Phase Carriers" . In The 22nd International Conference on
+Information Processing in Sensor Networks (IPSN ’23), May 09–12, 2023, San
+This work is licensed under a Creative Commons Attribution International
+4.0 License.
+IPSN ’23, May 09–12, 2023, San Antonio, TX, USA
+© 2023 Copyright held by the owner/author(s).
+ACM ISBN 979-8-4007-0118-4/23/05.
+https://doi.org/10.1145/3583120.3586965
+Figure 1: Platypus provides sub-mm multi-point micro-
+displacement sensing even at long ranges using passive
+mmWave backscatter tags as "carriers" of the phase.
+Antonio, TX, USA. ACM, New York, NY, USA, 13 pages. https://doi.org/10.
+1145/3583120.3586965
+1 INTRODUCTION
+Measuring and tracking micro-displacements of multiple points in
+space from long ranges has important applications in several con-
+texts ranging from structural health monitoring and environmental
+sensing to industrial robotics and automation. Consider, for ex-
+ample, structural health monitoring of bridges, where tracking of
+multiple points across the structure such as the bridge girder, tower,
+cables or around surface cracks helps detect internal defects that
+are often hidden before they can jeopardize the integrity of the
+structure. Despite the rich prior art in micro-displacement tracking,
+which use either traditional sensors (accelerometer, LVDT, RFID,
+etc), vision-based systems [34], or advanced surveying platforms [3],
+their limited accuracy or their prohibitive cost prevents them from
+being widely deployed in real application scenarios.
+More recent solutions propose the use of radars for deflection de-
+tection [26] or vibration measurements [16] due to their resilience to
+obstruction, weather, and lighting conditions. The majority of these
+systems rely on phase measurements and phase changes across
+frames (samples) to calculate tiny displacements. These methods
+136
+IPSN ’23, May 09–12, 2023, San Antonio, TX, USA Paper #60, 12 pages
+have been even more effective with millimeter-wave (mmWave)
+radars, owing to their short wavelength and therefore higher sensi-
+tivity of phase changes. However, the performance of conventional
+phase reconstruction methods (e.g. [ 16]) drastically drops in dy-
+namic environments with multiple moving objects with relatively
+similar speed and in close proximity of each other. In addition, such
+industrial and structural micro-displacements are often quasi-static
+– changing at millimeter level over long periods. Therefore, the
+phase changes caused by such displacements can be easily masked
+by the noise in the signal.
+In this paper, we answer how to enable unstructured micro-
+displacement estimation using commodity mmWave radars?.
+Similar to carrier waves in telecommunication that share wireless
+mediums via frequency division multiplexing, we demonstrate that
+by simply attaching passive modulating tags at the targets of in-
+terest, we can drastically improve the resolution and accuracy of
+micro-displacement measurements in dynamic environments. That
+is to say, we can use tag modulation frequencies as phase carriers
+to shift the phase changes due to the targets’ micro-displacements
+apart from each other and other background reflectors.
+This paper presents Platypus1, a practical approach that provides
+multi-point micro-displacement measurement with sub-millimeter
+accuracy even at long ranges (up to 100 meters). Platypus achieves
+super-resolution tracking of displacements at a fraction of the
+wavelength at mmWave bands. Uniquely, we make no assumptions
+whatsoever on the trajectory or shape of this displacement, unlike
+prior work in vibration [16] or 1D displacement sensing [26]. Platy-
+pus builds on prior hardware realizations of mmWave backscatter
+tags [4, 5, 33], with key system design and new signal processing to
+enable sub-mm displacement tracking, in contrast to the centimeter-
+scale one-shot localization that prior work has achieved.
+At a high level, Platypus operates on a familiar approach in
+backscatter tracking – it leverages the phase of wireless channels
+from tags to readers. However, unlike prior art on fine-grained
+RFID tracking [37, 39, 44], we mainly use the tags to shift the phase
+changes of each target to a different clean frequency bin to then re-
+construct the micro-displacements of each tag. Specifically, the tags
+used by Platypus are designed to transmit repetitive square wave
+patterns of on-off keying at pre-designed rates, enabling a relatively
+simple hardware design. The square wave of the tag reflection sig-
+nals in the time domain appears as a sinc function with harmonics
+at tag’s modulation frequency in the frequency domain, which also
+carry the small phase changes due to micro-displacements. As such,
+closely located tags with similar velocities that could otherwise
+appear in the same range bin and Doppler frequency bins, will be
+separated into different modulation frequency bins by just selecting
+different modulation frequency rates for each tag.
+While the use of mmWave tags allows us to deal with multipath
+and multi-point displacement tracking, it does not eliminate the
+phase noise induced by device circuits (e.g. oscillator or the mixer)
+or the wireless channel in low signal-to-noise ratios (SNRs). To
+address this challenge, we leverage a well-known signal leakage
+phenomenon caused by Discrete Fourier Transform (DFT) oper-
+ations [15], that creates stretching of FFT peaks in neighboring
+1Platypuses are mammals whose electric field receptors are sensitive to tiny changes
+in electric field arising from prey that could be very far away.
+range bin. Unlike phase noise, the changes in the In-phase and
+Quadrature (IQ) domain due to tag displacements is constant across
+all these neighboring range bins. We exploit the inherent consis-
+tency among these signals to recover the tags’ micro-displacement
+characteristics even in the presence of noise.
+With the above two techniques, Platypus can accurately esti-
+mate the tag micro-displacement but only its projection along the
+line-of-sight direction of the tag reflection. To extract the micro-
+displacement vector including both the magnitude and direction,
+we propose a simple but effective triangulation algorithm between
+first-order and second-order reflections of the tag. More specifically,
+we place a passive synthetic reflector near the radar (within 1 m) to
+create a second-order reflection from the tag to the reflector and to
+the radar, which we then use to estimate the tag micro-displacement
+along another direction. The second-order and direct tag reflections
+create a triangle, which we further use to extract the displacement
+vector in 2D (and potentially 3D by placing more reflectors). The use
+of a synthetic reflector as opposed to another radar is cheaper and
+inherently handles phase synchronization and provides scalability
+for different industrial scenarios and applications with different
+accessibility hurdles (e.g. underneath a bridge, tall buildings, out-
+of-reach parts of the power plants, etc.). We envision Platypus’s
+sub-millimeter, long-range and multi-point tracking capabilities
+enable many applications in industrial IoT such as structural health
+monitoring [10, 23, 26, 31] by allowing the monitoring of multiple
+points spanning the entire structure concurrently (Figure 1), with
+a radar mounted at a fixed point such as a support. The micro-
+displacements captured by the tags scattered at different points of
+interest can provide a holistic view of the stresses and displace-
+ment in the structure. These displacements, which can occur at
+sub-millimeter levels, can serve as an early detection mechanism
+for internal failures or excessive strain on the structure.
+We prototype Platypus using off-the-shelf mmWave radars op-
+erating in 24GHz and custom designed state-of-the-art mmWave
+backscatter tags [4, 27, 33]. We evaluate our system in indoor and
+outdoor settings and show that accurate micro-displacement sens-
+ing (median accuracy of 0.3 mm) can be achieved without making
+any assumption about the displacement direction or path of move-
+ment even at long ranges (<100m). We demonstrate the robustness
+of Platypus in estimating pseudo-static micro-displacements at var-
+ied speeds, multipath scenarios, or even in NLoS scenarios where
+the tags are obstructed by different materials. As a proof of concept,
+we demonstrate the application of Platypus in structural health
+monitoring (SHM) for both lab-based and in-field testing.
+Contributions: Our main contributions include:
+•A novel design of a mmWave backscatter platform, as car-
+rier of target micro-displacements, providing sub-millimeter
+accuracy from extended ranges.
+•Platypus’s algorithm and system design that obtains accu-
+rate and reliable signal phase measurements from tags stem-
+ming from minute displacements, despite ambient clutter
+and phase noises, obtaining micro-displacement vector (am-
+plitude and direction) in 2D (and potentially 3D) space by
+leveraging a synthetic reflector.
+137
+Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-wave Tags As "Phase Carriers" IPSN ’23, May 09–12, 2023, San Antonio, TX, USA
+•A detailed system implementation and evaluation in varied
+settings including a proof-of-concept evaluation of structural
+health monitoring using Platypus.
+2 PRELIMINARIES
+In this section, we first introduce the principles of displacement
+sensing using phase changes and why it can’t be directly used for
+sub-mm micro-displacement measurements. We then describe the
+principles of backscatter sensing using mmWave tags and FMCW
+radars and how the tag can play an important role in precise micro-
+displacement measurements.
+2.1 Phase-based Displacement Sensing
+mmWave radars typically use frequency-modulated continuous
+wave (FMCW) chirps (pulses with linearly increasing frequency)
+as shown in Figure 2. To analyze the object reflections at the radar,
+the radar’s received signal 𝑠𝐼𝐹 can be modeled as below after down-
+chirping and analog-to-digital conversions:
+𝑠𝐼𝐹;𝑡(𝑛)=
+𝐾∑︁
+𝑘=1
+𝛼𝑘 sin(4𝜋𝐵
+𝑁𝑐0
+𝑅𝑘(𝑡)𝑛) (1)
+where𝑛is the digital sample index,𝛼is the amplitude of the received
+signal, 𝐾 is the number of reflections, 𝐵is the chirp bandwidth of
+FMCW signal, 𝑁 is the number of samples taken per chirp,𝑐0 is the
+speed of light, and 𝑅(𝑡)is the distance of the object and the radar at
+time 𝑡. As such, the intermediate frequency (IF) signal consisting of
+multiple tones can be processed using a Fourier Transform which
+results in the Range-FFT Profile, denoted as 𝑅𝑃, with peaks at differ-
+ent range bins for each object. The movements of the objects create
+different phases at each chirp on the objects’ corresponding range
+bin. In an ideal model (i.e free space, no hardware imperfection, and
+infinite sampling rate), we can simply extract the objects’ micro-
+displacements by tracking the phase changes of the corresponding
+range bin across chirps: Δ𝑥 = 𝜆Δ𝜙/4𝜋.
+However, in realistic models, the received signal in each range
+bin also includes the reflections from other objects in the same and
+nearby range bins. In addition, the received signal at the radar is
+significantly affected by noise such as the phase offsets through
+the mixing process and down-chirping. The combination of signifi-
+cant path loss in mmWave, high sensitivity of mmWave signals to
+noise, as well as tiny phase changes due to micro-displacements of
+small targets, makes this problem significantly more challenging.
+For example, conventional velocity measurement techniques use
+a sequence of 𝑁𝑐 fast chirps collected in a ’frame’ and perform a
+second-dimension FFT on𝑅𝑃 (i.e. across the chirps) which results in
+the Range-Doppler grid, denoted as 𝑅𝐷, with peaks at correspond-
+ing Doppler frequencies due to phase changes from movement.
+However, a slow pseudo-static micro-displacement creates a neg-
+ligible Doppler frequency which is not detectable in commodity
+mmWave radars with limited sampling rate and buffer size (shown
+in Figure 2 as Obj 2).
+2.2 Modeling mmWave Tag Reflection
+Let us assume that a passive mmWave backscatter tag is attached to
+the target of interest with micro-displacements. The conventional
+mmWave tags in the literature [4, 27, 33] use retro-reflective Van
+Figure 2: The tag’s on-off-keying modulation appears as a
+sinc pattern in Range-Doppler profile, acting as a phase car-
+rier, thus shifting tag micro-displacements to a clean fre-
+quency bin.
+Figure 3: Typical structure of a mmWave tag using retro-
+reflective Van Atta arrays (left) and On-Off Keying modula-
+tion (right) at the tag.
+Atta antenna arrays [36] and some form of modulation (amplitude,
+frequency, or phase) to achieve long-range tag detection. Specifi-
+cally, the tag consists of an array of antennas, connected in pairs,
+that passively reflect the incoming signals to the tag back along
+the exact same directions as the incidence, thus boosting the SNR
+of the tag reflected signal (shown in Figure 3). In addition, an RF
+switch is added to each transmission line between these antennas
+to create modulation by controlling the amount of reflections as it
+switches on and off, known as on-off-keying modulation. In favor
+of lower power consumption, Platypus adapts a simple circuitry at
+the tag by avoiding envelop detection circuitry or high-frequency
+oscillators and assumes that the tag is constantly modulating with
+no coordination between the tag and radar.
+The on-off keying modulation of the tag appears as a square
+wave with the switching frequency of 𝑓𝑠𝑤𝑖𝑡𝑐ℎ = 1/𝑇𝑠𝑤𝑖𝑡𝑐ℎ applied
+on top of the tag reflection:
+𝑠𝐼𝐹;𝑡𝑎𝑔(𝑛)=𝛼sin(4𝜋𝐵
+𝑁𝑐0
+𝑅(𝑡)𝑛)·
+∞∑︁
+𝑘=−∞
+𝑠𝑞𝑟(2(𝑛𝑇𝑠 −𝑘𝑇𝑠𝑤𝑖𝑡𝑐ℎ −𝑡0)
+𝑇𝑠𝑤𝑖𝑡𝑐ℎ
+) (2)
+where sqr(.) is a periodic square function, and 𝑇𝑠 is the chirp sam-
+pling time corresponding to radar’s chirp repetition frequency, and
+𝑡0 denotes the time offset between the start of the frame and the start
+of the square function (due to asynchronous tag-reader operations).
+As the tag slowly moves due to the micro-displacements of the
+target, the Range-FFT Profile will have peaks at the same location
+with different phases across chirps. However, this phase still suffers
+from the noises due to other reflections with similar distances to
+the radar.
+138
+IPSN ’23, May 09–12, 2023, San Antonio, TX, USA Paper #60, 12 pages
+(a) Basic signal displacement model
+in the presence of background reflec-
+tion and noise.
+(b) Removing background reflections
+by shifting the displacement to a
+clean frequency.
+(c) Unwrapping the phases of sequential
+frames to 𝜋 to remove jumps from tag-
+read asynchronicity.
+Figure 4: The signal models used in Platypus’s stages.
+Next, we calculate the Range-Doppler profile by performing a
+second-dimension FFT on 𝑅𝑃. The square function of the tag mod-
+ulations converts into a sinc function at range 𝑟0 with the primary
+harmonic component equal to the tag’s modulation frequency. As
+an intuitive representation, we compare the reflection pattern of
+two objects in Figure 2 in the Range-FFT and Range-Doppler pro-
+files, Obj 1 is equipped with a tag and Obj 2 has no tag attached to it.
+We can see Obj 1’s reflection at a clean frequency while Obj 2’s re-
+flection is embedded around Doppler-bin 0. Previous works [27, 33]
+use the sinc signature of the tag in Range-Doppler profile to perform
+absolute ranging on the tag reflection, but here we leverage it as a
+way to shift the target phase away from background interference
+and other objects at the same range. In the next section, we show
+why the phase changes due to the tag micro-displacements are now
+embedded into the harmonics of the sinc function and how the tag
+modulation frequency can be used as a "phase carrier" for precise
+phase reconstructions.
+3 PLATYPUS DESIGN
+3.1 Tag Modulation as "Phase Carrier"
+A fundamental problem with phase-based micro-displacement is
+the signal noises due to background reflections at the same distance
+from the radar. Figure 4a shows this issue intuitively by showing
+the background reflections and noise as one composite reflection®𝑆𝐵.
+This results in the asynchronous rotation of the micro-displacement
+signal, ®𝑆, across frames in the IQ domain. Previous solutions have
+addressed this issue by assuming a fixed motion pattern such as vi-
+bration [16, 38] or circular rotations [28, 45] as a model to fit the per-
+ceived phase changes to. However, Platypus makes no assumption
+about the displacement patterns or directions, which makes it even
+more challenging to extract tag phase changes in the time domain.
+To address this problem, Platypus proposes a different approach:
+the use of a tag and its modulation to shift the phase changes due
+to the micro-displacements to a clean frequency bin in the Range-
+Doppler FFT (shown in Figure 4b). As mentioned in the previous
+section, the on-off switching of the tag appears as a sinc function in
+the Range-Doppler profile with a peak at the positive and negative
+modulation frequency bin, which also carries the phase changes
+of the tag reflection across frames. Note that a peak in the Range-
+Doppler FFT at a given range and frequency bin is essentially a
+sine wave in the time domain, with the phase of the peak being
+the starting phase value of the sine wave. If the object representing
+this sine wave (in this case the tag) moves, the phase difference at
+the peak in Range-FFT profile between two frames will be equal to
+the amount of displacement.
+However, the above algorithm only works if there is some form
+of synchronization across frames, such as the square wave that
+is applied on the tag reflection starts from the same time at all
+frames. Because we wish to conserve power to provide long-term
+micro-displacement monitoring, it is necessary to keep our tag
+asynchronous with the reader. This causes ambiguity in estimat-
+ing the phase shift because a 𝜋 phase shift from displacement (i.e
+negating the signal) would be equivalent to the tag square wave
+being sampled 𝑇𝑠/2 seconds later, and therefore phases in [0,𝜋)
+and [𝜋,2𝜋)alias such that 𝜙 ⇔𝜙+𝜋, where 𝜙 is the phase of the
+tag’s reflection. However, assuming that the micro-displacements
+across frames are less than a quarter wavelength, we can eliminate
+this effect through phase unwrapping (shown in Figure 4c).
+It should be noted that there are two underlying assumptions that
+make this approach work: (1) Since we are shifting the phase pro-
+cessing to the Range-Doppler FFT, we only get one sample for the
+entire frame (e.g. consisting of 64 chirps), much less frequently than
+Range-Profile-based methods. The elapsed time of a frame is around
+10ms, and the displacements during this period are neglected. How-
+ever, Platypus targets pseudo-static micro-displacements which
+change at a sub-millimeter level over long periods. Therefore, this
+assumption is held. (2) The modulation frequencies of the tags
+are selected carefully to avoid interference with other moving ob-
+jects with a similar Doppler velocity. Given the maximum expected
+Doppler velocity of the moving objects in the tested environments,
+we can safely use modulation frequencies above 300𝐻𝑧.
+3.2 Robust Micro-displacement Extraction
+By shifting the micro-displacement signal to a clean frequency
+bin using the tag modulation frequency, we can eliminate the ef-
+fect of the majority of background reflections in the same range
+bin. However, the extracted phase shifts at the tag’s range bin
+still suffer from noise due to hardware imperfections and down-
+chirping. Given the sensitivity of phase values in mmWave bands
+and the low-SNR signals, even a small noise can completely mask
+the micro-displacement phase shifts. Previous works either ignore
+139
+Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-wave Tags As "Phase Carriers" IPSN ’23, May 09–12, 2023, San Antonio, TX, USA
+Figure 5: Platypus provides robust displacement extraction by tracking the phase changes across all affecting neighboring
+range-bins in I and Q domain.
+these sources of noise, only achieving centimeter-level accuracy, or
+use chirp clustering for periodic, constrained displacements such
+as vibration [16]. However, none of these approaches are applicable
+for pseudo-static micro-displacement measurements. Our insight
+to address this issue is (1) IQ domain processing and (2) to exploit
+neighboring range-bins.
+3.2.1 Phase-Shift Tracking in IQ Domain. In the Range-Profile
+signal, the real and imaginary signals modulate up and down with
+the tag. To eliminate the phase noises, Platypus pulls In-phase (real)
+and Quadrature (imaginary) components of the tag’s modulation
+signal from the Range-Doppler FFT using the conjugate symmetry
+and linearity properties of FFTs:
+𝑓[𝑛]= 𝐼(𝑓[𝑛])+ 𝑗 ·𝑄(𝑓[𝑛]) (3)
+{𝐼(𝑓[𝑛])
+𝐹𝐹𝑇
+⇐⇒𝐹𝐼(𝜔)}=⇒{𝐹𝐼(𝜔) = 𝐹𝐼(−𝜔)∗}
+{𝑄(𝑓[𝑛])
+𝐹𝐹𝑇
+⇐⇒𝐹𝑄(𝜔)}=⇒{𝐹𝑄(𝜔) = −𝐹𝑄(−𝜔)∗}
+(4)
+Where 𝑓[𝑛]is an arbitrary function, 𝐹(𝜔)is an arbitrary FFT,
+𝐼(𝑓[𝑛])is the in-phase (real) component of 𝑓[𝑛], 𝑄(𝑓[𝑛])is the
+quadrature (imaginary) component of 𝑓[𝑛], and ∗is the complex
+conjugation operator [30]. From these equations, we can extract
+the real and imaginary components of the tag’s modulation by cal-
+culating the even and odd parts of the Range-Doppler FFT𝑅𝐷(𝑟,𝑓 ).
+Knowing 𝑟𝑡𝑎𝑔 and 𝑓𝑡𝑎𝑔 from matched filtering [ 33], we can find
+the IQ components specifically at each tag signature’s primary fre-
+quency, which will track with the phase change of the modulation’s
+square wave.
+𝐼(𝑓𝑡𝑎𝑔) = 𝑅𝐷(𝑟𝑡𝑎𝑔,𝑓𝑡𝑎𝑔)+𝑅𝐷(𝑟𝑡𝑎𝑔,−𝑓𝑡𝑎𝑔)∗
+2
+𝑄(𝑓𝑡𝑎𝑔) = 𝑗 ·𝑅𝐷(𝑟𝑡𝑎𝑔,𝑓𝑡𝑎𝑔)−𝑅𝐷(𝑟𝑡𝑎𝑔,−𝑓𝑡𝑎𝑔)∗
+2
+(5)
+𝜙𝑡𝑎𝑔 = 𝑎𝑡𝑎𝑛(𝐼(𝑓𝑡𝑎𝑔)
+𝑄(𝑓𝑡𝑎𝑔)) (6)
+𝛿𝑛 = 𝜆
+4𝜋 ·𝑢𝑛𝑤𝑟𝑎𝑝(𝜙𝑛) (7)
+Where 𝐼(𝑓𝑡𝑎𝑔)and 𝑄(𝑓𝑡𝑎𝑔)represent our estimate of the in-phase
+and quadrature magnitudes of the tag’s modulation, 𝑢𝑛𝑤𝑟𝑎𝑝 re-
+constructs the modulation phase 𝜙𝑡𝑎𝑔 by adding multiples of 𝜋,
+and 𝛿𝑛 is the calculated radial displacement. Note that the phase
+of these measurements, i.e. where 𝐼(𝑓𝑡𝑎𝑔)and 𝑄(𝑓𝑡𝑎𝑔)begin in 𝑅𝑃,
+is implicitly used in Equation (6) for distinguishing if 𝐼(𝑓𝑡𝑎𝑔)and
+𝑄(𝑓𝑡𝑎𝑔)are in-phase or out-of-phase with each other.
+3.2.2 Exploiting Neighboring Range Bins. In the above algo-
+rithm, if the I or Q component at a given range bin is small (i.e. 𝜙
+approaches a multiple of𝜋/2), that component can be dominated by
+noise and distorting the measured phase. To counter this, Platypus
+leverages a well-known phenomenon in FFT-based signal process-
+ing that the reflection of an object not only creates a peak at the
+true range bin in the Range-FFT Profile but also stretches to create a
+wide signature across multiple range bins. This is mainly due to the
+window effect in Discrete-Time Fourier Transforms, which creates
+side lobes around the frequency components [15]. Figure 5(a) shows
+this effect around the tag reflection in the Range-Doppler profile,
+stretching vertically along multiple range bins. The phase shift due
+to the tag micro-displacements will also appear at all of these range
+bins, in addition to a linear phase change across range bins due to
+the different underlying beat frequencies. Therefore, we can track
+the phase changes over all tag-affected range bins to provide more
+robustness to white or frequency-dependent noises.
+Platypus finds the phase shift by autocorrelating the I and Q
+responses with simplified template signals of |𝑠𝑖𝑛(𝜔·𝑟 +𝜙)|and
+|𝑐𝑜𝑠(𝜔·𝑟 +𝜙)|respectively, for different 𝜔, 𝑟, and 𝜙 values. The 𝜙
+value with the highest correlation on both I and Q signals corre-
+sponds with the tag’s phase shift. It should be noted that autocor-
+relating the I and Q signals are more resilient to noise due to the
+damped sine shape, with bins with low SNRs contributing the least
+to the autocorrelation (Figure 5(c)). This stretch also allows us to tell
+apart phases in [0,𝜋/2)and [𝜋/2,𝜋)by distinguishing I/Q signals
+with positive and negative slopes (Figure 5(c)), information that was
+previously reconstructed from the more noise-prone measurement
+of the phase difference of I and Q.
+3.2.3 Creating Synthetic Reflections. The phase reconstruc-
+tion algorithm explained in the previous section effectively extracts
+the micro-displacements along the radial direction of the tag re-
+flection. Therefore, if the tag is not moving perfectly toward or
+away from the radar, we only measure the projection of the tag dis-
+aplcement towards the LoS direction. In order to recover the micro-
+displacement vector, we need to estimate the displacements along
+two different known axes (or three axes for 3D tracking). Our initial
+140
+IPSN ’23, May 09–12, 2023, San Antonio, TX, USA Paper #60, 12 pages
+Figure 6: Using a synthetic reflector to extend Platypus’s
+micro-displacement estimates to 2D (or 3D).
+Figure 7: Extracting micro-displacement vector by combining
+the tag second-order and direct reflections.
+system tried to accomplish this by looking at the displacements
+measured at different receiving antennas on the radar. However, the
+distance between the antennas is too small to create enough spatial
+diversity, especially in long ranges. In addition, the phases are too
+sensitive to noise for accurate micro-displacement measurement.
+To address this challenge, Platypus leverages a synthetic reflec-
+tion from a carefully placed reflector in the vicinity of the radar.
+The synthetic reflector, shown in Figure 6, consists of two high-
+gain antennas connected together with a wire, one antenna facing
+the radar and the other facing the tag. Therefore, it acts as a relay
+to redirect between the radar signal and the tag. Due to the tag’s
+passive retro-reflectivity, the tag will reflect back each one of these
+paths toward its own direction. The received signal at the radar will
+include two dominant modulated reflections at two different range
+bins (due to length difference of the direct and the second-order
+reflections from the tag), shown in Figure 7. Platypus then per-
+forms the phase reconstruction for each reflection separately and
+calculates the micro-displacements along the direction of each path.
+Our empirical studies show that the best synthetic reflector place-
+ment is within 1m distance from the radar. This not only ensures
+higher SNR for the tag’s second-order reflection, but also ensures
+minimal overlap and interference between paths by offset the two
+reflections in range. To achieve this in practice, for each experiment,
+we tested locations within 1-2 m of the radar with the radar pointed
+directly at the reflector for the highest signal power. Since the tar-
+gets of interest are assumed to be pseudo-static (e.g. stationary struc-
+tures, or factory machinery), the synthetic reflector only needs to
+be deployed once for the entire duration of continuous monitoring.
+3.3 Extracting Micro-displacement Vector
+To convert the projected micro-displacements (𝑑𝐴 and 𝑑𝐵) to the
+true micro-displacement vector (Δ𝑟), Platypus forms a triangle as
+Figure 8: Platypus enables simultaneous tracking of multiple
+equi-range and equi-velocity points by using different tag
+modulation frequencies.
+shown in Figure 7 between the two tag reflections that can be
+solved for 𝛿𝑥 and 𝛿𝑦. First, using the conventional tag absolute
+range estimation described in Section 2.2, we can find 𝑑1 and 𝑑2 +
+𝑑3 (𝑑3 , the distance from the radar to the synthetic reflector, is
+assumed to be measured during setup, so we can find𝑑2). 𝜃2, which
+demonstrates the angle between the two reflections from the tag,
+can be then calculated based on the law of cosines. In addition, 𝜃1
+demonstrates the Angle-of-Arrival (AoA) of the tag direct reflection,
+which can be estimated using multiple antennas at the radar [33].
+We use𝜃1 to disambiguate which side of the LoS path the synthetic
+path is on, and to position multiple tags’ displacements relative to
+each other in the 2D space. Because𝜃1 has a larger uncertainty (due
+to our limited antenna count), we want our overall displacement
+magnitude to rely on 𝜃2, which is derived from the more accurate
+distance estimates. Note that we define the coordinate system with
+(0,0) at the radar location, and the positive y direction towards
+the 0-azimuthal direction of the radar. Finally, we define the unit
+vectors ®𝑢𝐴 and ®𝑢𝐵 in the two displacement directions 𝐴and 𝐵, and
+use a Change of Basis matrix to determine the micro-displacements
+in 𝑋 and 𝑌 coordinate system using a simple matrix equation:
+𝑑𝐴
+𝑑𝐵
+
+=
+𝑐𝑜𝑚𝑝 ®𝑢𝐴 (®𝑟)
+𝑐𝑜𝑚𝑝 ®𝑢𝐵 (®𝑟)
+
+=
+𝑠𝑖𝑛(𝜃1) 𝑠𝑖𝑛(𝜃1 +𝜃2)
+𝑐𝑜𝑠(𝜃1) 𝑐𝑜𝑠(𝜃1 +𝜃2)
+
+·
+𝛿𝑥
+𝛿𝑦
+
+(8)
+𝛿𝑥
+𝛿𝑦
+
+=
+𝑠𝑖𝑛(𝜃1) 𝑠𝑖𝑛(𝜃1 +𝜃2)
+𝑐𝑜𝑠(𝜃1) 𝑐𝑜𝑠(𝜃1 +𝜃2)
+−1
+·
+𝑑𝐴
+𝑑𝐵
+
+(9)
+Where 𝑑𝐴 and 𝑑𝐵 are the two displacement magnitudes calculated
+in phase reconstruction steps, 𝑐𝑜𝑚𝑝 ®𝑢𝐴 (®𝑟)is the projection of ®𝑟
+onto ®𝑢𝐴, ®𝑢𝐴 is the unit vector of the displacement direction 𝐴,
+and 𝛿𝑥 denote the micro-displacements toward a standardized 𝑋
+direction. While 𝜃1 is used in Equation (9), it mainly impacts the
+direction of the displacement vector, not the overall magnitude of
+the displacement. Note that Platypus can be extended to 3D by
+using another synthetic reflector at a different location.
+It should be noted that the Equation (9) will be invertible for
+a non-zero 𝜃2 between the synthetic reflection and the main LoS
+path. In addition, for very small angles between the two paths, the
+output displacements are expected to be much more sensitive and
+prone to errors, i.e. the transform matrix will be ill-conditioned.
+Thus, in addition to the constraints discussed in Section 3.2.3, the
+distance between the reflector and the radar should be set to achieve
+a sufficiently large angle between the two paths (e.g. at least 3◦).
+141
+Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-wave Tags As "Phase Carriers" IPSN ’23, May 09–12, 2023, San Antonio, TX, USA
+(a) 1D Prototype (b) 2D Prototype
+Figure 9: Platypus’s tag prototypes.
+3.4 Scaling to Multi-point Tracking
+In many applications (e.g. structural health monitoring, robotics,
+etc), there are typically multiple co-located components for which
+their relative displacements are even more important than the ab-
+solute displacement of each part. Therefore, it is essential to extend
+Platypus to simultaneous tracking of multiple operating tags that
+are co-located, essentially falling in the same range bin, and may
+even have very similar velocities. This use case is often ignored in
+RFID tracking due to lack of concurrent operation built into RFID
+EPC Gen2 protocol. However, Platypus can effectively provide this
+capability by deploying tags with different modulation frequencies,
+essentially separating the micro-displacements of different parts
+of the structure by shifting them to different frequency bins. As
+discussed in [33], approximately 30 tags with different modulation
+frequencies could be deployed in the same range bin with no over-
+lap in the Range-Doppler FFT. The key intuition is that even if two
+tags fall in the same range bin in the time domain, their frequency-
+domain representation after the second FFT and the first harmonic
+of tag modulations will fall in two different frequency bins, allowing
+Platypus’s phase reconstruction approach to work seamlessly. This
+allows us to additionally separate each tag’s reflection from other
+tags within or outside of each tag’s range bin.
+Figure 8 demonstrates this effect in an intuitive manner by hav-
+ing two collocated tags modulating in 600Hz and 800Hz and moving
+on a motion stage at the same speed of 1mm/s toward the radar. We
+can see that even though the modulation pattern of the two signals
+are interleaved across chirps in the Range-FFT output (time domain),
+they appear in different frequency bins in the Range-Doppler pro-
+file due to their distinguished modulation frequencies. Platypus can
+then reconstruct the phase of each tag individually and track their
+displacements over frames. We evaluate and analyze this further in
+the next section, with co-located tags moving in separate directions.
+4 IMPLEMENTATION
+We implemented Platypus using a commercial mmWave radar, Ana-
+log Devices TinyRad [2], operating at24𝐺𝐻𝑧 with 250𝑀𝐻𝑧 of band-
+width and 8𝑑𝐵𝑚 maximum power output. The radar integrates 4
+on-board receiving and 2 transmitting antennas, but one TX an-
+tenna is used for the presented results in favor of lower latency.
+Multiple RX antennas are used for estimating AoA direction for tag
+reflections. The received signal is sampled at 1MHz and captured
+using MATLAB, directly polling data from the board. It should be
+noted that our choice of 24GHz was mainly due to the abundance
+of ultra-low-power electronics such as RF switches at the tag, but
+Platypus can be seamlessly extended to other bands in mmWave
+frequencies such as 77GHz.
+Figure 10: Experimental setup both indoors and outdoors.
+4.1 Platypus Tag Prototype
+Inspired by recent developments [ 27, 29, 33] in retro-reflective
+mmWave tag designs for long-range operations, we develop a pro-
+totype of Platypus’s tag using the tags proposed in [33]. The design
+uses ADRF5027 [1] RF switch evaluation kit and two off-the-shelf
+microstrip patch antennas each in a 2𝑥8 array connected to the
+switch with short but matched length cables, creating a 2-element
+Van Atta array for retro-reflective behavior (shown in Figure 9).
+The tag is switching between retro-reflection, by letting the signal
+go through the transmission lines between the two antennas, and
+no-reflection, by terminating each of the antennas with a 50Ω to
+ground. This creates a simple on-off keying modulation that is used
+by the radar signal processing for detecting the tags and recon-
+structing their corresponding phase changes. For experiments with
+a synthetic reflector that require a wide AoA, we construct a 2D
+antenna array at the tag, shown in Figure 9(b), to create a larger
+field of view for tag detection from multiple angles.
+4.1.1 Power Consumption. While reducing the tag power con-
+sumption is not the main goal of this study, Platypus uses state-
+of-the-art mmWave tag designs with ultra low-power consump-
+tion [4, 33]. For majority of experiments, we use a constant mod-
+ulation at 600-1100 switching per second, which corresponds to
+2.6 −2.71𝑢𝑊 of power consumption and a corresponding continu-
+ous operation for 24 to 20.1 years, by using a 3V CR2032 lithium
+coin cell (235 mAh) with an efficiency of 75% and no battery self dis-
+charge. Alternatively, this amount of power can easily be harvested
+in outdoor use cases using small solar panels at the tag.
+5 EVALUATION
+We deploy our system in multiple indoor and outdoor environ-
+ments, shown in Figure 10, including office buildings with rich
+multipath propagation due to the presence of furniture, metallic
+shelves, and long corridors, covered and open-space parking lots,
+and a structural engineering lab with different structural specimens
+made of concrete and steel with large metallic machinery in the
+background (shown in Figure 18). The tags are placed between 3m
+to 100m from the radar. For the benchmarking purposes, we used
+1D and 2D linear motion stages, with 0.01mm resolution, to create
+different displacement vectors with different magnitude and in dif-
+ferent directions at varying speeds, for a total of 100 experiments.
+The magnitude of generated displacements are between 1mm to
+50cm (maximum length of the motion stage).
+Ground Truth: For the experiments conducted with the motion
+stage, we used the generated motion vectors at the translation stage
+as the ground truth. We implemented a synchronization mechanism
+between the data collection laptop connected to the radar and the
+142
+IPSN ’23, May 09–12, 2023, San Antonio, TX, USA Paper #60, 12 pages
+(a) Tag on a Motion Stage to create
+known 2D micro-displacements.
+ (b) Displacement Error CDF.
+ (c) Displacement Error % CDF.
+Figure 11: Platypus achieves sub-mm accuracy with 2% median error percentage in estimating the 2D displacements across a
+wide range of experiments at different environments generated with a 2D motion stage.
+(a) Sinusoidal Displacement
+ (b) Damped Sine Displacement
+ (c) Rectangular Displacement
+ (d) Triangular Displacement
+Figure 12: Sample displacements estimated by Platypus.
+computer that controls the motion stage. To synchronize the two
+systems, we initiate the motion from the data collection laptop
+by creating a socket between the two laptops. The duration of
+data collection is defined such that there are a few radar frames
+with no motion at the beginning and end of each command to
+the motion stage. This way, we can mark the start and end of
+each experiment and use the radar frame rate and displacement
+duration at the motion stage to create per frame ground truth.
+For experiments conducted in the structural lab, we used a high-
+precision Certus Opto-track system with active markers co-located
+with the mmWave tags as the ground truth for our experiments.
+Baseline: To the best of our knowledge, Platypus is the first dis-
+placement sensing algorithm that can provide sub-mm accuracy
+even at long ranges. The closest available systems to Platypus are
+Tagoram [45] and RF-IDraw [41], which use off-the-shelf RFID tags
+and can achieve mm and cm level accuracy in tracking tag move-
+ments, respectively. However, Tagoram requires the tag’s track
+function and RF-IDraw requires a large spacing in the reader’s an-
+tenna array to disambiguate the phase measurements. In addition,
+both of these methods only work at short ranges below 10m. So,
+they would both be severely handicapped if run on setups designed
+for Platypus. Therefore, a head-to-head comparison would not be
+meaningful. However, for sensitivity analysis, we demonstrate the
+effectiveness of tag in separate the micro-displacement signal by
+comparing the results with a corner reflector as the baseline.
+5.1 In-situ Micro-displacement Errors
+We evaluate the performance of Platypus in estimating the displace-
+ment vector across all the experiments, both indoors and outdoors
+at varying distances from the radar (2 m to 100 m). For ease of in-
+terpretation, we convert the displacement vector to displacements
+along X and Y axes defined relative to the norms of the radar. As
+shown in Figure 11(b), the median displacement error along X and
+Y axes are 0.36mm with 90𝑡ℎ percentile of 0.6mm and 0.7mm along
+X and Y axes, respectively. Please note that the median error in
+these plots is higher than the 1D sensitivity analysis in the next
+Section, which is mainly caused by the micro-displacement vec-
+tor extraction module. While Platypusis capable of measuring the
+micro-displacements with high accuracy, the absolute range esti-
+mates and AoA estimates are still bounded by the FFT accuracy,
+causing cm-level error in absolute range and 2-4 degree error in
+AoAs. These larger errors manifest in the multipath triangulation,
+which causes higher error along X and Y axes. It should be noted
+that the experiments contain a wide range of displacements from
+1mm to 50cm at varying environments and multipath conditions, so
+the presented errors are considered the worst-case scenario results.
+We also measure the percentage of displacement error relative to
+the total displacement in each experiment point. As shown in Fig-
+ure 11(c), Platypus provides a median of 2% percentage error (error
+compared to the total displacement) across experiments with 90𝑡ℎ
+percentile of 6% in euclidean displacement estimates.
+In addition, Platypus measures displacements per frame with-
+out making any assumption about the track of displacements. To
+demonstrate the capabilities of Platypus in estimating different
+shapes of motion, we imitate a few 2D displacements typically seen
+in industrial setups and structural displacements with a 2D mo-
+tion stage, including a sine wave emulating friction-less harmonic
+143
+Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-wave Tags As "Phase Carriers" IPSN ’23, May 09–12, 2023, San Antonio, TX, USA
+(a) Error vs. Distance To Radar
+ (b) Error vs. Speed of Displacement
+ (c) Error vs. Blockages
+Figure 13: Platypus maintains sub-mm micro-displacement accuracy at varying ranges, displacement speeds, and NLoS scenarios.
+motion (Figure 12(a)), a damped sine wave emulating damped os-
+cillations (Figure 12(b)), and mm-scale triangular and rectangular
+displacements emulating movements of mechanical parts in indus-
+trial machinery (Figure 12(c) and (d)). We can see minor errors in
+estimated displacements at points with a sudden changes in dis-
+placement direction, which mainly happens when the change falls
+between two sequential frames. To improve the performance in
+these corner cases, we can increase the frame rate by decreasing
+chirps per frame. This trades higher accuracy with a reduction in
+the Doppler resolution (fewer distinguishable of tag frequencies).
+However, these two requirements rarely conflict in real scenarios,
+which prioritize (a) faster tracking or (b) wider Field-of-View (FoV).
+5.2 Impact of Distance
+Next, we evaluate Platypus’s performance as a function of distance.
+We perform multiple experiments at each distance while keeping
+the environment and waveform parameters fixed across different
+trials (chirp duration of 500𝑢𝑠 and tag modulation frequency of
+200kHz). Figure 13(a) shows the displacement accuracy of Platypus
+across different distances and we can see that it can maintain its sub-
+mm median accuracy at different ranges. At longer distances we
+see an increase in the error, which is due to significant attenuation
+of the tag reflections. It should be noted that the tag detection rate
+also decreases at longer ranges, dropping from 100% tag detection
+at ranges below 40m to 60% detection rate at 100m. Therefore, there
+are fewer samples in the longer range measurements, increasing
+uncertainty. To address these problems for longer distances, a larger
+Van Atta array or higher gain antennas can be used at the tag to
+increase the retro-reflectivity. Previous studies have shown that
+doubling the tag’s antenna size from 2-element to 4-element can
+increase the gain by 80% [33].
+5.3 Impact of Displacement Speed
+To evaluate Platypus performance at different displacement speeds,
+we place the tag on a 1D motion stage and create forward and
+backward movements (toward or away from the radar) at vary-
+ing speeds between 0.2mm/s to 10mm/s. The tag was placed 20m
+away, with 10mm of displacement for velocities below 1.0 mm/s. and
+100mm of displacement for velocities above 1.0 mm/s . Figure 13(b)
+Figure 14: Impact of multipath in (left) different range bins
+and (right) the same range bin as Platypus’s tag.
+Figure 15: We stress test Platypus in severe multipath con-
+ditions by putting the tag in a rebar cage and a in front of a
+corner reflector.
+shows that the average error is slightly higher at higher speeds
+but the maximum error is still less then 0.25mm. Compared to
+0.3mm median accuracy in large-scale experiments, we can con-
+clude that displacement speed does not have a significant impact
+in accuracy. The lower maximum error in these experiments is due
+to the shorter tag-to-radar ranges. Theoretically, we don’t expect
+significant impact from displacement speeds as long as the amount
+of displacement between frames induces lower than 𝜋
+2 change in
+phase (or𝜋in complex radars). In addition, since Platypus estimates
+the displacement vector per frame, for higher speed displacements,
+reducing number of chirps per frame can improve response time.
+It should be noted that the pseudo-static micro-displacements are
+creating tiny displacements over long time, so the Doppler effect
+on tag movement is minimal and can be ignored.
+144
+IPSN ’23, May 09–12, 2023, San Antonio, TX, USA Paper #60, 12 pages
+Figure 16: Platypus leverages the distinguished harmonics
+of tags modulation frequencies for phase reconstruction of
+three co-located tags.
+5.4 Non-Line-of-Sight Performance
+Next, we study Platypus’s performance in Non Line of Sight (NLoS)
+scenarios. It is well-known that mmWave signals significantly at-
+tenuate by certain obstructions such as metal or human body, but
+we expect to detect the tag through other kinds of obstruction such
+as drywall, plaster, or concrete, which are common materials in
+industrial setups. We, therefore, evaluate the penetration capabil-
+ities of Platypus by placing the tag at different ranges from the
+reader between 10m to 35m and placing a large sheet of different
+materials to block the tag to reader view. We also make sure that
+the sheet blocks both LoS and potential multipath reflections from
+the tag by placing the sheet very close to the tag antennas. Figure
+13(c) demonstrates the mean displacement errors in different NLoS
+scenarios and we can see that the tag is still detectable and main-
+tains its sub-mm performance. This is significantly important in
+industrial plants and outdoor contexts such as construction sites or
+city structures, where optical displacement sensors fall short. In ad-
+dition, in harsh industrial environments, Platypus tags can be easily
+protected by keeping in weatherized enclosures, thus providing
+an industrial-grade sensing solution. It should be noted that metal
+obstacles are only problematic if they block the tag reflections, but
+Platypusis robust to background reflections from metal or moving
+targets, which is tested in the next experiment.
+5.5 Multipath Effect
+While the majority of our experiments are conducted in office spaces
+with surrounding furniture and metallic shelves, acting as multi-
+path reflectors, we specifically perform a more rigorous test for
+multipath sensitivity analysis. We interrogate a tag 10 m away, with
+no extra multipath in clean scenarios, 1 metal plate in light scenar-
+ios, and a metal plate and a moving person for the heavy scenarios.
+We also compare the results these experiment with the baseline that
+has a corner reflector as opposed to the tag. The results in Figure 14
+show that Platypus’s performance slightly degrades in the presence
+heavy multipath, but still preserves the sub-mm accuracy. How-
+ever, it significantly outperform the corner reflectors. In addition,
+the max error i less than 0.15mm which is in line with Platypus’s
+performance in shorter range and 1D micro-displacements.
+We also stress tested Platypus in severe multipath conditions,
+(1) where the tag was placed in a rebar cage emulating a dense
+rebar arrangement inside concrete structures; (2) a corner reflector
+behind the tag, both shown in Figure 15. While the rebar cage is
+assumed to work like a Faraday cage for electromagnetic signals,
+we see negligible effect in tag detection and micro-displacement
+measurements. This is mainly because Platypus uses the tag’s mod-
+ulation frequency component to reconstruct the tag phase, while
+other metallic objects even in the same range bin, fall in different
+Figure 17: Platypus sub-mm micro-displacement perfor-
+mance at long range can enable new applications in structural
+health monitoring for monitoring of critical infrastructure
+such as bridges, power plants, tunnels, railroads, etc.
+frequency bins. Even in cases with a moving metallic object nearby,
+the Doppler frequency due to the object movement will be much
+smaller than the Doppler frequency due to the tag modulation.
+5.6 Multi-tag Performance
+Platypus leverages the frequency multiplexing techniques [33] for
+multi-tag scenarios, in which each tag performs On-Off Keying at
+different rates. Theoretical analysis has shown Platypus’s ability
+to support 25 to 100 simultaneous co-located tags[ 33], which is
+sufficient for our purpose. However, to evaluate the performance
+of Platypus in reconstructing the phase shift of multiple tags, we
+stress tested our system by placing two tags on top of each other
+and selecting two similar modulation frequencies of 650 Hz and 800
+Hz. This causes the two tag reflections to interleave in both time
+and frequency domains. We applied different micro-displacements
+on both tags and compared the results with one tag only and when
+having two modulating tags at different range bins. As shown in
+Figure 16, we can successfully reconstruct each tag’s phase shift and
+accurately track their displacements. This is mainly due to Platy-
+pus’s phase reconstruction approach that relies on the harmonics
+of the tag’s modulation frequencies. Therefore, the resolution of
+Platypus’s micro-displacement sensing only depends on the spacing
+of the Doppler harmonics across Doppler frequency bins and will
+not be affected by how closely the two tags are located with respect
+to each other. This provides significant improvement over tagless
+tracking approaches [16] that purely rely on reflections from the ob-
+ject surface and therefore their displacement resolutions are limited
+by the range-bin resolution and the number of antennas at the radar.
+6 PROOF-OF-CONCEPT APPLICATION:
+STRUCTURAL HEALTH MONITORING
+In collaboration with the Civil and Environmental Engineering
+Department in our university, this section demonstrates a proof of
+concept application of Platypus in building displacement monitor-
+ing. Response of a structure under loads is a function of structural
+properties such as geometrical, material, and boundary conditions
+affecting the stiffness of the system and changes in the observed
+response can be traced back to changes in properties that underpin
+145
+Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-wave Tags As "Phase Carriers" IPSN ’23, May 09–12, 2023, San Antonio, TX, USA
+Figure 18: Experimental setup of studying the application
+of Platypus in Structural Health monitoring (SHM) for (a-b)
+studying building displacement compared with (c) Optotrak,
+and (d) earthquake response of multi-story buildings.
+a structure’s behavior and health. As a result, monitoring the re-
+sponse of a structure in various forms such as displacements, strains,
+and accelerations can provide important insights about structural
+behavior, health, and its operating conditions [10]. An extensive
+body of literature in the field of structural health monitoring thus
+focuses on correlating changes and anomalies in the monitored
+response with underlying damage [6, 47, 48] but their widespread
+adoption has been arguably hampered by the cost, power demand,
+and invasiveness of contact-based sensors.
+Specifically, linear variable differential transformers (LVDT),
+linear potentiometers, and dial gauges require a reference point
+that typically is unavailable in complex environments such as
+bridges over waterways. While acceleration-based measurements
+are highly effective for dynamic vibration response, they do not
+directly measure displacements and require double integration ren-
+dering them inaccurate for measuring quasi-static displacement.
+Therefore, there is a technology gap to measure high-resolution
+micro-displacements in a non-invasive way over extended periods
+of time. Past efforts to address this gap mostly rely on GPS [ 14],
+laser vibrometry [22], fiber optics [47], or computer vision-based
+techniques [48], where either require large arrays of instrumen-
+tation with significant deployment costs, or does not provide the
+desired accuracy specially in long ranges, low visibility or NLoS
+conditions. There have also been a few cases of microwave radar
+technology applied to structural measurement applications using
+Synthetic Aperture Radar (SAR) [31] or active transponders [6, 12].
+However, none of these techniques provide sub-mm displacement
+accuracy and are mainly evaluated in short-range lab experiments.
+To demonstrate Platypus’s application, we place two Platypus
+tags at two stories of a model building structure usually used to
+study the behavior of idealized mass-spring systems in structural
+dynamics instructions, shown in Figure 18. To measure the building
+displacements under horizontal forces, we manually applied a slow
+horizontal force at an estimated average speed of 8mm/sec on the
+top floor and compared the Platypus’s estimated displacements
+Figure 19: Platypus provides a similar performance com-
+pared to a $30k Optotrak system in estimating the micro-
+displacement of a two story model building structure, with-
+out the need for any active marker on the structure.
+with an Optotrak Certus HD dynamic motion tracking system by
+National Digital Inc. The Optotrak uses four active optical markers
+attached at different parts of the specimen with a reported accuracy
+of 0.1mm. Figure 19 demonstrates the estimated displacements,
+achieving a promising median sub-mm accuracy.
+6.1 Other Applications
+Platypus provides sub-mm micro-displacement sensing with oc-
+clusion resistance even at extended ranges, which opens up many
+different applications in civil engineering, industrial robotics, or au-
+tomation in industry 5.0 paradigm. In general, Platypus is expected
+to be applicable wherever visual markers or dedicated sensors are
+used for displacement tracking, with the added benefit of low-cost,
+ultra low-power and resilience to obstruction. Beyond structural
+health monitoring, some potential applications of Platypus include:
+Industrial Robotics: Robotic systems require fine-grained situa-
+tion awareness of the location and identity of surrounding objects
+to perform tasks such as grasping or assembly. Current visual sys-
+tems struggle in the presence of obstructions or poor orientation
+that impedes direct-field-of-view [39]. Recent RF-based systems (e.g.
+RFID tags) aim to remedy this [25], yet operate over short distances
+(about ten meters). Platypus can enable an effective long-range ob-
+ject tracking solution that minimizes the amount of infrastructure
+needed to enable location-tracking in an industrial robotic context.
+Predictive Maintenance for Industry 4.0: Machines in factories
+undergo significant micro-displacements that are a strong indica-
+tor of their overall health [ 35]. Tracking these displacements is
+challenging, especially those that occur within the interior of the
+machine or in locations obstructed from view. Platypus’s ability to
+track micro-displacement overcomes this limitation to obtain a new
+cost-effective and scalable sensing modality to empower predictive
+maintenance in industry 4.0.
+Sports Analytics: With the need for high mobility, long range,
+and high accuracy, tracking objects at high-speed in a sports sta-
+dium is challenging and typically requires complex visual sensing
+systems. Such systems traditionally use arrays of advanced cam-
+eras [19], primarily to enable line-of-sight access to the object being
+tracked. The long range and obstruction resilience of Platypus can
+146
+IPSN ’23, May 09–12, 2023, San Antonio, TX, USA Paper #60, 12 pages
+help augment such sensing systems, providing location-awareness
+when/where direct visual tracking fails.
+7 DISCUSSION AND FUTURE WORK
+Platypus still has several limitations including performance drops
+in fast displacements such as vibration. This is mainly due to Platy-
+pus’s reliance to frequency-domain measurements that aggregates
+multiple chirps within a frame with the movements of the tag
+within a frame (10 ms) assumed negligible. As such, this paper
+purely focuses on pseudo-static micro-displacements which hap-
+pen in millimeter-scale at long time periods without making any
+assumption on shape or direction of displacement. Nevertheless,
+Platypus is targeting a challenging problem that none of the exist-
+ing methods (e.g. LDVT, or visual sensing) can practically solve.
+For our future work, we plan to take tag modulation inside a chirp
+thus improving the estimation rate from a few 𝑚𝑠to 𝑢𝑠. This may
+increase power consumption by requiring a higher switching rate,
+but offers detection of both quasi-static and dynamic displacements.
+In addition, the Van Atta array design used in Platypus’s tag
+weighs approximately 0.1 kg and has overall dimensions of 8” x 1”
+x 1”, so it is bulkier than traditional RFID tags [41, 45]. Therefore, if
+Platypus’s tags were mounted on very delicate targets, the weight
+of the tags may affect the targets’ motion. This paper mainly focuses
+on the signal processing algorithms needed to accomplish tracking.
+Nevertheless, in the primary application area of structural health
+monitoring, the weight and size of the tags are negligible compared
+to the buildings. In addition, given the millimeter-scale wavelength
+used, the tag and Van Atta structure can be miniaturized in future
+work to enable applications that require a more lightweight tracking
+system. To attach the tag to the structure, we envision using similar
+adhesives used for attaching strain gauges. In our future work, we
+plan to extend the synthetic reflector design for even longer ranges
+by adding a bi-directional amplifier in the transmission line.
+8 RELATED WORK
+Here we discuss works and topics related to Platypus.
+8.1 RFID Tracking
+Radio Frequency IDentification (RFID) is a widely used backscat-
+ter system to tag different objects and track them over time. It’s
+been used for baggage tracking in airports [32], vehicle, people and
+animal tracking [9] and asset tracking in general. Depending on
+the application, RFID can measure small displacements of tagged
+objects with a much smaller form-factor and weight than the tags
+used in this paper. To achieve this, the fine phase changes of the
+RFID tag is monitored. [41] uses a multi-resolution sparse antenna
+array to track RFID tags on a centimeter level. [17, 18, 39, 43] uses
+phase to estimate tag orientation accurately. Processed phase can
+also be viewed as a time series for sensing activity types [7]. [8, 46]
+show that monitoring the phase helps in estimating parameters of
+periodic displacements such as vibration. [40, 45] uses phase mea-
+sured across multiple antennas to create a high resolution hologram
+to track the position of tags to millimeter level.
+However, all these systems make some assumptions in their
+problem definition which are not applicable in our use-case. They
+either assume a known displacement pattern (linear movements or
+periodic back and forth movements due to vibration) or static envi-
+ronments with one or handful tags moving with different speeds. In
+addition, RFID based systems suffer from small reading range (< 10
+meters) and, therefore, all of these systems are tested in short ranges
+which effectively bound the noises due to multipath and background
+reflections. Our focus, however, is in monitoring sub-mm pseudo-
+static micro-displacements across 100s of meters reading range with-
+out any assumption on the targets of interest and their surrounding
+environment, or displacement patterns. Another key difference
+from RFID operation is the use of the tags and their modulation fre-
+quency as carrier waves to shift the micro-displacements to different
+frequency bins for simultaneously tracking the micro-displacement
+of multiple points, as opposed to RFID EPC Gen2 [11] which only
+provides phase measurements from a single tag at each time.
+8.2 Radar-based Micro-Displacement Sensing
+Radar interferometry for displacement sensing has been around
+for several decades [20, 21, 50]. These works custom design radar
+platforms to show proof of concept micro-displacement of a single
+object by monitoring the phase of reflected signals upon interferom-
+etry and unwrapping it. More recently, several works study the use
+of commodity mmWave radars and the natural reflections of the
+signal from the object surfaces for vibration detection [16], rotor
+orbit measurements [13], heart rate sensing [49], or hand writing
+detection [42]. Despite the achieved high accuracies, all these works
+rely on mmWave radars to estimate displacements purely based
+on the reflections from a single moving object or unique moving
+patterns (i.e. vibration, orbits, or chest movements due to heart
+activities) at short ranges, which is a conventional viewpoint of
+using radars for tracking. In contrary, Platypus leverages mmWave
+backscatter tags [ 24, 27, 29, 33], which are mainly designed for
+identification, localization and communication, to act as carriers
+of minute micro-displacements of multiple closely-located points
+amidst other moving objects.
+9 CONCLUSION
+This paper presents Platypus, a system that uses mmWave backscat-
+ter tags and commodity mmWave radars to perform sub-millimeter
+accurate displacement tracking. Uniquely, Platypus maintains this
+high accuracy at distances of over 100 meters and in situations
+where a line-of-sight path to the tag is unavailable. A detailed
+implementation and evaluation of Platypus demonstrates high ac-
+curacy, range and resilience to obstruction. We believe Platypus
+has direct applications to structural health monitoring, industrial
+robotics and automation. We leave a more exhaustive exploration
+of potential application domains of Platypus to future work.
+ACKNOWLEDGMENTS
+This research was funded in part by T-mobile, Keysight, the CONIX
+Research Center, and the National Science Foundation (2030154).
+We thank our reviewers and shepherd for their insightful feed-
+back which helped improve this paper. We also thank Prof. Ann
+Sychterz and Prof. Bill Spencer and their research groups at the
+Civil and Environmental Engineering Department in the University
+147
+Platypus: Sub-mm Micro-Displacement Sensing with Passive Millimeter-wave Tags As "Phase Carriers" IPSN ’23, May 09–12, 2023, San Antonio, TX, USA
+of Illinois Urbana-Champaign for their helps in conducting in-field
+experiments.
+REFERENCES
+[1] 2020. Analog Devices SPDT Switch. https://www.analog.com/media/en/
+technical-documentation/data-sheets/ADRF5027.pdf.
+[2] 2020. Analog Devices TinyRad. https://www.analog.com/media/en/technical-
+documentation/user-guides/ev-tinyrad24g-ug-1709.pdf.
+[3] Mohammed Abdulkarem, Khairulmizam Samsudin, Fakhrul Zaman Rokhani, and
+Mohd Fadlee A Rasid. 2020. Wireless sensor network for structural health moni-
+toring: a contemporary review of technologies, challenges, and future direction.
+Structural Health Monitoring 19, 3 (2020), 693–735.
+[4] Kang Min Bae, Namjo Ahn, Yoon Chae, Parth Pathak, Sung-Min Sohn, and
+Song Min Kim. 2022. OmniScatter: extreme sensitivity mmWave backscattering
+using commodity FMCW radar. In MobiSys.
+[5] Kshitiz Bansal, Manideep Dunna, Sanjeev Anthia Ganesh, Eamon Patamsing,
+and Dinesh Bharadia. 2022. R-fiducial: Reliable and Scalable Radar Fiducials for
+Smart mmwave Sensing. arXiv preprint arXiv:2209.13109 (2022).
+[6] Arthur Charléty, Eric Larose, Mathieu Le Breton, and Baillet. 2022. 2D Phase-
+based RFID localization for on-site landslide monitoring. (2022).
+[7] Han Ding, Longfei Shangguan, Zheng Yang, Jinsong Han, Zimu Zhou, Panlong
+Yang, Wei Xi, and Jizhong Zhao. 2015. Femo: A platform for free-weight exercise
+monitoring with rfids. In SenSys.
+[8] Chunhui Duan, Lei Yang, Qiongzheng Lin, and Yunhao Liu. 2018. Robust spin-
+ning sensing with dual-rfid-tags in noisy settings. IEEE Transactions on Mobile
+Computing (2018).
+[9] Raymond E Floyd. 2015. RFID in animal-tracking applications. IEEE Potentials
+34, 5 (2015), 32–33.
+[10] B Glišic, Y Yao, S Tung, S Wagner, J Sturm, N Verma, Y Lee, D Blaauw, D Sylvester,
+J Gonzalez, et al. 2016. Structural Health Monitoring: Technological Advances to
+Practical Implementations. In Proceedings of the IEEE 104 .
+[11] GS1. 2022. EPC Radio-Frequency Identity Protocols Generation-2 UHF RFID
+Standard. "https://www.gs1.org/sites/default/files/docs/epc/gs1-epc-gen2v2-uhf-
+airinterface_i21_r_2018-09-04.pdf".
+[12] Shanyue Guan, Jennifer A Rice, Changzhi Li, Yiran Li, and Guochao Wang.
+2017. Structural displacement measurements using DC coupled radar with active
+transponder. Structural Control and Health Monitoring 24, 4 (2017), e1909.
+[13] Junchen Guo, Meng Jin, Yuan He, Weiguo Wang, and Yunhao Liu. 2021. Dancing
+Waltz with Ghosts: Measuring Sub-mm-Level 2D Rotor Orbit with a Single
+mmWave Radar. InIPSN.
+[14] et al Guzman-Acevedo. 2019. GPS, accelerometer, and smartphone fused smart
+sensor for SHM on real-scale bridges. Advances in Civil Engineering (2019).
+[15] Gerhard Heinzel, Albrecht Rüdiger, and Roland Schilling. 2002. Spectrum and
+spectral density estimation by the Discrete Fourier transform (DFT). (2002).
+[16] Chengkun Jiang, Junchen Guo, Yuan He, Meng Jin, Shuai Li, and Yunhao Liu.
+2020. mmVib: micrometer-level vibration measurement with mmwave radar. In
+MobiCom.
+[17] Chengkun Jiang, Yuan He, Xiaolong Zheng, and Yunhao Liu. 2018. Orientation-
+aware RFID tracking with centimeter-level accuracy. In IPSN. IEEE.
+[18] Haojian Jin, Zhijian Yang, Swarun Kumar, and Jason I Hong. 2018. Towards
+wearable everyday body-frame tracking using passive RFIDs. UbiComp (2018).
+[19] Paresh R Kamble, Avinash G Keskar, and Kishor M Bhurchandi. 2019. Ball tracking
+in sports: a survey. Artificial Intelligence Review 52, 3 (2019), 1655–1705.
+[20] Seoktae Kim and Cam Nguyen. 2003. A displacement measurement technique
+using millimeter-wave interferometry. IEEE Transactions on Microwave Theory
+and Techniques 51, 6 (2003), 1724–1728.
+[21] Seoktae Kim and Cam Nguyen. 2004. On the development of a multifunction
+millimeter-wave sensor for displacement sensing and low-velocity measurement.
+IEEE Transactions on Microwave Theory and Techniques 52, 11 (2004), 2503–2512.
+[22] Bernd Köhler and James L Blackshire. 2006. Laser vibrometric study of plate
+waves for structural health monitoring (SHM). In AIP Conference Proceedings ,
+Vol. 820. American Institute of Physics, 1672–1679.
+[23] Orfeas Kypris and Andrew Markham. 2016. 3-D displacement measurement for
+structural health monitoring using low-frequency magnetic fields. IEEE Sensors
+Journal 17, 4 (2016), 1165–1174.
+[24] Zhengxiong et. al. Li. 2019. FerroTag: a paper-based mmWave-scannable tagging
+infrastructure. In SenSys.
+[25] Zhihong Luo, Qiping Zhang, Yunfei Ma, Manish Singh, and Fadel Adib. 2019. 3D
+backscatter localization for fine-grained robotics. In NSDI.
+[26] Zhanxiong Ma, Jaemook Choi, Liu Yang, and Hoon Sohn. 2023. Structural dis-
+placement estimation using accelerometer and FMCW millimeter wave radar.
+Mechanical Systems and Signal Processing (2023).
+[27] Mohammad Hossein Mazaheri, Alex Chen, and Omid Abari. 2021. mmTag: a
+millimeter wave backscatter network. In SIGCOMM.
+[28] Ilya V Mikhelson and et al. 2011. Remote sensing of heart rate and patterns of
+respiration on a stationary subject using 94-GHz millimeter-wave interferometry.
+IEEE Transactions on Biomedical Engineering (2011).
+[29] John Nolan, Kun Qian, and Xinyu Zhang. 2021. RoS: passive smart surface for
+roadside-to-vehicle communication. In Proceedings of the 2021 ACM SIGCOMM
+2021 Conference . 165–178.
+[30] Alan V. Oppenheim, Ronald W. Schafer, and John R. Buck. 1999.Discrete-Time
+Signal Processing (second ed.). Prentice-hall Englewood Cliffs.
+[31] M Pieraccini, D Tarchi, H Rudolf, D Leva, G Luzi, G Bartoli, and C Atzeni. 2000.
+Structural static testing by interferometric synthetic radar. Ndt & E International
+33, 8 (2000), 565–570.
+[32] Longfei Shangguan, Zhenjiang Li, Zheng Yang, Mo Li, and Yunhao Liu. 2013.
+OTrack: Order tracking for luggage in mobile RFID systems. In INFOCOM.
+[33] Elahe Soltanaghaei and et al. 2021. Millimetro: mmWave retro-reflective tags for
+accurate, long range localization. In MobiCom.
+[34] Yi-Zhe Song and et al. 2014. Virtual visual sensors and their application in
+structural health monitoring. Structural Health Monitoring (2014).
+[35] Toshihiro Takeshita and et al. 2011. Characteristics of a monolithically integrated
+micro-displacement sensor. In IMEKO.
+[36] Lester Clare Van Atta. 1959. Electromagnetic reflector. US Patent 2,908,002.
+[37] Chuyu Wang and et al. 2018. Multi-touch in the air: Device-free finger tracking
+and gesture recognition via cots rfid. In INFOCOM.
+[38] Chuyu Wang and et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via
+RFID by Capturing Sub-mm Level Vibration. UbiCOMP (2021).
+[39] Jue Wang and et al. 2013. RF-compass: Robot object manipulation using RFIDs.
+In MobiCom.
+[40] Jingxian Wang and et al. 2019. Rfid tattoo: A wireless platform for speech
+recognition. UbiCOMP (2019).
+[41] Jue Wang, Deepak Vasisht, and Dina Katabi. 2014. RF-IDraw: Virtual touch screen
+in the air using RF signals. SIGCOMM (2014).
+[42] Teng Wei and Xinyu Zhang. 2015. mtrack: High-precision passive tracking using
+millimeter wave radios. In MobiCom. 117–129.
+[43] Teng Wei and Xinyu Zhang. 2016. Gyro in the air: tracking 3d orientation of
+batteryless internet-of-things. In MobiCom.
+[44] Binbin Xie and et al. 2020. Exploring commodity rfid for contactless sub-
+millimeter vibration sensing. In SenSys. 15–27.
+[45] Lei Yang and et al. 2014. Tagoram: Real-time tracking of mobile RFID tags to
+high precision using COTS devices. In MobiCom.
+[46] Lei Yang and et al. 2017. Tagbeat: Sensing mechanical vibration period with cots
+rfid systems. IEEE/ACM transactions on networking (2017).
+[47] Fuzheng Zhang and et al. 2006. A Novel Micro-Displacement Sensor Based on
+Double Optical Fiber Probes Made through Photopolymer Materials. Materials
+(2006).
+[48] Xinxiang Zhang, Yasha Zeinali, Brett A Story, and Dinesh Rajan. 2019. Mea-
+surement of three-dimensional structural displacement using a hybrid inertial
+vision-based system. Sensors 19, 19 (2019), 4083.
+[49] Peijun Zhao and et al. 2020. Heart rate sensing with a robot mounted mmwave
+radar. In ICRA.
+[50] Hongxing Zheng. 2005. A displacement and velocity measurement technique
+using millimeter-wave sensor. journal of infrared and millimeter waves (2005).
+148

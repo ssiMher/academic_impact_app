@@ -1,0 +1,37 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Some methods leverage the aliasing effect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera's color filter array. The aliasing pattern is sensitive to the pose of the target, introducing the potential of an ultraprecise out-of-plane rotation measurement. However, the reported accuracy does not demonstrate superiority when compared to traditional solutions, which might be due to the inherently low-quality imaging of aliasing patterns. Furthermore, the working range is limited, as the frequencies of the target pattern and the camera's color filter array must be closely matched.",
+      "reasoning": "The target reference [15] is cited in a grouped citation with [16] and [17] in the introduction as part of a general discussion of aliasing-based methods. The context describes the approach and limitations without detailed attribution to the target paper specifically. The stance is neutral, noting potential but also limitations.",
+      "keywords": [
+        "aliasing effect",
+        "sensitive",
+        "ultraprecise",
+        "reported accuracy",
+        "limited working range"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Some methods leverage the aliasing effect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera's color filter array. The aliasing pattern is sensitive to the pose ...",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[15]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "The target reference [15] is cited in a grouped citation with [16] and [17] in the introduction as part of a general discussion of aliasing-based methods. The context describes the approach and limitations without detailed attribution to the target paper specifically. The stance is neutral, noting potential but also limitations.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

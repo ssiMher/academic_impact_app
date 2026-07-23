@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated [50, 51, 52, 53].",
+      "reasoning": "The context lists [51] as one of several works investigating eavesdropping via RF signals, providing a general citation without detailed discussion of the cited paper's method or contribution. The citation is grouped with other references, and attribution is uncertain due to the grouped nature.",
+      "keywords": [
+        "Eavesdropping",
+        "RF signals",
+        "widely investigated"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated [50, 51, 52, 53].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[51]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The context lists [51] as one of several works investigating eavesdropping via RF signals, providing a general citation without detailed discussion of the cited paper's method or contribution. The citation is grouped with other references, and attribution is uncertain due to the grouped nature.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

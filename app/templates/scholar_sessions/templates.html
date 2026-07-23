@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}分析模板{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">模板系统</div>
+      <h1>分析模板</h1>
+      <p>会话 ID：{{ session_id }}</p>
+    </div>
+    <div class="action-row">
+      <a class="button button-secondary" href="/scholar-sessions/{{ session_id }}">返回学者分析会话</a>
+      <form action="/scholar-sessions/{{ session_id }}/templates/reapply" method="post">
+        <button class="button button-primary" type="submit">重新应用模板</button>
+      </form>
+    </div>
+  </header>
+  <section class="notice">
+    模板创建或修改后，旧分析结果不会自动变化。请点击“重新应用模板”，让已分析 evidence/card 重新计算模板命中、未满足原因和报告展示。
+  </section>
+  <section class="card">
+    <h2>已启用模板</h2>
+    {% if active_templates %}
+      {% for template in active_templates %}
+        <article class="card">
+          <h3><a href="/scholar-sessions/{{ session_id }}/templates/{{ template.id }}">{{ template.name }}</a></h3>
+          <p>{{ template.description }}</p>
+          <form action="/scholar-sessions/{{ session_id }}/templates/disable" method="post">
+            <input type="hidden" name="template_id" value="{{ template.id }}">
+            <button class="button button-secondary" type="submit">停用</button>
+          </form>
+        </article>
+      {% endfor %}
+    {% else %}
+      {{ empty_state("暂无启用自定义增强模板", "系统仍会使用内置证据类型进行基础分析。") }}
+    {% endif %}
+  </section>
+  <section class="card">
+    <h2>内置模板</h2>
+    <span class="sr-only">Built-in templates</span>
+    {% for template in builtin_templates %}
+      <article class="card">
+        <h3><a href="/scholar-sessions/{{ session_id }}/templates/{{ template.id }}">{{ template.description }}</a></h3>
+        <p>名称：{{ template.name }}</p>
+        <p>目标：{{ template.natural_language_goal }}</p>
+        <p>关键词：{{ template.positive_keywords_json }}</p>
+        <p>提示词片段：{{ template.prompt_fragment }}</p>
+        <form action="/scholar-sessions/{{ session_id }}/templates/enable" method="post">
+          <input type="hidden" name="template_id" value="{{ template.id }}">
+          <button class="button button-primary" type="submit">启用</button>
+        </form>
+      </article>
+    {% endfor %}
+  </section>
+  <section class="card">
+    <h2>创建自定义模板</h2>
+    <form action="/scholar-sessions/{{ session_id }}/templates/custom" method="post" class="inline-form">
+      <label class="form-label">模板名称<input class="form-control" name="template_name" placeholder="如：导师问题：精细振动感知能力佐证"></label>
+      <label class="form-label">自然语言目标<textarea class="form-control" name="natural_language_goal" required></textarea></label>
+      <label class="form-label">
+        模板类型
+        <select class="form-control" name="template_type">
+          <option value="positive_evaluation">正向评价</option>
+          <option value="theoretical_foundation">理论基础</option>
+          <option value="method_foundation">方法采用</option>
+          <option value="detailed_comparison">详细对比</option>
+          <option value="baseline_or_benchmark">基线/Benchmark</option>
+          <option value="representative_work">代表性相关工作</option>
+          <option value="long_context_citation">大篇幅/长上下文引用</option>
+          <option value="limitation_feedback">局限性反馈</option>
+          <option value="custom" selected>自定义</option>
+        </select>
+      </label>
+      <label class="form-label">正向关键词<input class="form-control" type="text" name="positive_keywords" placeholder="如: state-of-the-art, first, pioneering, foundation, use, extend, compare"></label>
+      <p class="muted">正向关键词只用于语义关键词，不用于“100 words”“超过100字”这类长度规则。</p>
+      <label class="form-label">排除关键词<input class="form-control" type="text" name="negative_keywords" placeholder="如: reference-only, title-only, ordinary related work"></label>
+      <label class="form-label">必要证据模式<input class="form-control" type="text" name="required_patterns" placeholder="逗号分隔；至少一个模式需出现在正文证据中"></label>
+      <label class="form-label">允许的证据类型<input class="form-control" type="text" name="allowed_evidence_types" placeholder="如: capability_recognition, method_use"></label>
+      <label class="form-label">严格规则<input class="form-control" type="text" name="strict_rules" placeholder="逗号分隔；这些规则会完整进入 LLM prompt"></label>
+      <label class="form-label">补充分析指令<textarea class="form-control" name="instruction_text" placeholder="进一步说明如何判断满足、降级和排除"></textarea></label>
+      <label class="form-label">最小 citation_text 字符数<input class="form-control" type="number" name="min_citation_chars" value="0"></label>
+      <label class="form-label">最小 citation_text 词数<input class="form-control" type="number" name="min_citation_words" value="0"></label>
+      <label class="form-label">必须包含目标引用编号<input type="checkbox" name="require_target_marker" value="true"></label>
+      <label class="form-label">允许 grouped citation<input type="checkbox" name="allow_grouped_citation" value="true"></label>
+      <label class="form-label">自动纳入报告<input type="checkbox" name="auto_include_in_report" value="true"></label>
+      <button class="button button-primary" type="submit">创建自定义模板</button>
+    </form>
+  </section>
+{% endblock %}

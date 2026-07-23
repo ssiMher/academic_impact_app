@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+  "paper_level_summary_zh": "本文利用[23]（ADNS-3050光学鼠标传感器数据手册）的像素抓取寄存器技术细节，将光学鼠标改造成高速相机，实现声学窃听。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "the ADNS-3050 [23], include a special register called the ‘pixel grabber’.",
+      "evidence_context": "Upon reviewing technical datasheets, we made an unexpected discovery: mainstream optical sensors used in optical mice, such as the ADNS-3050 [23], include a special register called the ‘pixel grabber’.",
+      "reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+      "why_this_judgment_zh": "[23]是数据手册，非目标论文；引用仅涉及传感器寄存器，不涉及目标论文的RFID窃听方案。",
+      "copy_ready_zh": "引文[23]为ADNS-3050数据手册，被用于说明像素抓取寄存器的存在，与目标论文无关。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "this paper will refer to the datasheet of the ADNS-3050 for explanations [23]",
+      "evidence_context": "Therefore, this paper will refer to the datasheet of the ADNS-3050 for explanations [23], which integrates more than 30 registers.",
+      "reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+      "why_this_judgment_zh": "明确表示引用的是数据手册，不是目标论文。",
+      "copy_ready_zh": "引文[23]是ADNS-3050数据手册，用于寄存器说明。",
+      "confidence": "high"
+    }
+  ]
+}

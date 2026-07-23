@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "Some methods leverage the aliasing effect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera\u2019s color filter array. The aliasing pattern is sensitive to the pose of the target, introducing the potential of an ultraprecise out-of-plane rotation measurement. However, the reported accuracy does not demonstrate superiority when compared to traditional solutions, which might be due to the inherently low-quality imaging of aliasing patterns. Furthermore, the working range is limited, as the frequencies of the target pattern and the camera\u2019s color filter array must be closely matched.",
+      "evidence_type": "baseline_or_benchmark",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper groups [15] (Moir\u00e9Pose) with [16] and [17] as methods leveraging the aliasing effect. It then criticizes these methods for not demonstrating superiority in accuracy and for having a limited working range. This serves as a baseline comparison, highlighting limitations of the cited paper.",
+      "highlight_keywords": ["aliasing effect", "ultraprecise out-of-plane rotation measurement", "reported accuracy does not demonstrate superiority", "working range is limited"],
+      "keep": true
+    },
+    {
+      "citation_text": "Tanaka [19] mounted a lens array on a periodic stripe pattern, while Qiu et al. [20] employed two periodic masks on opposite sides of a glass wafer, termed u-LentiMark and Moir\u00e9Tag, respectively. Their reported accuracies, along with those of two earlier versions [21], [22], fall in the range of about 0.1\u00b0 to 2\u00b0.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "This is a passing mention in the related work section, listing [15]? no, [20] is Moir\u00e9Tag, not [15]. However, [15] is Moir\u00e9Pose. The quote does not include [15] explicitly. Actually the quote mentions [19], [20], [21], [22]. So it is not about target reference. So not evidence for target.",
+      "highlight_keywords": [],
+      "keep": false
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "target_reference_marker": "[21]",
+  "target_reference_entry": "[21] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang,\nand S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid\nby capturing sub-mm level vibration,” Proc. of ACM on Interactive,\nMobile, Wearable and Ubiquitous Technologies (IMWUT , vol. 5,\nno. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文在相关工作中将目标论文列为基于RFID的声学窃听方法，指出其需要预先安装RFID标签，降低了实用性，且由于波长较长和数据包率低导致振动分辨率不足。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "limitation_feedback",
+      "evidence_quote": "[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim’s proximity, which reduces its practicality.",
+      "evidence_context": "In the area of mmWave-based eavesdropping, MILLIEAR [17] relies on inter-chirp-based coarse-grained phase estimates from mmWave signal to extract large amplitude vibrations (from 0.1 to 1mm). Nevertheless, all inter-chirp-based methods have limitations in terms of low-frequency response and inaccuracies, thus the authors address these challenges with cGAN. mmSpy [18] can use mmWaves to eavesdrop on phone calls. Since mmSpy considers eavesdropping as a classification problem, it can only identify specific keywords or digits (i.e., constrained vocabulary). Since both works [17], [18] leverage machine learning techniques, they require large labeled datasets, which are hard to obtain in an eavesdropping attack. Other RF-based methods unsuitable for eavesdropping. Among other methods that use RF-based technologies, [25] exploits Doppler radar to recognize a limited set of keywords and the frequency response is limited below 200Hz [26] presents a wall-permeable attack that infers the content visualized on an LCD screen via a mmWave radar. In an industrial environment, mmVib [27] achieves micron-level vibration measurements (below 500Hz). Authors in [28] use mmWave radar to sense vibration below 1kHz, but the radar sensor needs to be quite close to the speaker (≤ 5cm) for eavesdropping. [29] presents a system for user verification with mmWave radar, which does not focus on speech reconstruction and has a frequency response below 200Hz. [30] uses FMCW radar to reconstruct audio at frequency below 1kHz and inadequate experimental evaluation is provided. [16] can reconstruct a high-quality voice from the user’s throat by using mmWave radar, but it requires the subject to stay still and at a short distance from the radar probe (less than 2m). Authors in [31] use a customized mmWave radar to achieve vibration monitoring. [32] applies speech enhancement algorithms to improve the speech signal captured by customized mmWave radar. In [33], authors provide a noise-resistant multi-modal speech recognition system that combines mmWave and microphone by using machine learning. However, the work in [25], [27], [28], [30], [33] can achieve a frequency response that cannot fully covers the human speech spectrum ( 300Hz to 3.4kHz) [34]. In addition, since [16], [25], [26], [29], [33] use machine learning, they require prior knowledge and a large dataset for model training, thus they cannot achieve unconstrained-vocabulary eavesdropping. The works in [31], [32] rely on customized hardware and perform line-of-sight audio reconstruction. Hence, these works are not cost-effective and cannot achieve eavesdropping when the target is non-line-of-sight. Therefore, none of the aforementioned work fulfills the requirements for acoustic eavesdropping in a real-world scenario.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proc. of ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies (IMWUT), vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该引用使用 [21] 作为 RFID 窃听方法的负面例子，强调其需要预装标签、实用性低，且列于其他RF方法中作为分辨率不足的示例。属于普通相关工作和负面评价，不符合任何正面模板要求。",
+      "copy_ready_zh": "引用论文将目标论文作为RFID窃听方法的负面示例，指出其需预装标签且实用性低。",
+      "confidence": "high",
+      "target_reference_marker": "[21]",
+      "evidence_reference_marker": "[21]",
+      "evidence_reference_entry_raw": "[21] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang,\nand S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid\nby capturing sub-mm level vibration,” Proc. of ACM on Interactive,\nMobile, Wearable and Ubiquitous Technologies (IMWUT , vol. 5,\nno. 4, pp. 1–25, 2021.",
+      "reference_match_status": "matched",
+      "reference_match_reason": "reference_entry_matches_target",
+      "normalized_target_reference": "[21] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang,\nand S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid\nby capturing sub-mm level vibration,” Proc. of ACM on Interactive,\nMobile, Wearable and Ubiquitous Technologies (IMWUT , vol. 5,\nno. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": false,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

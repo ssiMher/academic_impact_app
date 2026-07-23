@@ -1,0 +1,878 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: TagVibra: push the limit of RFID-based vibration sensing
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+TagVibra: push the limit of RFID-based vibration
+sensing
+Jian Li1, 2, Ping Li1, 2, ∗, Biaokai Zhu3, Chong Dong2, Chao Gong1, Zhao Lv1
+1Anhui Province Key Laboratory of Multimodal Cognitive Computation,
+School of Computer Science and Technology, Anhui University, Hefei, Anhui, 230601, China
+2Anhui Engineering Research Center for Intelligent Applications and Security of Industrial Internet,
+Anhui University of Technology, Ma’anshan, Anhui, 243032, China
+3Shanxi Police College, Taiyuan, Shanxi, 030401, China
+E21201046@stu.ahu.edu.cn, pingli0112@gmail.com*
+Abstract—RFID-based mechanical vibration detection is con-
+sidered a promising method for many Internet of Things (IoT)
+applications. However , existing methods are affected by ambient
+interference and leakage from the reader signature, which
+makes it difﬁcult to obtain high-precision detection results. T o
+overcome this limitation, this paper introduces T agVibra, a high-
+precision non-contact vibration sensing system based on RFID
+technology. By leveraging the nonlinear effect inside the tag
+and the modulation mechanism of RFID, T agVibra can achieve
+sub-millimeter level vibration detection accuracy. We implement
+T agVibra on our Universal Software Radio Peripheral (USRP)
+platform and evaluate its performance via experiments. The
+experimental results show that T agVibra can detect vibration
+with amplitude as low as 0.3mm, and the average estimation
+error below 0.7Hz when the vibration frequency is 100Hz.
+Index T erms—Vibration detection, RFID, Wireless sensing,
+Harmonics.
+I. I NTRODUCTION
+With the development of industrial automation, the mechan-
+ical vibration detection plays a more and more critical role.
+By measuring the mechanical vibration, engineers can not only
+identify the working condition of the equipment, but also can
+analyze the failure reasons of the equipment [1]. Traditional
+vibration detection methods can be roughly divided into two
+categories, depending on the sensors used: contact detection
+methods and non-contact detection methods. The former is
+based on dedicated contact sensors [2] [3], while the latter
+mainly relies on lasers or cameras [4] [5]. Although accurate
+vibration detection can be achieved, these methods have been
+suffering from complex operation, expensive equipment and
+difﬁcult maintenance.
+RFID-based vibration detection technology has attracted
+the attention of researchers in recent years. Tagbeat uses
+compressed sensing technology to improve the frequency
+range for sensing periodic signals [6], and TagTwins uses a
+dual-tag system to reduce the interference of environmental
+noise on vibration detection [7]. RED proposes a non-contact
+RFID-based method for measuring eccentricity [8]. However,
+these two methods are only suitable for measuring mechan-
+ical vibrations with large amplitudes. TagSound introduces
+*Ping Li is the corresponding author.
+harmonics into vibration detection to improve the sensing
+capability of RFID systems for minor vibrations [9], and
+RF-Ear can distinguish different vibration source devices by
+sensing different frequencies [10]. However, in many cases, the
+vibration amplitude of the equipment appears to be smaller, so
+existing measurement methods still need further improvement.
+TagSMM can effectively measure vibration signals with an
+amplitude of 0.5mm by analyzing the relationship between the
+received signal and the RFID tag position [11], but it relies
+on tag array.
+In this paper, we attempt to push the limit of RFID-based
+vibration sensing and propose TagVibra, a high-precision vi-
+bration sensing system based on RFID. By integrating the non-
+linear effects inside the tag and the inherent characteristics of
+RFID modulation, TagVibra is able to achieve sub-millimeter
+vibration detection through a single tag. However, to achieve
+such high resolution, TagVibra must face some challenges.
+• First, since the reader signal and tag signal of RFID are
+in the same channel, the signal leakage of RFID reader
+may cause co-channel interference, which increases the
+phase noise of the tag signal and affects the sensibility
+of the tag to the slight vibration.
+• Second, the multi-path effect in the environment and
+direct-current (DC) component introduced by the hard-
+ware may distort the received signal, which may worse
+the performance of vibration sensing.
+• Finally, the half-duplex communication method of RFID
+makes it difﬁcult to continuously measure vibration,
+which is one of the problems that needs to be solved.
+To solve the ﬁrst challenge, TagVibra takes advantage of the
+nonlinear effect of RFID tag to receive the reﬂected signals
+from the tag in the harmonic band, thus eliminating the co-
+channel interference caused by the reader signal leakage. Next,
+TagVibra designs a differential phase ampliﬁcation algorithm
+(DPA) based on the special features of the RFID signal,
+which not only eliminates interference from multi-path, but
+also ampliﬁes the phase change caused by vibration. Finally,
+TagVibra uses Fourier ﬁtting technique to estimate the missing
+part of data based on the existing data, solving the third
+40
+2023 9th International Conference on Big Data Computing and Communications (BIGCOM)
+979-8-3503-3124-0/23/$31.00 ©2023 IEEE
+DOI 10.1109/BIGCOM61073.2023.00014
+2023 9th International Conference on Big Data Computing and Communications (BigCom) | 979-8-3503-3124-0/23/$31.00 ©2023 IEEE | DOI: 10.1109/BIGCOM61073.2023.00014
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.
+:DOO
+'&FRPSRQHQW
+G\QDPLFFRPSRQHQW
+PXOWLSDWKFRPSRQHQW
+Fig. 1. RFID-based vibration sensing model.
+
+5HFWLILHU&LUFXLW
+0&8
+%DFNVFDWWHU
+0RGXODWRU
+9ROWDJH
+5HJXODWRU
+Fig. 2. Internal structure diagram of RFID tag.
+ILUVWRUGHU
+KDUPRQLF WKLUGRUGHU
+KDUPRQLF
+ILIWKRUGHU
+KDUPRQLF
+Fig. 3. Reﬂected signal spectrum.
+challenge.
+The main contributions of this paper are as follows:
+• We take advantage of the modulation feature of RFID and
+design the DPA algorithm, which can not only eliminate
+the multi-path interference in the environment, but also
+improve the sensitivity of RFID system to weak vibration.
+• We designe TagVibra, which integrates the harmonic
+effect and modulation feature of RFID to achieve high
+accuracy vibration detection.
+• We implement the TagVibra system and evaluate its
+performance via comperhensive experiments. The results
+show that TagVibra can accurately detect vibrations with
+an amplitude of 0.3mm.
+The rest of this paper is organized as follows. In Section
+II, we show some preliminary knowledges about vibration
+sensing model and the RFID harmonics. In Section III, we
+describe the algorithm and system design of the proposed
+mechanism in detail. Next, we implement and evaluate our
+system in Section IV . And in Section V , we discuss possible
+solutions to system limitations. Finally we conclude our work
+in Section VI.
+II. P RELIMINARIES
+A. RFID-based vibration sensing model
+In a typical RFID system, when there is a vibration object
+nearby, the phase reading of the receiver is determined by two
+components, namely dynamic component, and static compo-
+nent. As shown in Fig. 1, the dynamic component is related
+to object vibration while the static component contains DC
+component introduced by the hardware and multi-path effect in
+the environment. Therefore, when object vibrates, the phase of
+the received signal can be expressed as a vector sum over the
+phase of both dynamic component and the static component:
+⃗θt = ⃗θd + ⃗θs, (1)
+where ⃗θd is the phase of dynimic component, which is directly
+related to the target vibration and can be calculated as follow
+[6]:
+⃗θd =
+(2d(t)
+λ +θ0
+)
+mod 2π (2)
+in which λ is the wavelength, θ0 denotes the initial phase
+of the received signal [12], d(t) is the distance between
+vibration source and received antenna.⃗θs, on the other hand,
+represents the phase of the static component, which is mainly
+affected by the multipath effects of the environment and the
+DC component of the devices themselves.
+From the above equation we can easily see the impact of
+static components on vibration measurements. In short, the
+presence of static components makes it difﬁcult to observe
+phase changes that could otherwise be observed.
+B. Harmonics
+Passive RFID tags do not carry any power source, therefore
+they need to collect energy from the reader signal to maintain
+their normal functioning. As shown in Fig. 2, in order to
+harvest energy from the air, the RFID tag employs a rectiﬁer
+circuit which consists of inductors and diodes. Inductors and
+diodes are well-known nonlinear devices, which gives RFID
+tags nonlinear characteristics as well [13] [14]. Due to the
+presence of nonlinear effects, when the tag modulates the
+carrier signal, in addition to the fundamental frequency, it
+will generate a number of components whose frequency are
+integers of the fundamental frequency (called harmonics).
+For example, suppose the input signal isSin =cos(2πft),
+then the backscattered signalSout is given by:
+Sout =α1cos(2πt)+ α2cos2(2πft)+ α3cos3(2πft)+ ...
+=1
+2α2 +(α1 + 3
+4α3)cos(2πft)+ 1
+2α2cos(2π(2f)t)
++ 1
+4α3cos(2π(3f)t)+ ...
+(3)
+where αi is the gain of the certain frequency component
+introduced by the non-linearity of tag. As shown in Fig. 3,
+since the carrier frequency of RFID is 920MHz, the spectrum
+of the tag backscattered signal will consist of two other peaks
+at 2.7GHz and 4.6GHz, which happen to be the third and ﬁfth-
+order harmonic signals of the carrier signal, besides 920MHz.
+Since the frequency of the harmonic signal is far away
+from the fundamental signal (about several GHz), the reader
+leakage can be completely eliminated by applying a bandpass
+ﬁlter. In addition, due to the higher frequency and narrower
+wavelength of the harmonic signal, it is also more sensitive to
+slight vibrations within a given phase noise.
+III. S YSTEM DESIGN
+In this section, we will describe our system design in detail.
+As shown in Fig. 4, the system consists of four modules. The
+41
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.
+'RZQVDPSOLQJ
+)RXULHU&XUYH)LWWLQJ
+9LEUDWLRQIUHTXHQF\
+HVWLPDWLRQ
+;ϰͿsŝďƌĂƚŝŽŶƐƚŝŵĂƚŝŽŶ
+(OLPLQDWLQJFDUULHU
+IUHTXHQF\RIIVHW
+;ϭͿ,ĂƌŵŽŶŝĐ^ŝŐŶĂůZĞĐĞŝǀŝŶŐ
+ ;ϮͿ^ŝŐŶĂůWƌĞƉƌŽĐĞƐƐŝŶŐ
+;ϯͿWŚĂƐĞŵƉůŝĨŝĐĂƚŝŽŶ
+([WUDFW(3&VLJQDO
+W
+Fig. 4. Architecture of the TagVibra
+harmonic signal receiving module is used to receive the tag’s
+backscattered signal in the harmonic band to eliminate the
+interference caused by the reader signal leakage; the signal
+preprocessing module is designed to separate and extract the
+EPC from the received signal, after that, the phase ampliﬁ-
+cation module will exploit the feature of RFID modulation
+to cancel the multi-path interference and amplify the phase
+change, and ﬁnally, the vibration estimation module is used to
+estimate the frequency information of the vibration signal.
+A. Harmonic signal receiving
+The co-channel leakage from readers is a common problem
+in RFID sensing. The high energy leakage deteriorates the
+signal-to-noise ratio (SNR) of the RFID tag signal, which
+subsequently affects the performance of sensing [15]. TagVibra
+receives tag harmonic signals by using a sniffer to avoid
+interference from reader leakage and to obtain better vibra-
+tion sensing resolution. As shown in Fig. 3, the third-order
+harmonic has a better SNR, therefore TagVibra chooses the
+third-order harmonic for vibration detection. However, since
+the carrier frequency of the reader is not equal to the speciﬁed
+frequency, but has a slight offset (i.e., carrier frequency offset,
+CFO), receiving harmonic signal directly at 2.7GHz will
+inevitably introduce additional phase interference.
+Inspired by TagSound [9], TagVibra employs a coarse-to-
+ﬁne CFO estimation algorithm. Speciﬁcally, TagVibra ﬁrst
+uses FFT to roughly estimate the range of CFO, and then
+uses a delay-autocorrelation algorithm to accurately estimate
+the CFO using the periodicity of the RFID extended preamble.
+After obtaining the estimated CFO, TagVibra eliminates the
+impact of CFO by the frequency compensation method.
+B. Signal preprocessing
+After receiving the harmonic signal, TagVibra ﬁrst uses a
+sliding average ﬁlter to denoise the raw signal. Please note that
+the harmonic signal received by the sniffer contains both the
+reader signal (e.g., Query and ACK) and the tag signal (e.g.,
+RN16 and EPC). The vibration signal is only contained in the
+tag signal. On the other hand, the EPC has a longer duration
+compared to the RN16 and is also more conducive to detect
+the vibration status. Therefore TagVibra needs to extract the
+EPC from the raw signal for vibration detection.
+For computational cost reasons, TagVibra does not imple-
+ment RFID reader on the sniffer, so it is unlikely to obtain
+the starting and ending positions of EPCs by decoding them.
+TagVibra has designed a two-step algorithm to locate the
+starting and ending edges of the EPC signal in order to extract
+the EPC signal accurately. As shown in Fig. 5(a), the reader
+signal has a larger amplitude variation compared to the tag
+signal, so TagVibra ﬁrst uses a sliding window and calculates
+the variation of the signal within the window to identify the
+reader and tag signals.
+After removing the reader signal, TagVibra also needs to
+extract the EPC signal accurately. Since the amplitude of the
+tag signal is larger than noise, TagVibra applies an amplitude-
+based threshold to identify the tag signal, as shown in Fig.
+5(b). Since RN16 has a shorter duration than EPC, it can be
+easily removed from the received signal.
+We note that the FM0 encoding used for RFID tags is a
+non-zeroing encoding, and using a magnitude-based threshold
+to determine the starting position of the EPC may lead to
+synchronization errors, but this has a negligible effect on
+vibration detection.
+C. Phase ampliﬁcation
+After data preprocessing, we successfully obtain all clean
+EPC segments. As shown in Fig. 5(b), the RFID tag modulates
+its data on the backscatter signal using ON-OFF keying
+scheme. We regard them asVi
+tag, wherei=0 or 1 represents
+the matching and mismatching states of the antenna impedance
+of the tag, respectively [16] [17]. Recall Sec.II, the phase of the
+received signal is determined by several factors such as DC
+component, multi-path interference, and the tag movement.
+The details can be expressed by the following equation:
+Vi =Vdc +Vi
+tag +Venv(i=0 or1) (4)
+42
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.
+ƚŚƌĞƐŚŽůĚ
+YƵĞƌǇ
+ZEϭϲ
+<
+W
+(a)
+W
+ƚŚƌĞƐŚŽůĚ
+ƐƚĂƌƚƉŽŝŶƚ ĞŶĚƉŽŝŶƚ
+(b)
+Fig. 5. Signal preprocessing. (a) Remove reader signal , (b) Extract EPC
+signal.
+by combine Vdc and Venv into the static componentVs, the
+above equation can be rewrite as:
+Vi =Vs +Vi
+tag (5)
+Fig. 6(a) illustrates the composition of the actual measured
+phases in the I-Q plane in detail. When the target object
+vibrates, bothV1 and V0 rotate with it in a similar trajectory.
+Ideally, V1 and V0 should be rotated by the same angle
+and aligned with the origin. However, due to the impact
+of the static componentVs, the actual measured values are
+vector sums of V1 and V0 with Vs, respectively. Therefore,
+V1 and V0 are no longer aligned with the origin, and phase
+jump may occur when we direct measure the phase of EPC
+which introduce interference to vibration sensing. Moreover,
+the phase change caused by the vibration decreases, and the
+resolution of the RFID measurement of the vibration reduces
+consequently.
+The tranditional method is difﬁcult to achieve satisﬁed
+results due to the imprecise estimation of the static component.
+Therefore, TagVibra takes advantage of the modulation scheme
+of RFID and proposes a phase ampliﬁcation algorithm (Dif-
+ferential Phase Ampliﬁcation, DPA) to eliminate the impact
+of static component and amplify the phase change. The basic
+idea of DPA is behind Equ.5, which can be rewritten as:
+{
+V1 =Vs +V1
+tag
+V0 =Vs +V0
+tag
+(6)
+Since V1 and V0 both contain the same static component
+Vs, an intuitive method is to eliminate the impact of the
+static component by making a difference betweenV1 and V0.
+However, the resulting phase change may be very slight (since
+the angular changes ofV1 and V0 should be identical when
+the static component is eliminated, in theory). To solve this
+problem, we calculated the average value ofV0 (regard asV0)
+and subtract it from V1. Since V0 contains the same static
+component asV1, the impact of the static component can still
+be eliminated after subtraction. sinceV0 is a point, the phase
+change ofV1 −V0 can be measured directly. Even better, since
+V0 is closer toV1 than the distance between the origin andV1,
+the phase change ofV1 can be effectively ampliﬁed:
+,
+4
+5DZ3KDVH
+&KDQJH
+(a)
+,
+4
+3KDVHFKDQJHRI
+'3$
+(b)
+Fig. 6. Signal in the IQ plane. (a) Raw phase change, (b) Ampliﬁed phase
+change.
+ΔV =V1 −V0 =V1
+tag −V0
+tag (7)
+Compared toV0 or V1, we have eliminated the static compo-
+nent, and ΔV only retains tag’s reﬂection signals related to
+vibration. Therefore, as shown in Fig. 6(b), compared to the
+raw phase, the modulated phase is signiﬁcantly ampliﬁed.
+Fig. 7 illustrates an example of DPA algorithm. As can
+be seen in the ﬁgure, the original signal (red curve) shows
+few periodicities, while the DPA-processed signal (blue curve)
+shows a very clear periodicity. This is because after DPA
+processing, the static component of the original signal has
+been eliminated and only the dynamic component related to
+the vibration is retained.
+D. Vibration estimation
+Due to the half-duplex communication mode of RFID, the
+EPC only occupies about 50% of the whole interrogation
+round duration. Therefore, TagVibra still needs to approximate
+the phase change of the rest time outside the EPC. TagVibra
+assuming that the vibration signal is consisted of a set of
+simple harmonic vibrations with different frequencies, and
+applies the Fourier Curve Fitting [18] to estimate the missing
+portion of the phase curve. Fig. 8 shows the ﬁtting result in
+which the black dots are the measured phase value while the
+red curve is the ﬁtted phase curve by using Fourier Curve
+Fitting. Obviously, the esitmated curve is well matched with
+the measure values. In order to avoid the impact of sudden
+interference, a Kalman ﬁlter is used. Finally, the spectrum of
+vibration can be obtained easily (as shown in Fig. 9) and the
+frequency of vibration can be calculated consequently.
+IV . PERFORMANCE EV ALUA TION
+In this section, we ﬁrst evaluate the overall performance of
+TagVibra and then conduct experimental analysises for various
+impact factors.
+A. System implementation
+To evaluate the performance of TagVibra, we have imple-
+mented a RFID reader on USRP [19] [20] to communicate
+with the tag. And its carrier frequency is set to 920MHz. Then,
+43
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.
+Fig. 7. Impact of DPA on vibration sensing.
+ Fig. 8. Phase curve ﬁtting.
+ Fig. 9. FFT of signal phase.
+;ĂͿǀŝďƌĂƚŽƌ
+ ;ĐͿƵƐƌƉ
+h^ZWƌĞĂĚĞƌ
+ŶƚĞŶŶĂ WƌŽĐĞƐƐŽƌ
+^ŶŝĨĨĞƌ
+dĂŐ
+sŝďƌĂƚŽƌ
+;ĂͿǀŝďƌĂƚŝŽŶŵĞƚĞƌ
+Fig. 10. Experimental setup.
+we employ a sniffer to receive the third-order harmonic of the
+tag’s backscatter at 2.76GHz. The computer used for signal
+processing is an Lenovo laptop with a Intel Core i5-7300HQ
+CPU and 16 GB RAM, and the received signal will feed into
+Matlab for further processing.
+B. Experimental setup
+We illustrate our experimental setup in Fig. 10. We use
+a vibrator to generate mechanical vibration, the amplitude
+and frequency can be controlled by a signal generator. The
+frequency range of vibrator can be set from 1Hz to 10kHz,
+while the minimum amplitude step is 0.1mm. The RFID tag is
+attached to the cup and placed at a distance of 10cm from the
+vibrator. The antenna of the reader is placed at a distance of
+50cm from the tag, while the antenna of the sniffer is placed
+at a distance of 10cm from the tag. And we use a GM63A
+vibration meter to provide a ground truth of the vibration.
+C. Overview performance of vibration sensing
+Submillimeter vibration amplitude sensing.We ﬁrst eval-
+uate TagVibra’s ability to detect slight vibrations. In this exper-
+iment, we ﬁrst observe the phase change obtained by TagVibra
+at different amplitudes. We set the vibration frequency to 20Hz
+and then gradually adjust the amplitude from 0.9mm to 0.3mm
+with the step of 0.2mm. As illustrated in Fig. 11, the amplitude
+of the phase curve becomes smaller as the vibration amplitude
+decreases, but even when the amplitude is reduced to 0.3mm,
+a clear periodic characteristic can still be observed, which
+demonstrates that TagVibra has a well-sensing capability for
+slight vibrations.
+We further analyze the performance of TagVibra in terms
+of vibration frequency estimation with different amplitudes.
+We set the vibration frequency to 50Hz and set the amplitude
+to 0.3mm to 1.5mm with the step of 0.2mm. For each ex-
+perimental conﬁguration, we repeat the experiment 100 times
+and present the statistical results in Fig. 12. As shown in
+the ﬁgure, the estimation error of frequency increases as the
+amplitude decreases. When the amplitude is above 0.7mm, the
+average error of frequency estimation is below 0.5Hz, while
+when the amplitude is less than 0.5mm, the error becomes
+signiﬁcantly larger, and when the amplitude is 0.3mm, the
+average error has exceeded 1Hz. This may be due to the fact
+that when the amplitude is very small, the phase change caused
+by the environmental interference is too great, and even after
+using the DPA algorithm to amplify the phase, it is difﬁcult
+to completely eliminate the interference. It can also be seen
+from the phase curves of 0.3mm and 0.5mm in Fig. 11 that
+there is a signiﬁcant distortion in the signal of small amplitude
+compared to the signal of large amplitude.
+Accuracy of vibration frequency estimation.We then test
+the frequency estimation performance of TagVibra. We set
+the vibration amplitude to 0.7mm and then set the vibration
+frequency from 10Hz to 100Hz in steps of 10Hz. For each
+of the experimental settings, we repeat the experiment 100
+times and present the results in Fig. 13. Although the average
+error rate increases as the frequency increases, it stays below
+0.7Hz. This indicates that TagVibra has good performance in
+frequency estimation.
+Comparison with other methodologies.Next we compare
+the measurement accuracy of TagVibra with existing advanced
+work, including TagSound [9], RF-Ear [10] and TagSMM [11].
+As shown in Table I, RF-Ear uses modiﬁed OMP (Orthogonal
+Matching Pursuit) algorithm to effectively remove environ-
+mental noise and can detect 2mm screw loose. TagSound
+utilizes harmonics to enhance the accuracy of vibration percep-
+tion and can measure vibrations at different frequencies with
+an amplitude of 1.7mm. However, none of the above systems
+44
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.
+Fig. 11. Vibration patterns for different amplitudes.
+ Fig. 12. Impact of different amplitudes.
+ Fig. 13. Impact of different frequencies.
+can sense sub-millimeter vibrations. The most recent work
+TagSMM can detect a 0.5mm vibration by using coupling
+effect. However, despite its high accuracy, it requires multiple
+tags. TagVibra performs best with a vibration of 0.3mm using
+only one tag. More importantly, even if the amplitude is as low
+as 0.3mm, TagVibira can still obtain the vibration frequency of
+the device, which is completely different from just perceiving
+the presence of vibration.
+TABLE I
+COMPARISON OF ACCURACY.
+Method Accuracy (mm)
+TagSound 1.7
+RF-Ear 2.0
+TagSMM 0.5
+T agVibra 0.3
+D. Impact factors
+Impact of harmonic on vibration sensing.To verify the
+effect of harmonic on vibration detection, an experiment is
+conducted. In this experiment, the amplitude is set to 2mm
+and the frequency is 20Hz. Then, we collect the backscattered
+signals of the tag on the 920MHz and 2.76GHz bands (i.e. the
+fundamental and the harmonic), respectively. Then we feed
+them into the TagVibra system for processing respectively.
+Fig. 14 shows the phase change curves after processing. It
+can be seen that for the same vibration amplitude, using the
+harmonic signal (blue curve) results in a larger phase change
+(from 0.5rad to 1.5rad) and is better for the detection of weak
+vibrations.
+Impact of distance between tag and vibrator . The
+distance between the tag and the vibrator may affect the
+performance of TagVibra. In this experiment, we set the
+vibration frequency to 20Hz and then observe the change in
+TagVibra’s performance by adjusting the distance between the
+tag and the vibrator (from 5cm to 50cm in steps of 5cm). For
+each experimental conﬁguration, we repeate the experiment
+100 times. Fig. 15 shows the result. We can see that the
+average error is less than 0.5Hz when the distance is less than
+20cm. However, with the increase of distance, the average
+error increases signiﬁcantly, when the distance increases to
+50cm, the average error is about 1.4Hz. The main reason is
+that TagVibra is a non-contact vibration system that relies on
+reﬂected signals from the vibrator. When the distance is too
+far, the reﬂected signal is too weak to be used for accurate
+sensing.
+Impact of distance between tag and reader .Next, we
+analyze the impact of the distance between the tag to the reader
+antenna on the performance of TagVibra. The amplitude and
+frequency of vibration are the same as in the previous exper-
+iment, and we adjust the distance from the tag to the reader
+antenna from 0.3m to 3m, and show the experimental results
+on Fig. 16. As we gradually increase the distance from 0.3m
+to 3m, the average error also gradually increase. This may
+be due to the fact that as the distance increases, the strength
+of the reﬂected signal from the tag decreases subsequently,
+making the SNR of the phase deteriorate and subsequently
+degrading the performance of TagVibra. When the distance
+exceeds 2m, it is already close to the communication limit
+distance of RFID, at which point the communication anomaly
+may also have an impact on the performance of TagVibra.
+Impact of distance between tag and sniffer .In this exper-
+iment, we set the vibration frequency to 20Hz and gradually
+change the distance between sniffer and tag at 10cm intervals.
+We conduct 20 experiments at each different distance and
+calculate the average error. Fig. 17 shows the results of the
+experiment. The implementation results show that when the
+distance is less than 30cm, the estimation error of TagVibra is
+very small, below 1Hz. As the distance continues to increase,
+the error begins to signiﬁcantly increase. When the distance
+exceeds 50cm, the error is already very large, making it
+difﬁcult to achieve accurate vibration frequency measurement.
+And when the distance exceeds 80cm, TagVibra is completely
+unable to detect the harmonic scattering signal of the tag, and
+it can no longer function normally. This is mainly because,
+compared to the fundamental frequency signal, the strength of
+the harmonic signal is very weak, and an increase in distance
+will cause the harmonic signal received by the monitoring
+device to be even weaker. So we should make the sniffer closer
+to the tag.
+Impact of the angle between tag and sniffer . In this
+experiment, we mainly evaluate the impact of different tag-
+reader angles on the system. We select 5 angles of 0◦,
+15◦, 30◦, 45◦, and 60◦, and conduct 50 experiments for
+45
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.
+Fig. 14. Impact of harmonic on vibration sensing.
+ Fig. 15. Impact of tag-vibrator distance.
+ Fig. 16. Impact of tag-reader distance.
+Fig. 17. Impact of tag-sniffer distance.
+ Fig. 18. Impact of the angle between tag and
+sniffer.
+(
++
+$=
+$=
+(
+$
+Fig. 19. Impact of tag diversity.
+different frequencies and amplitudes. Then we calculate the
+accuracy of detection and the results are shown in Fig. 18.
+We ﬁnd that as the angle increases, the accuracy gradually
+decreases, especially when it exceeds45◦, detection effect is
+already very poor. This is because we use directional antenna.
+When exceeding a certain range, it can lead to a decrease
+in signal strength and a decrease in transmission quality. In
+addition, it can also have a negative impact on tag’s decoding
+performance. Therefore, we must try our best to keep the angle
+within 30◦
+Impact of tag diversity. To study the effect of different
+RFID tags on sensing, we test the accuracy of H47(44*44mm),
+E51(95*8mm), AZ-9940(95*8mm), AZ-9630(48*14mm), and
+E44(105*6mm) tags in perceiving vibration in different sce-
+narios and distances. The experimental results shown in Fig.
+19 indicate that the H47 tag has the best sensing effect due to
+its larger antenna size. However, it is worth noting that even
+though the AZ-9940 tag has the same antenna size as the E51
+tag, its performance is the worst due to its low decoding rate,
+which is related to the use of a different type of antenna.
+V. DISCUSSION
+Through the above experiments, it is worth noting that
+distance has a signiﬁcant impact on TagVibra, especially on
+the tag-sniffer distance. When the distance exceeds a certain
+range, the harmonic cannot be received anymore. Therefore,
+if remote vibration measurement is required, we can mainly
+consider the following two solutions to enhance signal strength
+and then improve system performance. On the one hand, we
+can use a RF-ampliﬁer to increase the transmission power. On
+the other hand, we can improve the efﬁciency of transmission
+and reception by optimizing the design of the antenna. For
+example, using a better directional antenna can concentrate
+the energy of the signal in a speciﬁc direction.
+VI. C ONCLUSION
+In this work, we have proposed TagVibra, a high-precision
+and accurate non-contact vibration frequency inspection sys-
+tem. TagVibra is capable of detecting vibrations at different
+frequencies with an average error rate of less than 0.7Hz. Ad-
+ditionally, we have successfully detected a 0.3mm amplitude
+using the harmonic backscattering from the tag, which can be
+used to detect mechanical devices failures. In our next plan,
+we aim to achieve ﬁner amplitude perception and investigate
+quantitative measurement of the vibration amplitude.
+ACKNOWLEDGMENT
+This paper is supported by the Anhui Natural Science Foun-
+dation (No. 2108085MF207), Intelligent Policing Key Labo-
+ratory of Sichuan Province (No. ZNJW2022KFZD004), Basic
+Research Plan of Shanxi Province (No. 202303021211339),
+Virtual Teaching and Research Ofﬁce of Cyber Security
+(BJPC) of Ministry of Education (No. W AXVKF-2202), An-
+hui University of Technology School Y outh Fund (QZ202109),
+Ma’anshan, Anhui, 243032, China; Anhui Province Indus-
+trial Internet Intelligent Application and Security Engineering
+Laboratory Open Fund (IASII21-05, IASII22-05), Ma’anshan,
+Anhui, 243032, China.
+46
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.
+REFERENCES
+[1] Zhang, H., Sun, D., Liu, X., and Luo, Z. (2019). Machinery Fault
+Diagnosis and Prognosis Based on Vibration Analysis: A Review. Shock
+and Vibration, 2019, 1-17.
+[2] J. Liu, Y . Chen, M. Gruteser, and Y . Wang. Vibsense: Sensing touches
+on ubiquitous surfaces through vibration. In Annual IEEE International
+Conference on Sensing, Communication, and Networking (SECON),
+pages 19. IEEE, 2017.
+[3] M. Saﬁzadeh and S. Latiﬁ. Using multi-sensor data fusion for vibration
+fault diagnosis of rolling element bearings by accelerometer and load
+cell. Information Fusion, 18(6):18, 2014.
+[4] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and
+W. T. Freeman. The visual microphone: Passive recovery of sound from
+video. 33(4):110, 2014.
+[5] Y . Zhang, G. Laput, and C. Harrison. Vibrosight: Long-range vibrometry
+for smart environment sensing. In Annual ACM Symposium on User
+Interface Software and Technology, pages 225236. ACM, 2018.
+[6] L. Yang, Y . Li, Q. Lin, H. Jia, X.-Y . Li, and Y . Liu. Tagbeat: Sensing
+mechanical vibration period with cots rﬁd systems. IEEE/ACM Trans-
+actions on Networking (TON), 25(6):38233835, 2017.
+[7] Duan C, Yang L, Lin Q, et al. Robust spinning sensing with dual-rﬁd-
+tags in noisy settings[J]. IEEE Transactions on Mobile Computing, 2018,
+18(11): 2647-2659.
+[8] EeY . Zheng, Y . He, M. Jin, X. Zheng, and Y . Liu. Red: Rﬁd-based
+eccentricity detection for high-speed rotating machinery. In IEEE Inter-
+national Conference on Computer Communications (INFOCOM), pages
+15651573. IEEE, 2018.
+[9] Li P , An Z, Yang L, et al. Towards physical-layer vibration sensing
+with rﬁds[C]//IEEE INFOCOM 2019-IEEE Conference on Computer
+Communications. IEEE, 2019: 892-900.
+[10] P . Yang, Y . Feng, J. Xiong, Z. Chen, and X. Li. Rf-ear: Contactless
+multi-device vibration sensing and identiﬁcation using cots rﬁd. In
+International Conference on Computer Communications (INFOCOM),
+pages 110. IEEE, 2020.
+[11] Xie, B., Xiong, J., Chen, X., and Fang, D. (2020, November). Exploring
+commodity rﬁd for contactless sub-millimeter vibration sensing. In
+Proceedings of the 18th Conference on Embedded Networked Sensor
+Systems (pp. 15-27).
+[12] L. Yang et al., Tagoram: Real-time tracking of mobile RFID tags to high
+precision using COTS devices, in Proc. ACM MobiCom, 2014, pp. 112.
+[13] V era G A, Duroc Y , Tedjini S. Third harmonic exploitation in passive
+UHF RFID[J]. IEEE Transactions on Microwave Theory and Tech-
+niques, 2015, 63(9): 2991-3004.
+[14] Nikitin P V , Rao K V S. Harmonic scattering from passive UHF RFID
+tags[C]//2009 IEEE Antennas and Propagation Society International
+Symposium. IEEE, 2009: 1-4.
+[15] Li, J., Chen, W., and Wang, X. (2016). Interference analysis and mitiga-
+tion in co-channel wireless networks: A survey. IEEE Communications
+Surveys and Tutorials, 18(2), 1019-1043.
+[16] X. Lai, Z. Cai, Z. Xie, and H. Zhu, A novel displacement and tilt
+detection method using passive uhf rﬁd technology, Sensors, vol. 18,
+no. 5, p. 1644, 2018.
+[17] Wang C, Xie L, Lin Y , et al. Thru-the-wall eavesdropping on loudspeak-
+ers via RFID by capturing sub-mm level vibration[J]. Proceedings of the
+ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies,
+2021, 5(4): 1-25.
+[18] Abuelma’atti, Muhammad Taher. ”A simple algorithm for ﬁtting mea-
+sured data to Fourierseries models.” Integrated Education 24, no. 1
+(1993): 107-112.
+[19] 2018. USRP SDR reader. https://github.com/nkargas/Gen2-UHF-RFID-
+Reader.
+[20] 2019. USRP reader.https://github.com/nkargas/Gen2-UHF-RFID-
+Reader.
+[21] ”Tagbeat”.https://github.com/tagsys/tagbeat.
+47
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 01:42:04 UTC from IEEE Xplore.  Restrictions apply.

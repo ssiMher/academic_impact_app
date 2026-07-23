@@ -1,0 +1,257 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: A Comprehensive Survey of Side-Channel Sound-Sensing Methods
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+## TITLE_ABSTRACT_INTRO_RELATED_CONCLUSION
+## BEGINNING
+1554 IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 2, 15 JANUARY 2025
+A Comprehensive Survey of Side-Channel
+Sound-Sensing Methods
+Yunzhong Chen ,J i a d iY u , Senior Member, IEEE, Linghe Kong , Senior Member, IEEE,
+and Yanmin Zhu , Senior Member, IEEE
+Abstract—With the rapid developments of Internet of Thing
+(IoT) technologies, side-channel sound sensing has become a key
+research area. Unlike traditional sound-sensing methods that
+rely on direct acoustic signal recording, side-channel sound-
+sensing methods utilize various indirect emissions from electronic
+devices, such as mechanical vibrations, electromagnetic leakage,
+etc., to infer sound content, making it preferred in many
+application scenarios. Recently, many works related to side-
+channel sound sensing have been proposed and drawn much
+attention from not only academia but also industry. In this article,
+we present a comprehensive survey of various side-channel
+sound-sensing methods. Speciﬁcally, we ﬁrst review the commonly
+sensed object-state characteristics in side-channel sound-sensing
+methods. Then, we introduce the widely exploited hardware
+infrastructure, and signal processing techniques, which are the
+basis of side-channel sound sensing. After that, we provide
+a categorization introduction of emerging side-channel sound-
+sensing methods, and review the common application scenarios.
+Finally, we provide a thoughtful analysis of the countermeasures,
+challenges, and future directions in this ﬁeld. With this survey,
+we aim to summarize the latest research results in the ﬁeld of
+side-channel sound sensing and provide insights and inspiration
+for future research works.
+Index Terms —Side-channel, signal processing, sound eaves-
+dropping, sound recognition, sound sensing.
+I. I NTRODUCTION
+I
+N RECENT years, with the rapid development of Internet
+of Thing (IoT) technologies, side-channel sound sensing
+has become an important research topic in the ﬁeld of
+information security and human–computer interaction. Side-
+channel sound sensing refers to the process of leveraging
+side-channel signals from various sensors, such as cameras,
+millimeter-wave (mmWave) radars, radio frequency identiﬁ-
+cation (RFID), etc., to infer sound-related content without
+directly capturing sound signals. These side-channel signals
+are usually able to capture patterns of human facial dynamics,
+mechanical vibrations, electromagnetic (EM) wave changes,
+Received 5 July 2024; revised 14 September 2024 and 18 October 2024;
+accepted 7 November 2024. Date of publication 19 November 2024; date
+of current version 9 January 2025. This work was supported in part by
+the National Science Foundation of China under Grant 62172277, Grant
+62141220, Grant 62472277, and Grant 62072304; in part by the Shanghai
+Municipal Science and Technology Commission under Grant 21511104700;
+and in part by the Shanghai East Talents Program under Grant 2023-177.
+(Corresponding author: Jiadi Yu.)
+The authors are with the Department of Computer Science and
+Engineering, Shanghai Jiao Tong University, Shanghai 200240, China
+(e-mail: chenyzh@sjtu.edu.cn; jiadiyu@sjtu.edu.cn; linghe.kong@sjtu.edu.cn;
+yzhu@cs.sjtu.edu.cn).
+Digital Object Identiﬁer 10.1109/JIOT.2024.3501334
+etc., that are associated with sound content. By analyzing the
+frequency, amplitude, temporal characteristics, etc., of these
+side-channel signals, it is possible to infer corresponding sound
+content, such as human-speaking sound or speaker-produced
+sound content, without directly capturing sound signals.
+Traditional sound-sensing methods often rely on various
+microphones to capture sound. However, these methods are not
+always applicable in situations where direct access to sound
+sources are restricted, such as environments with soundproof
+barriers [1] or scenarios with signiﬁcant background noise [2].
+This shortcoming leads to the emergence of side-channel
+sound-sensing methods. Side-channel sound-sensing methods
+infer sound content through analyzing various side-channel
+s
+
+Abstract—With the rapid developments of Internet of Thing
+(IoT) technologies, side-channel sound sensing has become a key
+
+background noise elimination in speech processing. It operates
+
+background-noise conditions. Experimental results indicate the
+
+background noise. As for the model-based approaches, devel-

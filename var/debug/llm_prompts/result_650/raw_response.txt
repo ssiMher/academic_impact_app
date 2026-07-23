@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "Z. Wang, G. Yu, B. Zhou, P. Wang, and X. Wu, \"A train positioning method based-on vision and millimeter-wave radar data fusion,\" IEEE Transactions on Intelligent Transportation Systems, vol. 23, no. 5, pp. 4603–4613, 2021.",
+  "paper_level_summary_zh": "该引用论文在相关工作部分中，将目标论文列为多模态融合的示例之一，属于普通相关工作的列举，未对目标论文的亚毫米级精度或具体能力进行明确阐述或使用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Wang et al. [23] combine the train speed calculated by the mmWave and the loop closure detection result of camera data to accurately locate the train.",
+      "evidence_context": "The integration with vision enhances the universality and reliability of mmWave sensing. VPBCT [21] infers the optimal beam pair for transceivers based on the vision-measured vehicle position to improve communication performance. Li et al. [22] distinguish pedestrian or humanoid signs on the road by calculating the radar cross-section of mmWave, making up for the shortcomings of computer vision. Wang et al. [23] combine the train speed calculated by the mmWave and the loop closure detection result of camera data to accurately locate the train. ReID [24] achieves cross-modal human re-identification by analyzing human gait data from vision and mmWave radar.",
+      "reference_entry": "Z. Wang, G. Yu, B. Zhou, P. Wang, and X. Wu, \"A train positioning method based-on vision and millimeter-wave radar data fusion,\" IEEE Transactions on Intelligent Transportation Systems, vol. 23, no. 5, pp. 4603–4613, 2021.",
+      "why_this_judgment_zh": "正文引用标记 [23] 指向的是 Wang et al. 2021 年关于列车定位的论文，并非目标论文。目标论文是 RFID 亚毫米级振动感知，而此处 [23] 是另一篇不同的论文（多模态融合用于列车定位）。因此属于误标，应排除。",
+      "copy_ready_zh": "无，因为该引用为误标，目标论文未被实际引用。",
+      "confidence": "high"
+    }
+  ]
+}

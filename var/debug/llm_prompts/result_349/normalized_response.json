@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[49]",
+  "target_reference_entry": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+  "paper_level_summary_zh": "引用论文将目标文献[23]作为Rydberg原子的基本参考资料，在原理说明和公式推导中引用，但未涉及目标论文的亚毫米级RFID感知能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "evidence_context": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用语句仅定义Rydberg原子，引用标记[23]指向的是Rydberg Atoms书籍（Thomas Gallagher 2006），并非目标论文（Wang等2021）。目标论文标题/DOI未出现，属误引。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文中[23]指向Rydberg Atoms综合参考书，与目标论文无关。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[49]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Thomas Gallagher. 2006.Rydberg Atoms. Springer New York, New\nYork, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "evidence_context": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives. The difference is the measurement precision.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用语句涉及薛定谔方程，引用标记[23]再次指向Rydberg Atoms书籍，与目标文献无关。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文中[23]用于引用薛定谔方程背景知识，并非目标论文。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[49]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Thomas Gallagher. 2006.Rydberg Atoms. Springer New York, New\nYork, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

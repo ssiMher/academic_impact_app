@@ -1,0 +1,1408 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Moiré Vision: A Signal Processing Technology Beyond Pixels Using the Moiré Coordinate
+CITED_PAPER_TITLE: MoiréPose: ultra high precision camera-to-screen pose estimation based on Moiré pattern
+CITED_PAPER_YEAR: 2022
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3495243.3560537
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Yi Li 0062, Yingying Chen 0001, Yanling Bu, Baoliu Ye, Sanglu Lu
+TARGET_REFERENCE_MARKER: [40]
+TARGET_REFERENCE_ENTRY: [40] J. Ning, L. Xie, Y . Li, Y . Chen, Y . Bu, B. Y e, and S. Lu, “Moir ´epose:
+ultra high precision camera-to-screen pose estimation based on
+moir ´e pattern,” in Proceedings of the 28th Annual International
+Conference on Mobile Computing And Networking , 2022, pp. 106–119.
+TARGET_REFERENCE_CONTEXTS:
+[Context 1] section_heading=Although these setups are similar to our methods, they; context_type=formula_nearby; contains_formula=True
+gh-frequency
+patterns to generate moir ´e [32]. Several researchers ex-
+tended the method furthermore, as observed in e.g. 3D
+displacement with multiple cameras [33], [34], in-plane ro-
+tation angle [35] or in-plane movement (1D-rotation and
+2D-translation) [36]. Many researchers use these sampling
+methods for their applications, such as measuring defor-
+mation [37], [38] and curved surface residual stress [39].
+Although these setups are similar to our methods, they
+measure displacements or movements instead of position.
+Thus, their measurable DoF (degree of freedom) is limited.
+Jingyi et al. [40] measure 6-DoF position with moir ´e. Hou et
+al. [41] measures lens distortion with moir ´e. However , these
+methods use dedicated frequency domain or dedicated al-
+gorithms, which are different approaches from conventional
+feature points-based CV algorithms.
+6-DoF position measurement: Moir ´e vision enables
+the 6-DoF target position measurement with PnP [42], [43],
+[44], [45], [46], [47]. SLAM or visual odometry are probably
+the most famous methods for position measurement [48],
+[49], [50]. In recent years, the method combining inertial
+measurement units (IMU) has become mainstream and can
+b
+
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+
+FULL_EXTRACTED_TEXT:
+Moir ´e Vision: A Signal Processing T echnology
+Beyond Pixels Using the Moir ´e Coordinate
+Kensei Jo, Masahiko Inami
+Abstract—Nowadays, many computer vision (CV) techniques require high-precision feature point detection in calibration targets.
+Checkerboards or circle grids are common patterns used to infer the locations of the points directly from the image. However, such
+approaches can lead to degradation in sub-pixel accuracy for low-resolution or sub-sampled sensor data (e.g., Bayer pattern). This
+paper proposes a target-based calibration technique applicable to various conventional CV methods, leveraging the moir ´e phenomena.
+We use a moir ´e pattern that is created between the digital camera’s pixels and the high-frequency texture on the calibration target.
+Even a tiny movement of the target or camera leads to a signiﬁcant motion of the moir ´e, acting as a magniﬁer of the target texture for
+estimating accurate location of targets or camera. In contrast to previous moir ´e approaches that employ frequency domain analyses,
+we introduce the moir ´e coordinates and derive them from the difference between the sensor and target texture position. In the moir ´e
+coordinate, each moir ´e pattern is undistorted. Unlike moir ´e in standard images, each moir ´e pattern has almost the same scale and
+shape in these coordinates. Utilizing this property , we propose a straightforward algorithm to detect and handle correspondence in the
+moir ´e peaks in image and texture location, treating them as feature points of calibration target. In addition, the moir ´e vision can magnify
+pixels, which means the pattern in the moir ´e coordinate visualizes the pixel sensitivity with high spatial resolution. T o validate the
+proposed approach, we present an empirical evaluation using simulated and real Bayer sensor patterns. We show the advantages of
+the proposed method in terms of accuracy and identify promising future directions.
+Index Terms —Moir ´e, Computer Vision, Computational Photography , Image Processing, Calibration, Marker
+✦
+1 I NTRODUCTION
+C
+Amera sensors and computer vision (CV) algorithms
+are deployed in various areas to measure, extract and
+understand the information acquired from the environment.
+A popular technique for calibrating intrinsic/extrinsic pa-
+rameters uses calibration targets, which are printed patterns
+on a ﬂat plane. Widely used patterns include checkerboards
+or circular grids. Such targets help to develop methods to
+locate feature points in the target and image. Usually , the
+point’s locations in the target are known in advance, and
+these are detected in captured images. While handy , such
+approaches can lead to degradation in sub-pixel accuracy
+for low-resolution or sub-sampled sensor data (e.g. Bayer
+pattern).
+Moir ´e are large-scale interference patterns observed by
+discretely sampling data. When a digital camera captures
+a cyclic pattern whose wavelength is almost identical to
+the image sensor ’s sampling interval, the camera observes
+the large low-frequency shapes. This pattern is called moir ´e.
+Even small movements of less than one pixel of the camera
+or target can cause a big displacement in the observed
+moir ´e. Moir ´e has a long history , and many techniques use
+moir ´e [1], [2], [3], [4]. However , these methods employ
+dedicated algorithms and frequency domain analysis to
+extract relevant information. For example, most can measure
+a limited degree of freedom (DoF) displacement. And these
+are challenging to compile with standard CV techniques
+such as feature points of a calibration target.
+T o the best of our knowledge, no one has attempted to
+use the moir ´e phenomenon as spatial feature points for CV .
+There are two issues with using moir ´e as feature points.
+• K. Jo and M. Inami are with the University of T okyo, Japan
+E-mail: {kensei, inami }@star .rcast.u-tokyo.ac.jp
+The ﬁrst is the static characteristics. The size and shape of
+the moir ´e pattern highly depend on the relative position
+between the camera and the target, which makes it difﬁcult
+to detect the moir ´e in the captured image. The second is
+the dynamic characteristics. The movement of the moir ´e
+patterns is entirely different from standard imaging. For
+example, even when a camera or target moves within a
+small range, the observed moir ´e movement is enormous.
+Therefore it is not easy to convert the moir ´e position from
+image coordinates to the texture coordinates.
+This paper proposes a novel approach that overcomes
+these challenges while leveraging the moir ´e phenomenon
+for high-sensitivity measurements for CV . Such an approach
+can go well with many methods that use targets printed on a
+ﬂat surface and placed at a certain distance from the camera.
+Examples include but are not limited to, improving the
+accuracy of measurements used in standard CV processes
+such as camera calibration or Perspective-n-Point (PnP)
+transformations.
+The paper offers a CV technique based on a moir ´e
+coordinate system. W e call it ”moir ´e vision.” W e present a
+simple method to convert the captured image into the moir ´e
+coordinate system. Each moir ´e pattern is normalized in the
+coordinate domain to facilitate the detection of moir ´e peak
+points. By doing so, the size and shape of the pattern will
+be almost consistent and aligns the moir ´e peaks (brightest
+points), thus solving the static characteristic problem. W e
+estimate the moir ´e peak’s positions in the target plane from
+their positions in the image and moir ´e coordinate, which is
+different from the methods with the standard calibration
+targets. The moir ´e is an aliasing pattern and does not
+physically exists on the target plane. Still, since it is possible
+to correlate the image and texture coordinates of the pattern,
+979-8-3503-1676-6/23/$31.00 ©2023 IEEE
+2023 IEEE International Conference on Computational Photography (ICCP) | 979-8-3503-1676-6/23/$31.00 ©2023 IEEE | DOI: 10.1109/ICCP56744.2023.10233828
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+moir ´e vision can use moir ´e peaks as visual feature points in
+CV algorithms. In our approach, the pattern in the moir ´e
+coordinate frame represents an enlarged view of the tiny
+texture grid with optical blur , as shown in Fig.1 (d). It
+allows us to analyze various high-resolution lens errors
+using moir ´e vision. As an example, consider a lens that has a
+color aberration error . The color channel’s moir ´e coordinate
+image also shifts from the ideal position.
+T o validate the proposed approach, we present an empir-
+ical evaluation using simulated and real Bayer sensor pat-
+terns. W e show the advantages of the proposed method in
+terms of accuracy . Moreover , we demonstrate the potential
+of this approach for analysing various errors and along the
+way , we identify promising future directions.
+Contributions:
+1) Methods: W e propose a spatial domain technique in the
+moir ´e coordinate system that leverages moir ´e as image
+feature points. With this method, moir ´e can be used for
+many common CV algorithms.
+2) Error analysis: W e demonstrate that errors in moir ´e
+peak position measurement in the image result in a
+small effect on the detection accuracy of the corre-
+sponding texture coordinates. Additionally , we show
+the relationship between the error of the moir ´e coor-
+dinate system and the error of the texture and sensor
+coordinate system.
+3) Results and applications: W e evaluate the accuracy of
+feature point measurements with simulation and an
+actual system. W e propose several potential CV use-
+cases such as Zhang’s lens calibration [5], 6-DoF target
+position with PnP [6], and visualized color aberration
+error [7].
+2 R ELATED WORKS
+Numerous image-based sensing methods use the location of
+feature points. Here we describe the research with calibra-
+tion target literature and the other moir ´e works.
+General feature point detector without calibration
+target: Many applications, such as SLAM (Simultaneous
+Localization and Mapping) [8], detect landmarks or feature-
+points without using a target. This type of application does
+not require speciﬁc devices to work in various scenes. In this
+area, many feature point detectors and descriptors are pro-
+posed [9], [10], [11], [12], [13]. These algorithms are designed
+to recognize natural shapes, not pre-designed patterns on
+target. These methods are designed for robustness to image
+warp, such as translation, rotation, and scaling. However ,
+the localization accuracy depends on the scene, and gener-
+ally , the liberation target-based method can achieve higher
+performance.
+Patterned illumination, Structured Light: Many meth-
+ods use patterned illumination to create feature points.
+Structured light is one of the typical examples, which
+calculates the depth by identifying the projected pattern’s
+location in the captured image. For example, Phase shift
+projects multiple sine waves of different frequencies and
+phases to identify pattern locations [14], [15]. Because the
+correspondence’s accuracy is critical, there are various types
+of research to locate the pattern [16], [17], [18]. T ypically ,
+these methods detect sub-pixel locations of illuminated pat-
+terns without aliasing, like moir ´e.
+Shadow or projection moir ´ e: Moir ´e-based methods are
+proposed to increase accuracy . The shadow or projection
+moir ´e illuminates cyclic pattern and observes it through
+a reference grating so that these two high-frequency pat-
+terns create the moir ´e fringe [1], [2], [3], [4]. Although the
+moir ´e looks like a large-scale pattern, it is made from high-
+frequency grating. Thus, it has a high sensitivity to surface
+geometry . Because of the sensitivity , there are several types
+of works in this research area, such as a novel calibration
+technique [19], [20] or applications of moir ´e [21], [22]. These
+techniques measure the target surface without putting or
+printing something on it. However , that requires illumina-
+tion and grating.
+2.1 Calibration target-based methods
+Some methods capture pre-designed patterns and locate the
+feature points on the calibration targets. Checkerboards or
+circle grids are popular methods that achieve sub-pixel ac-
+curacy and are used in various image processing algorithms
+[23], [24], [25], [26]. Some markers send both position, ID
+and small amounts of information simultaneously . This is
+often used for Augmented Reality [27], [28], [29]. Some tech-
+niques have been proposed to improve angular accuracy
+by showing different patterns in each angular direction, but
+it requires a lenticular lens, which limits its usable range
+[30], [31]. These processes generally result in lower accuracy
+when using lower-resolution sensors, e.g. resulting from the
+mosaic pattern of Bayer coding.
+Methods using moir ´ e: Unlike the shadow or projection
+moir ´e, the sampling moir ´e measures precise surface 2D
+displacement from a single image using the digital image
+sensor ’s sampling interval as one of the high-frequency
+patterns to generate moir ´e [32]. Several researchers ex-
+tended the method furthermore, as observed in e.g. 3D
+displacement with multiple cameras [33], [34], in-plane ro-
+tation angle [35] or in-plane movement (1D-rotation and
+2D-translation) [36]. Many researchers use these sampling
+methods for their applications, such as measuring defor-
+mation [37], [38] and curved surface residual stress [39].
+Although these setups are similar to our methods, they
+measure displacements or movements instead of position.
+Thus, their measurable DoF (degree of freedom) is limited.
+Jingyi et al. [40] measure 6-DoF position with moir ´e. Hou et
+al. [41] measures lens distortion with moir ´e. However , these
+methods use dedicated frequency domain or dedicated al-
+gorithms, which are different approaches from conventional
+feature points-based CV algorithms.
+6-DoF position measurement: Moir ´e vision enables
+the 6-DoF target position measurement with PnP [42], [43],
+[44], [45], [46], [47]. SLAM or visual odometry are probably
+the most famous methods for position measurement [48],
+[49], [50]. In recent years, the method combining inertial
+measurement units (IMU) has become mainstream and can
+be used in many applications [51]. The moir ´e vision can
+work only in front of the target but can accurately measure
+the position.
+The moir ´ e in imaging context. In another context,
+moir ´e is investigated for a stereoscopic display to improve
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+Sensor
+(a) (b) (c) (d)
+p
+T,x
+L ( p
+T,x
+): Pattern on the target
+u
+I ideal ( u ): Projected ideal pattern  
+u
+I blur ( u ): Pattern with blur
+I moiré ( u ) : Sampled value
+x
+S
+x
+T
+S : Sensor Coordinate M : Moiré Coordinate
+T : Texture Coordinate
+High frequency texture
+Target
+ project   
+ project   
+blur
+Blur Kernel
+ˎ
+Fig. 1. Concept of moir ´ e vision. When a camera observes a high-frequency pattern shown in (a), the camera observes moir ´e. The graphs (b)
+depict an 1-dimensional example to illustrate the phenomenon. The pattern on the calibration target plane (b)-top is projected into the sensor plane
+(b)-middle. As it is sampled in the sensor, the pattern will be blurred due to non-ideal optics and ﬁnite pixel size, as shown in Iblur(u). If the sensor’s
+pixel pitch approaches the interval distance of the pattern, a low-frequency image can be observed. This is known as the moir ´e, as in (b)-bottom
+and (c)-bottom. This paper introduces the moir ´e coordinate (d) where each moir ´es are aligned in a way that it is easy to analyse the error from the
+ideal location. With the ideal location, it is possible to detect the correspondence between the moir ´e image (c)-bottom and texture location (c)-top
+with high precision, enabling various image processing algorithms.
+the image quality [52], [53], [54]. Moir ´e’s magniﬁcation
+properties enlarge a surface’s tiny cyclic pattern [55]. W e
+use the same phenomena to visualize pixel sensitivity with
+high spatial resolution in the moir ´e coordinates where each
+moir ´e is aligned.
+3 I MAGE FORMATION MODEL
+This section introduces a mathematical model of moir ´e.
+3.1 Deﬁnition of coordinate systems
+In this paper , we deﬁne pT = (pT,x, p T,y) as a physical
+location in texture coordinate T , and pS = (u, v ) a point in
+sensor coordinate S. Also, we use M for a moir ´e coordinate,
+which is introduced later . W e describe the coordinate in the
+subscription and vector in a bold italic font such as a. T able
+1 shows the mathematical notation in this paper .
+3.2 Moir ´e formation
+Fig. 1 (a) shows the hardware setup for our proposed
+method. A camera observes a planar target with a high-
+frequency cyclic pattern L (xT ). In Fig. 1 (b), the top graph
+shows the irradiance of the horizontal pattern on the target.
+In the ideal case, the pattern IIdeal (u) is perfectly projected
+with high contrast onto the sensor (with ideal optics and
+pixel). This is depicted in the graph in the middle of Fig.
+1 (b). However , the actual lens is subject to optical blur ,
+and pixels have a ﬁnite size. Therefore, the actual projected
+pattern is blurred, such as Iblur (u) in Fig. 1 (b) bottom
+black graph. More precisely , an optically blurred image is
+projected onto the image sensor and the sensor converts
+photoelectrically received photons in each pixel area. There-
+fore, there are two blur types, blur due to optics and physical
+pixel sampling. In this paper , we use a blur kernel model
+that contains both effects. Each pixel samples a single point
+T ABLE 1
+Mathematical notation in this paper.
+Notation
+Deﬁnition
+a, a A vector a and scalar value a.
+aS , aT , aM A value a in T : texture, S: sensor ,
+and M: moir ´e coordinates respectively .
+pT =
+(
+pT,x, p T,y
+)
+Physical position in texture coordinates.
+pS = (u, v ) Pixel coordinates in the image sensor .
+Iblur(xS ) The texture pattern projected onto
+the sensor plane with optical and pixel blur .
+xT , xS
+Normalized position in T : texture, S: sensor ,
+which are scaled so that the one
+pattern or sampling interval is 1.
+xM
+Normalized position in T : texture, S: sensor ,
+and M: moir ´e coordinates respectively .
+Int (x), Frac (x) Integer and fractional part of the position,
+respectively . e.g., x = Int (x) + Frac (x)
+P
+A position of moir ´e peak point.
+P 0 Initial moir ´e peak point’s position
+measured by the conventional maker .
+∆ xmeasure. Error due to the moir ´e peak
+point measurement error in the image plane.
+∆ xrepro. Error in due to intrinsic or extrinsic parameter .
+of the blurred image Iblur (u). They deﬁne the sampled
+value as Imoir´e (u). If the pixel sampling interval and the
+wavelength of pattern Iblur(u) have almost the same and
+Iblur(u) has a simple shape, then Imoir´e (u) shows a large-
+scale pattern, as shown in Fig. 1 (b) on the bottom green
+graph. Following important observations can be made:
+1) A cyclic texture pattern is projected to the sensor under
+the inﬂuence of the optical/pixel blurring, which leads
+to Iblur(u) on the sensor surface.
+2) If the pattern wavelength and the sampling interval are
+similar , the adjacent pixel observes a slightly different
+position on the next repeating pattern of Iblur(u).
+3) As a result, the sensor observes a low-frequency pat-
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+Gr
+Gb
+p
+T,x
+ [mm]
+0 1 2 3
+0 2 4 61 3 5 7
+x
+T,x
+0 1 2 30 2 4 61 3 5 7
+0 2 4 61 3 5 7
+x
+S,x
+0 2 4 61 3 5 7
+x
+S,x
+0.5 1.5 2.5 3.5
+(a) Texture Position (b) Sensor Position
+(sampling interval =1)
+(c)  Sensor Position
+(sampling interval =2)
+wavelength:  2 mm Interval:  1 pixel Interval:  2 pixel
+Texture Sensor Sensor (Bayer pattern)
+u [pixel] u [pixel]
+Fig. 2. Deﬁnition of position x. In this ﬁgure, we scaled physical posi-
+tion or sensor’s sampling coordinates linearly and deﬁned a normalized
+position in a way such that wavelength of the texture pattern or sensor’s
+sampling interval to 1. (a) top shows an example of a texture whose
+wavelength is 2 mm and the bottom shows the corresponding position
+value in horizontal dimension. For image sensors without sub-sampling,
+the pixel location pS is the same as xS , as shown in (b). In case of
+sub-sampling (e.g. Bayer pattern) such as in (c), the sensor’s sampling
+interval, 2 pixels, is scaled to be 1 in xS .
+tern Imoir´e (u), which represents the expansion and
+distorted pattern of the projected image Iblur(u).
+If we can undistort the moir ´e pattern, we could obtain the
+Iblur(u) with high spatial resolution.
+3.3 Position deﬁnition
+This paper deals with moir ´e phenomenon with a vision-
+based approach using multiple coordinate systems. T o facil-
+itate moir ´e computations, we deﬁne a normalized position ,
+where pattern’s wavelength or sampling interval in each
+axis will be one. xT , xS and xM represent the normalized
+position of texture, sensor and moir ´e, respectively .
+The position can be easily converted from the interval
+or wavenumber of texture. Fig. 2 (a) shows an example of
+a texture’s position whose horizontal wavelength is 2 [mm].
+By multiplying the physical position pT with wavenumber
+˜v = 1
+2 [mm−1] we get xT . The wavenumber here represents
+the number of pattern cycles per unit distance. For simplic-
+ity , we choose the origin of texture coordinates as one of the
+white square centers in the texture grid in a way that every
+center takes an integer value in xT as shown in Fig. 2(a).
+The sensor position xS can be calculated similarly as in Fig.
+2 (b). Unlike textures, the sampling interval can be changed
+later by sub-sampling the acquired image. For instance, the
+xS needs to be multiplied by two because each color pixel
+on the sensor is only repeated with a period of 2 pixels due
+to the Bayer pattern. This is apparent in Fig. 2 (c).
+Note that the normalized position is the same as phase
+divided by 2 π. As the phase, the pattern repeats a period
+of 2 π. As the position, the pattern repeats at wavelength
+1. This paper uses position to address moir ´e in a spatial
+domain approach.
+In this paper , we refer to the green (G) pixels horizontally
+next to red (R) and blue (B) as Gr and Gb, respectively . W e
+use Bayer ’s raw images and use Gr and Gb as different
+channels so that each color has the same moir ´e effect.
+This paper ’s colorized images are shown only for display
+purposes, but four channels are processed separately in
+the calculation stage. Note that moir ´e visibility depends
+on sensor ’s sampling frequency . Usually , Bayer ’s colorized
+images have moir ´e in R and B color because they have a
+lower sampling frequency than G.
+3.4 Mathematical model of moir ´e
+Although the deﬁnition of the normalized position is sim-
+ple, it has a lot of advantages because moir ´e represents the
+beat signal of the two underlying high-frequency patterns.
+The moir ´e phase is calculated from the difference between
+the texture and sampling phase [32], [33]. Similarly , the
+moir ´e position xM can be calculated as the difference of
+sensor and texture position. The derivation is described in
+Appendix A.
+xM = xT − xS (1)
+xM is also known as the number of moir ´e fringes. The
+wavelength, the distance between adjacent moir ´e peaks is
+1. Even when the texture is repeated with an extraordinary
+frequency , the observed moir ´e frequency can be low if the
+texture wavelength and sampling intervals are almost the
+same. This is due to the fact that xM is derived from the
+difference between xT and xS.
+4 P ROPOSED METHOD
+W e want to ﬁnd the texture position xT corresponding to
+the image position xS such that we can use moir ´e as feature
+points. If we know the moir ´e position xM in advance, we
+can measure the corresponding texture position, such as
+xT = xS + xM . The problem is identifying the ideal xM .
+Prior estimation of moir ´ e peak positions This paper
+uses moir ´e peak positions, P . Let’s split the position into
+the integer part 1 Int (x) and fractional part Frac (x), such as
+x = Int (x)+Frac (x) . It is possible to identify the fractional
+part of moir ´e peak position in advance because moir ´e’s
+wavelength is 1 in the moir ´e coordinate. Therefore, all moir ´e
+peaks take the same fractional part Frac (PM ). Let’s ﬁnd
+one example which observes a moir ´e peak. Suppose one
+pixel sees the exact center of the texture grid. That pixel
+would sample a peak value of moir ´e. Recall, the center of
+the texture has an integer value of xT and the fractional part
+of pixel position Frac (xS) is also known, as it can be seen in
+Fig. 2. Therefore, the fractional part of the moir ´e peak can be
+calculated from the fractional part of texture and pixel with
+Eq. 1. T ake Fig. 2 (c) using the Bayer pattern as an example.
+W e start with the R channel as the origin, then it’s Gr
+channel’s fractional part is (0. 5, 0). The center of the grid has
+a value of (0, 0) so that the fractional part of moir ´e position
+is (0. 5, 0). Therefore all moir ´e peak position PM in the Gr
+channel take the same fractional part Frac (PM ) = (0. 5, 0).
+Although the fractional part is known, PM still has an
+ambiguity for the integer part Int (PM ), because the texture
+is cyclic. It is necessary to estimate Int (PM ) to know the
+position PM .
+Estimation of moir ´ e position using hybrid pattern
+This paper uses a hybrid pattern between the conventional
+calibration target and the grid for moir ´e. The conventional
+target estimates Int (PM ), and moir ´e is for the precise
+location.
+1. Int (x) returns the largest integer less than or equal to the input
+value x. Frac (x) gives the fractional part of x, such Frac(x) = x −
+Int(x). Here we compute for each element of the vector x.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+x
+T
+S : Sensor
+x
+S
+x
+M 
+ x
+T 
+ x
+S
+T : Texture
+(1) reproject
+Pin-hole
+(2) transform
+(5) inverse transform
+P
+T 
+ P
+M 
+ P
+S
+M : Moire
+(4) update P
+M
+(3) detect  P
+init, M
+ and  P
+S
+Gr channel
+Fig. 3. Conversion of each coordinate. This depicts the process of how
+to measure the moir ´e’s peak positions in sensor and texture coordinates
+and use them as feature points. (1) Reproject pixel coordinates from
+S to T with the initial intrinsic and extrinsic parameters, estimated by
+a conventional calibration target. (2) T ransform image into the moir ´e
+coordinate system. (3) Measure peak of moir ´e. At this moment, the peak
+position might be inaccurate due to the intrinsic & extrinsic parameter
+error, so that the peak potion Pinit,M deviates from the ideal location
+PM . (4) Update moir ´e peak with PM . Note that the fractional part of
+PM is known in advance. (5) The accurate texture position can be
+estimated using inverse transformation.
+The key technique of moir ´e vision is the use of Equ. 1 for
+the coordinate transformation. Fig. 3 shows the measure-
+ment process of moir ´e vision.
+1) Find the texture coordinates corresponding to pixel lo-
+cations in the captured image using conventional target
+pattern. It is possible to reproject and estimate target
+position from the intrinsic/extrinsic parameters and the
+distortion coefﬁcient, estimated from the conventional
+target pattern. W e calculate ray vectors of every pixel
+using the intrinsic parameter and measure intersections
+with the target plane with the extrinsic parameter .
+2) W arp image into the moir ´e coordinates with Eq. 1.
+Recall that the moir ´e is undistorted in the moir ´e co-
+ordinates such as in Fig. 1 (d).
+3) Measure moir ´e’s initial peak positions Pinit,M and
+corresponding sensor position PS. W e measure moir ´e
+areas with connected-component labeling [56] and de-
+tect sub-pixel peak points with polynomial ﬁtting. As
+we discussed, the fractional position of moir ´e peak is
+known; in this case, it is (0. 5, 0) for Gr . However , the
+measured position Pinit,M could be different from the
+actual location, due to errors in the current estimate of
+intrinsic or extrinsic calibration.
+4) Reﬁne moir ´e position. W e select PM as the closest point
+from Pinit,M, whose fractional position is (0. 5, 0) for
+Gr because the error of position is expected to be small.
+5) Measure texture position with moir ´e peak. Now , we
+know the ideal position in the moir ´e coordinates so that
+we can estimate the texture position as, PT = PS +PM .
+4.1 Texture and pixel property magniﬁcation
+Let’s think about the pattern in moir ´e coordinates. Although
+the moir ´e pattern is scaled or distorted in sensor coordinates
+(b) Captured Image (c) Moiré Coordinate (d) Enlarged image
+with optical blur
+without optical blur
+* Simulation
+* Enlarged
+image
+(a) Texture pa�ern
+Fig. 4. Moir ´ e coordinates and Iblur pattern identity . T o demonstrate
+the effect of optical blur, we generated a grid with a small ”F” character
+(a), which is captured in a simulated moir ´e image (b). Calculating
+moir ´e coordinates from the ideal intrinsic & extrinsic parameters, (c) is
+observed. In case of no optical blur, the result (d)-top is the same as
+the original texture pattern (a). Simulating the effect of optical blur yields
+high-resolution pattern with blur as it can be seen in (d)-bottom.
+shown in Fig. 4 (b), it is undistorted in moir ´e coordinates,
+as Fig. 4 (c). Therefore, the pattern in the moir ´e coordinates
+is the same as the undistorted Iblur(xS). Fig. 4 (d) shows
+the simulated image with and without optical blur . If there
+is no optical blur , the pattern in the moir ´e coordinates is the
+same as the texture pattern in Fig. 4 (a). Since a real camera
+usually suffers from optical and pixel blurring, the moir ´e
+pattern emerges as an effect of it.
+4.2 T arget texture design
+T o observe moir ´e, the texture wavelength should be almost
+the same as the sensor ’s sampling interval. For example, if a
+VGA sensor observes a target that ﬁlls the sensor plane, the
+target should have a grid of about 640x480.
+Handling large optical blur. When the camera’s blur
+kernel is large, it is challenging to observe high contrast
+moir ´e, as exempliﬁed in Fig. 5 (a). Because the large blur
+eliminates the high-frequency pattern, Iblur(xS) is low in
+contrast. Even if the camera location changes, it still ob-
+serves a distorted low-contrast image of Iblur(xS).
+Fig. 5 (b) results from 2 times sparser texture and
+sampling pattern. Recall changing the sampling interval is
+possible by sub-sampling the captured image. The same
+technique is introduced in sampling moir ´e [32]. In case the
+lens blur is large, we recommend to sub-sample the sensor ,
+e.g. at every second pixel.
+4.3 Limitations of moir ´e vision
+Moir ´e vision has several limitations.
+T arget pattern. The appropriate target design depends
+on camera resolution, ﬁeld of view (FoV), blur kernel,
+and location as shown in Sec. 4.2. Therefore, the method
+is unsuitable for multiple cameras with the same target
+design. Higher performance can be achieved by designing
+the targets according to the camera parameter and location.
+Initial position measurement. The proposed method
+uses conventional targets to measure the initial position.
+Usually , the moir ´e peak positions are corrected in the moir ´e
+coordinate system. However , if the initial position error is
+signiﬁcant, the moir ´e peak will be misaligned for another
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+(a) sampling interval: 1 pixel (b) sampling interval: 2 pixel
+*simula�on
+High Contrast
+Iideal(u): Projected pattern on the sensor
+Iblur(u): Pattern with blur
+Captured Image
+Low Contrast
+z=3.6m
+⾝
+ử
+⾝
+ử
+z=3.5m
+z=3.6m
+z=3.5m
+blur
+Fig. 5. Advantage of sub-sampling. The moir ´e pattern depends highly
+on the Point Spread Function (PSF), target texture’s wavelength and
+sampling interval. Although a small movement of the camera or target
+frame changes the moir ´e size, the contrast of the moir ´e image does not
+change (a). In order to observe the high contrast pattern, it is required to
+make both, the texture and sampling pattern sparse. On the right (b) we
+can see the moir ´e with a sparser texture and sub-sampled image. This
+leads to a higher contrast moir ´e pattern.
+neighboring position. T o avoid this, the error of estimating
+Pinit,T should be no more than ±0.5 in the target plane.
+Signal processing. W e use Bayer ’s raw images instead
+of the colorized image to avoid information distortion due
+to further digital image processing in the camera. In addi-
+tion, we use Gr and Gb separately as described in Sec. 3.3.
+5 T HEORETICAL ERROR ANALYSIS
+In this section, we show that the effect of moir ´e peak
+measurement error is small. Additionally , we demonstrate
+how the error in moir ´e coordinate ∆x M can quantify
+the measurement or reprojection error . Even though these
+errors are too small to be measured directly with standard
+computer vision techniques, moir ´e vision can observe it due
+to its high resolution as there are numerous sampling points
+in one moir ´e pattern.
+5.1 Moir ´e peak measurement error
+Let’s think about how the measurement error surfaces in the
+target plane. Suppose the intrinsic and extrinsic parameter
+is correct. The P is a position of target moir ´e peak, and
+Q is the measured point that contains the measurement
+error . Recall that the proposed method estimates the moir ´e
+peak’s texture location from its sensor coordinates ( QS), so
+that the error should be measured from the point QT . For
+conventional imaging, the corresponding error is ∆x QP,T ,
+which is shown in Fig. 6 (a). In the case of moir ´e vision, the
+ideal texture point which corresponds to the point QS can
+be calculated as QT = QS + QM . However , since the point
+P is the goal and the point Q was measured, the calculated
+texture coordinates RT are obtained by using the position
+of P , such as RT = QS + PM . Therefore, the measurement
+error for the proposed method ∆x measure.,T = RT − QT
+can be simpliﬁed into
+∆x measure.,T = ∆x M . (2)
+Target
+P
+T
+R
+T
+Q
+T
+Sample
+∆x
+S
+Q
+S
+Peak
+Sensor
+∆x
+measure., T
+∆x
+QP , T
+P
+S
+∆x
+M
+(a) (b) Moiré Coordinate (c)
+P
+M
+Q
+M
+wavelength = 1
+Fig. 6. Measurement error. Although the measured point in sensor
+coordinates contains an error ∆x S , the estimated texture point RT is
+calculated according to the sampled point QS so that the error in texture
+is ∆x measure,T . The converted moir ´e image is shown in (b) and (c)
+shows its values as the red line in the plot. Even if ∆x S is one pixel,
+the corresponding phase error ∆x M can be much smaller in moir ´e
+coordinates, as shown in (c). This paper demonstrates that the error in
+texture ∆x measure.,T is identical to ∆x M .
+The moir ´e phase error ∆x M = PM − QM is shown in
+Fig. 6 (c). This equation signiﬁes that even if there is a
+measurement error when detecting moir ´e’s peak location
+in the image, it results in an error in the texture frame. It’s
+value is the same as the error in the moir ´e coordinates.
+For example, if the error is 1 pixel in the sensor co-
+ordinates and the moir ´e size is 20 pixels, which is the
+∆x M = 1/ 20 = 0. 05 in the moir ´e phase. Therefore, the
+error in the target plane is also 0.05. The larger the size of
+moir ´e, the smaller the error in the target plane.
+5.2 Reprojection error in the target plane
+Previous analyses assume intrinsic / extrinsic parameter
+were correct, but usually this is not the real case. W e show
+that the moir ´e coordinates are beneﬁcial for visualizing the
+error due to incorrect camera calibration parameters, as
+shown in Fig. 7. W e ignore the measurement error because
+it results in a small error if the moir ´e size is appropriate.
+Calculating the total derivative of Eq. 1, we get
+∆ xM = ∆ xT − ∆ xS. (3)
+W e want to measure how a single point contributes to the re-
+projection error ∆ xrepro.,T, which is in texture coordinates,
+because of the intrinsic / extrinsic parameter . Therefore, we
+can get the following equation by substituting zero for ∆ xS
+in Eq. 3, such that
+∆ xrepro.,T = ∆ xM . (4)
+This shows that the error in the moir ´e coordinate ∆ xM is
+identical to the reprojection error in texture coordinates.
+5.3 Reprojection error in the sensor plane
+The moir ´e coordinate can visualize the reprojection error in
+the sensor coordinates, which decpits the distance between
+an ideal and measured point projected from a single texture
+point, as shown in Fig. 8. Substituting zero for ∆ xT , Eq. 3
+will be
+∆ xrepro.,S = − ∆ xM . (5)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+Target
+∆x
+repro., T
+ ∆x
+M
+P
+S
+(a)
+ (b) Inaccurate (c) Accurate
+∆x
+M
+f
+Inaccurate
+f
+Accurate
+Fig. 7. Reprojection error in the target plane . A miscalibrated camera
+can lead to reprojection errors, such that a point PS is reprojected
+to a different location ∆ xrepro.,T . This error is the same as ∆ xM
+visualized in (b), which is captured with incorrect intrinsic parameters so
+that ∆ xM is large. A calibrated camera would however result in (c).
+Target
+f
+R
+f
+G
+P
+T
+(a) (b)
+Color R
+G  (Gr and Gb) B
+∆x
+repro., S
+if  f
+R
+ 
+= f
+G
+Actual.
+Fig. 8. Reprojection error in the sensor plane . Aside from calibration
+mis-alignment, color aberration can also be visualized. Even if intrinsic
+parameters are correct for a single color, e.g., green, other color chan-
+nels may exhibit a different focal length. Therefore, a single texture point
+PT is projected in a different location for each color, as shown in (a).
+This error ∆ xrepro,S can then be measured from ∆ xM , as depicted
+in (b). While G shows no error, R and B suffer more mis-alignment in
+different directions.
+By measuring the moir ´e error , we can get the error sensor
+coordinate. For example, when the intrinsic and extrinsic
+parameters of green color are correct, the parameters of red
+/ blue might still differ due to color aberration. Therefore, a
+single texture point will be observed in different locations
+in each color channel as shown in Fig. 8 (a). If the red
+channel had the same intrinsic parameters and no color
+aberration, the peak points would be located on the lattice
+point in Fig. (b). It is possible to estimate ∆ xrepro.,S from
+the difference ∆ xM . This analysis is physically incorrect
+since the physical pixel location is static, and yet the camera
+calibration parameters contain errors.
+6 E MPIRICAL EVALUATION
+In this section, we evaluate the proposed method qualita-
+tively and quantitatively .
+6.1 Quantitative Evaluation with synthetic data
+Here, we show results of moir ´e peak detection accuracy us-
+ing generated data. This experiment measures and evaluates
+the accuracy performance of the moir ´e vision and shows its
+advantages compared to conventional calibration targets.
+(a) checker board (b) circle grid
+(c) moire-1 (No Sub-sample) (d) moire-2 (Sub-sample Step 2)
+* Simulated results. Vectors are scaled x1000
+Fig. 9. Observed targets with the simulation. Here, the target texture
+plane is placed at a distance of 3.6 meters. The proposed targets (c)
+and (d) have smaller error than the checkerboard (a) and the circle grid
+(b) in this simulation.
+Evaluation methods and parameters. W e generate syn-
+thetic images with a simulator and measure the accuracy
+of feature point and moir ´e peak detection. By using a
+simulation, it is possible to evaluate the accuracy as accurate
+ground-truth information is available.
+W e use a camera with VGA (640 × 480) resolution with a
+horizontal FoV of 60 degrees, 3 % distortion at the corner
+of the image and pixel noise of 30 dB, as shown in T able. 2.
+Besides, we choose a display size of 4m × 3m and place it at
+a distance of 3.6-meter from the camera so that the target is
+well observable in the captured image including the corner
+area of the image.
+W e select the checkerboard, the circle grid, and two
+proposed targets (moir ´e-1 and moir ´e-2) for comparison.
+Here, moir ´e-1 shows the observed moir ´e image without sub-
+sampling, where as moir ´e-2 exhibits a two times sparser
+target grid than moir ´e-1 to visualize sub-sampling by a
+factor of 2. As the sub-sampled version is the same as the
+Bayer color pattern, we only show the colorized image of
+moir ´e-2 for visualization purposes. During computation, Gr
+and Gb in Fig. 2 are processed as separate channels. The
+checkerboard and the circle grid are detected with default
+OpenCV methods. W e select a diameter of 63mm for the
+circle grid, because large circles are not robust against lens
+distortion.
+W e change the target location for each axis and mea-
+sure the estimated feature point’s root mean square error
+(RMSE). The target is to measure with a sub-pixel accuracy .
+Therefore, we calculate the RMSE with seven images, which
+are all slightly shifted in parallel to the target plane to exhibit
+various sub-pixel ground-truth values.
+Simulation method. W e generate synthetic data for the
+evaluation in the following way:
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+-
+-
+(a) x -Position [mm] (e) y -Tilt [deg] (d) x -Tilt [deg] (c) z -Position [mm] (b) y -Position [mm] (f ) z -Tilt [deg] 
+* Scaled x2000
+(h) z = 3200mm (i) z = 3400mm (j) z = 3600mm
+jih
+(k) θ x  = -14 deg
+k
+(l) θ y  = -12 deg
+l m
+(m) θ z  = - 4 deg
+x
+y  
+z
+y
+x
+z
+Fig. 10. Results of simulated feature point accuracy for each calibration target. The top row shows root mean square error (RMSE) of measured
+points from each target. We placed the four types of targets at the base point ( z=3.6 meters) and measured the RMSE of feature points with
+estimated and ideal locations while slightly moving them. We evaluated the checkerboard, circle grid, and moir ´e target (with and without sub-
+sampling). The moir ´e target results in high accuracy . However, z-axis rotation or z-position change leads to smaller the moir ´e sizes, which deteriorate
+the performance. This is exempliﬁed in the bottom row.
+T ABLE 2
+Simulation experiment parameters.
+Parameter V alue
+Holizontal FoV 60 deg
+Resolution VGA
+T arget Size 4× 3 m
+T arget Distance 3.6 m
+Grid Interval moir ´e-1 6.25mm
+Grid Interval moir ´e-2 12.5mm
+T ABLE 3
+Real device’s parameters.
+Parameter V alue
+Focal Length 6 mm
+F-number 2.8
+Resolution VGA
+Pixel Size 7.4 µ m
+T arget Size 281× 281mm
+T arget Distance 61 cm
+Grid Interval 1.44 mm
+circle grid
+camera
+stage
+(b) Experimental Setup
+moi ré
+(a) Target Pattern
+target
+Fig. 11. Experimental setup. We choose the circle grid and the moir ´e
+patterns shown in (a) as targets for our qualitative evaluation. For the
+PnP experiment, we use a linear and rotation stage to evaluate the
+performance (b). For other applications such as calibration, we moved
+the target by hand.
+1) Render scenes with high resolution 2 in OpenGL.
+2) Convolve with the PSF and sample the image according
+to lens distortion and sensor resolution.
+3) Apply noise.
+Results. Fig. 9 shows the simulated image with different
+targets. The green arrow shows the error vectors between
+2. In our experiment, we set the resolution to 14’720 × 11’040 pixels,
+which is almost the maximum resolution for our environment.
+the ideal and observed location of feature points. Note that
+the length of the arrows is magniﬁed by a factor 1000 times
+to emphasize the error . It becomes apparent that the moir ´e
+targets are more accurate than conventional ones under the
+simulated conditions.
+Fig. 10 demonstrates the result of the quantitative eval-
+uation with different target locations. The horizontal axes
+in the plots represent the location on each axis and the
+vertical shows the RMSE. Because we know the ground-
+truth parameters of the simulation, we can measure the ideal
+and estimated feature point locations.
+The accuracy depends on the target location. In case
+of the checkerboard pattern, it exhibits the worst accuracy
+across all axes. Although in the case of rotations around
+z-axis in Fig. 10 (f) shows varying performance, it is only
+on par with the circle grid. The circle grid exhibits a slight
+dependency on the z-position, as the area of the circles
+change in depending on the distance (c).
+As we mentioned before, the moir ´e’s accuracy depends
+on its size in the image. This can be seen in the results in
+Fig. 10 (c). The moir ´e size is the biggest at a z-distance
+of around 3.4 meter . Thus, the RMSE is small around that
+value. However , just at a distance at 3.45 meters the error
+is large as the moir ´e pattern is too large to detect peak
+point locations or exhibits fewer moir ´e peaks as seen in
+Fig. 10 (i). A large tilt might also degrade the accuracy in
+(d) and (e), because some parts of the target plane have
+different z-positions, where the moir ´e is too small to detect,
+as exempliﬁed in (k) & (l). Finally , z-tilt also impacts the
+moir ´e pattern to become smaller , which results in worse
+performance, see (f) & (m).
+Discussion. In our simulated environment, the moir ´e
+target is more accurate than the conventional checkerboard
+or the circle grid pattern, when placed in the appropriately .
+Furthermore, within this range, the moir ´e vision can accu-
+rately measure moir ´e peak points even when the target is
+moved in six directions. In other words, it indicates that a 6-
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+* vector scale: x200
+(a) calibrated by circle grid (b) calibrated by moiré
+Fig. 12. Reprojection errors calibrated by different targets. The green
+vector shows the reprojection error measured by moir ´e vision. We can
+see that in (a) the intrinsic parameter from circle grid calibration exhibits
+larger error than in (b) where we used the moir ´e target to calibrate the
+intrinsics.
+DoF position measurement is possible. Furthermore, by sub-
+sampling every two pixels, moir ´e-2 was even more accurate
+than with dense sampling as in moir ´e-1. The common tar-
+get, such as a checkerboard, usually degrades performance
+with sparse pixels samplings. As mentioned in Sec 4.3, the
+moir ´e vision is unsuitable for measuring different cameras
+in different locations using the same pattern. If we want
+to measure cameras in various locations, the conventional
+circle grid performs better because it is more robust to
+changes in target location.
+6.2 Qualitative and Quantitative evaluation with a real
+device
+This section shows the evaluation with an actual device. W e
+use a VGA resolution camera with a pixel size of 7.4 µm.
+The lens focal length is 6mm with an aperture of F2.8. As
+depicted in Fig. 11 (a), we selected the targets such that
+rotation symmetry for 90 degrees is given and placed it at
+a distance of approximately 61cm. Experimental parameters
+can be found in T able. 3. The sensor has a Bayer color ﬁlter ,
+thus a 2 pixel sub-sampling applies. W e use only the green
+channel (Gr and Gb) images to avoid the effect of color
+aberration. Fig. 11 (b) shows the experimental setup for the
+experiments.
+6.2.1 Lens Calibration
+First, we measure the intrinsic camera parameters and qual-
+itatively evaluate the proposed method’s accuracy .
+Evaluation method.
+1) Calibration: W e capture several images with circle girds
+and the moir ´e target, shown in Fig. 11 (a), and measure
+two intrinsic parameters with Zhang’s method [5].
+2) Error measurement: W e plot errors of the two param-
+eters with the method of Sec. 5.2 and evaluate them
+qualitatively . That is, the error ∆ xM is measured in
+the moir ´e coordinates and draw them on the image
+coordinates.
+Results and discussions. Fig. 12 shows the reprojection
+errors with different intrinsic parameters, which are cali-
+brated using either the circle grid (a) or the moir ´e target
+(b). In both cases, we use the same image to validate and
+to do a fair comparison with respect to their accuracy of
+the intrinsic parameters. W e calculated the errors using Eq.4
+and displayed them on the captured image. On the zoomed
+(a) (b) (c) (d)
+JEFBM
+DJSDMF
+NPJSF
+x
+z
+y
+z
+Fig. 13. Experiment results of displacement with a real camera. The
+graphs show the displacement (relative position or angle) from original
+location. The moir ´e target measures precise translation with higher
+accuracy than the circle grid (a)-(b).
+blocks we have the same number of moir ´e peak points. Note
+that the magnitudes for the shown respective reprojection
+errors (the shown green colour arrows) are different. In the
+same Fig. 12, for the zoomed blocks it is obvious to see
+that the magnitudes for the reprojection errors under (a)
+are larger than the ones under (b). Moreover , we can see
+that this is also valid for the whole image, since we use the
+same number of moir ´e peak points for both cases (a) and (b).
+Thus, it becomes visually apparent that using moir ´e vision
+in Fig. 12 (b) we have much less error compared to the error
+for the case (a).
+6.2.2 6-DoF position measurement
+In this section, we evaluate position measurement accuracy
+using PnP with a real device.
+Evaluation methods. Fig. 11 (b) shows the experimental
+setup, where we use a linear and rotational stage to change
+the position. Considering the symmetry of the target, we
+omitted y-position and x-tilt because these are the same as
+x-position and y-tilt, respectively . Note that we examined,
+that 6-DoF position estimation is possible using the detected
+feature points of Fig. 10 as a preliminary experiment.
+Results and discussions. Results can be seen in Fig. 13.
+It is challenging to get the ground-truth positions for the
+real experiment, so the plot only shows the displacement
+from the starting point. The moir ´e exhibits generally more
+accurate performance than the circle grid in translational
+and rotational movements for x- and y-axis. Only in the
+case of z-tilt, the circle grid is able to track the location more
+smoothly . W e think the proposed method is too sensitive, as
+it is affected by minor residual distortion correction or in-
+trinsic parameter quality . Because of the experiment setup’s
+limitations, the rotation axis of z-tilt is far from the target
+center , so the z-tilt also involves a large translation. It results
+in massive moir ´e movement, so some moir ´e patterns appear
+and disappear with the z-tilt. In contrast, the circle grid is
+more consistent in that case. Therefore, if lens distortion
+correction is imperfect, some moir ´e points are affected by
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+distortion effects, but the points may move to another area
+soon. This leads to a rattling line for z-tilt.
+6.2.3 Qualitative evaluation of reprojection error
+Moir ´e vision can visualize errors in the moir ´e coordinate
+system. W e evaluate the results qualitatively and verify that
+it matches with the color aberration error .
+Evaluation methods. W e capture several moir ´e images,
+measure errors ∆ xM and depict them on the images with
+Eq. 5 method. The captured images are then converted to
+the moir ´e coordinate system based on the green (Gr and
+Gb) channels, where we measure the errors of the R and B.
+Results and discussions. Fig. 14 depict the results in
+measured error . In (a) we can see the captured moir ´e images
+and overlayed error and (b) the error vectors are measured
+by Eq. 5. The error is small in the screen’s center portion and
+signiﬁcant in the peripheral area. Furthermore, blue and red
+show an error in opposite directions.
+The chromatic aberration can explain this result. All red,
+green and blue have different diffractive indices, which
+leads to their focal lengths being slightly different. The
+vector ’s directions are opposing each other because red has
+a longer and blue a shorter wavelength than green. Note
+that the error is displayed based on measurements in the
+green channel. Additionally , we can see that the lens used
+has a larger error in the corner area. The result demonstrates
+that the error can be measured by moir ´e vision qualitatively .
+In future work, we would like to extend this with a quanti-
+tative accuracy evaluation of error measurement.
+7 C ONCLUSION
+W e proposed moir ´e vision, a novel image processing tech-
+nique in moir ´e coordinates, where the pattern is identical
+to the high-resolution image of the undistorted and the
+blurred texture grid. The method enables using moir ´e peaks
+as feature points of the calibration target to improve the
+accuracy for various CV techniques, such as lens calibration
+and 6-DoF position detection, and to visualize reprojection
+or color aberration errors in greater detail. W e evaluated the
+moir ´e vision technique using simulated and real images.
+The results show that, unlike conventional methods, our
+approach can increase accuracy with appropriate target
+design, even for sub-sampled sensor data.
+However , moir ´e vision has some limitations. The target’s
+design depends on various parameters such as sensor res-
+olution, FoV and target’s location. The accuracy depends
+on the moir ´e’s visual size in the image. Thus, there is a
+trade-off between accuracy and spatial information. A larger
+moir ´e yields higher accuracy but decreases the number of
+moir ´e, measurement points. Therefore, this method is more
+appropriate to analyze a single type of camera in detail.
+Finally , we note that it is better to process raw camera data
+because modern digital cameras involve a lot of image post-
+processing to generate color images, e.g., gamma correction
+and contrast enhancement. In our evaluation, we used raw
+data and treated Gr and Gb as different channels such that
+all R, Gr , B and Gb channels have same sampling intervals
+and observer moir ´e with the same target.
+W e now discuss possible future directions and use cases.
+An immediate next step could be a quantitative evaluation
+* vectors are scaled x20.
+(a)
+(b)
+Fig. 14. Visualized results of the color aberration error. We captured
+multiple images (a) and measured color aberration error (b). Because
+the wavelength of red is longer than green and blue is shorter, the
+direction of red and blue error are opposing each other. Furthermore, we
+can see that the corner area of this lens suffers from more aberration.
+for error analyses and an extension for color aberration
+error measurement. The magniﬁcation property , as outlined
+in Sec. 4.1, can be useful for more CV techniques that
+require high-resolution blur kernel, such as super-resolution
+[57]. The kernel may be possible to be measured by moir ´e
+vision due to the ability to visualize pixel’s characteristics at
+subpixel accuracy . The moir ´e vision approach might also be
+of interest for techniques without calibration targets, such as
+structured light. While this paper only focuses on a printed
+pattern in a ﬂat plane, the same concept can be used for
+illumination. Because moir ´e vision uses a simple framework
+with the moir ´e coordinates, we believe it has tremendous
+potential in the setting where precise measurements are
+required.
+APPENDIX A
+DERIVATION OF THE MOIR ´E EQUATION
+Let us derive Eq. 1. W e want to ﬁnd the normalized moir ´e
+positon xM in which moir ’e wavelength is 1. For simplicity ,
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+we assume that the patterns affected by optical/pixel blur ,
+Lblur(xT ), lie on the calibration target plane and ideal pixels
+sample them. In other words, the pattern itself is affected by
+the blur , not in the camera. The pattern Lblur (xT ) satisﬁes
+the following equation for any integer value N because the
+pattern is cyclic 3 .
+Lblur (xT ) =Lblur (xT + N) (6)
+Let f(xS) be the reprojection function 4 that outputs texture
+plane position from pixel position, such as xT = f(xS).
+When a camera observes a low-frequency moir ´e pattern, the
+camera sampling interval is almost the same as the texture
+pattern’s wavelength. It means the next pixel samples al-
+most the next grid point in the texture. Therefore, f(xS) is
+separated into xS and the residual components f′(xS).
+xT = f(xS) =xS + f′(xS) (7)
+The observed image Imoir´e(xS) samples the pixel location
+of Iblur(xS) on the sensor plane, as shown in Fig. 1 (b)
+bottom. This value is as same as the corresponding texture
+pattern Lblur(xT ). From Eq. 6 and 7, the following equation
+is obtained where xS is an integer , the pixel position.
+Imoir´e(xS) = Iblur(xS) =Lblur(xT )
+= Lblur (❍❍xS + f′(xS)) =Lblur (xT − xS) .
+Since it is Lblur is a cyclic pattern whose wavelength is 1, the
+wavelength of xM will be 1 by deﬁning xM = xT − xS.
+ACKNOWLEDGMENTS
+W e thank Professor Mohit Gupta for his valuable discus-
+sions and Professor Masashi Ikeuchi for his cooperation in
+the experiment.
+REFERENCES
+[1] H. T akasaki, “Moir ´e T opography,” Applied Optics , vol. 9, no. 6, p.
+1467, jun 1970.
+[2] S. W . Kim, Y . B. Choi, and J. T . Oh, “Reverse engineering: High
+speed digitization of free-form surfaces by phase-shifting grating
+projection moir ´e topography,” International Journal of Machine T ools
+and Manufacture , vol. 39, no. 3, pp. 389–401, 1999.
+[3] Y .-B. Choi, “Phase-shifting grating projection moire ´ topography,”
+Optical Engineering , vol. 37, no. 3, p. 1005, 2002.
+[4] M. F . Y uichi AKA TSUKA and T . MA TUI, “Three-dimensional
+Shape Measurement Using Optimal Number of Phase-shifting
+Steps Based on Light-source-stepping Method,” Advanced Exper-
+imental Mechanics , vol. 2, no. 3, pp. 105–111, jun 2017.
+[5] Z. Zhang, “A ﬂexible new technique for camera calibration,” IEEE
+T ransactions on Pattern Analysis and Machine Intelligence , vol. 22,
+no. 11, pp. 1330–1334, 2000.
+[6] E. Marchand, H. Uchiyama, and F . Spindler , “Pose estimation
+for augmented reality: a hands-on survey ,” IEEE transactions on
+visualization and computer graphics , vol. 22, no. 12, pp. 2633–2651,
+2015.
+[7] D. H. Marimont and B. A. W andell, “Matching color images: the
+effects of axial chromatic aberration,” JOSA A , vol. 11, no. 12, pp.
+3113–3122, 1994.
+[8] T . T aketomi, H. Uchiyama, and S. Ikeda, “Visual slam algorithms:
+A survey from 2010 to 2016,” IPSJ T ransactions on Computer V ision
+and Applications , vol. 9, no. 1, pp. 1–11, 2017.
+3. This formula holds when the target is not greatly tilted. When tilted
+greatly , the size of the optical blur kernel changes drastically depending
+on the target location.
+4. The function depends on intrinsic/extrinsic parameters and dis-
+tortion coefﬁcients, but we omitted them for simplicity .
+[9] D. G. Low , “Distinctive image features from scale-invariant key-
+points,” International Journal of Computer V ision , pp. 91–110, 2004.
+[10] H. Bay , A. Ess, T . T uytelaars, and L. V an Gool, “Speeded-Up Ro-
+bust Features (SURF),” Computer V ision and Image Understanding ,
+vol. 110, no. 3, pp. 346–359, jun 2008.
+[11] R. P . Richner , “Research Collection,” BRISK Binary Robust Invariant
+Scalable Keypoints , pp. 12–19, 2011.
+[12] E. Rublee, V . Rabaud, K. Konolige, and G. Bradski, “ORB: An efﬁ-
+cient alternative to SIFT or SURF,” in 2011 International Conference
+on Computer V ision . IEEE, nov 2011, pp. 2564–2571.
+[13] P . F . Alcantarilla, J. Nuevo, and A. Bartoli, “Fast explicit diffusion
+for accelerated features in nonlinear scale spaces,” BMVC 2013 -
+Electronic Proceedings of the British Machine V ision Conference 2013 ,
+p. 5, 2013.
+[14] T . Chen, H. P . Seidel, and H. P . Lensch, “Modulated phase-shifting
+for 3D scanning,” 26th IEEE Conference on Computer V ision and
+Pattern Recognition, CVPR , 2008.
+[15] M. T akeda and K. Mutoh, “Fourier transform proﬁlometry for
+the automatic measurement of 3-D object shapes,” Applied Optics ,
+vol. 22, no. 24, p. 3977, 1983.
+[16] J. L. Posdamer and M. D. Altschuler , “Surface measurement by
+space-encoded projected beam systems,” Computer Graphics and
+Image Processing , vol. 18, no. 1, pp. 1–17, 1982.
+[17] J. Salvi, S. Fernandez, T . Pribanic, and X. Llado, “A state of the
+art in structured light patterns for surface proﬁlometry,” Pattern
+Recognition, vol. 43, no. 8, pp. 2666–2680, 2010.
+[18] M. Gupta and S. K. Nayar , “Micro Phase Shifting Conventional
+Phase Shifting Projected images Micro Phase Shifting,” IEEE Con-
+ference on computer vision and Pattern Recognition , pp. 813–820, 2012.
+[19] J. J. J. Dirckx and W . F . Decraemer , “Automatic calibration method
+for phase shift shadow moire interferometry ,” Applied Optics ,
+vol. 29, no. 10, p. 1474, apr 1990.
+[20] C. Breque, J. C. Dupre, and F . Bremand, “Calibration of a system
+of projection moir ´e for relief measuring: Biomechanical applica-
+tions,” Optics and Lasers in Engineering , vol. 41, no. 2, pp. 241–260,
+2004.
+[21] F . Zhu, X. Lin, W . Zhang, J. Fan, and S. Liu, “Morphology Evalua-
+tion of Microelectronic Packaging Substrates Using Shadow Moir ´e
+T echnique,” IEEE Access , vol. 6, pp. 33 099–33 110, 2018.
+[22] C.-H. W ang, Y .-H. Hsu, S.-S. Lee, W .-J. Wu, and C.-K. Lee,
+“Distributed pulsation waveform inspection to radial artery with
+shadow moir ´e fringe,” in 2018 Conference on Lasers and Electro-
+Optics (CLEO) , 2018, pp. 1–2.
+[23] L. Lucchese and S. Mitra, “Using saddle points for subpixel feature
+detection in camera calibration targets,” in Asia-Paciﬁc Conference
+on Circuits and Systems , vol. 2. IEEE, 2002, pp. 191–195.
+[24] A. S. Alturki and J. S. Loomis, “X-Corner Detection for Camera
+Calibration Using Saddle Points,” International Jpurnal of Com-
+puter< Electrical, Automation, Control and Information Engineering ,
+vol. 10, no. 4, pp. 676–681, 2016.
+[25] J. Heikkila, “Geometric camera calibration using circular control
+points,” IEEE T ransactions on Pattern Analysis and Machine Intelli-
+gence, vol. 22, no. 10, pp. 1066–1077, 2000.
+[26] A. Duda and U. Frese, “Accurate detection and localization of
+checkerboard corners for calibration,” British Machine V ision Con-
+ference 2018, BMVC 2018 , 2019.
+[27] H. Kato and M. Billinghurst, “Marker tracking and HMD calibra-
+tion for a video-based augmented reality conferencing system,”
+Proceedings - 2nd IEEE and ACM International Workshop on Aug-
+mented Reality, IW AR 1999 , pp. 85–94, 1999.
+[28] M. Fiala, “ART ag, a ﬁducial marker system using digital tech-
+niques,” in Proceedings - 2005 IEEE Computer Society Conference on
+Computer V ision and Pattern Recognition, CVPR 2005 , vol. II, 2005,
+pp. 590–596.
+[29] S. Garrido-Jurado, R. Mu ˜noz-Salinas, F . Madrid-Cuevas, and
+M. Mar ´ın-Jim ´enez, “Automatic generation and detection of highly
+reliable ﬁducial markers under occlusion,” Pattern Recognition ,
+vol. 47, no. 6, pp. 2280–2292, jun 2014.
+[30] H. T anaka, Y . Sumi, and Y . Matsumoto, “A visual marker for
+precise pose estimation based on lenticular lenses,” Proceedings -
+IEEE International Conference on Robotics and Automation , pp. 5222–
+5227, 2012.
+[31] I. Schillebeeckx and R. Pless, “Single Image Camera Calibration
+with Lenticular Arrays for Augmented Reality ,” in 2016 IEEE Con-
+ference on Computer V ision and Pattern Recognition (CVPR) . IEEE,
+jun 2016, pp. 3290–3298.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.
+[32] S. Ri, M. Fujigaki, and Y . Morimoto, “Sampling Moir ´e Method for
+Accurate Small Deformation Distribution Measurement,” Experi-
+mental Mechanics , vol. 50, no. 4, pp. 501–508, apr 2010.
+[33] K. Shimo, M. Fujigaki, A. Masaya, and Y . Morimoto, “Devel-
+opment of dynamic shape and strain measurement system by
+sampling moir ´e method,” in Fourth International Conference on
+Experimental Mechanics , C. Quan, K. Qian, A. K. Asundi, and F . S.
+Chau, Eds., vol. 7522, no. May , dec 2009, p. 75224M.
+[34] D. T omita, Y . Murata, and M. Fujigaki, “3d displacement distribu-
+tion measurement using sampling moire method with multiple
+cameras,” in Emerging Challenges for Experimental Mechanics in
+Energy and Environmental Applications, Proceedings of the 5th Inter-
+national Symposium on Experimental Mechanics and 9th Symposium
+on Optics in Industry (ISEM-SOI), 2015 , A. Mart ´ınez-Garc´ıa, C. Fur-
+long, B. Barrientos, and R. J. Pryputniewicz, Eds. Cham: Springer
+International Publishing, 2017, pp. 187–194.
+[35] S. Javadian V arjovi and K. Madanipour , “Measurement of in-plane
+rotation angle by sampling Moir ´e technique,” in Optical Measure-
+ment Systems for Industrial Inspection IX , P . Lehmann, W . Osten, and
+A. Albertazzi Gonc ¸alves, Eds., vol. 9525, jun 2015, p. 95253P .
+[36] X. Chen and C.-C. Chang, “In-Plane Movement Measurement
+T echnique Using Digital Sampling Moir ´e Method,” Journal of
+Bridge Engineering , vol. 24, no. 4, p. 04019013, apr 2019.
+[37] Q. W ang, S. Ri, and H. T suda, “Digital sampling Moir ´e as a substi-
+tute for microscope scanning Moir ´e for high-sensitivity and full-
+ﬁeld deformation measurement at micron/nano scales,” Applied
+Optics, vol. 55, no. 25, p. 6858, sep 2016.
+[38] P . Xia, S. Ri, Q. W ang, and H. T suda, “Nanometer-order thermal
+deformation measurement by a calibrated phase-shifting digital
+holography system,” Optics Express , vol. 26, no. 10, p. 12594, may
+2018.
+[39] H. Zhang, C. Wu, Z. Liu, and H. Xie, “A curved surface micro-
+moir ´e method and its application in evaluating curved surface
+residual stress,” Measurement Science and T echnology , vol. 25, no. 9,
+2014.
+[40] J. Ning, L. Xie, Y . Li, Y . Chen, Y . Bu, B. Y e, and S. Lu, “Moir ´epose:
+ultra high precision camera-to-screen pose estimation based on
+moir ´e pattern,” in Proceedings of the 28th Annual International
+Conference on Mobile Computing And Networking , 2022, pp. 106–119.
+[41] Y . Hou, H. Zhang, J. Zhao, J. He, H. Qi, Z. Liu, and B. Guo, “Cam-
+era lens distortion evaluation and correction technique based on a
+colour CCD moir ´e method,” Optics and Lasers in Engineering , vol.
+110, no. June, pp. 211–219, nov 2018.
+[42] Long Quan and Zhongdan Lan, “Linear N-point camera pose
+determination,” IEEE T ransactions on Pattern Analysis and Machine
+Intelligence, vol. 21, no. 8, pp. 774–780, 1999.
+[43] C.-P . Lu, G. Hager , and E. Mjolsness, “Fast and globally convergent
+pose estimation from video images,” IEEE T ransactions on Pattern
+Analysis and Machine Intelligence , vol. 22, no. 6, pp. 610–622, jun
+2000.
+[44] A. nsar and K. Daniilidis, “Linear pose estimation from points
+or lines,” IEEE T ransactions on Pattern Analysis and Machine Intelli-
+gence, vol. 25, no. 5, pp. 578–589, May 2003.
+[45] Xiao-Shan Gao, Xiao-Rong Hou, Jianliang T ang, and Hang-Fei
+Cheng, “Complete solution classiﬁcation for the perspective-three-
+point problem,” IEEE T ransactions on Pattern Analysis and Machine
+Intelligence, vol. 25, no. 8, pp. 930–943, aug 2003.
+[46] Y . Wu and Z. Hu, “PnP Problem Revisited,” Journal of Mathematical
+Imaging and V ision , vol. 24, no. 1, pp. 131–141, jan 2006.
+[47] F . Moreno-Noguer , V . Lepetit, and P . Fua, “EPnP: An Accurate
+O (n) solution to the PnP problem,” Computer V ision, 2007. ICCV
+2007. IEEE 11th International Conference on , pp. 1–8, 2007.
+[48] M. G. Dissanayake, P . Newman, S. Clark, H. F . Durrant-Whyte,
+and M. Csorba, “A solution to the simultaneous localization and
+map building (slam) problem,” IEEE T ransactions on robotics and
+automation, vol. 17, no. 3, pp. 229–241, 2001.
+[49] D. Scaramuzza and F . Fraundorfer , “Visual odometry [tutorial],”
+IEEE robotics & automation magazine , vol. 18, no. 4, pp. 80–92, 2011.
+[50] F . Fraundorfer and D. Scaramuzza, “Visual odometry: Part
+ii: Matching, robustness, optimization, and applications,” IEEE
+Robotics & Automation Magazine , vol. 19, no. 2, pp. 78–90, 2012.
+[51] C. Chen, H. Zhu, M. Li, and S. Y ou, “A review of visual-inertial
+simultaneous localization and mapping from ﬁltering-based and
+optimization-based perspectives,” Robotics, vol. 7, no. 3, p. 45,
+2018.
+[52] K. Oku, Y . T omizuka, and Y . T anaka, “P-66: Analysis and Reduc-
+tion of Moir ´e in T wo-Layered 3D Display ,” SID Symposium Digest
+of T echnical Papers , vol. 38, no. 1, pp. 437–440, may 2007.
+[53] V . Saveljev and S.-K. Kim, “Experimental observation of moir ´e
+angles in parallax barrier 3D displays,” Optics Express , vol. 22,
+no. 14, p. 17147, jul 2014.
+[54] Y . Kim, G. Park, J.-H. Jung, J. Kim, and B. Lee, “Color moir ´e pattern
+simulation and analysis in three-dimensional integral imaging for
+ﬁnding the moir ´e-reduced tilted angle of a lens array,” Applied
+Optics, vol. 48, no. 11, p. 2178, apr 2009.
+[55] M. C. Hutley , R. Hunt, R. F . Stevens, and P . Savander , “The moire
+magniﬁer,” Pure and Applied Optics: Journal of the European Optical
+Society Part A , vol. 3, no. 2, pp. 133–142, mar 1994.
+[56] F . Bolelli, S. Allegretti, L. Baraldi, and C. Grana, “Spaghetti la-
+beling: Directed acyclic graphs for block-based connected compo-
+nents labeling,” IEEE T ransactions on Image Processing , vol. 29, pp.
+1999–2012, 2019.
+[57] P . Milanfar , Super-resolution imaging . CRC press, 2017.
+Kensei Jo received a master’s degree from The
+University of T okyo, Japan, in 2009. From 2012
+to 2015, he was a visiting scholar at Columbia
+University . His research interests include com-
+puter vision and computational photography .
+Masahiko Inami received the Ph.D . degree from
+The University of T okyo, Japan, in 1999. He
+is currently a Professor with The University of
+T okyo. His research interests include human
+augmentation technologies with bioengineering,
+HCI, and robotics. He was the Director of JST
+ERA TO Inami JIZAI Body Project.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 20,2026 at 11:42:44 UTC from IEEE Xplore.  Restrictions apply.

@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[51]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration, Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 5 (4) (2021) 1–25.",
+  "paper_level_summary_zh": "该论文在隐私保护人体感知综述中引用目标论文作为语音窃听的一个实例，但引文标记在正文中仅出现在列举参考文献的位置，没有对目标论文的具体能力（如亚毫米级、穿墙）作展开描述，属于普通引用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated [50, 51, 52, 53].",
+      "evidence_context": "In addition to identity information, the speech content in the audio signal also involves private information. ... Eavesdropping on speech via IMU sensors, RF signals, and side-channel signals is widely investigated [50, 51, 52, 53].",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, S. Lu, Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration, Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 5 (4) (2021) 1–25.",
+      "why_this_judgment_zh": "引用标记[51]出现在一组引文中，正文没有描述目标论文的具体贡献或能力，仅作为普通引用出现，属于grouped citation，不应被视为能力认可。根据规则，grouped citation需考虑attribution risk，故推荐exclude。",
+      "copy_ready_zh": "引用论文在列举语音窃听相关研究时，将目标论文作为RF信号窃听的一个代表纳入参考文献列表，但未在正文中对其具体技术或性能展开描述，属于普通相关引用。",
+      "confidence": "high"
+    }
+  ]
+}

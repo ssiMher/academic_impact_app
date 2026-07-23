@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[13]",
+  "target_reference_entry": "[13] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "本文利用[23]（ADNS-3050光学鼠标传感器数据手册）的像素抓取寄存器技术细节，将光学鼠标改造成高速相机，实现声学窃听。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "the ADNS-3050 [23], include a special register called the ‘pixel grabber’.",
+      "evidence_context": "Upon reviewing technical datasheets, we made an unexpected discovery: mainstream optical sensors used in optical mice, such as the ADNS-3050 [23], include a special register called the ‘pixel grabber’.",
+      "reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+      "why_this_judgment_zh": "[23]是数据手册，非目标论文；引用仅涉及传感器寄存器，不涉及目标论文的RFID窃听方案。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引文[23]为ADNS-3050数据手册，被用于说明像素抓取寄存器的存在，与目标论文无关。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[13]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] A. Technologies, “Adns-3050 optical mouse sensor datasheet,”\nhttps://www.mouser.com/datasheet/2/678/avagotechnologies\nADNS-3050-1217285.pdf.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[13] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "this paper will refer to the datasheet of the ADNS-3050 for explanations [23]",
+      "evidence_context": "Therefore, this paper will refer to the datasheet of the ADNS-3050 for explanations [23], which integrates more than 30 registers.",
+      "reference_entry": "A. Technologies, “Adns-3050 optical mouse sensor datasheet,” https://www.mouser.com/datasheet/2/678/avagotechnologies ADNS-3050-1217285.pdf.",
+      "why_this_judgment_zh": "明确表示引用的是数据手册，不是目标论文。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引文[23]是ADNS-3050数据手册，用于寄存器说明。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[13]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] A. Technologies, “Adns-3050 optical mouse sensor datasheet,”\nhttps://www.mouser.com/datasheet/2/678/avagotechnologies\nADNS-3050-1217285.pdf.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[13] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,” Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

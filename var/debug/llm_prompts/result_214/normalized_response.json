@@ -1,0 +1,266 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Passive eavesdropping attacks can simply intercept communication between an RFID reader and a tag to capture confidential data or analyze traffic to infer such data [3], [4].",
+      "reasoning": "This context groups [3] with [4] as examples of passive eavesdropping attacks. The target paper is cited as a representative eavesdropping attack, but no specific details about its sub-mm vibration sensing capability are mentioned. The description is generic and does not attribute any unique capability to the target paper.",
+      "keywords": [
+        "eavesdropping",
+        "passive",
+        "intercept"
+      ],
+      "keep": true,
+      "matched_template_ids": [
+        73
+      ],
+      "template_match_reason": "precision_claim: body quote anchors to target and contains sub-mm",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": true,
+          "template_match_reason": "precision_claim: body quote anchors to target and contains sub-mm",
+          "template_failure_reason": "",
+          "matched_terms": [
+            "sub-mm",
+            "rfid",
+            "vibration sensing",
+            "eavesdropping",
+            "capture"
+          ],
+          "match_score": 30.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Existing attacks on RFID systems primarily fall into three categories: eavesdropping [3], [4], [14]–[17], relay/cloning attacks [5], [18]–[25], and jamming attacks [6]–[8], [26].",
+      "reasoning": "The target paper [3] is listed as an example of eavesdropping attacks in a related work categorization. No specific technical details or evaluation of the target paper are provided. It serves as a general reference for the category.",
+      "keywords": [
+        "eavesdropping",
+        "RFID"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "rfid",
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Eavesdropping attacks. Eavesdropping attacks that passively steal information were extensively considered in [3], [4], [37], [38].",
+      "reasoning": "The target paper is cited in a related work section as part of a list of eavesdropping attacks. No further characterization is given. It is used as a representative reference for the topic.",
+      "keywords": [
+        "eavesdropping",
+        "passively steal information"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [
+            "eavesdropping"
+          ],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "By closely examining existing attack methods, we find that they pay less attention to altering the identification or data of tags on the fly [3]–[9].",
+      "reasoning": "The target paper is cited in a range [3]–[9] as part of a critique that existing attacks focus on other aspects. No specific discussion of the target paper's content or capabilities. It is used to support the claim that prior work overlooks identification overriding.",
+      "keywords": [
+        "less attention",
+        "altering identification"
+      ],
+      "keep": true,
+      "matched_template_ids": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text",
+      "matched_template_names": [],
+      "template_evaluations": [
+        {
+          "template_id": 73,
+          "template_name": "RFID 亚毫米级感知能力佐证",
+          "template_type": "rfid_submm_capability",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "plain RFID reference without sub-mm or vibration capability wording",
+          "matched_terms": [],
+          "match_score": 0.0
+        },
+        {
+          "template_id": 74,
+          "template_name": "首次/开创性明确表述",
+          "template_type": "first_or_pioneering_claim",
+          "template_satisfied": false,
+          "template_match_reason": "",
+          "template_failure_reason": "no explicit first/pioneering expression in body text",
+          "matched_terms": [],
+          "match_score": 0.0
+        }
+      ]
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Passive eavesdropping attacks can simply intercept communication between an RFID reader and a tag to capture confidential data or analyze traffic to infer such data [3], [4].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This context groups [3] with [4] as examples of passive eavesdropping attacks. The target paper is cited as a representative eavesdropping attack, but no specific details about its sub-mm vibration sensing capability are mentioned. The description is generic and does not attribute any unique capability to the target paper.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [
+        73
+      ],
+      "matched_template_names": [
+        "RFID 亚毫米级感知能力佐证"
+      ],
+      "template_match_reason": "precision_claim: body quote anchors to target and contains sub-mm",
+      "template_satisfied": true,
+      "template_failure_reason": "首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Existing attacks on RFID systems primarily fall into three categories: eavesdropping [3], [4], [14]–[17], relay/cloning attacks [5], [18]–[25], and jamming attacks [6]–[8], [26].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target paper [3] is listed as an example of eavesdropping attacks in a related work categorization. No specific technical details or evaluation of the target paper are provided. It serves as a general reference for the category.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Eavesdropping attacks. Eavesdropping attacks that passively steal information were extensively considered in [3], [4], [37], [38].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target paper is cited in a related work section as part of a list of eavesdropping attacks. No further characterization is given. It is used as a representative reference for the topic.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    },
+    {
+      "finding_index": 3,
+      "citation_text_preview": "By closely examining existing attack methods, we find that they pay less attention to altering the identification or data of tags on the fly [3]–[9].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target paper is cited in a range [3]–[9] as part of a critique that existing attacks focus on other aspects. No specific discussion of the target paper's content or capabilities. It is used to support the claim that prior work overlooks identification overriding.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true,
+      "matched_template_ids": [],
+      "matched_template_names": [],
+      "template_match_reason": "",
+      "template_satisfied": false,
+      "template_failure_reason": "RFID 亚毫米级感知能力佐证: plain RFID reference without sub-mm or vibration capability wording; 首次/开创性明确表述: no explicit first/pioneering expression in body text"
+    }
+  ]
+}

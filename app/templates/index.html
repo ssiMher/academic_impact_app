@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ app_name }}{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">学术引用证据分析工作台</div>
+      <h1>{{ app_name }}</h1>
+      <p>系统已启动，可进行普通论文分析、学者分析和本地 PDF 库管理。</p>
+      <p>运行环境：{{ environment }}</p>
+    </div>
+  </header>
+  <section class="stat-grid">
+    <a class="card" href="/paper-sessions/new">
+      <h2>创建普通论文分析</h2>
+      <p class="muted">围绕单篇目标论文分析第三方引用证据。</p>
+    </a>
+    <a class="card" href="/scholar-sessions/new">
+      <h2>创建学者分析</h2>
+      <p class="muted">构建队列、上传 PDF、分析证据并进行人工复核。</p>
+    </a>
+    <a class="card" href="/pdf-library">
+      <h2>本地 PDF 库</h2>
+      <p class="muted">索引并匹配本地 PDF，不暴露本地绝对路径。</p>
+    </a>
+  </section>
+{% endblock %}

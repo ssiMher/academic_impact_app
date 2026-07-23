@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[56]",
+  "target_reference_entry": "[56] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping\non loudspeakers via RFID by capturing sub-mm level vibration. InProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies, Vol. 5. 1–25.",
+  "paper_level_summary_zh": "该论文在相关工作部分提及[23]作为基于RFID的振动感知方法之一，但未对目标论文的具体贡献进行详细描述或直接引用。文中主要讨论的是通过RFID标签感知音频电缆周围的电磁变化来实现窃听，与目标论文的通过RFID捕获亚毫米级扬声器振动实现穿墙窃听属于同一领域的不同技术路线。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Existing works mainly capture traditional patterns, such as signal changes due to multi-path effect or mechanical vibrations, for achieving localization[59], user authentication[14], and vibration sensing[36, 60, 64, 66], etc.",
+      "evidence_context": "RFID-based sensing. Recently, due to the advantages of low cost and deployment flexibility, RFID tags are widely used in various wireless sensing applications. Existing works mainly capture traditional patterns, such as signal changes due to multi-path effect or mechanical vibrations, for achieving localization[59], user authentication[14], and vibration sensing[36, 60, 64, 66], etc. However, no existing works capture electromagnetic variation patterns to achieve RFID-based sensing.",
+      "reference_entry": "[23] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration. In Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, Vol. 5. 1–25.",
+      "why_this_judgment_zh": "引文[23]未出现在此处的引用标记中，该句引用的是[36,60,64,66]等，不涉及目标论文。属于广义相关工作列举，且引用标记不匹配。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该论文在RFID传感相关工作中列举了振动感知研究，但未直接引用目标论文。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[56]",
+      "evidence_reference_marker": "[14]",
+      "evidence_reference_entry_raw": "[14] Yunzhong Chen, Jiadi Yu, Linghe Kong, Yanmin Zhu, and Feilong Tang. 2022. RFPass: Towards environment-independent gait-based\nuser authentication leveraging RFID. In Proceedings of IEEE SECON’22. Virtual Conference.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[56] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping\non loudspeakers via RFID by capturing sub-mm level vibration. InProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies, Vol. 5. 1–25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "rfid_loudspeaker_vibration",
+      "evidence_quote": "Researchers use various sensors, such as accelerator [4, 32], gyroscope [40], Wi-Fi [57], mmWave [5, 30, 31, 55], and RFID [12, 37, 56] to capture speaker/microphone vibration or nearby surface vibration patterns for eavesdropping on speaker-produced or/and human-speaking sound.",
+      "evidence_context": "Sound eavesdropping through dynamic sensing. ... Researchers use various sensors, such as accelerator [4, 32], gyroscope [40], Wi-Fi [57], mmWave [5, 30, 31, 55], and RFID [12, 37, 56] to capture speaker/microphone vibration or nearby surface vibration patterns for eavesdropping on speaker-produced or/and human-speaking sound.",
+      "reference_entry": "[23] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration. In Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, Vol. 5. 1–25.",
+      "why_this_judgment_zh": "引用标记[56]可能对应目标论文（参考文献中[56]为目标论文），但此处是组引用，未单独描述目标论文。属于普通相关工作列举，不能认定为对目标论文能力的明确确认。",
+      "copy_ready_zh": "该论文将[56]与其他RFID窃听工作一起列举为基于RFID的振动感知方法，但未单独强调目标论文的具体贡献。",
+      "confidence": "medium",
+      "target_reference_marker": "[56]",
+      "evidence_reference_marker": "[56]",
+      "evidence_reference_entry_raw": "[56] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping\non loudspeakers via RFID by capturing sub-mm level vibration. InProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies, Vol. 5. 1–25.",
+      "reference_match_status": "matched",
+      "reference_match_reason": "reference_entry_matches_target",
+      "normalized_target_reference": "[56] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping\non loudspeakers via RFID by capturing sub-mm level vibration. InProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies, Vol. 5. 1–25.",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true,
+      "grouped_citation": true
+    }
+  ]
+}

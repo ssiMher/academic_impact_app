@@ -1,0 +1,34 @@
+{
+  "findings": [
+    {
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "To quantify the performance of audio recovery of the five lyrics, we calculate the similarity between the original sound and recovered sound using cross-correlation of audio frequencies [49].",
+      "reasoning": "The citing paper uses the cross-correlation method from target paper [49] to evaluate audio recovery similarity, indicating direct methodological reuse.",
+      "keywords": [
+        "cross-correlation of audio frequencies",
+        "[49]"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "To quantify the performance of audio recovery of the five lyrics, we calculate the similarity between the original sound and recovered sound using cross-correlation of audio frequencies [49].",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[49]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper uses the cross-correlation method from target paper [49] to evaluate audio recovery similarity, indicating direct methodological reuse.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    }
+  ]
+}

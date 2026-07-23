@@ -1,0 +1,181 @@
+<article class="card">
+  {% set card_type_labels = {
+    "theoretical_foundation": "理论基础",
+    "method_foundation": "方法采用",
+    "representative_work": "代表性相关工作",
+    "ordinary_citation": "普通引用",
+    "background_reference": "背景引用",
+    "citation_only": "仅引用记录",
+    "weak_mention": "弱证据",
+    "limitation_or_negative": "局限性反馈",
+    "detailed_comparison": "详细对比",
+    "baseline_or_benchmark": "基线/Benchmark",
+    "positive_evaluation": "正向评价",
+    "first_or_seminal_claim": "首次/开创性"
+  } %}
+  {% set is_invalid_anchor = narrative_meta and narrative_meta.anchor_validation_status == "invalid" %}
+  {% set is_false_positive = card.review_status == "false_positive" or is_invalid_anchor %}
+  <h2>{% if is_false_positive and not card.title.startswith("误报候选：") %}误报候选：{% endif %}{{ card.title }}</h2>
+  <dl class="meta-grid">
+    <div><dt>卡片类型</dt><dd>{{ card_type_labels.get(card.card_type, card.card_type) }}</dd></div>
+    <div><dt>副标题</dt><dd>{{ card.subtitle or "" }}</dd></div>
+    <div><dt>引用论文</dt><dd>{{ card.source_citing_paper_title }}</dd></div>
+    <div><dt>被引用论文</dt><dd>{{ card.source_cited_paper_title }}</dd></div>
+    <div><dt>证据类型</dt><dd>{{ card.aspect }}</dd></div>
+    <div><dt>倾向</dt><dd>{{ card.stance }}</dd></div>
+    {% if is_false_positive %}
+      <div><dt>状态</dt><dd>false_positive</dd></div>
+      <div><dt>锚点状态</dt><dd>锚点不匹配</dd></div>
+      <div><dt>误报原因</dt><dd>{{ narrative_meta.anchor_validation_reason if narrative_meta else "anchor_invalid" }}</dd></div>
+    {% else %}
+      <div><dt>证据强度</dt><dd>{{ card.evidence_strength }}</dd></div>
+      <div><dt>分数</dt><dd>{{ card.score }}</dd></div>
+    {% endif %}
+    {% if card.notable_author_name %}
+      <div><dt>重要作者</dt><dd>{{ card.notable_author_name }}</dd></div>
+    {% endif %}
+    {% if card.fellow_status and card.fellow_status != "unknown" %}
+      <div><dt>Fellow 状态</dt><dd>{{ card.fellow_status }}</dd></div>
+    {% endif %}
+  </dl>
+  {% if is_false_positive %}
+    <p class="notice notice-danger">false_positive：该卡片的 citation_text 未锚定目标论文，默认不纳入报告。</p>
+  {% endif %}
+  <section class="diagnostics-panel">
+    <h3>【原文证据】</h3>
+    <blockquote class="quote">{{ card.highlighted_quote_html | safe }}</blockquote>
+    {% if narrative_meta and narrative_meta.evidence_context %}
+      <details class="compact-details">
+        <summary>展开原文上下文</summary>
+        <pre>{{ narrative_meta.evidence_context }}</pre>
+      </details>
+    {% endif %}
+    {% if narrative_meta and narrative_meta.key_phrases %}
+      <p><strong>关键短语：</strong>{{ narrative_meta.key_phrases | join(" / ") }}</p>
+    {% endif %}
+    {% if narrative_meta and narrative_meta.judgment_label %}
+      <p><strong>判断标签：</strong>{{ narrative_meta.judgment_label }}</p>
+    {% endif %}
+    {% if narrative_meta and narrative_meta.confidence %}
+      <p><strong>置信度：</strong>{{ narrative_meta.confidence }}</p>
+    {% endif %}
+    {% if narrative_meta %}
+      <div class="notice">
+        <p><strong>命中模板：</strong>{{ narrative_meta.matched_template_names | join(" / ") if narrative_meta.matched_template_names else "无" }}</p>
+        <p><strong>是否满足模板：</strong>{{ narrative_meta.template_satisfied if narrative_meta.template_satisfied is not none else "unknown" }}</p>
+        {% if narrative_meta.template_match_reason %}
+          <p><strong>模板判断理由：</strong>{{ narrative_meta.template_match_reason }}</p>
+        {% endif %}
+        {% if narrative_meta.template_failure_reason %}
+          <p><strong>未满足原因：</strong>{{ narrative_meta.template_failure_reason }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% if narrative_meta %}
+      <dl class="meta-grid">
+        <div><dt>target_reference_marker</dt><dd>{{ narrative_meta.target_reference_marker or "none" }}</dd></div>
+        <div><dt>citation_text_contains_target_marker</dt><dd>{{ narrative_meta.citation_text_contains_target_marker }}</dd></div>
+        <div><dt>citation_text_contains_other_marker</dt><dd>{{ narrative_meta.citation_text_contains_other_marker }}</dd></div>
+        <div><dt>anchor_validation_status</dt><dd>{{ narrative_meta.anchor_validation_status }}</dd></div>
+        <div><dt>anchor_validation_reason</dt><dd>{{ narrative_meta.anchor_validation_reason }}</dd></div>
+      </dl>
+    {% endif %}
+  </section>
+  {% if grouped_warning %}
+    <p class="notice notice-warning">该卡片涉及成组引用或局限性反馈，请人工确认归因与汇报口径。</p>
+  {% endif %}
+  {% if card.card_type == "limitation_or_negative" %}
+    <p class="notice notice-warning">这是负面/局限性证据，适合进入客观评价或技术反馈，不建议包装成正向亮点。</p>
+  {% endif %}
+  <section class="diagnostics-panel">
+    <h3>【为什么这样判断】</h3>
+    <p>{{ narrative_meta.judgment_basis_zh if narrative_meta and narrative_meta.judgment_basis_zh else (narrative_meta.why_this_judgment if narrative_meta else "") }}</p>
+    {% if narrative_meta and narrative_meta.report_recommendation %}
+      <p><strong>报告建议：</strong>{{ narrative_meta.report_recommendation }}{% if narrative_meta.confidence_level %}（置信度：{{ narrative_meta.confidence_level }}）{% endif %}</p>
+    {% endif %}
+  </section>
+  <section class="diagnostics-panel">
+    <h3>【不应如何过度解读】</h3>
+    <p>{{ narrative_meta.limitation_zh if narrative_meta and narrative_meta.limitation_zh else "请严格按照原文上下文表述，不要扩展为原文没有支持的评价。" }}</p>
+  </section>
+  <section class="diagnostics-panel">
+    <h3>【可复制表述】</h3>
+    <p>{{ narrative_meta.copy_ready_statement_zh if narrative_meta and narrative_meta.copy_ready_statement_zh else (narrative_meta.copy_ready_statement if narrative_meta else (card.narrative_zh or card.body_markdown)) }}</p>
+  </section>
+  <section class="diagnostics-panel">
+    <h3>【风险提示】</h3>
+    <p>{{ narrative_meta.risk_note if narrative_meta and narrative_meta.risk_note else "未发现额外风险提示；仍建议人工复核原文上下文后使用。" }}</p>
+  </section>
+  <p>中文亮点评价：{{ card.narrative_zh or card.body_markdown }}</p>
+  {% if narrative_meta and narrative_meta.technical_terms_used %}
+    <p><strong>技术依据：</strong> {{ narrative_meta.technical_terms_used | join(" / ") }}</p>
+  {% endif %}
+  {% if narrative_meta and narrative_meta.evidence_basis %}
+    <p><strong>生成依据字段：</strong> {{ narrative_meta.evidence_basis }}</p>
+  {% endif %}
+  {% if narrative_meta and narrative_meta.risk_note %}
+    <p class="notice notice-warning">{{ narrative_meta.risk_note }}</p>
+  {% endif %}
+  <p>英文原文 citation_text：{{ card.evidence_quote }}</p>
+  {% if context_preview and context_preview.display_context %}
+    <details class="compact-details">
+      <summary>展开原文上下文</summary>
+      <p><strong>section_heading:</strong> {{ context_preview.section_heading or "unknown" }}</p>
+      {% if context_preview.target_reference_marker %}
+        <p><strong>target_reference_marker:</strong> {{ context_preview.target_reference_marker }}</p>
+      {% endif %}
+      <div class="quote">{{ context_preview.highlighted_sentence_html | safe }}</div>
+      <div class="quote">{{ context_preview.highlighted_context_html | safe }}</div>
+      <pre>{{ context_preview.display_context }}</pre>
+    </details>
+    <div class="action-row">
+      <button class="button button-secondary" type="button" data-copy-text="{{ context_preview.display_context }}">复制原文上下文</button>
+      <button class="button button-secondary" type="button" data-copy-text="{{ narrative_meta.copy_ready_statement if narrative_meta else (card.narrative_zh or card.body_markdown) }}">复制中文亮点评价</button>
+    </div>
+  {% endif %}
+  <p>用户备注：{{ card.user_note or "" }}</p>
+  <p>纳入报告：{{ card.include_in_report }}</p>
+  {% if card.id %}
+    <form action="/scholar-sessions/{{ session_id }}/cards/{{ card.id }}/edit" method="post" class="review-form">
+      <label class="form-label">
+        标题
+        <input class="form-control" type="text" name="title" value="{{ card.title }}">
+      </label>
+      <label class="form-label">
+        副标题
+        <input class="form-control" type="text" name="subtitle" value="{{ card.subtitle or '' }}">
+      </label>
+      <label class="form-label">
+        中文 narrative
+        <textarea class="form-control" name="narrative_zh">{{ card.narrative_zh or card.body_markdown }}</textarea>
+      </label>
+      <label class="form-label">
+        正文
+        <textarea class="form-control" name="body_markdown">{{ card.body_markdown }}</textarea>
+      </label>
+      <label class="form-label">
+        重要作者
+        <input class="form-control" type="text" name="notable_author_name" value="{{ card.notable_author_name or '' }}">
+      </label>
+      <label class="form-label">
+        单位
+        <input class="form-control" type="text" name="notable_author_affiliation" value="{{ card.notable_author_affiliation or '' }}">
+      </label>
+      <label class="form-label">
+        身份
+        <input class="form-control" type="text" name="fellow_status" value="{{ card.fellow_status or 'unknown' }}">
+      </label>
+      <label class="form-label">
+        备注
+        <input class="form-control" type="text" name="user_note" value="{{ card.user_note or '' }}">
+      </label>
+      <label class="form-label">
+        纳入报告
+        <input type="checkbox" name="include_in_report" value="true" {% if card.include_in_report %}checked{% endif %}>
+      </label>
+      <button class="button button-primary" type="submit">保存卡片</button>
+    </form>
+  {% else %}
+    <p class="notice">这是系统自动生成的普通引用/背景引用素材卡片，默认不纳入报告，建议人工复核后决定是否转为正式卡片。</p>
+  {% endif %}
+</article>

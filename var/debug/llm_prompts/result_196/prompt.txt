@@ -1,0 +1,1649 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Evaluate ACTIVE_EVIDENCE_TEMPLATES for every finding. Include matched_template_ids, template_match_reason, template_satisfied, and template_failure_reason. If a template is relevant but not satisfied, explain why.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true,
+      "matched_template_ids": [1],
+      "template_match_reason": "why this quote satisfies an active template",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: SuperEar: Eavesdropping on Mobile Voice Calls via Stealthy Acoustic Metamaterials
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: 
+TARGET_REFERENCE_ENTRY: 
+TARGET_REFERENCE_CONTEXTS:
+(none)
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+SuperEar: Eavesdropping on Mobile Voice Calls via Stealthy
+Acoustic Metamaterials
+Zhiyuan Ning
+ningzhiyuan@stumail.nwu.edu.cn
+ACSS Lab, NorthWest
+University
+Xi’an, Shaanxi, China
+Zhanyong Tang∗
+zytang@nwu.edu.cn
+ACSS Lab, NorthWest
+University
+Xi’an, Shaanxi, China
+Juan He
+hejuan@stumail.nwu.edu.cn
+PINE Lab, NorthWest
+University
+Xi’an, Shaanxi, China
+Weizhi Meng
+weizhi.meng@ieee.org
+Lancaster University
+Lancaster, Lancashire
+United Kingdom
+Yuntian Chen
+chenyt@stumail.nwu.edu.cn
+PINE Lab, NorthWest
+University
+Xi’an, Shaanxi, China
+Jie Zhang
+jiezhang@xupt.edu.cn
+Xi’an University of Posts
+and Telecommunications
+Xi’an, Shaanxi, China
+Zheng Wang
+z.wang5@leeds.ac.uk
+University of Leeds
+Leeds, West Yorkshire
+United Kingdom
+Abstract
+Acoustic eavesdropping is a privacy risk, but existing attacks rarely
+work in real outdoor situations where people make phone calls on
+the move. We presentSuperEar, the first portable system that uses
+acoustic metamaterials to reliably capture conversations in these
+scenarios. We show that the threat is real as a practical prototype
+can be implemented to enhance faint signals, cover the full range of
+speech with a compact design, and reduce noise and distortion to
+produce clear audio. We show thatSuperEarcan be implemented
+from low-cost 3D-printed parts and off-the-shelf hardware. Exper-
+imental results show thatSuperEarcan recover phone call audio
+with a success rate of over 80% at distances of up to 4.6 m - more
+than twice the range of previous approaches. Our findings highlight
+a new class of privacy threats enabled by metamaterial technology
+that requires attention.
+CCS Concepts
+•Security and privacy→Usability in security and privacy.
+Keywords
+Acoustic eavesdropping, Acoustic metamaterials, Portable system
+ACM Reference Format:
+Zhiyuan Ning, Zhanyong Tang, Juan He, Weizhi Meng, Yuntian Chen, Jie
+Zhang, and Zheng Wang. 2026.SuperEar: Eavesdropping on Mobile Voice
+Calls via Stealthy Acoustic Metamaterials. InProceedings of the ACM Web
+Conference 2026 (WWW ’26), April 13–17, 2026, Dubai, United Arab Emi-
+rates.ACM,NewYork,NY,USA,10pages.https://doi.org/10.1145/XXXXXX.
+XXXXXX
+∗Corresponding author
+PINELab:ShaanxiKeyLaboratoryofPassiveInternetofThingsandNeuralComputing
+ACSS Lab: Xi’an Key Laboratory of Advanced Computing and Software Security
+This work is licensed under a Creative Commons Attribution-NonCommercial-
+NoDerivatives 4.0 International License.
+WWW ’26, Dubai, United Arab Emirates.
+©2026 Copyright held by the owner/author(s).
+ACM ISBN 979-8-4007-2307-0/2026/04
+https://doi.org/10.1145/XXXXXX.XXXXXX
+1 INTRODUCTION
+Mobile phones are widely used for private voice communication in
+public environments. Making a phone call while walking outdoors
+is common in daily life, and users often assume that conversations
+can be protected by distance, ambient noise, and the limited acoustic
+output of mobile devices. These assumptions shape how people
+behave in public space and how mobile systems are designed, yet
+they are rarely examined under realistic adversarial conditions.
+Acoustic eavesdropping attacks exploit unintended sound emis-
+sions to recover sensitive information such as account details or
+transaction data, enabling fraud or identity theft [12, 13, 23, 60]. In
+noisy outdoor environments, users are particularly vulnerable be-
+cause human auditory attention tends to focus on the caller’s voice
+and ignore subtle cues of being monitored [18,29,46]. As a result,
+acoustic attacks can remain unnoticed even when users are alert to
+more conventional forms of surveillance.
+Prior acoustic eavesdropping attacks leverage motion-sensor [12,
+27,43,60],optical[ 34,41],andradiofrequency(RF)[ 13,21]meth-
+ods. They work in controlled settings but are ineffective in realistic
+mobile outdoor scenarios. Motion-sensor attacks typically require
+compromisingthevictim’sdevice,whichishardtoachievewhilethe
+target device is moving. Optical and RF approaches require precise
+targeting of a vibrating surface, which is infeasible when the victim
+and attacker are moving [13, 21, 34, 41]. Acoustic eavesdropping
+in a moving outdoor environment is also difficult because earpiece
+audio is very weak and drops below a usable signal-to-noise ratio
+(SNR) beyond roughly 2 m [47].
+Recent advances in acoustic metamaterials may change this pic-
+ture. Acoustic metamaterials are engineered structures designed
+to manipulate sound in ways not achievable with natural materi-
+als [10,30,39,61]. By controlling wave interference through their
+internalgeometry,theycanamplify,filter,orredirectacousticsignals,
+with demonstrated applications in areas such as noise reduction and
+ultrasound imaging. As a potential eavesdropping medium, metama-
+terials can enhance the SNR of faint earpiece emissions and capture
+airborne speech without the need for precise alignment or access
+to vibrating surfaces. This creates opportunities for eavesdropping
+attacks that bypass limitations of existing acoustic eavesdropping
+methods, extending the threat model to scenarios where interception
+was previously considered impractical.
+arXiv:2501.15032v2  [cs.SD]  16 Jan 2026
+WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates. Zhiyuan Ning et al.
+SuperEar
+(a)
+VS
+Voice output 
+during calls
+Voice output in 
+other situations
+Earpiece
+d < 5cm
+ Loudspeaker
+D2 > 10m
+D1< 2m
+Compare of voice propagation distance (b)
+Figure 1: (a) Possible attack:SuperEareavesdrops on an out-
+door call. (b) Call voice vs. other scenarios.
+This paper demonstrates a new and practical acoustic eavesdrop-
+pingattackthatcaninterceptphonecallsmadewhileauseriswalking
+outdoors, as illustrated in Fig. 1a. We presentSuperEar, the first
+portable system that uses acoustic metamaterials to make outdoor
+interception of phone calls reliable during everyday travel. We show
+that it is possible to overcome three key limitations that previously
+preventedmetamaterialsfrombeingeffectiveforeavesdropping.First,
+we reduce thermo-viscous losses, i.e., energy lost as heat and fric-
+tion when sound travels through narrow channels, which otherwise
+weakens low-frequency signals. Second, we design the system so
+that the full speech frequency band can be covered with only a few
+metamaterial elements, keeping the device compact and portable.
+Finally, we lower the distortion and background noise caused by
+uneven amplification by applying smoothing and adaptive filtering.
+Together, these improvements enableSuperEarto reconstruct clear
+speech in mobile outdoor conditions.
+To show thatSuperEaris a real threat, we implemented a work-
+ing prototype using low-cost, off-the-shelf components, including
+a Raspberry Pi, a microphone array, and resin 3D-printed acoustic
+metamaterials. Because the metamaterials are passive,SuperEar
+requires no additional power source, supporting a compact form fac-
+tor and long-duration operation. The system captures high-quality
+audiodirectlythroughacousticdesignandsignalprocessing,without
+relying on machine-learning models that can be difficult to build and
+are hard to adapt to complex environments.
+We evaluatedSuperEaron nine mobile devices from seven man-
+ufacturersunderdiverseenvironmentalconditions.Resultsshowthat
+SuperEarreliably reconstructs call audio with over 80% success at
+distances up to 4.6 m, substantially extending the range of prior at-
+tacks and revealing a previously overlooked privacy risk. This paper
+makes the following contributions.
+•It demonstrates the first practical outdoor acoustic eavesdropping
+of in-transit phone calls using acoustic metamaterials;
+•It identifies and solves three practical challenges for using meta-
+materials in eavesdropping;
+•It shows how an attack system can be built from 3D-printed meta-
+materials and commodity hardware.
+2 Background and Related Work
+2.1 Acoustic Eavesdropping Attacks
+Previous studies on voice communication eavesdropping mainly
+include RF sensing [13,21,22,47–49,52,53,55,56], motion sen-
+sor–based eavesdropping [9, 12, 19, 23, 27, 31–33, 41, 60], and
+optical sensing [16,34,42]. RF sensing reconstructs audio by cap-
+turing tiny vibrations with millimeter waves [13, 21, 47]; motion
+sensors recover speech by detecting sound-induced micro-vibrations
+[12, 19, 23, 32, 33, 41, 60]; optical sensing remotely captures audio
+by sensing surface vibrations [16, 34].
+However, RF sensor-based eavesdropping [13, 21, 22, 47–50, 52,
+53,55]andopticalsensor-basedeavesdropping[ 16,34,42]typically
+rely on fixed observable media, and in outdoor mobile environments,
+maintainingcontinuousandprecisetrackingofthemediumbecomes
+challenging, limiting their application. Motion sensor-based eaves-
+dropping [9, 12, 19, 23, 27, 32, 33, 43, 60] requires intrusion into
+the target device, increasing the risk of exposure for the attacker.
+2.2 Outdoor Eavesdropping on Voice Output
+As shown in Fig. 1b, during private calls, users typically hold the
+phonewithin5cmoftheear.Modernearpiecesemploybeamforming
+to enhance privacy by directing most of the acoustic energy toward
+theuser’searwhileminimizingleakageintothesurroundingair[ 13].
+Asaresult,theeffectivetransmissiondistanceofearpieceaudioisfar
+shorter than that of the loudspeaker, with the SNR dropping below
+the detection threshold beyond roughly 2 m [13, 47]. In outdoor
+scenarios, additional factors such as background noise, wind, and
+movementfurthershortenthisrange,makingeavesdroppingonphone
+calls particularly challenging.
+2.3 Acoustic Metamaterials
+Acoustic metamaterials manipulate sound through engineered inter-
+nal structures, enabling precise bending, focusing, and amplification
+forapplicationssuchasnoisereduction,imaging,andaudioenhance-
+ment [24, 38]. Mie resonators, compact space-coiled structures, trap
+and re-radiate sound at specific frequencies to provide omnidirec-
+tional enhancement and can be easily concealed in everyday objects,
+making them suitable for mobile eavesdropping [28, 44].
+Their limitations include narrowband enhancement, uneven gain,
+andamplificationofambientnoise.Thisworkisthefirsttoshowthat,
+despite these constraints, carefully designed acoustic metamaterials
+canenablepracticaloutdooreavesdroppingonphonecalls,revealing
+a new and realistic privacy threat.
+2.4 Threat Model
+Ourthreatmodelconsidersarealisticoutdooracousticeavesdropping
+attack on mobile calls, where an adversary captures acoustic leakage
+from a victim’s phone earpiece during normal walking and conversa-
+tion. The attacker uses a portable device built from passive acoustic
+metamaterials, a small microphone array, and commodity hardware,
+requiringno compromiseof the victim’s device or network and
+relying solely on physical side channels.
+To remain covert, the attacker operates beyond a conservative
+safe distance (>3 m)[40,45,54]. The key challenge is recovering
+intelligible speech from extremely weak earpiece signals in noisy
+environments. Attacks involving malware, network interception, spe-
+cialized sensing hardware, or earphone-based calls are outside the
+scope.
+SuperEar: Eavesdropping on Mobile Voice Calls via Stealthy Acoustic Metamaterials WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates.
+Bob
+(Victim)
+Eve
+(Attacker)
+① Enhancing the gain of low-frequency signal
+③ Mitigating distortion and noise from metamaterial defects
+Metamaterial Wideband clean enhanced signal
+Distortion-enhanced narrowband signalOri signal with noise
+② Expanding bandwidth via multi-metamaterials
+1×
+High
+Low
+Energy
+D1 D8
+...8× Narrowband 
+enhancement only
+Wideband enhancement with distortion
++
+D2
++ +
+...+ +8×+
+Capture
+Balance uneven
+metamaterial gains
+Remove gain jumps 
+in metamaterials
+Remove high-
+noise units
+Crop and 
+recombine 
+Figure 2:SuperEareavesdropping overview: enhanced low-frequency narrowband signals (Sec. 3.3), wideband amplification via
+multi-metamaterials (Sec. 3.4), and defect-induced distortion/noise suppression (Sec. 3.5).
+3 Methodology
+3.1 Overview ofSuperEar
+We implemented aSuperEarprototype using a Raspberry Pi, eight
+acoustic metamaterials, and a microphone array (see Sec. 3.6). As
+shown in Fig. 2, the eavesdropping process consists of three stages:
+signal capture and enhancement, cropping and recombination, and
+distortion suppression with noise reduction.
+Enhancing the gain of low-frequency signal.When the target initi-
+ates a call,SuperEarcaptures acoustic signals using metamaterials
+andappliestheMinimumVarianceDistortionlessResponse(MVDR)
+algorithm [11, 17] to extract the earpiece audio while suppressing
+interference from other directions. Since the target’s position is di-
+rectly observable, the system remains behind the target and follows
+along the radial path, allowing MVDR to focus on that direction and
+improving the stability and accuracy of direction estimation (V1, see
+Sec. 3.3).
+Expanding bandwidth via multi-metamaterials.To obtain a wide-
+bandsignal,SuperEarbuildsamulti-metamaterialsystemandcrops
+andrecombinesthefrequencybandsenhancedbyeachmetamaterial,
+reconstructing a complete voice signal covering all bands (V2) (see
+Sec. 3.4 for details).
+Mitigating distortion and noise from metamaterial defects.The
+system first applies a distortion suppression algorithm to eliminate
+gain jumps caused by metamaterial defects and balance gains across
+frequency bands, producing high-fidelity audio (V3). It then ana-
+lyzes the background noise spectrum and uses a noise suppression
+algorithm with SoX [3] to filter interference, yielding the processed
+signal (V4) (see Sec. 3.5 for details).
+3.2 Technical Challenges
+There are several obstacles that limit the practicality of acoustic
+metamaterials for eavesdropping. The first challenge is improving
+performance at low frequencies. Speech signals carry important in-
+formationinthisrange,butexistingdesignslosemuchoftheirenergy
+as heat when trying to amplify low-frequency sounds. The second
+challenge is covering the speech frequency bands while avoiding a
+large,bulkydevice.Asasinglemetamaterialonlyamplifiesanarrow
+frequency band, covering the full speech range typically requires
+manyunits.Thethirdchallengeismaintainingaudioqualityinrealis-
+ticenvironments.Manufacturingimperfectionscanintroducesudden
+jumps in amplification, while uneven gain across frequencies can
+Sound
+a
+D
+t
+d
+Mic
+N
+(a)
+D1
+D8D2
+h
+H
+(1) (2) (8)
+...
+...
+... (b)
+Figure3:(a)Acousticmetamaterialstructurewithamicrophone
+at the center. (b) Metamaterial system.
+distort the reconstructed signal. In addition, metamaterials amplify
+environmentalnoise,suchastrafficandwind,togetherwiththetarget
+speech, further reducing clarity.
+These obstacles have so far limited the use of acoustic metamate-
+rials in realistic attacks. In the following sections, we describe how
+SuperEarovercomestheseissuesandmakesoutdooreavesdropping
+feasible.
+3.3 Enhancing the Gain of Low-frequency Signal
+As described in Sec. 2.3, we use Mie resonators to prototypeSu-
+perEar. We start by analyzing how acoustic metamaterials based on
+Mie resonators use coiled channels to enhance sound pressure and
+identified their limitations in low-frequency performance.
+As shown in Fig. 3a, the resonator structure consists of a curved
+propagation path with path width𝑎=3.2mm , wall thickness𝑡=
+0.8mm, outer diameter𝐷=80mm , inner diameter𝑑=14mm , and
+𝑁=8 turns. The sound pressure detected at the central microphone
+can be expressed as [28, 59]:
+𝑃=𝑃 0 ·𝑛𝑟(𝑓𝑟)
+𝜆0
+·
+√︄
+2𝜌𝑐2
+𝜆2
+0
+,
+where𝑃0 istheinputsoundpressure, 𝑛𝑟 theeffectiverefractiveindex,
+𝜆0 the wavelength in air,𝜌 the medium density, and𝑐 the speed
+of sound. Increasing𝑛𝑟 concentrates more acoustic energy at the
+microphone.Thegainisstrongestneartheresonantfrequency 𝑓𝑟.For
+the parameters above, the resonator exhibits a resonance at 563 Hz,
+enhancing sound in a narrow 100 Hz band with up to 16×gain [59].
+Prior work attempted to shift the resonance into the lower speech
+range by increasing the number of channels𝑁. For example, setting
+𝑁=22 lowers 𝑓𝑟 to around 260 Hz [15]. However, longer coiled
+paths also increase thermo-viscous losses, as sound reflections and
+WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates. Zhiyuan Ning et al.
+4 5 6 7 8 9 10 11 12 13 14 15 16 17
+Parameter: D (cm)
+200
+600
+1000
+0.4 0.8 1.2 1.6 2 2.4 2.8 3.2 3.6 4
+Parameter: a (mm)
+200
+600
+1000
+(a)
+Combination:(D,a) (mm)
+200
+400
+600
+800
+1000
+1200
+0
+20
+40
+60
+80
+100
+Resonant freq. Gain
+Change within 
+220-1100Hz (b)
+4 6 8 1 01 21 41 6
+Parameter: D (cm)
+0
+1
+2
+3
+4
+250 500 750 1000
+Resonant freq. (Hz)
+50
+100
+150
+200
+(6, 1.776)
+(10, 0.64)
+(8, 1)
+(16, 0.253)
+(12, 0.46)
+(550, 125)
+(250, 50) (1000, 190) (c)
+Figure 4: (a)Dandaindividually. (b)Dandasimultaneously.
+(c) Top:𝑘vs.D; Bottom: resonant frequency vs. bandwidth.
+scattering dissipate more energy as heat. This limits achievable gain
+in the 250 - 300 Hz range to about 5×, far below what is needed for
+reliable eavesdropping.
+Basedonstructuralparameteranalysis,weproposeamulti-metamaterial
+systemdesignthatavoidsincreasingthenumberofchannels( 𝑁)and
+instead tunes other key parameters to shift the resonant frequency.
+As shown in Fig. 3a, the outer diameter (𝐷) and channel width (𝑎)
+directly influence the sound transmission path, thereby affecting the
+effective refractive index (𝑛𝑟) and resulting sound pressure (𝑃). In
+contrast, wall thickness (𝑡) can be treated as fixed, since varying𝑡 is
+essentially equivalent to adjusting𝑎. The inner diameter (𝑑) of the
+central cavity also has little effect, as amplification mainly occurs
+inside the coiled channels. Using COMSOL (a widely used multi-
+physics simulation platform known for its ability to accurately solve
+coupled acoustic-structural problems. It has been extensively vali-
+dated in metamaterials and acoustics research, making its simulation
+results highly reliable [10, 30, 58, 61]), we examined how adjusting
+𝐷and𝑎whilekeeping 𝑁 fixedaffectstheresonantfrequency(Fig.4).
+Whenvariedindividually,changesin 𝐷showalmostnoinfluence,
+whilechangesin 𝑎shiftthecentralfrequencybyonly50Hz(Fig.4a),
+neither of which meets the low-frequency enhancement requirement.
+However, simultaneous tuning of𝐷 and 𝑎 produces a significant
+downward shift of the resonance (Fig. 4b). The relationship can be
+expressed as:
+𝑓𝑐 =𝑘×𝑓 𝑐,0 × (𝐷,𝑎)
+(𝐷0,𝑎0),
+where𝑓𝑐,0 =563Hz,𝐷 0 =80mm,𝑎 0 =3.2mm.
+The proportionality factor𝑘 decreases as𝐷 increases, showing
+nonlinear behavior: highly sensitive at small sizes and leveling off
+as size grows (Fig. 4c). This relationship provides the foundation
+for designing multi-metamaterial systems. COMSOL simulations
+confirm that the new design achieves low-frequency gain exceeding
+15×, while avoiding the thermo-viscous losses that limit traditional
+high-𝑁resonators (Fig. 4b).
+3.4 Expanding bandwidth via multi-metamaterials
+3.4.1 Defining the gain range.To design an effective metamaterial
+system, we first identify the key frequency range for speech enhance-
+ment. While human speech spans from roughly 250 Hz to 4000 Hz,
+prior studies show that intelligibility depends most on frequencies
+below 1000 Hz [14,50]. This is because vowel recognition, which
+is crucial for comprehension, relies on first formants (F1), which
+largely fall within 250 - 1000 Hz. We therefore target this range for
+enhancement.
+3.4.2 Determining the number of units.We then used COMSOL
+simulationstoexaminehowmetamaterialresonantfrequenciesrelate
+Algorithm 1:Optimal Number of Metamaterials
+1𝐼𝑛𝑝𝑢𝑡:𝑓 𝑠𝑡𝑎𝑟𝑡 , 𝑓𝑒𝑛𝑑 , 𝐵𝑊(𝑓𝑐 )
+2Optimal Design(𝑓 𝑠𝑡𝑎𝑟𝑡 ,𝑓𝑒𝑛𝑑 ,𝐵𝑊(𝑓 𝑐 ))
+3Function
+4Optimal Design(𝑓 𝑠𝑡𝑎𝑟𝑡 ,𝑓𝑒𝑛𝑑 ,𝐵𝑊(𝑓 𝑐 )):
+5𝑟𝑒𝑠𝑜𝑛𝑎𝑛𝑡_𝑓𝑟𝑒𝑞𝑠←[],𝑓 𝑐𝑢𝑟𝑟𝑒𝑛𝑡 ←𝑓𝑠𝑡𝑎𝑟𝑡 ;
+6while𝑓 𝑐𝑢𝑟𝑟𝑒𝑛𝑡 <𝑓𝑒𝑛𝑑 do
+7𝑓 𝑐 ←𝑓𝑐𝑢𝑟𝑟𝑒𝑛𝑡 ,𝑏𝑤←𝐵𝑊(𝑓 𝑐 ),𝑟𝑒𝑠𝑜𝑛𝑎𝑛𝑡_𝑓𝑟𝑒𝑞𝑠.append(𝑓 𝑐 );
+8𝑓 𝑐𝑢𝑟𝑟𝑒𝑛𝑡 ←𝑓𝑐𝑢𝑟𝑟𝑒𝑛𝑡 +𝑏𝑤;
+9end
+10𝑆←len(𝑟𝑒𝑠𝑜𝑛𝑎𝑛𝑡_𝑓𝑟𝑒𝑞𝑠)
+11return𝑟𝑒𝑠𝑜𝑛𝑎𝑛𝑡_𝑓𝑟𝑒𝑞𝑠,𝑆
+Table 1: Parameter Combinations of Acoustic Metamaterials.
+label path width (a) Diameters (D) Resonant freq. Freq. range
+(1) 2 mm 50 mm 930 Hz 840 - 1000 Hz
+(2) 2.4 mm 60 mm 790 Hz 720 - 860 Hz
+(3) 2.8 mm 70 mm 670 Hz 580 - 700 Hz
+(4) 3.2 mm 80 mm 563 Hz 490 - 597 Hz
+(5) 4 mm 100 mm 470 Hz 430 - 523 Hz
+(6) 4.8 mm 120 mm 385 Hz 350 - 435 Hz
+(7) 5.6 mm 140 mm 325 Hz 290 - 350 Hz
+(8) 6.4 mm 160 mm 280 Hz 250 - 295 Hz
+tobandwidth(bottomofFig.4c).Resultsshownarrowerbandwidths
+in the 250 - 550 Hz range (around 87.5 Hz) and wider bandwidths
+in the 550 - 1000 Hz range (around 157.5 Hz). This behavior can
+be explained by material properties: bandwidth scales with resonant
+frequency,𝐵𝑊=𝛼·𝑓 𝑐,where 𝛼isamaterialconstant.Forourresin-
+based design, higher resonant frequencies yield broader bandwidths.
+To cover the 250 - 1000 Hz range, we apply Algorithm 1. Starting
+from 𝑓𝑠𝑡𝑎𝑟𝑡 =280 Hz (bandwidth 60 Hz), the algorithm iteratively
+selects resonant frequencies and their bandwidths until reaching
+𝑓𝑒𝑛𝑑 =1000 Hz. This yields eight distinct resonant frequencies, cor-
+responding to eight metamaterial units (𝑆=8 ).SuperEartherefore
+consists of eight acoustic metamaterial units (Fig. 3b, Table 1). The
+thickness ℎ is fixed at 15 mm, sufficient to house a microphone,
+producing a total thickness of 120 mm. This compact design spans
+250–1000 Hz effectively while maintaining portability.
+3.4.3 Spectrum cropping and stitching.Each metamaterial unit am-
+plifies only a narrow band, so the outputs must be combined to
+achieve continuous coverage. Based on COMSOL simulations, we
+trimmed overlapping regions at frequencies with the highest gain
+(320, 360, 430, 520, 620, 700, and 860 Hz), retaining only ranges
+with >5× gain. Because each unit covers a different band, mutual
+interference is minimal. Stitching the trimmed outputs provides full
+coverage of the target speech range, enabling the system to recon-
+struct intelligible voice. The effectiveness of this design choice is
+validated in Sec. 4.3.3.
+3.5 Mitigating distortion and noise from
+metamaterial defects
+Our optimizations described so far extend metamaterial across a
+wide speech range, but distortions and noise can occur. First, cer-
+tain frequencies exhibit abrupt gain jumps (>1500× as shown in
+Fig. 6a), typically caused by uneven material distribution from 3D
+printing defects. Second, the gain response varies across frequencies
+SuperEar: Eavesdropping on Mobile Voice Calls via Stealthy Acoustic Metamaterials WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates.
+250 400 550 700 850 1000
+Frequence (Hz)
+5
+15
+25
+35
+45
+55
+65
+75
+85
+No redundancy and all 
+gains exceed 5×
+250 400 550 700 850 1000
+Frequence (Hz)
+5
+15
+25
+35
+45
+55
+65
+75
+85Gain
+320Hz
+360Hz
+430Hz
+520Hz
+620Hz
+720Hz
+860Hz
+M (1) M (2) M (3) M (4) M (5) M (6) M (7) M (8)
+(a) (b)
+Figure 5: (a) Gain curve of system and spectrum trimming (M:
+metamaterials), (b) Spectrum stitched after trimming.
+(Fig. 5), which reduces audio fidelity and weakens eavesdropping
+performance. Third, metamaterials amplify both signals and noise
+within the same frequency bands, making outdoor deployment vul-
+nerable to interference. We address these issues with algorithms for
+distortion suppression and noise reduction.
+3.5.1 Eliminating gain jumps.To mitigate abrupt frequency jumps,
+we apply a smoothing algorithm that combines median filtering with
+threshold-based replacement. Gain jumps are detected by computing
+Δ𝐺(𝑓𝑖)= |𝐺(𝑓𝑖)−𝐺 median (𝑓𝑖−𝑛,𝑓𝑖,𝑓𝑖+𝑛)|,
+with 𝑛=5,4,3,2,1 . Larger step sizes (5 Hz) capture wide-range
+anomalies, while smaller steps capture subtle local variations. Mea-
+surements across metamaterial samples show that all jumps occur
+within a 5 Hz window, consistent with geometric errors from 3D
+printing. A threshold is then applied: ifΔ𝐺(𝑓𝑖)exceeds the mean
+plus three standard deviations, the value is replaced with the local
+median:
+𝐺new(𝑓𝑖)=𝐺 median(𝑓𝑖−𝑛,𝑓𝑖,𝑓𝑖+𝑛), 𝑛=5,4,3,2,1.
+Iterativelyapplyingthisprocessremovesoutliers,producingasmooth
+gaincurve(asillustratedinFig.6a)andamorecoherentreconstructed
+signal.
+3.5.2 Maintain frequency gain balance.Even after removing jumps,
+gain mismatches across bands can degrade quality. To equalize per-
+formance, we implement an adaptive gain adjustment algorithm that
+dynamically scales each band relative to a target gain, set as the
+median of the curve. For excessively amplified bands:new= 𝐺target
+𝐺actual
+,
+and for under-amplified bands:new= 𝐺actual
+𝐺target . This balances all fre-
+quency responses, yielding a stable20×- 30×gain across 250–1000
+Hz (Fig. 6b). Together, smoothing and balancing form theDistor-
+tion Suppression Algorithm, which improves both intelligibility and
+fidelity.
+3.5.3 Suppress noise interference.Since metamaterials amplify all
+sounds within their effective range, suppressing background noise is
+essential. We design aNoise Suppression Algorithm(Algorithm 2)
+that detects noise-dominated frequency bands during spectrum syn-
+thesis and selectively suppresses the corresponding metamaterial
+outputs.
+Outdoor noise analysis shows that different types of noise exhibit
+distinct frequency distributions: environmental and traffic noise are
+typically concentrated in the 20–300 Hz range [25, 51], while in-
+dustrial machinery noise mainly falls within 50–500 Hz [20, 57].
+Algorithm 2:Noise Suppression Algorithm
+1Noise Suppression()
+2FunctionNoise Suppression():
+3Step1();Step2(𝑓 0);returnStep2(𝑓 0)
+4FunctionStep1():
+5𝑅𝑒𝑐𝑒𝑖𝑣𝑒𝑛𝑜𝑖𝑠𝑒𝑎𝑛𝑑𝑎𝑛𝑎𝑙𝑦𝑧𝑒 𝑓𝑟𝑒𝑞𝑢𝑒𝑛𝑐𝑦𝑟𝑎𝑛𝑔𝑒 𝑓 0;return𝑓 0
+6FunctionStep2(𝑓 0):
+7𝑆𝑑𝑒𝑛𝑜𝑡𝑒𝑠𝑡ℎ𝑒𝑜𝑝𝑡𝑖𝑚𝑎𝑙𝑛𝑢𝑚𝑏𝑒𝑟𝑜𝑓 𝑚𝑒𝑡𝑎𝑚𝑎𝑡𝑒𝑟𝑖𝑎𝑙𝑠.
+8for𝑖=1toSdo
+9if𝑓 𝑖 contains𝑓0 then
+10𝑓 𝑖 ←Isolate from the combined range
+11end
+12end
+13𝐶𝑜𝑚𝑏𝑖𝑛𝑒𝑡ℎ𝑒𝑟𝑒𝑚𝑎𝑖𝑛𝑖𝑛𝑔𝑓 𝑖 𝑖𝑛𝑡𝑜𝑎𝑛𝑒𝑤𝑠𝑝𝑒𝑐𝑡𝑟𝑢𝑚𝐹;return𝐹
+400 600 800 1000
+Frequency (Hz)
+500
+1000
+1500Gain
+400 600 800 1000
+Frequency (Hz)
+100
+200
+300Gain
+Jumps Jumps
+Jumps removed
+(a) Remove jumps in enhancement curve
+400 600 800 1000
+Frequency (Hz)
+100
+200
+300Gain
+400 600 800 1000
+Frequency (Hz)
+20
+40
+60
+80
+100Gain
+Ratio before balancing
+20x-30x
+Ratio after balancing (b) Enhancement curve after balancing
+Figure 6: Optimization result: eliminated jumps in the enhance-
+ment curve and generated a new balanced curve.
+Raspberry Pi Microphone array
+Control
+Raw audio
+Metamaterials and microphones
+Raspberry Pi
+System flow diagram
+Microphone array
+Metamaterials
+(a) Prototype ofSuperEarand its flow dia-
+gram
+30.41 cm
+20.24 cm 16 cm
+27 cm
+(b) Covert prototype (smaller than a 13-
+inch MacBook Air)
+Figure 7: Implementation: prototype and covert form factor.
+These ranges only partially overlap withSuperEar’s 250 - 1000 Hz
+enhancement band, making selective suppression feasible. Our noise
+suppression algorithm first measures the environment to identify the
+dominant noise frequency range (𝑓0), then checks each metamaterial
+unit’s band (𝑓𝑖) and excludes those overlapping with𝑓0. The remain-
+ing bands are combined into a new spectrum𝐹, which reduces noise
+while preserving intelligible speech.
+When interference occurs within the enhanced range,SuperEar
+automatically reduces the gain of the affected channels to minimize
+noisecontribution.Althoughthissacrificessomefrequencycoverage,
+experiments (Sec. 4.4.2) show that speech intelligibility is largely
+preserved while background interference is significantly reduced.
+3.6 Implementation
+As shown in Fig. 7a, theSuperEarprototype integrates eight acous-
+tic metamaterial modules, a commercial microphone array, and a
+Raspberry Pi 5B, which performs on-device beamforming, MVDR
+filtering,noisesuppression,andaudioreconstruction.Theassembled
+WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates. Zhiyuan Ning et al.
+WhisperCatch
+Target
+Environment noise: 
+60 dB - 70 dB
+Target
+Environment noise: 
+60 dB - 70 dB
+Obstacle
+SuperEar
+(a)S1:environmentalnoiseandobstacles
+SuperEar
+Target
+Move speed: 2m/s – 3m/s
+Wind speed: 2m/s – 4m/s (b) S2: walking targets with wind
+Figure 8: Real attack evaluation scenarios: S1 and S2.
+Table 2: Mobile devices used in evaluation.
+Brand Model OS
+iPhone 16 Pro Max IOS 18.4.1Apple [4] iPhone 15 Pro IOS 17.5
+HONOR [5] Magic V Flip MagicOS 8
+Samsung [7] Galaxy Z Fold 4 Android 14
+Google [1] Pixel 8 Pro Android 14
+Sony [8] Xperia 10 IV Android 13
+Xiaomi 14 HyperOS 2Xiaomi [6] Redmi K50 Ultra Miui 13.0.1
+Huawei [2] Mate 60 Pro HarmonyOS 4
+device fits in a (27×16 ) cm handbag (Fig. 7b), enabling portable
+and covert operation in mobile attack scenarios.
+4 EVALUATION
+4.1 Experimental Setup
+All our experiments were conducted under approval from the Institu-
+tionalReviewBoard(IRB).Theresearchequipmentwasself-funded,
+and participants voluntarily joined with informed consent. No sensi-
+tive or personally identifying data was collected or stored during the
+study, ensuring compliance with ethical standards.
+4.1.1 Test targets.As given in Table 2, we evaluatedSuperEar
+against nine mainstream smartphones. In addition, three volunteers
+(one female, two males) acted as callers to test the system’s ability
+to capture spoken content. We also recruited 10 volunteers (5 female
+and5males)toevaluatethesimilaritybetweentheoriginalvoiceand
+the one captured bySuperEar. All our volunteers are postgraduate
+students studying at our university.
+4.1.2 Metrics.Followingpriorwork[ 12,13,21,23,26,43],weuse
+four metrics:success rate,range of successful attack (RSA),word
+accuracy,andMeanOpinionScore(MOS).Successrateiscomputed
+over 30 trials per device-condition pair, with reconstructed audio
+considered successful if Mel-Cepstral Distortion (MCD, lower is
+better) < 8 [21, 26]. RSA is the maximum distance with success rate
+≥80% [12]. Word accuracy is the fraction of correctly recognized
+words via Google Speech Recognition [1, 12, 13, 43]. MOS is rated
+by 10 gender-balanced volunteers on a 1–5 scale [21, 23].
+4.1.3 Experiment design.Our experiments simulate realistic phone-
+callscenarios.Ineachtrial,thetargetdeviceplayedascriptedphrase
+at about 65 dB, while the volunteer repeated it at a whisper level of
+roughly 45 dB.
+Roadmap.Our evaluation is organized into four parts: baseline
+performance (Sec. 4.2), design choices and ablations (Sec. 4.3),
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+Attack Range (m)
+0
+20
+40
+60
+80
+100 Success Rate (%)
+0
+10
+20
+30
+40
+50
+SNR (dB)
+(a) iPhone 16 Pro Max (b) iPhone 15 Pro (c) MagicV Flip
+(d) Galaxy Z Fold 4 (e) Pixel 8 Pro (f) Xperia10 IV
+(g) Xiaomi 14 (h) Redmi K50 Ultra (i) Mate 60 Pro
+(j) V1 (k) V2 (l) V3
+SuperEar's success rate Microphone's success rate SuperEar's SNR Microphone's SNR
+Figure 9: Performance ofSuperEarand microphone array.
+60 55 50 45
+Earpiece volume level (dB)
+2.5
+3
+3.5
+4
+4.5RSA (m)
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+Figure 10: Performance under different volumes (covering four
+typical and low earpiece volume levels across different devices).
+English Chinese German French Spanish
+Different languages   and multiple semantics
+4
+4.25
+4.5
+4.75
+5
+RSA  (m)
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3
+Figure11:Performanceunderdifferentlanguagesandsemantics
+(covering five languages and various semantic scenarios).
+real-world scenarios (Sec. 4.4), and comparison with prior meth-
+ods (Sec. 4.5). All experiments were repeated multiple times, and
+mean results are reported.
+4.2 Eavesdropping Performance ofSuperEar
+4.2.1 Eavesdropping range for different targets.Eavesdroppingrange
+is a key metric for evaluating attack effectiveness. We measured the
+SNR of reconstructed audio across multiple devices and volunteers
+(Table 2). Results (Fig. 9) show thatSuperEarconsistently achieves
+4.6 meters on different devices and individuals, with success rates
+over 80% and average SNRs of 20.4 dB and 20.7 dB, demonstrating
+strong stability and adaptability. In contrast, the average maximum
+eavesdroppingrangeofmicrophonearraysisonly1.3meters[ 31,47],
+far below thesafe distance.
+SuperEar: Eavesdropping on Mobile Voice Calls via Stealthy Acoustic Metamaterials WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates.
+Different targets
+1
+2
+3
+4
+5
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3
+(a)
+4.2 4.5
+Attack Range (m)
+75
+80
+85
+90
+95
+100Word Accuracy (%)
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3 (b)
+Figure 12: (a) Human auditory evaluation performance. (b)
+Eavesdropping accuracy against passwords.
+4.2.2 Effect of earpiece volume.Earpiecevolumedirectlyinfluences
+sound energy and propagation distance, thereby affecting eavesdrop-
+pingperformance.Buildingonthe65dBsetting,weevaluatedlower
+volumes of 60, 55, 50, and 45 dB. As shown in Fig. 10, even at
+approximately 45 dB,SuperEarmaintains a stable eavesdropping
+range of about 3.2 m, exceeding the safe distance. This demonstrates
+thateffectiveeavesdroppingispossibleevenduringlow-volumecalls.
+Since typical call volumes are generally higher,SuperEarremains
+practical in real-world scenarios.
+4.2.3 Performance across different languages and multi-semantic
+content.To evaluate multilingual performance, we tested English,
+Chinese, German, French, and Spanish with five privacy-sensitive
+phrases. As shown in Fig. 11, the average eavesdropping distance
+for all languages exceeds 4.55 m, with English and Chinese perform-
+ing best. Overall,SuperEarmaintains stable performance across
+differentlanguagesandsemanticcontent,demonstratingstrongcross-
+language robustness.
+4.2.4 Human assessment of eavesdropping performance.Our ten
+volunteersratedthereconstructedaudioformultipletargets(Fig.12a),
+with average MOS scores above 4, indicating most of the original
+speech was successfully recovered and verifying the excellent eaves-
+dropping capability ofSuperEar.
+4.2.5 Eavesdropping accuracy on passwords.Password eavesdrop-
+ping is a risky method of information theft. The success of such an
+attack depends on whetherSuperEarcan accurately reconstruct
+eachpassworddigit.Evaluationsshow(Fig.12b)thatatadistanceof
+4.2meters,SuperEarachieves100%passwordrecognitionaccuracy,
+demonstrating its high precision in remote eavesdropping.
+4.2.6 Performance with electret microphones.Electret microphones
+have slightly lower sensitivity but are low-cost and have a wide
+frequency response. After integration intoSuperEar(Fig. 13a),
+the average RSA reached 4.52 meters. The metamaterial enhance-
+menteffectivelycompensatesforthereducedsensitivity,maintaining
+eavesdropping performance.
+4.3 Enhanced Capability ofSuperEar
+4.3.1 Actual gain performance.To evaluateSuperEar’s actual
+gain, we conducted laboratory experiments at a distance of 4.6 m
+under 43 dB background noise and without obstacles. As shown in
+Fig. 13b,SuperEarachieves a 20–30×gain in the 250–1000 Hz
+frequency range, closely matching simulation results, whereas prior
+low-frequency metamaterials provide only about 5×gain.
+Silicon mic Electret mic
+Different mics
+4
+4.2
+4.4
+4.6
+4.8
+5
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3
+(a)
+300 400 500 600 700 800 900 1000
+Frequence (Hz)
+0
+0.5
+1
+1.5
+2
+2.5 10-5
+Prior metamaterials
+SuperEar
+Original audio (b)
+Figure 13: (a) Performance with different microphones. (b) The
+real enhancement effect ofSuperEar.
+SuperEar Prior Only mic
+Different systems
+0.5
+1.5
+2.5
+3.5
+4.5RSA (m)
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3
+(a)
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3
+SuperEar W/O Algorithm
+Different systems
+2.5
+3
+3.5
+4
+4.5
+5
+RSA (m) (b)
+Figure 14: (a) Improved metamaterial capability. (b) Perfor-
+mance ofDistortion Suppression Algorithm.
+Add 0.2-0.25kHz Add 1-1.2kHz Cut 0.25-0.32kHz Cut 0.9-1kHz SuperEar (0.25-1kHz)
+Different systems
+3.8
+4.3
+4.8 RSA (m)
+Figure 15:SuperEar’s optimal metamaterials (covering the im-
+pact of adding or removing metamaterial units on the system).
+65(W) 65(T) 65(V) 65(I) 70(W) 70(T) 70(V) 70(I) 70(A)
+Noise Pressure Level (dB, W/O Algorithm)
+0.5
+1
+1.5 RSA (m)
+Noise Pressure Level (dB, With Algorithm)
+65(W) 65(T) 65(V) 65(I) 70(W) 70(T) 70(V) 70(I) 70(A)
+0
+2
+4
+RSA (m)
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+GalaxyZ Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3
+Figure 16: Noise impact (W: wind; T: thunder; V: vehicle; I:
+industrial; A: combination of the above noises).
+4.3.2 Multi-metamaterial system performance.The proposed multi-
+metamaterialsystemplaysacriticalroleinlong-rangeeavesdropping.
+Ablation experiments show thatSuperEarachieves an average RSA
+of4.6m,representingan86%improvementoverpriormetamaterials
+with approximately 5×gain [15]. This performance far exceeds that
+of microphones and previous metamaterial designs, highlighting the
+system’s gain advantage.
+4.3.3 Distortion suppression algorithm performance.TheDistortion
+SuppressionAlgorithmmitigatesdistortionscausedbymanufacturing
+imperfections and gain imbalance across multiple metamaterials.
+Without this algorithm, the system achieves an RSA of only 2.94 m,
+whereasSuperEarimproves RSA by 53%, demonstrating that the
+algorithm is essential for maintaining a safe eavesdropping distance.
+WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates. Zhiyuan Ning et al.
+33 . 544 . 5
+Attack Range (m)
+80
+85
+90
+95
+100Success Rate (%)
+iPhone16 PM
+iPhone15 P
+MagicV Flip
+Galaxy Z Fold4
+Pixel8 P
+Xperia10 IV
+Xiaomi14
+Redmi K50 U
+Mate60 P
+V1
+V2
+V3
+33 . 544 . 5
+Attack Range (m)
+80
+85
+90
+95
+100
+Figure 17: Impact of moving target (left: 2 m/s, right: 3 m/s).
+23456
+Wind speed (m/s)
+3.3
+3.6
+3.9
+4.2
+4.5
+4.8
+(a)
+Building Cars Pedestrians Trees
+Different obstacles
+4
+4.1
+4.2
+4.3
+4.4
+4.5
+ (b)
+Figure 18: (a) Impact of wind. (b) Impact of obstacles.
+4.3.4SuperEarmetamaterial design.To suit outdoor mobile eaves-
+dropping,SuperEar’s metamaterial design balances audio quality
+and portability. Comparisons with designs that added or removed
+specific frequency bands show that adding bands yields RSA close
+toSuperEar, increasing only 0.65%–1.5%, while removing bands
+reduces RSA by 12.3%–14.5%, confirming the balance between
+performance and portability.
+4.4 Performance in Real-world Scenarios
+4.4.1 Noise impact.To assess environmental noise, we testedSu-
+perEarunder wind (20–300 Hz), thunderstorm (20–200 Hz), traffic
+(30–300 Hz), and industrial noise (50–500 Hz) (Fig. 16). At 60 dB,
+average RSA reached 4.05 m, 23.1% higher than without the al-
+gorithm. At 70 dB, RSA without theNoise Suppression Algorithm
+dropped to 0.38 m, whileSuperEarmaintained 3.53 m, exceeding
+thesafe distance.
+4.4.2 Attacks against walking victims.With its portability and ro-
+bustness,SuperEareffectively eavesdrops on moving targets. At
+4.5 m, average success rates for targets walking at 2 m/s and 3 m/s
+were 86.7% and 84.4%, respectively (Fig. 17).
+4.4.3 Impact of wind speed.Wind can affect sound propagation,
+impacting eavesdropping performance. We testedSuperEarunder
+wind speeds of 2–6 m/s; at 6 m/s, the average RSA remained 3.4 m
+(Fig.18a).Thisisthankstotheomnidirectionalnatureofthesystem’s
+metamaterials, which capture sound from multiple directions and
+maintain stable performance.
+4.4.4 Impact of obstacles.Obstacles partially block sound. Trees,
+pedestrians, and partially blocked doors/windows were tested. Par-
+tially blocked doors/windows reduced RSA from 4.6 m to 4.1 m,
+butomnidirectional receptionallowsSuperEarto capturediffracted
+sound and maintain stable performance.
+4.5 Compared to Prior Methods
+We comparedSuperEarwith prior eavesdropping attacks (Table 3).
+Only mmSpy [13], mmEve [47], EarSpy [31], and Vibphone [43]
+intercept earpiece audio, but EarSpy [31] and Vibphone [43] require
+Table 3: Performance compared to prior work
+System
+Name
+Earpiece
+Attack
+Non
+invasive
+Over
+3 m
+No
+aiming Portable Off-the-
+shelf
+User-
+friendly
+mmEve [47] Yes Yes Yes No Yes No No
+mmSpy [13] Yes Yes No No Yes No No
+mmEcho [21] No Yes Yes No Yes No No
+EarSpy [31] Yes No Yes Yes Yes Yes No
+AccelEve [12] No No Yes Yes Yes Yes No
+Vibphone [43] Yes No Yes Yes Yes Yes No
+LidarPhone [42] No No Yes No Yes Yes No
+Lamphone[34] No Yes Yes No No No No
+SuperEar Yes Yes Yes Yes Yes Yes Yes
+device infiltration. mmSpy [13] is limited to 3 m, while mmEve [47]
+requires continuous millimeter-wave alignment. Most alternatives
+rely on costly millimeter-wave radars [13, 21, 47] or bulky optical
+equipment [34], often with machine learning overhead. In contrast,
+SuperEarenables portable, low-cost, non-intrusive eavesdropping
+suited for outdoor scenarios.
+5 DISCUSSION
+Robustness.SuperEarremains effective under wind (up to 6 m/s),
+noise (up to 70 dB), and obstacles, though performance may drop in
+harsher, noisy environments.
+Earphone scenarios.Current design cannot reliably capture audio
+from wired or wireless earphones due to weaker leakage; only low-
+volume speech may be intercepted. This marks the boundary of the
+current threat model.
+Concealment.Theprototypeiscompact,fitsinahandbag,andworks
+at4–5m,typicalforpublicspaces.Concealmentisharderinsparsely
+populated or monitored areas.
+Countermeasures.Soundproofing(e.g.,fiberboards,acousticfoam[ 35–
+37])orloudwhitenoisecanblockleakage,butarecostlyorintrusive
+outdoors.Practicaldefensesincludeportablebuilt-inprotections,like
+directional-transmissionearpiecesoractive-noise-cancelingwireless
+earphones optimized for 250–1000 Hz.
+6 CONCLUSION
+WepresentSuperEar,thefirstsystemexperimentallydemonstrating
+acoustic metamaterial–based eavesdropping on moving targets out-
+doors.Unlikepriornon -intrusivemethods,itreliablycapturesphone-
+call audio at several meters. Key advances—combining multiple
+metamaterialsforlow-frequencygain,optimizingstructuresforporta-
+bility, and applying filtering to reduce noise and artifacts—enable
+effective audio reconstruction in realistic environments. Our eval-
+uation showsSuperEaroutperforms existing attacks, revealing a
+new privacy threat and highlighting the need for improved defenses
+against acoustic side channels.
+7 Ethical Considerations
+We present a novel acoustic eavesdropping attack using acoustic
+metamaterials,framedwithexplicitethicalconsiderations.Ourwork
+highlights overlooked privacy risks in outdoor phone calls and moti-
+vates countermeasure development. To reduce misuse, we focus on
+feasibility and limitations rather than replication details, aiming to
+guide future defenses and policy.
+SuperEar: Eavesdropping on Mobile Voice Calls via Stealthy Acoustic Metamaterials WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates.
+References
+[1] https://cloud.google.com/speech-to-text. Google Text-to-Speech AI. Last ac-
+cessed: 2024-8-6.
+[2] https://consumer.huawei.com/cn/phones/. Huawei. Last accessed: 2024-10-14.
+[3] https://sourceforge.net/projects/sox/. Sox. Last accessed: 2024-10-6.
+[4] https://www.apple.com.cn/iphone/. Apple. Last accessed: 2024-10-14.
+[5] https://www.honor.com/cn/phones/. HONOR. Last accessed: 2024-10-14.
+[6] https://www.mi.com/. Xiaomi. Last accessed: 2024-10-14.
+[7] https://www.samsung.com.cn/smartphones/all-smartphones/. Samsung. Last
+accessed: 2024-10-14.
+[8] https://www.sony.com.hk/zh/smartphones?srsltid=
+AfmBOopWInT4KRcdpk37iCnv3688Jc44KDiGgdUlSnzyn-PZlq-Mm1gk.
+Sony. Last accessed: 2024-10-14.
+[9] S Abhishek Anand and Nitesh Saxena. 2018. Speechless: Analyzing the threat to
+speech privacy from smartphone motion sensors. In2018 IEEE Symposium on
+Security and Privacy (SP). IEEE, 1000–1017.
+[10] Badreddine Assouar, Bin Liang, Ying Wu, Yong Li, Jian-Chun Cheng, and Yun
+Jing. 2018. Acoustic metasurfaces.Nature Reviews Materials3, 12 (2018), 460–
+472.
+[11] DembaEBa,DineiFlorêncio,andChaZhang.2007. EnhancedMVDRbeamform-
+ing for arrays of directional microphones. In2007 IEEE international conference
+on multimedia and expo. IEEE, 1307–1310.
+[12] Zhongjie Ba, Tianhang Zheng, Xinyu Zhang, Zhan Qin, Baochun Li, Xue Liu,
+and Kui Ren. 2020. Learning-based Practical Smartphone Eavesdropping with
+Built-in Accelerometer.. InNDSS, Vol. 2020. 1–18.
+[13] Suryoday Basak and Mahanth Gowda. 2022. mmspy: Spying phone calls using
+mmwave radars. In2022 IEEE Symposium on Security and Privacy (SP). IEEE,
+1211–1228.
+[14] John Cunnison Catford. 2001.A practical introduction to phonetics. Oxford
+University Press.
+[15] Y Cheng, C Zhou, BG Yuan, DJ Wu, Q Wei, and XJ Liu. 2015. Ultra-sparse
+metasurface for high reflection of low-frequency sound based on artificial Mie
+resonances.Nature materials14, 10 (2015), 1013–1019.
+[16] Abe Davis, Michael Rubinstein, Neal Wadhwa, Gautham J Mysore, Fredo Durand,
+and William T Freeman. 2014. The visual microphone: Passive recovery of sound
+from video.ACM Transactions on Graphics(2014).
+[17] Aidong Deng, Hang Tong, Jianeng Tang, Hao Cao, Kang Qin, and Xi Yan. 2013.
+Study on location algorithms of beamforming based on MVDR.Applied Mathe-
+matics & Information Sciences7, 6 (2013), 2455.
+[18] Ervin RHafter,AnastasiosSarampalis, andPsycheLoui.2008. Auditory attention
+and filters. InAuditory perception of sound sources. Springer, 115–142.
+[19] Jun Han, Albert Jin Chung, and Patrick Tague. 2017. Pitchln: eavesdropping via
+intelligiblespeechreconstructionusingnon-acousticsensorfusion.InProceedings
+of the 16th ACM/IEEE International Conference on Information Processing in
+Sensor Networks. 181–192.
+[20] Olaf Heintze, Volker Wittstock, and Carl Fredrik Hartung. 2008. Sound Radiation
+of a Large Truck Oil Pan: Estimation and Experimental Investigation.Journal of
+the Acoustical Society of America123, 5 (2008), 3171–3171.
+[21] Pengfei Hu, Wenhao Li, Riccardo Spolaor, and Xiuzhen Cheng. 2023. mmecho:
+A mmwave-based acoustic eavesdropping method. InProceedings of the ACM
+Turing Award Celebration Conference-China 2023. 138–140.
+[22] Pengfei Hu, Yifan Ma, Panneer Selvam Santhalingam, Parth H Pathak, and Xi-
+uzhen Cheng. 2022. Milliear: Millimeter-wave acoustic eavesdropping with un-
+constrained vocabulary. InIEEE INFOCOM 2022-IEEE Conference on Computer
+Communications. IEEE, 11–20.
+[23] Pengfei Hu, Hui Zhuang, Panneer Selvam Santhalingam, Riccardo Spolaor, Parth
+Pathak, Guoming Zhang, and Xiuzhen Cheng. 2022. Accear: Accelerometer
+acoustic eavesdropping with unconstrained vocabulary. In2022 IEEE Symposium
+on Security and Privacy (SP). IEEE, 1757–1773.
+[24] JunJi,ChumingZhao,FrankYao,TetsuroOishi,JohnStewart,andYunJing.2023.
+Metamaterial-Augmented Head-Mounted Audio Module.Advanced Materials
+Technologies8, 19 (2023), 2300834.
+[25] Vladislovas Katinas, Mantas Marčiukaitis, and Marijona Tamašauskien˙e. 2016.
+Analysis of the wind turbine noise emissions and impact on the environment.
+Renewable and Sustainable Energy Reviews58 (2016), 825–831.
+[26] John Kominek, Tanja Schultz, and Alan W Black. 2008. Synthesizer voice quality
+of new languages calibrated with mean mel cepstral distortion.. InSLTU. 63–68.
+[27] Andrew Kwong, Wenyuan Xu, and Kevin Fu. 2019. Hard drive of hearing: Disks
+that eavesdrop with a synthesized microphone. In2019 IEEE symposium on secu-
+rity and privacy (SP). IEEE, 905–919.
+[28] Yunzhong Lei, Jiu Hui Wu, Libo Wang, Yao Huang, and Jiamin Niu. 2023. Deep
+sub-wavelength acoustic transmission enhancement and whisper via the monopole
+resonance in meta-cavities.Applied Acoustics203 (2023), 109227.
+[29] Steven J Luck. 2016. Neurophysiology of selective attention. InAttention. Psy-
+chology Press, 257–295.
+[30] Guancong Ma and Ping Sheng. 2016. Acoustic metamaterials: From local reso-
+nances to broad horizons.Science advances2, 2 (2016), e1501595.
+[31] Ahmed Tanvir Mahdad, Cong Shi, Zhengkun Ye, Tianming Zhao, Yan Wang,
+Yingying Chen, and Nitesh Saxena. 2022. Earspy: Spying caller speech and
+identity through tiny vibrations of smartphone ear speakers.arXiv preprint
+arXiv:2212.12151(2022).
+[32] HéctorACordourierMaruri,PauloLopez-Meyer,JonathanHuang,WillemMarco
+Beltman, Lama Nachman, and Hong Lu. 2018. V-Speech: noise-robust speech
+capturing glasses using vibration sensors.Proceedings of the ACM on Interactive,
+Mobile, Wearable and Ubiquitous Technologies2, 4 (2018), 1–23.
+[33] Yan Michalevsky, Dan Boneh, and Gabi Nakibly. 2014. Gyrophone: Recognizing
+speech from gyroscope signals. In23rd USENIX Security Symposium (USENIX
+Security 14). 1053–1067.
+[34] Ben Nassi, Yaron Pirutin, Raz Swisa, Adi Shamir, Yuval Elovici, and Boris Zadov.
+2022. Lamphone:Passivesoundrecoveryfromadesklamp’slightbulbvibrations.
+In31st USENIX Security Symposium (USENIX Security 22). 4401–4417.
+[35] P Nechita and S Năstac. 2018. Foam-formed cellulose composite materials with
+potential applications in sound insulation.Journal of composite materials52, 6
+(2018), 747–754.
+[36] LPeng.2017. Soundabsorptionandinsulationfunctionalcomposites. InAdvanced
+high strength natural fibre composites in construction. Elsevier, 333–373.
+[37] LPeng.2017. Soundabsorptionandinsulationfunctionalcomposites. InAdvanced
+high strength natural fibre composites in construction. Elsevier, 333–373.
+[38] Sichao Qu, Min Yang, Yunfei Xu, Songwen Xiao, and Nicholas X Fang. 2023.
+Reverberation time control by acoustic metamaterials in a small room.Building
+and Environment244 (2023), 110753.
+[39] Zhiwen Ren, Yuehang Cheng, Mingji Chen, Xujin Yuan, and Daining Fang. 2022.
+A compact multifunctional metastructure for Low-frequency broadband sound
+absorptionandcrashenergydissipation.Materials&Design215(2022),110462.
+[40] Virginia P Richmond. 2008. Nonverbal behavior in interpersonal relations.(No
+Title)(2008), 366.
+[41] Nirupam Roy and Romit Roy Choudhury. 2016. Listening through a vibration
+motor. InProceedings of the 14th Annual International Conference on Mobile
+Systems, Applications, and Services. 57–69.
+[42] Sriram Sami, Yimin Dai, Sean Rui Xiang Tan, Nirupam Roy, and Jun Han. 2020.
+Spying with your robot vacuum cleaner: eavesdropping via lidar sensors. InPro-
+ceedings of the 18th Conference on Embedded Networked Sensor Systems. 354–
+367.
+[43] Weigao Su, Daibo Liu, Taiyuan Zhang, and Hongbo Jiang. 2021. Towards device
+independent eavesdropping on telephone conversations with built-in accelerom-
+eter.Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous
+Technologies5, 4 (2021), 1–29.
+[44] Ye-Yang Sun, Jian-Ping Xia, Hong-Xiang Sun, Shou-Qi Yuan, Yong Ge, and Xiao-
+Jun Liu. 2019. Dual-Band Fano Resonance of Low-Frequency Sound Based on
+Artificial Mie Resonances.Advanced Science6, 20 (2019), 1901307.
+[45] Eric Sundstrom and Irwin Altman. 1976. Interpersonal relationships and personal
+space: Research review and theoretical model.Human Ecology4 (1976), 47–67.
+[46] KylePWalsh,EdwardGPasanen,andDennisMcFadden.2014. Selectiveattention
+reduces physiological noise in the external ear canals of humans. I: Auditory
+attention.Hearing research312 (2014), 143–159.
+[47] Chao Wang, Feng Lin, Tiantian Liu, Kaidi Zheng, Zhibo Wang, Zhengxiong Li,
+Ming-Chun Huang, Wenyao Xu, and Kui Ren. 2022. mmEve: eavesdropping on
+smartphone’s earpiece via COTS mmWave device. InProceedings of the 28th
+AnnualInternationalConferenceonMobileComputingAndNetworking.338–351.
+[48] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai
+Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via
+RFIDbycapturingsub-mmlevelvibration.ProceedingsoftheACMonInteractive,
+Mobile, Wearable and Ubiquitous Technologies5, 4 (2021), 1–25.
+[49] Guanhua Wang, Yongpan Zou, Zimu Zhou, Kaishun Wu, and Lionel M Ni. 2014.
+We can hear you with Wi-Fi!. InProceedings of the 20th annual international
+conference on Mobile computing and networking. 593–604.
+[50] LeiWang,MengChen,LiLu,ZhongjieBa,FengLin,andKuiRen.2023. Voicelis-
+tener: A training-free and universal eavesdropping attack on built-in speakers of
+mobile devices.Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies7, 1 (2023), 1–22.
+[51] Wenjie Wang, Yan Yan, Yongnian Zhao, and Yu Xue. 2024. Studies on the
+Experimental Measurement of the Low-Frequency Aerodynamic Noise of Large
+Wind Turbines.Energies17, 7 (2024), 1609.
+[52] Ziqi Wang, Zhe Chen, Akash Deep Singh, Luis Garcia, Jun Luo, and Mani B
+Srivastava.2020. UWHear:Through-wallextractionandseparationofaudiovibra-
+tions using wireless signals. InProceedings of the 18th Conference on Embedded
+Networked Sensor Systems. 1–14.
+[53] TengWei,ShuWang,AnfuZhou,andXinyuZhang.2015. Acousticeavesdropping
+through wireless vibrometry. InProceedings of the 21st Annual International
+Conference on Mobile Computing and Networking. 130–141.
+[54] Matthias J Wieser, Paul Pauli, Miriam Grosseibl, Ina Molzow, and Andreas
+Mühlberger. 2010. Virtual social interactions in social anxiety—the impact of
+sex, gaze, and interpersonal distance.Cyberpsychology, Behavior, and Social
+Networking13, 5 (2010), 547–554.
+WWW ’26, April 13–17, 2026, Dubai, United Arab Emirates. Zhiyuan Ning et al.
+[55] Chenhan Xu, Zhengxiong Li, Hanbin Zhang, Aditya Singh Rathore, Huining Li,
+Chen Song, Kun Wang, and Wenyao Xu. 2019. Waveear: Exploring a mmwave-
+based noise-resistant speech sensing for voice-user interface. InProceedings of
+the 17th Annual International Conference on Mobile Systems, Applications, and
+Services. 14–26.
+[56] Xiangyu Xu, Yu Chen, Zhen Ling, Li Lu, Junzhou Luo, and Xinwen Fu. 2024.
+mmEar: Push the Limit of COTS mmWave Eavesdropping on Headphones. In
+IEEE INFOCOM 2024-IEEE Conference on Computer Communications. IEEE,
+351–360.
+[57] Baoqing Zhang, Yubin Rao, Yunyi Guo, and Wangqiang Xiao. 2023. Noise
+Reduction Performance of Metamaterials Sound Insulation Plate. InInternational
+Conference on Urban Climate, Sustainability and Urban Design. Springer, 656–
+666.
+[58] Guoming Zhang, Xiaoyu Ji, Xinfeng Li, Gang Qu, and Wenyuan Xu. 2021. EarAr-
+ray: Defending against DolphinAttack via Acoustic Attenuation.. InNDSS.
+[59] Jin Zhang, Wei Rui, Chengrong Ma, Ying Cheng, Xiaojun Liu, and Johan Chris-
+tensen. 2021. Remote whispering metamaterial for non-radiative transceiving of
+ultra-weak sound.Nature Communications12, 1 (2021), 3670.
+[60] Li Zhang, Parth H Pathak, Muchen Wu, Yixin Zhao, and Prasant Mohapatra.
+2015. Accelword: Energy efficient hotword detection through accelerometer. In
+Proceedings of the 13th Annual International Conference on Mobile Systems,
+Applications, and Services. 301–315.
+[61] YihuanZhu,RuizhiDong,DongxingMao,XuWang,andYongLi.2023. Nonlocal
+Ventilating Metasurfaces.Physical Review Applied19, 1 (2023), 014067.

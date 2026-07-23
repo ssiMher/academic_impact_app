@@ -1,0 +1,40 @@
+{
+  "findings": [
+    {
+      "citation_text": "[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim's proximity, which reduces its practicality.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "reasoning": "The citing paper mentions [21] as an RFID-based eavesdropping method using cGAN, but also points out a limitation (requirement of pre-installed tags), which is a negative comparison. This is in the related work section.",
+      "highlight_keywords": ["RFID tags", "cGAN", "pre-install", "reduces practicality"],
+      "keep": true
+    },
+    {
+      "citation_text": "In summary, these WiFi signal- and impulse radio-based methods [14], [15], [21], [22], [24] suffer a insufficient vibration resolution due to long wavelength and low packet rate.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "[21] is grouped with other WiFi/impulse radio methods and criticized for insufficient vibration resolution. This is a limitation mentioned in the context of related work.",
+      "highlight_keywords": ["insufficient vibration resolution", "long wavelength", "low packet rate"],
+      "keep": true
+    },
+    {
+      "citation_text": "Tag-Bug [21] ✗ ✓ ✓ ✗ -",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "This is from a table comparing capabilities. Tag-Bug [21] (the cited paper) is listed with checkmarks and crosses for various competencies. No detailed evaluation is provided.",
+      "highlight_keywords": ["Tag-Bug"],
+      "keep": true
+    },
+    {
+      "citation_text": "[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim's proximity, which reduces its practicality.",
+      "evidence_type": "baseline_or_benchmark",
+      "stance": "mixed",
+      "mention_type": "related_work",
+      "reasoning": "The citing paper presents [21] as a baseline RFID-based method, but notes its limitation. This is consistent with a baseline comparison in related work.",
+      "highlight_keywords": ["RFID tags", "cGAN", "pre-install", "practicality"],
+      "keep": true
+    }
+  ]
+}

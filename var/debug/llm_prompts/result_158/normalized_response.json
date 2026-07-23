@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19],WiFi[20]) is limited.",
+      "reasoning": "The context groups RFID[19] (target) with WiFi[20] as longer wavelength RF signals with limited accuracy for micron mechanical vibration, positioning the target's sub-mm vibration capability as insufficient for this scenario. The stance is negative toward the target's accuracy in this specific application.",
+      "keywords": [
+        "accuracy",
+        "longer wavelength RF signals",
+        "limited"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19],WiFi[20]) is limited.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[19]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_too_ambiguous",
+      "generated_strong_evidence": false,
+      "reasoning": "The context groups RFID[19] (target) with WiFi[20] as longer wavelength RF signals with limited accuracy for micron mechanical vibration, positioning the target's sub-mm vibration capability as insufficient for this scenario. The stance is negative toward the target's accuracy in this specific application.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

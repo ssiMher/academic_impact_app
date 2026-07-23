@@ -1,0 +1,169 @@
+{% from "components/status_badge.html" import status_badge %}
+
+<article class="evidence-card" id="evidence-{{ evidence.id }}">
+  <div class="card-row card-row-between">
+    <div>
+      <div class="eyebrow">{{ item.citing_paper_title }}</div>
+      <h2>{{ evidence.aspect }}</h2>
+      <p class="muted">被引用论文 / 目标论文：{{ item.cited_paper_title }}</p>
+    </div>
+    <div class="badge-stack">
+      {{ status_badge(evidence.evidence_strength) }}
+      {{ status_badge(evidence.review_status) }}
+      {{ status_badge(evidence.third_party_status) }}
+    </div>
+  </div>
+
+  <section class="diagnostics-panel">
+    <h3>【原文证据】</h3>
+    <blockquote class="quote">{{ evidence.highlighted_text_html | safe }}</blockquote>
+    {% if judgment_basis and judgment_basis.evidence_context %}
+      <details class="compact-details">
+        <summary>展开原文上下文</summary>
+        <pre>{{ judgment_basis.evidence_context }}</pre>
+      </details>
+    {% endif %}
+    {% if judgment_basis and judgment_basis.key_phrases %}
+      <p><strong>关键短语：</strong>{{ judgment_basis.key_phrases | join(" / ") }}</p>
+    {% endif %}
+    {% if judgment_basis and judgment_basis.judgment_label %}
+      <p><strong>判断标签：</strong>{{ judgment_basis.judgment_label }}</p>
+    {% endif %}
+    {% if judgment_basis and judgment_basis.confidence %}
+      <p><strong>置信度：</strong>{{ judgment_basis.confidence }}</p>
+    {% endif %}
+    {% if judgment_basis %}
+      <div class="notice">
+        <p><strong>命中模板：</strong>{{ judgment_basis.matched_template_names | join(" / ") if judgment_basis.matched_template_names else "无" }}</p>
+        <p><strong>是否满足模板：</strong>{{ judgment_basis.template_satisfied if judgment_basis.template_satisfied is not none else "unknown" }}</p>
+        {% if judgment_basis.template_match_reason %}
+          <p><strong>模板判断理由：</strong>{{ judgment_basis.template_match_reason }}</p>
+        {% endif %}
+        {% if judgment_basis.template_failure_reason %}
+          <p><strong>未满足原因：</strong>{{ judgment_basis.template_failure_reason }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% if judgment_basis %}
+      <dl class="meta-grid">
+        <div><dt>target_reference_marker</dt><dd>{{ judgment_basis.target_reference_marker or "none" }}</dd></div>
+        <div><dt>citation_text_contains_target_marker</dt><dd>{{ judgment_basis.citation_text_contains_target_marker }}</dd></div>
+        <div><dt>citation_text_contains_other_marker</dt><dd>{{ judgment_basis.citation_text_contains_other_marker }}</dd></div>
+        <div><dt>anchor_validation_status</dt><dd>{{ judgment_basis.anchor_validation_status }}</dd></div>
+        <div><dt>anchor_validation_reason</dt><dd>{{ judgment_basis.anchor_validation_reason }}</dd></div>
+      </dl>
+    {% endif %}
+  </section>
+  <section class="diagnostics-panel">
+    <h3>【为什么这样判断】</h3>
+    <p>{{ judgment_basis.judgment_basis_zh if judgment_basis and judgment_basis.judgment_basis_zh else (judgment_basis.why_this_judgment if judgment_basis else evidence.evidence_reason) }}</p>
+    {% if judgment_basis and judgment_basis.report_recommendation %}
+      <p><strong>报告建议：</strong>{{ judgment_basis.report_recommendation }}{% if judgment_basis.confidence_level %}（置信度：{{ judgment_basis.confidence_level }}）{% endif %}</p>
+    {% endif %}
+  </section>
+  <section class="diagnostics-panel">
+    <h3>【不应如何过度解读】</h3>
+    <p>{{ judgment_basis.limitation_zh if judgment_basis and judgment_basis.limitation_zh else "请严格按照原文上下文表述，不要扩展为原文没有支持的评价。" }}</p>
+  </section>
+  <section class="diagnostics-panel">
+    <h3>【可复制表述】</h3>
+    <p>{{ judgment_basis.copy_ready_statement_zh if judgment_basis and judgment_basis.copy_ready_statement_zh else (judgment_basis.copy_ready_statement if judgment_basis else evidence.evidence_reason) }}</p>
+  </section>
+  <section class="diagnostics-panel">
+    <h3>【风险提示】</h3>
+    <p>{{ judgment_basis.risk_note if judgment_basis and judgment_basis.risk_note else "未发现额外风险提示；仍建议人工复核原文上下文后使用。" }}</p>
+  </section>
+  {% if evidence.mention_type == "grouped_citation" %}
+    <p class="notice notice-warning">该证据来自成组引用，可能同时适用于多个被引论文，请人工确认归因范围。</p>
+    <p class="sr-only">This evidence comes from a grouped citation and may apply to multiple cited papers. Please review attribution manually.</p>
+  {% endif %}
+  {% if notable_annotations %}
+    <p class="notice">该证据来自重要学者/团队引用。</p>
+    {% for annotation in notable_annotations %}
+      <p><strong>重要引用作者：</strong>{{ annotation.citing_author_name }} / {{ annotation.honor_category }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <dl class="meta-grid">
+    <div><dt>倾向</dt><dd>{{ evidence.stance }}</dd></div>
+    <div><dt>提及类型</dt><dd>{{ evidence.mention_type }}</dd></div>
+    <div><dt>分数</dt><dd>{{ evidence.score }}</dd></div>
+    <div><dt>锚点状态</dt><dd>{{ evidence.anchor_status or "unknown" }}</dd></div>
+    <div><dt>页码 / span</dt><dd>{{ evidence.page or "unknown" }} / {{ evidence.span_index if evidence.span_index is not none else "unknown" }}</dd></div>
+    <div><dt>高亮关键词</dt><dd>{{ evidence.highlight_keywords_json }}</dd></div>
+  </dl>
+
+  <p><strong>证据判断依据：</strong> {{ evidence.evidence_reason }}</p>
+  {% if evidence.aspect == "limitation_or_negative" %}
+    <p class="notice notice-warning">这是负面/局限性证据，适合进入客观评价或技术反馈，不建议包装成正向亮点。</p>
+  {% endif %}
+  {% if evidence.aspect == "representative_work" %}
+    <p class="notice">这是代表性相关工作/领域定位证据，不等同于直接正向评价。建议人工确认后再用于 PPT 亮点表述。</p>
+  {% endif %}
+  {% if evidence.user_note %}<p><strong>用户备注：</strong> {{ evidence.user_note }}</p>{% endif %}
+  {% if evidence.corrected_label %}<p><strong>修正标签：</strong> {{ evidence.corrected_label }}</p>{% endif %}
+  {% if context_preview and context_preview.display_context %}
+    <details class="compact-details">
+      <summary>展开原文上下文</summary>
+      <p><strong>section_heading:</strong> {{ context_preview.section_heading or "unknown" }}</p>
+      {% if context_preview.target_reference_marker %}
+        <p><strong>target_reference_marker:</strong> {{ context_preview.target_reference_marker }}</p>
+      {% endif %}
+      <p><strong>context_start/context_end:</strong> {{ context_preview.context_start }} / {{ context_preview.context_end }}</p>
+      <div class="quote">{{ context_preview.highlighted_sentence_html | safe }}</div>
+      <div class="quote">{{ context_preview.highlighted_context_html | safe }}</div>
+      <pre>{{ context_preview.display_context }}</pre>
+    </details>
+    <div class="action-row">
+      <button class="button button-secondary" type="button" data-copy-text="{{ context_preview.display_context }}">复制原文上下文</button>
+      <button class="button button-secondary" type="button" data-copy-text="{{ judgment_basis.copy_ready_statement if judgment_basis else evidence.evidence_reason }}">复制中文亮点评价</button>
+    </div>
+    <p class="muted">可展开查看前后上下文，不显示整篇全文。</p>
+  {% endif %}
+
+  {% if template_matches %}
+    <details class="compact-details">
+      <summary>模板命中</summary>
+      <span class="sr-only">Template match</span>
+      {% for match in template_matches %}
+        <p>模板命中词：{{ match.matched_terms_json }}</p>
+        <span class="sr-only">template match terms: {{ match.matched_terms_json }}</span>
+        <p>模板命中原因：{{ match.matched_reason }}</p>
+        <p>模板命中分数：{{ match.match_score }}</p>
+      {% endfor %}
+    </details>
+  {% endif %}
+
+  <div class="action-row">
+    <form action="/scholar-sessions/{{ session_id }}/evidence/{{ evidence.id }}/generate-card" method="post">
+      <button class="button button-primary" type="submit">生成亮点评价卡片</button>
+    </form>
+    <a class="button button-secondary" href="/scholar-sessions/{{ session_id }}/report-workspace">纳入报告 / 编辑 narrative</a>
+    {% for review_status, label, button_class in [
+      ("accepted", "接受", "button-primary"),
+      ("rejected", "拒绝", "button-secondary"),
+      ("important", "标记重要", "button-secondary"),
+      ("false_positive", "误报", "button-danger"),
+      ("needs_discussion", "需要讨论", "button-secondary")
+    ] %}
+      <form action="/scholar-sessions/{{ session_id }}/evidence/{{ evidence.id }}/review" method="post">
+        <input type="hidden" name="review_status" value="{{ review_status }}">
+        <input type="hidden" name="user_note" value="{{ evidence.user_note or '' }}">
+        <input type="hidden" name="corrected_label" value="{{ evidence.corrected_label or '' }}">
+        <button class="button {{ button_class }}" type="submit">{{ label }}</button>
+      </form>
+    {% endfor %}
+  </div>
+  <form action="/scholar-sessions/{{ session_id }}/evidence/{{ evidence.id }}/review" method="post" class="review-form">
+    <input type="hidden" name="review_status" value="{{ evidence.review_status }}">
+    <label class="form-label">
+      用户备注
+      <input class="form-control" type="text" name="user_note" value="{{ evidence.user_note or '' }}">
+    </label>
+    <label class="form-label">
+      修正标签
+      <input class="form-control" type="text" name="corrected_label" value="{{ evidence.corrected_label or '' }}">
+    </label>
+    <button class="button button-primary" type="submit">保存复核备注</button>
+  </form>
+</article>

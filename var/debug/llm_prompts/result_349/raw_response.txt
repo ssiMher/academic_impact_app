@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+  "paper_level_summary_zh": "引用论文将目标文献[23]作为Rydberg原子的基本参考资料，在原理说明和公式推导中引用，但未涉及目标论文的亚毫米级RFID感知能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "evidence_context": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用语句仅定义Rydberg原子，引用标记[23]指向的是Rydberg Atoms书籍（Thomas Gallagher 2006），并非目标论文（Wang等2021）。目标论文标题/DOI未出现，属误引。",
+      "copy_ready_zh": "引用论文中[23]指向Rydberg Atoms综合参考书，与目标论文无关。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "evidence_context": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives. The difference is the measurement precision.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用语句涉及薛定谔方程，引用标记[23]再次指向Rydberg Atoms书籍，与目标文献无关。",
+      "copy_ready_zh": "引用论文中[23]用于引用薛定谔方程背景知识，并非目标论文。",
+      "confidence": "high"
+    }
+  ]
+}

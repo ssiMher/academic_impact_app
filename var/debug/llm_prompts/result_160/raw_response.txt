@@ -1,0 +1,40 @@
+{
+  "findings": [
+    {
+      "citation_text": "Wireless vibration sensing, as a specialized area within the broader field of ISAC, utilizes radio-frequency signals-such as RFID [8–23], Wi-Fi [24–27], UWB [28], MMW [29–34], and visible light (VL) [35]-to detect and analyze vibration characteristics of objects or environments. Compared to other approaches, RFID stands out due to its compact size, lightweight design, low cost, and ease of deployment, which contribute to its widespread application in industrial monitoring [8–16], healthcare [17,18], and eavesdropping [19–23].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citation is in a group [19-23] that lists eavesdropping applications. [23] is specifically the target paper on thru-the-wall eavesdropping. The context groups it with other references, but the target reference is included. The evidence type is representative_work because the citing paper uses the target as an example of RFID eavesdropping, without detailed discussion. Attribution is uncertain because it's a grouped citation.",
+      "highlight_keywords": ["eavesdropping", "RFID"],
+      "keep": true
+    },
+    {
+      "citation_text": "TagMic [22], built with COTS devices, was the first to show RFID tags could be used for eavesdropping. Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "explicit_target",
+      "reasoning": "This sentence in the Related Work (Section 6.1.3) directly mentions Wang et al. [23] as extending RFID sensing to through-wall eavesdropping. It positions the target paper as a follow-up work that extends the state-of-the-art. Although it does not explicitly use 'first' or 'pioneering', the first claim is attributed to [22]. The target is presented as a representative work in the voice eavesdropping subfield.",
+      "highlight_keywords": ["through-wall eavesdropping", "Wang et al."],
+      "keep": true
+    },
+    {
+      "citation_text": "RFID [8–23]",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "In the Introduction, the citing paper lists RFID [8-23] as one of the wireless signals used for vibration sensing. This is a generic background citation grouping multiple references. The target reference [23] is included but not discussed. This evidence is background with grouped citation.",
+      "highlight_keywords": ["RFID"],
+      "keep": true
+    },
+    {
+      "citation_text": "speech eavesdropping [19–23]",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "In Section 6.1, the citing paper lists speech eavesdropping [19-23] as an application area of RFID vibration sensing. This is a grouped citation including the target. No additional detail is provided, so it's background.",
+      "highlight_keywords": ["speech eavesdropping"],
+      "keep": true
+    }
+  ]
+}

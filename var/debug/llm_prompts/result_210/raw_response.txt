@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "TABLE I: Comparison of Eavesdropping Attack Methodologies. \"GT Req.\" indicates whether ground truth data is required for training. Symbol legend:#= Low,G #= Medium, = High. Previous WorkHardwareMax. Dist.Thru-WallGT Req.Preset Input?MobilityGeneralizabilityUser Env.WaveEar [18]mmWave Radar2 m ✗ ✓ ✗ # G #G #AccelEve [19]Accelerometer0 m ✗ ✓ ✓ - G #G #UWHear [20]IR-UWB Radar8 m ✓ ✗ ✗ - G #G #Tag-Bug [21]RFID Tag 2 m ✓ ✓ ✓ - G #G #AccEar [22]Accelerometer0 m ✗ ✓ ✗ G #G #G #MILLIEAR [23]mmWave Radar5 m ✓ ✓ ✗ - G #G #mmSpy [24]mmWave Radar1.8 m ✗ ✓ ✓ # G #G #mmPhone [25]mmWave Radar5 m ✓ ✗ ✓ - G #G #Wavesdropper [1]mmWave Radar5 m ✓ ✓ ✓ G ## G #mmEve [5]mmWave Radar8 m ✗ ✓ ✗ G #G #G #RADIOMIC [4]mmWave Radar4 m ✓ ✗ ✗ G #G #G #AmbiEar [3]mmWave Radar2.5 m ✗ ✓ ✗ G #G #G #Radio2Text [2]mmWave Radar1.5 m ✓ ✓ ✗ - G #G #Shiet al. [6]mmWave Radar11 m ✓ ✓ ✓ G #G #G #mmEav [26]mmWave Radar3 m ✗ ✓ ✓ - G ##RFSpy [7] RFID Tag 3.5 m ✓ ✓ ✗ G #G #G #VibSpeech [10]mmWave Radar5 m ✓ ✗ ✗ # G #G #mmEar [27]mmWave",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "Table I lists Tag-Bug [21] as an RFID-based system for eavesdropping with through-wall capability. The citation is grouped with other works, and the context only provides a comparison of attributes, not detailed discussion. Since the target reference marker [21] appears, but the evidence is merely a comparative table entry, it is classified as background/grouped citation.",
+      "highlight_keywords": ["Tag-Bug [21]", "RFID Tag", "through-wall"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The context includes 'RFID Tag' and 'Thru-Wall' which relate to RFID vibration sensing, but no explicit mention of sub-mm or millimeter-level precision. The table entry is a grouped citation (Tag-Bug [21]) that lists hardware as RFID Tag and Thru-Wall as yes, but does not provide body text describing sub-mm capability. Thus the template is not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit body text stating sub-mm/millimeter-level sensing or vibration capability. The table entry is a grouped citation without descriptive text about precision."
+    },
+    {
+      "citation_text": "Backscatter-based systems like RFSpy [7] and RF-Parrot [8] utilize passive tags or conductive paths to capture vibrations, yet depend on resonant structures or wired access.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "In Section VI-A, the citing paper categorizes backscatter-based systems, mentioning that they capture vibrations. However, the target reference [21] is not explicitly cited in this sentence; the cited references are [7] and [8]. Thus, this sentence does not directly discuss the target paper. No evidence for the target.",
+      "highlight_keywords": [],
+      "keep": false,
+      "matched_template_ids": [],
+      "template_match_reason": "No target reference marker present.",
+      "template_satisfied": false,
+      "template_failure_reason": "No citation to target paper in this text."
+    }
+  ]
+}

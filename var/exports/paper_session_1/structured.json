@@ -1,0 +1,79 @@
+{
+  "exports": {
+    "schema_version": "phase8.5",
+    "generated_at": "2026-07-23T05:38:59.764497",
+    "formats": [
+      "report.md",
+      "structured.json"
+    ]
+  },
+  "session": {
+    "id": 1,
+    "query_text": "Evidence-aware citation analysis",
+    "query_kind": "title",
+    "status": "created",
+    "provider_total_citation_count": null,
+    "displayed_candidate_count": 0,
+    "created_at": "2026-07-23T05:38:59.740841",
+    "updated_at": "2026-07-23T05:38:59.740844"
+  },
+  "citing_papers": [
+    {
+      "id": 1,
+      "local_code": "C001",
+      "analysis_status": "analyzed",
+      "pdf_asset_attached": false,
+      "pdf_status": "need_pdf",
+      "publication": {
+        "id": 1,
+        "title": "Citing Study on Evidence Quality",
+        "year": 2025,
+        "venue": "Journal of Tests",
+        "doi": null,
+        "authors": []
+      }
+    }
+  ],
+  "fulltext_results": [
+    {
+      "id": 1,
+      "citing_paper_id": 1,
+      "analysis_scope": "citation_context",
+      "status": "succeeded",
+      "parsed_result": {
+        "findings": [
+          {
+            "evidence_type": "method_foundation",
+            "stance": "positive",
+            "mention_type": "strong",
+            "citation_text": "Evidence-aware citation analysis is a method foundation for this system.",
+            "reasoning": "The citing paper describes a concrete method dependency.",
+            "keywords": [
+              "method foundation",
+              "evidence-aware"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "strong_evidence": [
+    {
+      "id": 1,
+      "fulltext_result_id": 1,
+      "citing_paper_id": 1,
+      "citing_paper_title": "Citing Study on Evidence Quality",
+      "aspect": "method_foundation",
+      "stance": "positive",
+      "mention_type": "strong",
+      "citation_text": "Evidence-aware citation analysis is a method foundation for this system.",
+      "highlight_keywords": [
+        "method foundation",
+        "evidence-aware"
+      ],
+      "score": 0.9,
+      "evidence_strength": "strong",
+      "reason": "The citing paper describes a concrete method dependency."
+    }
+  ]
+}

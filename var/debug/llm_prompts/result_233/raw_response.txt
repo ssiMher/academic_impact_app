@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "Wireless systems based on long-wavelength signals represented by RFID [5], [6] have limited displacement sensitivity.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper groups [5] and [6] as representative RFID systems with limited displacement sensitivity, implying a limitation of the target paper's approach.",
+      "highlight_keywords": ["limited displacement sensitivity", "RFID", "long-wavelength signals"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions RFID and limitation in displacement sensitivity, but does not explicitly confirm sub-mm capability; rather it negates it. Template requires positive confirmation of sub-mm capability, so not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73 requires explicit positive confirmation of sub-mm vibration sensing capability. This quote states a limitation ('limited displacement sensitivity') and is a grouped citation with negative stance."
+    },
+    {
+      "citation_text": "RFID [5], [6] is limited in detecting small amplitudes due to its long wavelength.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "In the Related Work section, the citing paper states RFID is limited in detecting small amplitudes, which directly criticizes the target paper's capability.",
+      "highlight_keywords": ["limited", "small amplitudes", "long wavelength", "RFID"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions limitation in small amplitude detection due to long wavelength, which is the opposite of sub-mm capability confirmation. Template requires positive evidence.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template 73 demands explicit positive confirmation of sub-mm capability; this quote is a negative limitation statement."
+    }
+  ]
+}

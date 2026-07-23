@@ -1,0 +1,32 @@
+{
+  "name": "self_citation_should_be_downranked_case",
+  "target_paper": {"title": "Cited Scholar Paper"},
+  "citing_paper": {
+    "title": "Self Citation Study",
+    "authors": ["Grace Hopper"],
+    "third_party_status": "not_third_party",
+    "self_citation_status": "self_citation"
+  },
+  "candidate_spans": [
+    "Cited Scholar Paper provides a method foundation and citation evidence for our extended evaluation pipeline."
+  ],
+  "fake_llm_response": {
+    "findings": [
+      {
+        "evidence_type": "method_foundation",
+        "stance": "positive",
+        "mention_type": "strong",
+        "citation_text": "Cited Scholar Paper provides a method foundation and citation evidence for our extended evaluation pipeline.",
+        "reasoning": "The citing paper makes a concrete foundation claim, but it is a self citation.",
+        "keywords": ["method foundation", "citation evidence"]
+      }
+    ]
+  },
+  "expected": {
+    "labels": ["method_foundation"],
+    "keep": true,
+    "evidence_strength": "moderate",
+    "highlight_keywords": ["method foundation", "citation evidence"],
+    "must_not_miss": true
+  }
+}

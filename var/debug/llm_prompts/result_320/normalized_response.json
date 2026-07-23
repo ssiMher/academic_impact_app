@@ -1,0 +1,22 @@
+{
+  "target_reference_marker": "[34]",
+  "target_reference_entry": "[34] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, and Yingying Chen et al. 2021. Thru-the-wall Eavesdropping on Loudspeakers via RFID\nby Capturing Sub-mm Level Vibration. Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.5, 4 (2021), 182:1–182:25.",
+  "paper_level_summary_zh": "引用论文在实验设置中提到使用开源项目[23]（USRP Reader）来捕获谐波RF信号，但[23]是一个软件/硬件项目，并非目标论文。因此，该引用属于技术实现参考，并非对目标论文方法或能力的陈述。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "We implement RF-Mic using an Impinj Speedway R420 COTS RFID reader to transmit RF signals and a USRP N210 with a SBX daughter-board according to the open source project [23] for capturing the harmonic RF signals.",
+      "evidence_context": "We implement RF-Mic using an Impinj Speedway R420 COTS RFID reader to transmit RF signals and a USRP N210 with a SBX daughter-board according to the open source project [23] for capturing the harmonic RF signals.",
+      "reference_entry": "F. Mavromatis N. Kargas and A. Bletsas. 2019. USRP reader. [Online]. Available: https://github.com/nkargas/Gen2-UHF-RFID-Reader.",
+      "why_this_judgment_zh": "引用[23]是一个开源软件项目（USRP Reader的GitHub仓库），并非目标论文。目标论文是Wang等人的Thru-the-wall Eavesdropping...论文。因此这是典型的误引用。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文将[23]用作USRP Reader实现参考，但[23]是软件项目，不是目标论文。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[34]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

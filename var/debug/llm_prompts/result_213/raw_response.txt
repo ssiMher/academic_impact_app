@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "Numerous studies have shown successful attempts in through-wall human motion [3–5] and speech eavesdropping [15–18] via RFID tags for adversarial uses.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [15] is cited in a grouped citation alongside [16-18] to illustrate successful adversarial speech eavesdropping via RFID. The context establishes privacy concerns and positions the cited paper as part of a broader research landscape, without detailed discussion or evaluation.",
+      "highlight_keywords": ["through-wall", "speech eavesdropping", "RFID tags", "adversarial uses"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions 'speech eavesdropping via RFID' which relates to RFID sensing capability but lacks explicit sub-mm or millimeter-level precision wording. It is a grouped citation with attribution uncertainty.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit sub-mm, millimeter-level, or vibration sensing terminology. Template 73 requires explicit body wording of sub-mm precision anchored to target; this is a plain eavesdropping mention in a grouped setting."
+    },
+    {
+      "citation_text": "In addition, researchers have demonstrated the feasibility of using commodity RFID devices for through-wall eavesdropping [15, 17].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [15] is cited alongside [17] to support the feasibility of through-wall eavesdropping using commodity RFID. This is a general statement in related work, not a detailed evaluation or method use.",
+      "highlight_keywords": ["feasibility", "commodity RFID", "through-wall eavesdropping"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Relates to RFID eavesdropping capability but lacks sub-mm or vibration specificity. Grouped citation with no precision claim.",
+      "template_satisfied": false,
+      "template_failure_reason": "No sub-mm, millimeter-level, or vibration sensing terms. Does not meet required patterns."
+    }
+  ]
+}

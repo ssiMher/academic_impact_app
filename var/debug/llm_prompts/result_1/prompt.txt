@@ -1,0 +1,59 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate every active user-defined template using its natural-language goal, configured concepts, required patterns, exclusion terms, and strict rules. Keywords are candidate signals only, not sufficient proof.
+Do not attribute any template concept to the cited paper unless the body evidence clearly anchors that concept to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output prose outside JSON. Template evaluation metadata belongs only in the JSON fields defined below. Do not output Markdown.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low",
+      "matched_template_ids": [1],
+      "template_match_reason": "why the body evidence satisfies the configured template goal",
+      "template_satisfied": true,
+      "template_failure_reason": "why a relevant template was not satisfied, or empty"
+    }
+  ]
+}
+
+Template evaluation rules:
+- Apply each template's natural-language goal to the body quote and surrounding context, not to the References title alone.
+- A plain related-work listing does not satisfy a capability or evaluation template.
+- Respect each template's grouped-citation, target-marker, length, evidence-type, exclusion, and strict rules.
+- Misattributed or reference-mismatched claims must be false_positive or exclude.
+
+CITING_PAPER_TITLE: Independent Citing Paper
+CITED_PAPER_TITLE: Target Paper
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Journal of Scholarly Systems
+CITED_PAPER_DOI: 
+CITED_PAPER_AUTHORS: Grace Hopper
+ACTIVE_EVIDENCE_TEMPLATES:
+(none)
+FULL_EXTRACTED_TEXT:
+Cited Scholar Paper is a method foundation for this new system. This citation evidence explains why the target paper is important.

@@ -1,0 +1,36 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "citation_text": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19], WiFi[20]) is limited.",
+      "reasoning": "This quote places the RFID-based sub-mm vibration sensing [19] as limited in accuracy for micron vibration compared to mmWave, thus acknowledging its sub-mm capability but as less accurate in that context.",
+      "keywords": [
+        "RFID",
+        "accuracy",
+        "limited",
+        "micron mechanical vibration"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19], WiFi[20]) is limited.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "target_reference_marker": "[19]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "This quote places the RFID-based sub-mm vibration sensing [19] as limited in accuracy for micron vibration compared to mmWave, thus acknowledging its sub-mm capability but as less accurate in that context.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

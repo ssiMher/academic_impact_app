@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "F. Mavromatis N. Kargas and A. Bletsas. 2019. USRP reader. [Online]. Available: https://github.com/nkargas/Gen2-UHF-RFID-Reader.",
+  "paper_level_summary_zh": "引用论文在实验设置中使用[23]作为开源项目来捕获谐波RF信号，[23]是一个软件/硬件开源项目，并非目标论文。因此该引用属于误报。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "We implement RF-Mic using an Impinj Speedway R420 COTS RFID reader to transmit RF signals and a USRP N210 with a SBX daughter-board according to the open source project [23] for capturing the harmonic RF signals.",
+      "evidence_context": "We implement RF-Mic using an Impinj Speedway R420 COTS RFID reader to transmit RF signals and a USRP N210 with a SBX daughter-board according to the open source project [23] for capturing the harmonic RF signals.",
+      "reference_entry": "F. Mavromatis N. Kargas and A. Bletsas. 2019. USRP reader. [Online]. Available: https://github.com/nkargas/Gen2-UHF-RFID-Reader.",
+      "why_this_judgment_zh": "引用的[23]是一个开源USRP RFID读取器项目，并非目标论文（Thru-the-wall Eavesdropping on Loudspeakers via RFID）。因此属于误报，应排除。",
+      "copy_ready_zh": "引用论文中的[23]对应的是USRP reader开源项目，而非目标论文，属于误报引用。",
+      "confidence": "high"
+    }
+  ]
+}

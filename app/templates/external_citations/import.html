@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}导入外部引用列表{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">外部引用导入</div>
+      <h1>导入 Google Scholar / Publish or Perish CSV</h1>
+      <p>系统不会抓取 Google Scholar 页面，也不会绕过验证码。请上传你已经合法导出的 CSV。</p>
+    </div>
+    <div class="quick-links">
+      <a class="button button-secondary" href="/{{ session_kind_path }}/{{ session_id }}">返回会话</a>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>上传 CSV</h2>
+    <p class="notice">当前 MVP 支持 CSV。BibTeX / RIS 将作为后续阶段支持。</p>
+    <form action="/{{ session_kind_path }}/{{ session_id }}/external-citations/import" method="post" enctype="multipart/form-data" class="review-form">
+      <label class="form-label">
+        来源名称
+        <input class="form-control" type="text" name="source_name" value="google_scholar_import">
+      </label>
+      <label class="form-label">
+        CSV 文件
+        <input class="form-control" type="file" name="file" accept=".csv,text/csv">
+      </label>
+      <button class="button button-primary" type="submit">导入外部引用列表</button>
+    </form>
+  </section>
+
+  {% if batch %}
+    <section class="card">
+      <h2>导入摘要</h2>
+      <dl class="meta-grid">
+        <div><dt>总行数</dt><dd>{{ batch.total_rows }}</dd></div>
+        <div><dt>新增引用数</dt><dd>{{ batch.imported_count }}</dd></div>
+        <div><dt>已匹配已有引用</dt><dd>{{ batch.matched_existing_count }}</dd></div>
+        <div><dt>重复跳过</dt><dd>{{ batch.duplicate_count }}</dd></div>
+        <div><dt>跳过</dt><dd>{{ batch.skipped_count }}</dd></div>
+        <div><dt>失败</dt><dd>{{ batch.error_count }}</dd></div>
+        <div><dt>来源</dt><dd>{{ batch.source_name }}</dd></div>
+      </dl>
+    </section>
+    <section class="card">
+      <h2>逐行诊断</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>行号</th>
+              <th>标题</th>
+              <th>DOI</th>
+              <th>年份</th>
+              <th>状态</th>
+              <th>原因</th>
+              <th>edge</th>
+              <th>错误</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>{{ row.row_index }}</td>
+                <td>{{ row.parsed_title or "" }}</td>
+                <td>{{ row.parsed_doi or "" }}</td>
+                <td>{{ row.parsed_year or "" }}</td>
+                <td>{{ row.match_status }}</td>
+                <td>{{ row.match_reason or "" }}</td>
+                <td>{{ row.citation_edge_id or "" }}</td>
+                <td>{{ row.error_message or "" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

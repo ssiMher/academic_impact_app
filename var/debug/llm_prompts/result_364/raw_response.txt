@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[19]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该文在相关工作中提及目标论文[19]作为RFID振动感知的代表性工作，但并未对目标论文的亚毫米精度、穿墙窃听能力等具体技术细节进行直接引用或评价。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "The mmWave naturally supports much more fine-grained sensing, compared with other wireless technologies (i.e., RFID [10],WiFi[11],UWB[12]).",
+      "evidence_context": "In comparison to traditional sensors (i.e., Piezoelectric accelerometer [8], velocity transducers [9]), mmWave-based wireless sensing is non-intrusive, cost-effective and unaffected by ambient light conditions. The mmWave naturally supports much more fine-grained sensing, compared with other wireless technologies (i.e., RFID [10],WiFi[11],UWB[12]).",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用[10]是[19]吗？检查参考文献[10]：参考文献[10]对应P. Yang et al., “RF-ear: Contactless multi-device vibration sensing and identification using COTS RFID,” 并非目标论文[19]。因此，该引用为误标，应排除。",
+      "copy_ready_zh": "引用论文在对比mmWave与其他无线技术时引用了RFID相关工作，但所引文献并非目标论文。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19],WiFi[20]) is limited.",
+      "evidence_context": "The works mentioned above are dedicated to analyzing the frequency of mechanical vibration. Displacement is also an essential parameter of mechanical vibration. However, in the scenario of micron mechanical vibration, the accuracy of longer wavelength RF signals (e.g., RFID[19],WiFi[20]) is limited.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文引用[19]指出RFID在微米级振动场景下精度有限，这是对目标论文的负面评价（局限性），但属于普通引用，未涉及亚毫米精度或具体能力，因此推荐排除。",
+      "copy_ready_zh": "引用论文指出RFID技术在微米振动下精度受限，引用了目标论文。",
+      "confidence": "high"
+    }
+  ]
+}

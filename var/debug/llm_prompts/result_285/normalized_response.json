@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[15]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文在相关工作部分简要提及目标RFID论文，将其归类为利用低分辨率无线信号进行窃听的工作，并指出其需要预装标签和较大物理足迹的局限性。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim’s room.",
+      "evidence_context": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim’s room. Compared to our approach, these works relying on low resolution traffic data due to lower frequencies and packet rates. Also, they require a multi-antenna setup to localize victims and thus result in larger physical footprint compared to mmWave, making the attack more difficult to be carried out in practice.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文将[15]作为RFID窃听的例子，并指其需要预装标签和低分辨率局限性。属于普通相关工作列举，未明确确认亚毫米级能力。",
+      "copy_ready_zh": "相关工作将目标RFID论文列为利用低分辨率无线信号进行窃听的工作，并指出其实践限制。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In particular, [15] requires a pre-installed tag in the victim’s room.",
+      "evidence_context": "Akin to WiFi works, RFID [15] and Doppler radar [19] have been leveraged for eavesdropping. In particular, [15] requires a pre-installed tag in the victim’s room.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interactive, Mobile, Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文指出目标论文需要预装标签，可能为误读；目标论文标题本身是'Thru-the-wall'，实际无需室内预装标签。属于负面/局限性陈述，且可能不准确。",
+      "copy_ready_zh": "引用论文认为目标RFID论文需要预装标签，这与其'Thru-the-wall'声称可能不一致，属于局限性反馈。",
+      "confidence": "medium"
+    }
+  ]
+}

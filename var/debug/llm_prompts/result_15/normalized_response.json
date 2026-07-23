@@ -1,0 +1,88 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "Some methods leverage the aliasing eﬀect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera's color ﬁlter array. ... However, the reported accuracy does not demonstrate superiority when compared to traditional solutions, which might be due to the inherently low-quality imaging of aliasing patterns.",
+      "reasoning": "The citing paper groups [15], [16], [17] together as methods leveraging the aliasing effect. Reference [15] is the cited paper. The text notes that the reported accuracy of these methods does not demonstrate superiority, implying a negative evaluation. However, it is a grouped citation; the negative remark applies to the group, not necessarily to the cited paper individually. Still, since the cited paper is included in the group and the statement is critical, it is recorded as negative.",
+      "keywords": [
+        "aliasing eﬀect",
+        "reported accuracy does not demonstrate superiority"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "citation_text": "Recently, some out-of-plane rotation measurement methods based on 3-D Moir´e eﬀect have achieved a favorable balance among cost-eﬀectiveness, easy-to-deployment, and high accuracy. They exploit the sensitivity of 3-D Moir´e eﬀect to viewing angle [18] to achieve high-accuracy out-of-plane rotation measurement.",
+      "reasoning": "This paragraph introduces 3-D Moiré-based methods. It does not mention the cited paper explicitly; the cited paper is about Moiré-based pose estimation (aliasing-based, not 3-D Moiré). The cited paper is not discussed here. So this finding is not about the cited paper; it is only included to show that the cited paper is not mentioned here. However, since the instruction requires findings only for the cited paper, this should not be included. It is kept as a placeholder to indicate that the cited paper appears elsewhere.",
+      "keywords": [],
+      "keep": false
+    },
+    {
+      "evidence_type": "detailed_comparison",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "The aliasing Moir´e-based methods yield errors in the range from 0.2◦ to 2◦. These methods exploit the aliasing eﬀect that arises when a camera captures high-frequency patterns, such as the pixel array of a display, thereby avoiding the use of visually obtrusive artiﬁcial markers. However, in terms of accuracy, they oﬀer no advantage over conventional methods.",
+      "reasoning": "This sentence appears in Section V-C Comparative Analysis of Existing Methods. The context groups several aliasing Moiré-based methods (including the cited paper via references [15], [16], [17] as listed in Table I). The text states that their accuracy offers no advantage over conventional methods, which is a negative evaluation. Since the cited paper is one of these methods, this negative comparison applies to it as part of the group.",
+      "keywords": [
+        "aliasing Moir´e-based methods",
+        "no advantage over conventional methods"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "reference_only",
+      "citation_text": "Ning et al. [15] \"Moir´epose: Ultra high precision camera-to-screen pose estimation based on Moir´e pattern,\" in Proc. Annu. Int. Conf. Mob. Comput. Netw., 2022, pp. 106–119.",
+      "reasoning": "This is merely a reference entry in the reference list. It does not contain discussion from the main body. According to the instruction, reference entries are not evidence. Therefore, this finding should not be kept.",
+      "keywords": [],
+      "keep": false
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Some methods leverage the aliasing eﬀect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera's color ﬁlter array. ... However, the reported accuracy does not demo...",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "filter_reason": "no_body_anchor",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper groups [15], [16], [17] together as methods leveraging the aliasing effect. Reference [15] is the cited paper. The text notes that the reported accuracy of these methods does not demonstrate superiority, implying a negative evaluation. However, it is a grouped citation; the negative remark applies to the group, not necessarily to the cited paper individually. Still, since the cited paper is included in the group and the statement is critical, it is recorded as negative."
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Recently, some out-of-plane rotation measurement methods based on 3-D Moir´e eﬀect have achieved a favorable balance among cost-eﬀectiveness, easy-to-deployment, and high accuracy. They exploit the sensitivity of 3-D Moir´e eﬀect to viewing...",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "related_work",
+      "filter_reason": "keep_false",
+      "generated_strong_evidence": false,
+      "reasoning": "This paragraph introduces 3-D Moiré-based methods. It does not mention the cited paper explicitly; the cited paper is about Moiré-based pose estimation (aliasing-based, not 3-D Moiré). The cited paper is not discussed here. So this finding is not about the cited paper; it is only included to show that the cited paper is not mentioned here. However, since the instruction requires findings only for the cited paper, this should not be included. It is kept as a placeholder to indicate that the cited paper appears elsewhere."
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "The aliasing Moir´e-based methods yield errors in the range from 0.2◦ to 2◦. These methods exploit the aliasing eﬀect that arises when a camera captures high-frequency patterns, such as the pixel array of a display, thereby avoiding the use...",
+      "evidence_type": "detailed_comparison",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "filter_reason": "no_body_anchor",
+      "generated_strong_evidence": false,
+      "reasoning": "This sentence appears in Section V-C Comparative Analysis of Existing Methods. The context groups several aliasing Moiré-based methods (including the cited paper via references [15], [16], [17] as listed in Table I). The text states that their accuracy offers no advantage over conventional methods, which is a negative evaluation. Since the cited paper is one of these methods, this negative comparison applies to it as part of the group."
+    },
+    {
+      "finding_index": 3,
+      "citation_text_preview": "Ning et al. [15] \"Moir´epose: Ultra high precision camera-to-screen pose estimation based on Moir´e pattern,\" in Proc. Annu. Int. Conf. Mob. Comput. Netw., 2022, pp. 106–119.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "reference_only",
+      "filter_reason": "keep_false",
+      "generated_strong_evidence": false,
+      "reasoning": "This is merely a reference entry in the reference list. It does not contain discussion from the main body. According to the instruction, reference entries are not evidence. Therefore, this finding should not be kept."
+    }
+  ]
+}

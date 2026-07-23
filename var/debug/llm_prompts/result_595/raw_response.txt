@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[6]",
+  "target_reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "本文在相关工作部分将目标论文[6]列为基于振动的音频窃听技术之一，指出其利用RFID标签捕获扬声器振动实现窃听，但强调该方法需要音频通过扬声器播放才能驱动周围物体振动，而本文提出的RF-Parrot通过植入式逆向反射器直接窃听有线音频，突破了这一限制。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "TagBug places RFID tags on the surrounding objects around the loudspeaker and collects the backscattered RFID signal for eavesdropping [6].",
+      "evidence_context": "Acoustic signals are mechanical waves that force surrounding elastic objects to vibrate continuously. Researchers harness such phenomenon to investigate various vibration sensors, e.g., accelerometer [34]–[36], laser [7], RFID [6], WiFi [5], mmWave [2]–[4] and videos [8], for audio eavesdropping. ... TagBug places RFID tags on the surrounding objects around the loudspeaker and collects the backscattered RFID signal for eavesdropping [6]. However, the above vibration-based eavesdropping methods require the audio to be played out by the loudspeaker so that the nearby object\u2019s surface can be driven to vibrate.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该证据属于普通相关工作列举，没有明确提及亚毫米精度或特殊能力，且引用标记[6]正确对应目标论文。文中仅将其作为基于RFID的窃听方法之一进行描述，因此归类为ordinary_reference，建议review。",
+      "copy_ready_zh": "本文在相关工作部分将目标论文[6]归类为基于振动的音频窃听方法，指出其利用RFID标签捕获扬声器振动实现窃听，但未对其性能或技术先进性做出明确评价。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "We select U-Net, a classical encoder-decoder convolutional network [26], for audio reconstruction.",
+      "evidence_context": "Thus, we adopt the encoder-decoder model, which is widely applied for translation purposes [23]–[25], to “translate” the deformed mel-spectrogram. Thus, we select U-Net, a classical encoder-decoder convolutional network [26], for audio reconstruction.",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该引用的标记[26]并非目标论文标记[6]，因此该证据与目标论文无关。属于false_positive，应排除。",
+      "copy_ready_zh": "不适用",
+      "confidence": "high"
+    }
+  ]
+}

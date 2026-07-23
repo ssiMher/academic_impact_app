@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "T. Wei, S. Wang, A. Zhou, and X. Zhang, \"Acoustic eavesdropping through wireless vibrometry,\" in ACM MobiCom, 2015.",
+  "paper_level_summary_zh": "该论文在分类侧信道窃听攻击时，将[23]作为WiFi侧信道外部窃听的代表性工作，在相关工作中简要提及，未对其具体技术细节或性能进行深入评价。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "RF signals, including WiFi [23], UHF RFID [24, 41, 25, 26], UWB [27], mmWave signals [29, 31, 32, 28, 42, 7], can be considered as a wireless vibrometry to measure the RF signal changes caused by the sound source vibration.",
+      "evidence_context": "RF-based SSEA. RF signals, including WiFi [23], UHF RFID [24, 41, 25, 26], UWB [27], mmWave signals [29, 31, 32, 28, 42, 7], can be considered as a wireless vibrometry to measure the RF signal changes caused by the sound source vibration.",
+      "reference_entry": "T. Wei, S. Wang, A. Zhou, and X. Zhang, \"Acoustic eavesdropping through wireless vibrometry,\" in ACM MobiCom, 2015.",
+      "why_this_judgment_zh": "该句将[23]作为WiFi为代表的外部窃听技术之一，在概述RF-based SSEA时以列表形式引用，未对[23]进行具体描述或评价，属于普通相关引用。",
+      "copy_ready_zh": "引用论文将[23]列为RF-based侧信道窃听的代表性工作之一，未对其性能或能力进行具体肯定。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "UHF RFID [24, 25, 26] Int/Ext mm∼cm <2 MHz Distance",
+      "evidence_context": "Table 1.1. Key factors of different side channels may affect SSEA. ... UHF RFID [24, 25, 26] Int/Ext mm∼cm <2 MHz Distance",
+      "reference_entry": "T. Wei, S. Wang, A. Zhou, and X. Zhang, \"Acoustic eavesdropping through wireless vibrometry,\" in ACM MobiCom, 2015.",
+      "why_this_judgment_zh": "该引用标记[23]出现在UHF RFID的行中，但[23]实际上是WiFi相关论文，并非UHF RFID，属于引用标记与内容不匹配，故为误配。",
+      "copy_ready_zh": "无",
+      "confidence": "high"
+    }
+  ]
+}

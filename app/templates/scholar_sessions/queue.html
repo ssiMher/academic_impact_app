@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% from "components/stat_card.html" import stat_card %}
+{% from "components/status_badge.html" import status_badge %}
+{% from "components/task_card.html" import task_card %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}学者深度分析队列{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">学者分析流程</div>
+      <h1>深度分析队列</h1>
+      <p>准备引用论文 PDF，选择 PDF 已就绪的条目，然后执行全文引用证据分析。</p>
+    </div>
+    <nav class="quick-links" aria-label="scholar workflow links">
+      <a href="/scholar-sessions/{{ session_id }}/evidence">查看强证据</a>
+      <a href="/scholar-sessions/{{ session_id }}/cards">查看高亮卡片</a>
+      <a href="/scholar-sessions/{{ session_id }}/exports/missing_pdfs_download_list.csv">下载缺失 PDF 清单</a>
+      <a href="/scholar-sessions/{{ session_id }}/import-honor-csv">导入重要引用作者 CSV</a>
+      <a href="/pdf-inbox">PDF 导入目录</a>
+      <a href="/scholar-sessions/{{ session_id }}/analysis-debug">分析调试</a>
+      <a href="/scholar-sessions/{{ session_id }}">返回学者详情</a>
+    </nav>
+  </header>
+
+  <section class="flow-steps" aria-label="analysis workflow">
+    <span>已扩展引用</span>
+    <span>深度分析队列</span>
+    <span>PDF 已就绪</span>
+    <span>全文分析</span>
+    <span>强证据</span>
+    <span>复核 / 导出</span>
+  </section>
+  <p class="flow-hint">已扩展引用 → 深度分析队列 → PDF 已就绪 → 全文分析 → 强证据 → 复核 / 导出</p>
+
+  {% if analyze_task %}
+    <section class="task-notice" aria-label="analyze task status">
+      {% if analyze_task_created %}
+        <p class="notice">analyze_scholar_queue 任务已创建。</p>
+      {% endif %}
+      <p>任务 #{{ analyze_task.id }} analyze_scholar_queue - {{ analyze_task.status }}</p>
+      <p class="sr-only">Task #{{ analyze_task.id }} analyze_scholar_queue - {{ analyze_task.status }}</p>
+      <p>进度：{{ analyze_task.progress_current }}/{{ analyze_task.progress_total }}</p>
+      {{ status_badge(analyze_task.status) }}
+      {% if analyze_task.stage_message %}<p class="task-message">{{ analyze_task.stage_message }}</p>{% endif %}
+      {% if analyze_task.status in ["pending", "running"] %}
+        <p>任务正在等待或执行中。如状态长时间停留在 pending，请运行 worker：<code>python3 scripts/run_worker.py</code></p>
+      {% elif analyze_task.status == "succeeded" %}
+        <p>分析完成，<a href="/scholar-sessions/{{ session_id }}/evidence">查看强证据</a>。</p>
+      {% elif analyze_task.status == "failed" %}
+        <p class="status-warning">分析失败：{{ analyze_task.error_message or "No error message recorded." }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if discover_task %}
+    <section class="task-notice" aria-label="PDF batch download task status">
+      {% if discover_task_created %}
+        <p class="notice">批量 PDF 下载任务已创建。</p>
+      {% endif %}
+      <div class="card-row card-row-between">
+        <div>
+          <h2>自动查找 / 下载所有 PDF</h2>
+          <p>任务 #{{ discover_task.id }} · {{ discover_task.status }}</p>
+        </div>
+        {{ status_badge(discover_task.status) }}
+      </div>
+      <p>进度：{{ discover_task.progress_current }}/{{ discover_task.progress_total }}</p>
+      {% if discover_task.stage_message %}
+        <p class="task-message">{{ discover_task.stage_message }}</p>
+      {% endif %}
+      {% if discover_task.error_message %}
+        <p class="status-warning">{{ discover_task.error_message }}</p>
+      {% endif %}
+      {% if discover_task.result_summary %}
+        <div class="stat-grid">
+          {{ stat_card("下载成功", discover_task.result_summary.downloaded or 0) }}
+          {{ stat_card("开放 PDF", discover_task.result_summary.open_access_downloaded or 0) }}
+          {{ stat_card("IEEE 助手", discover_task.result_summary.ieee_downloaded or 0) }}
+          {{ stat_card("已跳过", discover_task.result_summary.skipped or 0) }}
+          {{ stat_card("需要登录", discover_task.result_summary.requires_login or 0) }}
+          {{ stat_card("未找到 PDF", discover_task.result_summary.no_pdf_found or 0) }}
+          {{ stat_card("失败", discover_task.result_summary.failed or 0) }}
+        </div>
+        {% if discover_task.result_summary.failures %}
+          <details open>
+            <summary>未下载条目及原因（{{ discover_task.result_summary.failure_count }}）</summary>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Queue Item</th><th>引用论文</th><th>原因</th></tr>
+                </thead>
+                <tbody>
+                  {% for failure in discover_task.result_summary.failures %}
+                    <tr>
+                      <td>{{ failure.queue_item_id }}</td>
+                      <td>{{ failure.citing_paper_title }}</td>
+                      <td>{{ failure.reason }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        {% endif %}
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="stat-grid" aria-label="queue summary">
+    {{ stat_card("队列条目总数", summary.total_queue_items) }}
+    {{ stat_card("已选择条目", summary.selected_items) }}
+    {{ stat_card("PDF 已就绪", summary.ready_items) }}
+    {{ stat_card("需要 PDF", summary.need_pdf_items) }}
+    {{ stat_card("已分析条目", summary.analyzed_items) }}
+    {{ stat_card("强证据数", summary.strong_evidence_items) }}
+    {{ stat_card("失败条目", summary.failed_items) }}
+  </section>
+  <section class="card" aria-label="legacy queue summary labels">
+    <p>total queue items: {{ summary.total }}</p>
+    <p>ready_count: {{ summary.ready_count }}</p>
+    <p>need_pdf_count: {{ summary.need_pdf_count }}</p>
+    <p>selected_count: {{ summary.selected_count }}</p>
+    <p>analyzed_count: {{ summary.analyzed_count }}</p>
+    <p>important_count: {{ summary.important_count }}</p>
+  </section>
+
+  <nav class="filter-buttons" aria-label="queue filters">
+    <a class="{% if view == 'all' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=all">全部</a>
+    <a class="{% if view == 'need_pdf' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=need_pdf">需要 PDF<span class="sr-only">缺 PDF</span></a>
+    <a class="{% if view == 'ready_only' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=ready_only">可分析</a>
+    <a class="{% if view == 'selected' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=selected">已选择</a>
+    <a class="{% if view == 'analyzed' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=analyzed">已分析</a>
+    <a class="{% if view == 'failed' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=failed">失败</a>
+    <a class="{% if view == 'third_party_only' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=third_party_only">第三方引用</a>
+    <a class="{% if view == 'exclude_self_citation' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=exclude_self_citation">排除自引</a>
+    <a class="{% if view == 'skipped' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=skipped">已跳过</a>
+    <a class="{% if view == 'important' %}active{% endif %}" href="/scholar-sessions/{{ session_id }}/queue?view=important">重要</a>
+  </nav>
+
+  <section class="analyze-panel">
+    <div class="section-heading">
+      <h2>分析已选择且 PDF 就绪的条目</h2>
+      <p>只有已选择且状态为 `manual_pdf`、`reused_pdf` 或 `local_library_pdf` 的条目可以分析。</p>
+    </div>
+    <form class="inline-form" action="/scholar-sessions/{{ session_id }}/queue/discover-pdfs" method="post">
+      <button class="button button-secondary" type="submit">自动查找 / 下载所有 PDF</button>
+      <p class="muted">优先下载 arXiv、OpenAlex OA 等开放 PDF；对 IEEE Xplore 论文会调用已配置的 IEEE 浏览器助手。单篇失败不会中断后续条目。</p>
+    </form>
+    <form id="bulk-queue-form" class="analyze-form" method="post">
+      <input type="hidden" name="view" value="{{ view }}">
+      <div class="quick-links">
+        <button class="button button-secondary" type="submit" formaction="/scholar-sessions/{{ session_id }}/queue/bulk-select" name="mode" value="current_view">选择当前筛选结果</button>
+        <button class="button button-secondary" type="submit" formaction="/scholar-sessions/{{ session_id }}/queue/bulk-select" name="mode" value="ready_items">选择所有 PDF 已就绪条目</button>
+        <button class="button button-secondary" type="submit" formaction="/scholar-sessions/{{ session_id }}/queue/bulk-select" name="mode" value="important_items">选择所有重要条目</button>
+        <button class="button button-secondary" type="submit" formaction="/scholar-sessions/{{ session_id }}/queue/bulk-clear" name="mode" value="current_view">取消选择当前筛选结果</button>
+        <button class="button button-secondary" type="submit" formaction="/scholar-sessions/{{ session_id }}/queue/bulk-update" name="action" value="skip">批量跳过</button>
+        <button class="button button-secondary" type="submit" formaction="/scholar-sessions/{{ session_id }}/queue/bulk-update" name="action" value="mark_important">批量标记重要</button>
+      </div>
+      <p>selected_ready_items: {{ selected_ready_item_ids|length }}</p>
+    </form>
+    <form class="analyze-form" action="/scholar-sessions/{{ session_id }}/queue/analyze" method="post">
+      {% for item_id in selected_ready_item_ids %}
+        <input type="hidden" name="item_ids" value="{{ item_id }}">
+      {% endfor %}
+      <fieldset>
+        <legend>Analysis scope</legend>
+        <label>
+          <input type="radio" name="analysis_scope" value="candidate_spans">
+          candidate_spans：候选段分析，速度快，但可能漏掉证据；候选段分析，快但可能漏
+        </label>
+        <label>
+          <input type="radio" name="analysis_scope" value="fulltext_direct">
+          fulltext_direct：全文直接分析，速度慢，但更不容易漏；全文直接分析，慢但更不容易漏
+        </label>
+        <label>
+          <input type="radio" name="analysis_scope" value="fulltext_anchor_direct" checked>
+          fulltext_anchor_direct：锚点优先全文分析，推荐用于引用证据验证
+        </label>
+        <label>
+          <input type="radio" name="analysis_scope" value="fulltext_template_direct">
+          fulltext_template_direct：全文 + 当前模板直接生成报告判断，不从候选段自动生成卡片
+        </label>
+        <label class="muted">
+          <input type="radio" name="analysis_scope" value="fulltext_chunked" disabled>
+          fulltext_chunked：预留，尚未启用
+        </label>
+      </fieldset>
+      <p class="notice">fulltext_anchor_direct 会先定位目标论文在 References 中的引用编号，并优先分析正文中该编号附近的上下文，再结合全文兜底。适合发现公式建模、理论基础、方法采用等隐性引用证据。</p>
+      <p class="notice">fulltext_template_direct 会把引用论文全文、目标论文信息和当前启用模板直接交给大模型，输出面向报告的证据判断。</p>
+      <p class="sr-only">fulltext_anchor_direct will prioritize body contexts around the target reference marker and then use the full text as fallback.</p>
+      <button type="submit" {% if not selected_ready_item_ids %}disabled{% endif %}>分析已选择且 PDF 就绪的条目</button>
+      <span class="sr-only">Analyze selected ready items</span>
+      {% if not selected_ready_item_ids %}
+        <p class="status-warning">请先上传或匹配 PDF，并选择 ready item。</p>
+      {% endif %}
+    </form>
+  </section>
+
+  {% if items %}
+    {% for item in items %}
+      {% include "components/queue_item.html" %}
+    {% endfor %}
+  {% else %}
+    {% if summary.citation_edge_count > 0 %}
+      <section class="empty-state">
+        <h2>暂无队列条目</h2>
+        <p>已经扩展出引用，但还没有构建深度分析队列。</p>
+        <form action="/scholar-sessions/{{ session_id }}/build-queue" method="post">
+          <button class="button button-primary" type="submit">构建深度分析队列</button>
+        </form>
+      </section>
+    {% else %}
+      <section class="empty-state">
+        <h2>暂无队列条目</h2>
+        <p>请先扩展引用。</p>
+        <a class="button button-primary" href="/scholar-sessions/{{ session_id }}">返回学者详情</a>
+      </section>
+    {% endif %}
+  {% endif %}
+{% endblock %}

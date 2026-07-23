@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% from "components/stat_card.html" import stat_card %}
+{% from "components/status_badge.html" import status_badge %}
+{% from "components/task_card.html" import task_card %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}学者分析会话详情{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">学者分析会话</div>
+      <h1>{{ session.display_name }}</h1>
+      <p>该学者的学术引用证据分析工作台。</p>
+    </div>
+    <div class="badge-stack">
+      {{ status_badge(session.status) }}
+      <a class="button button-secondary" href="/scholar-sessions/{{ session.id }}/analysis-debug">分析调试</a>
+      <a class="button button-secondary" href="/scholar-sessions/{{ session.id }}/import-honor-csv">导入重要引用作者 CSV</a>
+      <a class="button button-secondary" href="/scholar-sessions/{{ session.id }}/external-citations/import">导入外部引用列表</a>
+      <a class="button button-secondary" href="/scholar-sessions/{{ session.id }}/exports/missing_pdfs_download_list.csv">下载缺失 PDF 清单</a>
+      <a class="button button-secondary" href="/pdf-inbox">PDF 导入目录</a>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>作者信息</h2>
+    <dl class="meta-grid">
+      <div><dt>显示名称</dt><dd>{{ session.display_name }}</dd></div>
+      <div><dt>DBLP id</dt><dd>{{ session.dblp_id or "unavailable" }}</dd></div>
+      <div><dt>OpenAlex id</dt><dd>{{ session.openalex_id or "unavailable" }}</dd></div>
+      <div><dt>会话状态</dt><dd>{{ session.status }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="stat-grid" aria-label="scholar workflow stats">
+    {{ stat_card("论文数量", session.publication_count) }}
+    {{ stat_card("已扩展引用", session.citation_edge_count, "已扩展引用是系统已经扩展出的引用边，不等于 Google Scholar 或 OpenAlex 的总引用数。") }}
+    {{ stat_card("深度分析队列数量", workflow_stats.deep_analysis_queue_count) }}
+    {{ stat_card("PDF 已就绪数量", workflow_stats.pdf_ready_count) }}
+    {{ stat_card("已分析条目数", workflow_stats.analyzed_item_count) }}
+    {{ stat_card("强证据数量", workflow_stats.strong_evidence_count) }}
+    {{ stat_card("重要作者数量", honor_import_summary.notable_author_count) }}
+    {{ stat_card("重要引用数量", honor_import_summary.important_citation_count) }}
+    {{ stat_card("CSV 匹配成功数量", honor_import_summary.matched_count) }}
+    {{ stat_card("CSV 未匹配数量", honor_import_summary.unmatched_count) }}
+  </section>
+  <span class="sr-only">Publication count</span>
+  <span class="sr-only">Expanded citation edges</span>
+  <span class="sr-only">Deep analysis queue count</span>
+  <span class="sr-only">PDF ready count</span>
+  <span class="sr-only">Analyzed item count</span>
+  <span class="sr-only">Strong evidence count</span>
+  <span class="sr-only">Recent tasks</span>
+
+  <p class="notice">
+    已扩展引用是系统已经扩展出的引用边，不等于 Google Scholar 或 OpenAlex 的总引用数。
+    <span class="sr-only">Expanded citation edges are citations already expanded by this system. They are not the total citation count from Google Scholar or OpenAlex.</span>
+    <span class="sr-only">Citation edges: {{ session.citation_edge_count }}</span>
+  </p>
+  {% if citation_expansion_summary.provider == "openalex" or citation_expansion_summary.external_import_count %}
+    <section class="card">
+      <h2>引用数量口径</h2>
+      <dl class="meta-grid">
+        <div><dt>OpenAlex 总引用数</dt><dd>{{ citation_expansion_summary.openalex_cited_by_count or "unknown" }}</dd></div>
+        <div><dt>系统已扩展引用</dt><dd>{{ citation_expansion_summary.expanded_citation_edges_count }}{% if citation_expansion_summary.openalex_cited_by_count %} / {{ citation_expansion_summary.openalex_cited_by_count }}{% endif %}</dd></div>
+        <div><dt>本次抓取数量</dt><dd>{{ citation_expansion_summary.fetched_count or "unknown" }}</dd></div>
+        <div><dt>扩展 limit</dt><dd>{{ citation_expansion_summary.citation_expansion_limit or "default" }}</dd></div>
+        <div><dt>扩展是否完成</dt><dd>{{ citation_expansion_summary.citation_expansion_complete }}</dd></div>
+        <div><dt>Google Scholar 引用数</dt><dd>{% if citation_expansion_summary.external_citation_count_value %}{{ citation_expansion_summary.external_citation_count_value }}（外部参考，非 OpenAlex 来源）{% else %}未导入（外部参考，非 OpenAlex 来源）{% endif %}</dd></div>
+        <div><dt>Google Scholar / 外部导入</dt><dd>{{ citation_expansion_summary.external_import_count }}（外部导入来源）</dd></div>
+        <div><dt>去重后引用总数</dt><dd>{{ session.citation_edge_count }}</dd></div>
+      </dl>
+      {% if citation_expansion_summary.incomplete %}
+        <p class="notice notice-warning">当前只扩展了部分引用，请提高 limit 或继续扩展。</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="card">
+    <div class="section-heading">
+      <h2>下一步操作</h2>
+      <p>建议流程：扩展引用、构建队列、准备 PDF、执行分析、复核证据。</p>
+    </div>
+    <div class="quick-links">
+      <form action="/scholar-sessions/{{ session.id }}/match-local-pdfs" method="post">
+        <button class="button button-secondary" type="submit">匹配本地 PDF</button>
+      </form>
+      <a class="button button-secondary" href="/scholar-sessions/{{ session.id }}/templates">配置分析模板</a>
+      <a class="button button-primary" href="/scholar-sessions/{{ session.id }}/queue">打开深度分析队列</a>
+      <a class="button button-secondary" href="/scholar-sessions/{{ session.id }}/evidence">复核强证据</a>
+      <a class="button button-secondary" href="/scholar-sessions/{{ session.id }}/cards">高亮卡片</a>
+    </div>
+  </section>
+
+  {% if honor_import_summary.total_rows %}
+    <section class="card">
+      <div class="section-heading">
+        <h2>最近一次重要引用作者导入摘要</h2>
+      </div>
+      <dl class="meta-grid">
+        <div><dt>总行数</dt><dd>{{ honor_import_summary.total_rows }}</dd></div>
+        <div><dt>成功匹配</dt><dd>{{ honor_import_summary.matched_count }}</dd></div>
+        <div><dt>模糊匹配</dt><dd>{{ honor_import_summary.ambiguous_count }}</dd></div>
+        <div><dt>未匹配</dt><dd>{{ honor_import_summary.unmatched_count }}</dd></div>
+        <div><dt>重要 queue items 数量</dt><dd>{{ honor_import_summary.important_queue_items_count }}</dd></div>
+      </dl>
+    </section>
+  {% endif %}
+
+  <section class="card">
+    <div class="section-heading">
+      <h2>论文列表</h2>
+      <p>选择要扩展引用边的论文。</p>
+    </div>
+    {% if publications %}
+      <form action="/scholar-sessions/{{ session.id }}/expand-and-build-queue" method="post">
+        <label class="form-label">
+          每篇论文最多扩展引用数
+          <input class="form-control" type="number" name="limit_per_publication" value="100" min="1" max="1000">
+        </label>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>选择</th>
+                <th>编号</th>
+                <th>标题</th>
+                <th>年份</th>
+                <th>发表位置</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for publication in publications %}
+                <tr>
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="publication_ids"
+                      value="{{ publication.id }}"
+                      {% if publication.selected_for_expansion %}checked{% endif %}
+                    >
+                  </td>
+                  <td>{{ publication.local_code }}</td>
+                  <td>{{ publication.title }}</td>
+                  <td>{{ publication.year or "" }}</td>
+                  <td>{{ publication.venue or "" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <button class="button button-primary" type="submit">一键扩展引用并构建队列</button>
+        <section class="card subtle-card">
+          <div class="section-heading">
+            <h3>高级操作</h3>
+            <p>保留独立任务入口，便于调试扩展引用或单独重建队列。</p>
+          </div>
+          <div class="quick-links">
+            <button
+              class="button button-secondary"
+              type="submit"
+              formaction="/scholar-sessions/{{ session.id }}/expand-citations"
+            >
+              仅扩展引用
+            </button>
+          </div>
+        </section>
+      </form>
+      <section class="card subtle-card">
+        <form action="/scholar-sessions/{{ session.id }}/build-queue" method="post">
+          <button class="button button-secondary" type="submit">仅重建队列</button>
+        </form>
+      </section>
+    {% else %}
+      {{ empty_state("暂无论文", "当前 provider 没有返回论文。") }}
+    {% endif %}
+  </section>
+
+  <section>
+    <div class="section-heading">
+      <h2>最近任务</h2>
+      <p>后台 worker 任务会处理引用扩展、队列构建、PDF 匹配和全文分析。</p>
+    </div>
+    {% if recent_tasks %}
+      <div class="layout-grid">
+        {% for task in recent_tasks %}
+          {{ task_card(task) }}
+        {% endfor %}
+      </div>
+    {% else %}
+      {{ empty_state("暂无任务", "创建引用扩展或队列任务后，会在这里显示状态。") }}
+    {% endif %}
+  </section>
+
+  <p><a href="/scholar-sessions/new">创建新的学者分析</a></p>
+{% endblock %}

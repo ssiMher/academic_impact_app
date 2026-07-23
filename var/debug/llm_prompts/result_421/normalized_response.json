@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[43]",
+  "target_reference_entry": "[43] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingy-\ning Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-\nthe-wall eavesdropping on loudspeakers via RFID by\nCapturing Sub-mm Level Vibration. Proceedings of the\nACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies, 5(4):1–25, Dec. 2021.",
+  "paper_level_summary_zh": "该引用论文在附录中提及[23]以引用Nyquist定理，仅作为技术背景说明，并未涉及目标论文的RFID亚毫米级感知或穿墙窃听能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "the resulting audio sampling rate is 8 kHz, implying that, according to the Nyquist theorem [23], frequency components up to 4 kHz can be captured.",
+      "evidence_context": "In our configuration, the resulting audio sampling rate is 8 kHz, implying that, according to the Nyquist theorem [23], frequency components up to 4 kHz can be captured. This range is sufficient for most speech recognition applications.",
+      "reference_entry": "HJ Landau. Sampling, data transmission, and the nyquist rate. Proceedings of the IEEE, 55(10):1701–1706, 1967.",
+      "why_this_judgment_zh": "引用标记[23]对应的是Landau 1967年的论文，仅用于说明Nyquist定理，与目标论文（Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration）无关，属于误引。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "该引用正文中的[23]并非目标论文，而是Landau 1967关于Nyquist定理的经典文献，属于false_positive。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[43]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] HJ Landau. Sampling, data transmission, and the nyquist\nrate. Proceedings of the IEEE, 55(10):1701–1706, 1967.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[43] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingy-\ning Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-\nthe-wall eavesdropping on loudspeakers via RFID by\nCapturing Sub-mm Level Vibration. Proceedings of the\nACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies, 5(4):1–25, Dec. 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

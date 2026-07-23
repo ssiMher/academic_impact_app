@@ -1,0 +1,1 @@
+"""Academic Impact App package."""

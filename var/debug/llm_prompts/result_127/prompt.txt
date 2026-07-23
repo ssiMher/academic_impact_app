@@ -1,0 +1,1726 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: A survey of acoustic eavesdropping attacks: Principle, methods, and progress
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+TARGET_REFERENCE_MARKER: 
+TARGET_REFERENCE_ENTRY: 
+TARGET_REFERENCE_CONTEXTS:
+(none)
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+- Template goal (custom): 判断引用论文是否明确承认、概括、使用或评价目标论文实现了 RFID 亚毫米级 / sub-mm level / millimeter-level 振动感知能力，尤其关注 loudspeaker vibration、through-wall eavesdropping、voice/acoustic vibration sensing、fine-grained RFID sensing 等语境。必须给出原文证据，并解释为什么该原文能支持“亚毫米级精度佐证”。. Prioritize evidence matching these terms: sub-mm, submillimeter, sub-millimeter, sub millimeter, millimeter-level, mm-level, fine-grained vibration, tiny vibration, micro-vibration, vibration sensing, RFID sensing, RFID tag, loudspeaker vibration, speaker vibration, through-wall, eavesdropping, acoustic sensing, voice sensing, audio sensing, high-precision sensing. Still require original citation_text and avoid promoting grouped citation or weak mention.
+- Template goal (custom): 判断引用论文是否明确称目标论文是 first / pioneering / early / seminal / first-of-its-kind / the first to achieve 等首次、早期或开创性工作。只能在原文明确出现相关表述时给出该判断，不能根据年份或系统推断自动生成。. Prioritize evidence matching these terms: first, the first, first-of-its-kind, pioneering, early work, seminal, earliest, for the first time, 首次, 开创性, 率先, 最早. Still require original citation_text and avoid promoting grouped citation or weak mention.
+FULL_EXTRACTED_TEXT:
+High-ConfidenceComputing4(2024)100241
+Contents lists available at ScienceDirect
+High-ConfidenceComputing
+journal homepage: www.sciencedirect.com/journal/high-confidence-computing
+Reviewarticle
+Asurveyofacousticeavesdroppingattacks:Principle,methods,and
+progress
+YiweiChen,WenhaoLi,XiuzhenCheng ∗,1,PengfeiHu ∗,1
+Institute of Intelligent Computing, the School of Computer Science and Technology, Shandong University, Qingdao 266237, China
+a r t i c l e i n f o
+Article history:
+Received7March2024
+Revised5April2024
+Accepted8April2024
+Availableonline18May2024
+Keywords:
+Acousticeavesdropping
+Attackscenariosandthreatmodels
+Acousticside-channelattacks
+a b s t r a c t
+Intoday’sinformationage,eavesdroppinghasbeenoneofthemostseriousprivacythreatsininforma-
+tionsecurity,suchasexodusspyware(Rudieetal.,2021)andpegasusspyware(Anatolyevich,2020).
+Andthemainoneofthemisacousticeavesdropping.Acousticeavesdropping(GeorgeandSagayarajan,
+2023)isatechnologythatusesmicrophones,sensors,orotherdevicestocollectandprocesssound
+signalsandconvertthemintoreadableinformation.Althoughmuchresearchhasbeendoneinthis
+area,thereisstillalackofcomprehensiveinvestigationintothetimelinessofthistechnology,given
+thecontinuousadvancementoftechnologyandtherapiddevelopmentofeavesdroppingmethods.In
+thisarticle,wehavegivenaselectiveoverviewofacousticeavesdropping,focusingonthemethods
+ofacousticeavesdropping.Morespecifically,wedivideacousticeavesdroppingintothreecategories:
+motion sensor-based acoustic eavesdropping, optical sensor-based acoustic eavesdropping, and RF-
+basedacousticeavesdropping.Withinthesethreerepresentativeframeworks,wereviewtheresults
+ofacousticeavesdroppingaccordingtothetypeofequipmenttheyuseandthephysicalprinciples
+ofeach.Secondly,wealsointroduceseveralimportantbutchallengingapplicationsoftheseacoustic
+eavesdroppingmethods.Inaddition,wecomparedthesystemsthatmeettherequirementsofacoustic
+eavesdroppinginreal-worldscenariosfrommultipleperspectives,includingwhethertheyarenon-
+intrusive,whethertheycanachieveunconstrainedwordeavesdropping,andwhethertheyusemachine
+learning,etc.Thegeneraltemplateofourarticleisasfollows:firstly,wesystematicallyreviewand
+classify the existing eavesdropping technologies, elaborate on their working mechanisms, and give
+correspondingformulas.Then,theseeavesdroppingmethodswerecomparedandanalyzed,andeach
+method’seffectivenessandtechnicaldifficultywereevaluatedfrommultipledimensions.Inaddition
+toanassessmentofthecurrentstateofthefield,wediscussthecurrentshortcomingsandchallenges
+andgiveafruitfuldirectionforthefutureofacousticeavesdroppingresearch.Wehopetocontinue
+toinspireresearchersinthisdirection.
+©2024TheAuthor(s).PublishedbyElsevierB.V.onbehalfofShandongUniversity.Thisisanopenaccess
+articleundertheCCBY-NC-NDlicense(http://creativecommons.org/licenses/by-nc-nd/4.0/).
+1. Introduction
+Inthecurrenteraofinformationtechnology,eavesdropping
+standsasasignificantprivacyconcernwithinthefieldofinfor-
+mation security. Examples include the exodus spyware[1] and
+thePegasusspyware[2].Inrecentyears,eavesdroppinghashada
+relativelylargesecurityproblemonsmarthomes,smartphones,
+andotherdevices.Forexample,thepossibilityofcoverteaves-
+dropping with a smartphone microphone [3], the KeyListener
+∗ Correspondingauthors.
+E-mail addresses: xzcheng@sdu.edu.cn(X.Cheng),phu@sdu.edu.cn(P.Hu).
+1 Given Xiuzhen Cheng’s role as Editor-in-Chief and Pengfei Hu’s role as
+Editorofthisjournal,XiuzhenChengandPengfeiHuhadnoinvolvementinthe
+peer-reviewofthisarticleandhadnoaccesstoinformationregardingitspeer-
+review.Fullresponsibilityfortheeditorialprocessforthisarticlewasdelegated
+toDr.YueZhang.
+smartphone side channel attacks [4] and Lamphone [5]. Inter-
+estingly,mosteavesdroppingusessoundsensorstopickupthe
+soundandthenrestorethesoundandusesauditoryorvisual
+equipment to analyze and extract information, which can be
+specificallydescribedasacousticeavesdroppingproblems.Specif-
+ically,acousticeavesdropping[6]isasurveillancetechniquethat
+obtainsinformationbycapturingandanalyzingsoundorvibra-
+tion[7].Thisapproachcaninvolvelisteningtoconversations[8],
+machineruns[7],keyboardclicks[9],etc.,toquietlyobtainsensi-
+tiveinformationinthetargetenvironmentwithoutphysicalcon-
+tact.Acousticeavesdroppingdevicesmayincludehigh-sensitivity
+microphones[10],soundamplifiers[11],vibrationsensors[12],
+etc.,whichcanbehiddeninavarietyofplaces[7]tocollectaudio
+evidenceorintelligenceundetected.
+Acoustic eavesdropping technology is essential for applica-
+tionsinthesecuritysector[13].Acousticeavesdroppingtechnol-
+ogycanbeusedtogatherintelligenceinformationtoimprove
+https://doi.org/10.1016/j.hcc.2024.100241
+2667-2952/© 2024 The Author(s). Published by Elsevier B.V. on behalf of Shandong University. This is an open access article under the CC BY-NC-ND license
+(http://creativecommons.org/licenses/by-nc-nd/4.0/).
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+securityandresponsecapabilities.Acousticeavesdroppingtech-
+nologyalsoinspiresandpromotesscientificresearchandengi-
+neeringapplications.Inthefieldsofacousticsignalprocessing,
+sensornetworks[14],wirelesscommunications[12],etc.,theap-
+plicationofacousticeavesdroppingtechnologyhaspromotedthe
+innovationanddevelopmentofrelatedtechnologiesandprovided
+newideasandmethodsforsolvingpracticalproblems.
+However,thereisalackofcomprehensiveinvestigationand
+analysis of the latest development and application of acoustic
+eavesdroppingtechnology.Therefore,thisarticlesummarizesthe
+currentacousticeavesdroppingsystems.
+Toalargeextent,acousticeavesdroppingcanbedividedinto
+the following categories: motion sensor-based acoustic eaves-
+dropping,opticalsensor-basedacousticeavesdropping,andRF-
+basedacousticeavesdropping.Thesevarydependingonthede-
+vicetheyareusing.Inparticular,inthefirsttype,motionsensor-
+basedacousticeavesdroppingutilizesmotionsensorsonsmart
+devicestocapturethetinymovementsofthedeviceduetosound
+wave vibrations [15]. Motion sensors convert these vibrations
+intoelectricalsignalsthatcanbeanalyzedandreconstructedto
+identifysoundinformation[16].Itdoesnotrequiredirectcontact
+withthesoundsourceandcanbemonitoredremotelyfroma
+distance[17].Inthesecond,opticalsensor-basedacousticeaves-
+dropping relies on optical devices to capture changes in light
+generatedbyvibrationsonthesurfaceofobjectscausedbysound
+waves[18].Thismethodallowsforveryprecisemeasurement
+ofthesmallmovementsofthesurfaceofanobject[19].Itcan
+be used for acoustic eavesdropping at a greater distance [20].
+Inthethird,RF-basedacousticeavesdroppingusesthereflective
+properties of radio waves to detect and analyze the vibration
+of objects [21]. This method can penetrate certain substances
+andisbeneficialforacousticeavesdroppinginnon-line-of-sight
+situations[22].Fortheuseofdifferentacousticeavesdropping,it
+isnecessarytocovermultipleprinciplesortheoriessuchasthe
+gyroscopeprinciple,theaccelerationprinciple,andtherefraction
+andreflectiontheoryoflight,andformoredetaileddiscussions,
+pleaserefertoSection2.
+Although there has been a lot of research in the field of
+acoustic eavesdropping, there is still a lack of comprehensive
+investigation into the timeliness of this technology due to the
+continuousadvancementoftechnologyandtherapiddevelop-
+mentofeavesdroppingmethods.Withtherapiddevelopmentof
+digitalsignalprocessing[23],artificialintelligence[24],wireless
+communication [25], and other fields, acoustic eavesdropping
+technologyisalsoconstantlyevolvingandupdating.
+Inrecentyears,acousticsensingtechnologyhasmaderemark-
+able progress in the fields of health monitoring [26], environ-
+mentalmonitoring[27],andsmarthome[28],whichprovides
+new possibilities for the application of acoustic eavesdropping
+technology [29]. [30] discusses the latest advances in acous-
+ticemissiontechnologyandfurtherdemonstratesthepotential
+andapplicationprospectsofacoustictechnologyinthefieldof
+eavesdropping.
+In this article, we selectively elaborate on the methods of
+acoustic eavesdropping. More specifically, we classify acoustic
+eavesdroppingintothreecategoriesbasedonthedifferentde-
+vices used: motion sensor-based acoustic eavesdropping, opti-
+calsensor-basedacousticeavesdropping,andRF-basedacoustic
+eavesdropping.
+Motionsensor-basedacousticeavesdropping[31]exploitsthe
+sensitivityofmotionsensorstosound-inducedvibrationstocap-
+turesoundsignals.Acousticeavesdroppingofhumanvoicesis
+possible due to the partial overlap between the fundamental
+frequencyofhumanspeechandthesamplingfrequencyofthe
+sensor.Researchonthisattackbeganin2014,andavarietyof
+identificationandreconstructionsystemsbasedondeeplearning
+have been proposed. Acoustic eavesdropping based on optical
+sensors[32]isanattackmethodthatuseslasersorotherlight
+sourcestomeasuretinyvibrationsonatargetsurfaceandre-
+storesoundsignals.Thisattackexploitsthehighsensitivityof
+optical sensors to light signals and the nonlinear relationship
+betweensoundandlightsignals.Researchonthisattackbegan
+in the 1940s, and a variety of optical acoustic sensors based
+onMEMS[33],fiberoptics[34],ormicro-resonantcavities[35]
+havebeenproposed.RF-basedacousticeavesdropping[36]isa
+methodthatusesradiowavestomeasuretinyvibrationsonthe
+targetsurfaceandrestorethem.Soundsignalattackmethod.This
+attackexploitsthesensitivityofradiowavestochangesinthe
+electromagneticfieldcausedbysound,aswellasthemodulation
+anddemodulationrelationshipbetweensoundandradiowaves.
+Researchonthisattackbeganinthe1960s[37].Atpresent,a
+varietyofRFsoundsensorsbasedonultrasonic[38],radar[39],
+orWiFi[19]havebeenproposed.
+Wediscusseachofthethreetypesofacousticeavesdropping
+attacks.Therepresentativeeavesdroppingmethodsareexplained
+andtherelevantformulasaregiven.Wealsocomparethreetypes
+ofacousticeavesdroppingattackmethods.
+We compared them in terms of whether they were non-
+invasive,whethertheycouldachieveunconstrainedvocabulary,
+whethertheycouldpassthroughopaqueinsulators,whetherthey
+neededMLhelp,whethertheycoulddetectmobileaudiosources,
+whethertheyachievedhighaccuracy,andwhethertheycould
+achievelowenergyconsumption.Eachofthesesevenareasis
+brieflydescribedbelow.
+Researchintonon-intrusivetechniques[40]allowsforcon-
+cealment, which in turn allows for covert acoustic eavesdrop-
+ping.Non-intrusivetechniquesareusuallymoreflexibleandeas-
+ilyadaptedtodifferentacousticeavesdroppingneeds[41].Un-
+constrainedvocabulary[42]meansthattheacousticeavesdrop-
+ping system needs to be able to understand and process any
+vocabulary without being constrained by presuppositions. This
+helpstounderstandmorecomplexcontextsandextractinfor-
+mationbroadly.Acousticeavesdroppingthroughanopaquein-
+sulator[10]allowssoundtobecapturedwithoutenteringthe
+targetspace,whichincreasestheconcealmentoftheactionand
+thebreadthofthesoundsignalcollection.UnaidedbyML[43]
+meansthatwedon’tneedalotoftrainingdatatotrainthemodel,
+whichisgoodforacousticeavesdroppinginsituationswheredata
+isdifficulttoobtainorwhereprivacyisextremelydemanding.In
+addition,thespeedofsoundsignalprocessingcanbeincreased
+withoutrelyingoncomplexmachinelearningmodelsandlarge
+computingresources,makingreal-timemonitoringandanalysis
+possible.Theabilityofacousticeavesdroppingtolistentomobile
+audiosources[43]expandstherangeofapplicationsforacoustic
+taps, allowing surveillance to be no longer limited to specific
+static locations, but to cover a wider area and different envi-
+ronmentalconditions[44].Ahighaccuracyrate[6]canimprove
+theoverallperformanceofanacousticeavesdroppingsystemby
+reducingfalsealarms(incorrectlyidentifyingnon-targetsounds
+as target sounds) and missed alarms (failing to detect target
+sounds that are present) [45]. It can also improve the quality
+ofthecollectedacousticsignals.Therealizationoflowenergy
+consumption[46]canextendthelifeoftheequipment,reduce
+costs,andfacilitatethewidespreaduseofacousticeavesdropping
+methods.
+Forallarticlesthatmeettherequirementsofacousticeaves-
+droppinginreal-worldscenarios,wehaveTable1tocompare
+theireavesdroppingmethods.
+Finally,wediscusstheshortcomingsandchallengesofcurrent
+researchandprovidepossiblefuturedirections.
+The survey is presented as follows: First, we classify and
+summarizethreetypesofacousticeavesdroppingandillustrate
+2
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+Table 1
+Comparisonofacousticeavesdroppingattacksintheliterature.
+Sensortype Acoustic
+eavesdropping
+attack
+Competence
+Non-Invasive Unconstrained
+vocabulary
+Through
+opaque
+insulator
+Unaidedby
+ML
+Mobile
+audiosource
+High
+accuracy
+Lowenergy
+consumption
+Motionsensor AccelWord[47] ✗ ✗ ✗ ✗ ✓ ✓ ✓
+PitchIn[48] ✗ ✓ ✗ ✓ – – –
+AccelEve[49] ✗ ✗ ✗ ✗ – ✓ ✓
+AccEar[42] ✗ ✓ ✗ ✗ – ✓ ✓
+Speechless[50] ✗ ✗ ✗ ✗ – – –
+Gyrophone[51] ✗ ✗ ✗ ✗ – ✗ –
+HDD[52] ✗ ✓ – ✓ – – –
+VibraPhone[49] ✗ ✓ ✗ ✗ – ✓ –
+V-Speech[53] ✗ ✓ ✗ ✓ – ✓ ✓
+Opticalsensor Visual
+microphone[54]
+✓ ✓ ✗ ✓ – – –
+LidarPhone[55] ✗ ✓ ✗ ✗ – ✓ –
+Lamphone[5] ✓ ✓ ✗ ✓ – ✓ –
+Radioreceiver WiHear[56] ✓ ✗ ✓ ✗ ✗ ✓ –
+ART[10] ✓ ✗ ✓ ✓ – ✓ –
+Tag-Bug[57] ✗ ✓ ✓ ✗ – ✓ ✓
+UWHear[58] ✓ – ✓ ✓ ✗ – –
+WaveEar[59] ✓ ✓ – ✗ ✗ ✓ ✓
+MILLIEAR[60] ✓ ✓ ✓ ✗ ✗ ✓ –
+mmSpy[61] ✓ ✗ – ✗ ✗ ✓ –
+mmEcho[43] ✓ ✓ ✓ ✓ ✓ ✓ –
+a The✓ indicatesthattheabilityispresent.
+b The✗ indicatesthattheabilityisnotpresent.
+c The–indicatesthatitisnotmentionedintheirpaper.
+themwithexamplesinSection2.Thenwediscusstheadvantages
+anddisadvantagesofdifferentacousticeavesdroppingattacksin
+Section3.Finally,Sections4and5givefutureresearchdirections.
+andsummary.
+2. Acoustic eavesdropping method
+Acousticeavesdroppingissecretlyorquietlylisteningtoother
+people’s private conversations without their permission to get
+information.Acousticeavesdroppingisabasicsecurityandpri-
+vacythreatinwirelessnetworks,whichcanleadtotheleakage
+ofsensitiveinformation,identityimpersonation,datatampering,
+orothermaliciousbehavior.Acousticeavesdroppingcanbeused
+inthemilitarytoobtainthestrategiesandplansofenemiesor
+competitors.Itcanbeusedinbusinessandfinancetostealtrade
+secrets,customerdata,ormarketdynamics.Itcanbeusedfor
+scientificandtechnicalanalysisanddetectionofsignalfeatures.
+Ansitcanbeusedbyindividualstoobtainotherpeople’sprivate
+information,etc.
+To improve privacy protection capabilities, we summarized
+existing acoustic eavesdropping methods. This section reviews
+existingacousticeavesdroppingmethodsanddividestheminto
+thefollowingthreecategoriesbasedondifferentacousticeaves-
+droppingmethods.
+2.1. Motion Sensor-based acoustic eavesdropping
+MotionSensor-basedacousticeavesdropping[62]isatechnol-
+ogythatusesmotionsensors(suchasaccelerometers,gyroscopes,
+etc.) on smartphones or other devices to capture and analyze
+surroundingsoundsignals.Thistechnologycanbypasstheper-
+missionrestrictionsonthemicrophone[63],therebyachieving
+privacy eavesdropping on the user. The basic principle of mo-
+tion sensing-based acoustic eavesdropping is that when sound
+wavespropagateintheair,theycausetinyvibrationsinobjects,
+which can be detected by motion sensors and converted into
+electricalsignals.Byperformingsignalprocessingandmachine
+learning on these electrical signals, the spectral characteristics
+of the sound waves can be restored, thereby identifying the
+speaker’sinformationandevenparsingthespeechcontent.
+Intheexistingresearch,acousticeavesdroppingbasedonmo-
+tionsensorscanbedividedintothefollowingaspects.
+2.1.1. Base on MEMS gyroscopes
+Astandard-size(non-MEMS)gyroscope[64]generallyconsists
+ofarotor,anaxisofrotation,andagimbalcoordinatesystem
+(innerandouterrings).Whentherotorrotatesathighspeed,if
+noexternalmomentactsonthegyroscope,thespindleofthe
+rotorremainsaxiallyfixed,i.e.pointinginafixeddirection.If
+anexternalmomentactsonthegyroscope,thespindleofthe
+rotorrotates,i.e.,aroundanaxisperpendiculartotheexternal
+moment.Bymeasuringthedirectionoftherotor’saxisofrotation
+andtheangularvelocityoftheprecession,theangularvelocity
+anddirectionofthecarriercanbeobtained.However,acoustic
+eavesdropping uses a MEMS gyroscope [65]. All MEMS gyro-
+scopesworkwithanotherphysicalphenomenon—theCoriolis
+force[66],whichisafictitiousforce(D’Alembertforce)observed
+inarotatingframeofreference,whichisorientedperpendicular
+totheaxisofrotationoftheframeofreferenceandthevelocity
+oftheobject.
+TheformulaforcalculatingtheCoriolisforceis
+Fcor = 2m⃗v × ω (1)
+wherem andv representthemassandvelocityoftheobject,
+respectively, andω denotes the angular rate of the reference
+frame.
+In general, the structure of a MEMS gyroscope consists of
+a vibrating detection mass and a fixed driving mass, and the
+MEMSgyroscopemeasuresitsangularrate( ω)bysensingthe
+amount of Coriolis force acting on the moving detection mass
+withinthegyroscope.Whenthegyroscoperotatesaroundanaxis
+perpendicular to the direction of vibration, the detected mass
+is subjected to the Coriolis force, which produces a secondary
+3
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+vibration perpendicular to the direction of vibration, and the
+Coriolisforceissensedbymeasuringthevibrationitproduces.Its
+vibrationalfrequencyisalsoknownasthegyroscope’sresonant
+frequency[67].
+Specifically,aMEMSgyroscopeisusedasamicrophonefor
+speech recognition and analysis in [51]. First, the authors ex-
+tractedthefeaturesmeasuredbytheMEMSgyroscope,suchas
+digital pronunciation and other information, and preprocessed
+thedata.Then,theytrainedmachinelearningalgorithmstoiden-
+tifyspecificspeakersornumberpronunciations.Inthisway,they
+couldrecognizeandleaksensitiveinformationsuchasnumbers
+spokennearorabovethephone,andachievespeaker(includ-
+ingspeakergender)identificationandisolatedwordrecognition,
+showingthepotentialeavesdroppingriskofMEMSgyroscopes.
+2.1.2. Based on accelerometer
+Anaccelerometer[68]isaninertialsensorthatiscapableof
+measuringtheaccelerationforceofanobject.Theacceleration
+forceistheforcethatactsonanobjectduringitsacceleration,
+such as the earth’s gravitational pull, which is also known as
+gravity.Theaccelerationforcecanbeaconstant,suchas g,or
+avariable.Accelerometersgenerallyconsistofabody,aspring,
+andaninertialbody.Accelerometersuseinertialforcesandca-
+pacitancechangestodetectacceleration.Whenthebodyofthe
+accelerometerisaccelerated,theinertialbodywillmoverelative
+tothebodyduetoinertia,resultinginachangeintheshapeand
+lengthofthespring,andthecapacitancebetweenthebodyand
+theinertialbodywillchangewithdistance.Inthisway,bymea-
+suringthechangeincapacitance,themagnitudeanddirectionof
+theaccelerationcanbecalculated.
+Theaccelerometersensorscurrentlyusedinsmartphonesand
+othersmartdevices,suchassmartwatchesandsmartglasses,are
+Micro-Electro-MechanicalSystems(MEMS)[69].MEMStechnol-
+ogyenablesMEMSaccelerometerstobesmall,light,andenergy-
+efficient.ThistypeofMEMSaccelerometerisadevicethatcap-
+turestheaccelerationofitsbodyalongthreesensingaxes,eachof
+whichistypicallyhandledbyasensingunitwiththreemaincom-
+ponents:inertialmass,springlegs,andstationaryfingers[70].
+Whenaccelerationisapplied,theinertialmassshiftsintheop-
+positedirection,resultinginachangeincapacitancebetweenthe
+stationaryfingers.Thischangeproducesananalogsignal,which
+isthenmappedtoanaccelerationmeasurement.
+Specifically,in[71]theauthorsdiscussedamethodofper-
+formingaside-channelattackonsmartphonespeakersusingthe
+smartphone’saccelerometer.TheyproposeAccelEve,alearning-
+based smartphone eavesdropping attack that can identify and
+reconstructspeechsignalsemittedbysmartphonespeakers,and
+demonstrate its ability to identify sensitive words in calls, as
+wellashowtolinkthisinformationtospecificcallersbycross-
+identifyingsensitivewordsacrossmultiplephonecalls.[47]dis-
+cusses how to identify some of the user’s private information
+throughthesmartphone’saccelerometer,andproposesasolution
+namedAccelWordtoaddresstheenergyconsumptionproblem
+ofvoicecontrol.Theauthorspointoutthatiftheattackercan
+adjust the sampling frequency of the accelerometer, they can
+evenusetheaccelerometerreadingstoreconstructpartofthe
+humanspeech,increasingtherisktouserprivacy.
+Theabovearealleavesdroppingstudiesthatonlytargethu-
+manspeech.[50]focusesontheimpactofmachine-generated
+speechandactualhumanspeechonsmartphonemotionsensors,
+as well as the potential privacy leakage risks. [42] performs
+eavesdroppingattacksthroughaccelerometersignals,whichcan
+reconstruct any audio signals played by smartphone speakers,
+andthevocabularyisunrestricted.
+2.1.3. Other methods
+Besidestheabovemethodsofeavesdroppingusinggyroscopes
+andaccelerometers,therearealsothefollowingtypesofmotion-
+sensing acoustic eavesdropping: [48] eavesdrops on sounds in
+a room by reconstructing intelligible speech signals from data
+fusedfromnon-acousticsensors(e.g.seismometers,gyroscopes,
+accelerometers).[52]exploresthepossibilityofextractingand
+parsinghumanspeechusingthemechanicalcomponentsindisk
+drivesasminiaturemicrophones,anddemonstratesamethodof
+eavesdroppingusingthemechanicalobjectsinharddiskdrives.
+[49] discusses the possibility of extracting and parsing human
+speechusingthesoundsensorwithminimalhardwarechanges
+bytransformingthevibrationmotorintoasoundsensorusing
+the back electromotive force generated by the ambient sound
+inthesmartphone’svibrationmotor,anddesignstechniquesto
+decodehumanspeechfromnoisy,low-bandwidthsignals,indi-
+catingthatthevibrationmotorcanbeusedtolistentohuman
+speechundercertainconditions.[53]eavesdropsonaudiousing
+thevibrationsensorintheglassesnosepad.[72]achieveseaves-
+droppingbyconvertingthespeakersconnectedtothecomputer
+intomicrophones.
+2.2. Optical sensor-based acoustic eavesdropping
+Opticalsensor-basedacousticeavesdroppingisasecrettech-
+niquethatusesopticalsensors[73]suchasphotodiodes,pho-
+tomultipliertubes,phototransistors,etc.tocapturethevibration
+signalsofthetargetobjectandrestorethesoundcontentfrom
+them.Theprincipleofthistechniqueisthatsoundisavibra-
+tion[74],whichcausestinydeformationsonthesurfaceofthe
+object,therebychangingthereflectionortransmissionoflight
+fromtheobject.Bymeasuringthesechangesinlightintensity,
+thevibrationsignaloftheobjectcanbeobtained,andthenthe
+soundcontentcanberestoredbysignalprocessingandmachine
+learning[75].Thereareseveraltypesofacousticeavesdropping
+basedonopticalsensors.
+2.2.1. Based on cameras
+Theprincipleofacousticeavesdroppingusingacameraisto
+use the optical sensor of the camera to capture the vibration
+signalofthetargetobjectandrestorethesoundcontentfrom
+it.Thisisasecrettechnique.[54]usedahigh-speedcamerafor
+acousticeavesdropping.Ahigh-speedcamera[76]isadevicethat
+cancapturemotionimagesatanexposureoflessthan1/1000s
+oraframerateofmorethan250framespersecond.Itsworking
+principleistousetheopticalsensortoconvertthelightsignal
+into an electric signal, and then process and store the signal,
+and finally playback or display it in slow motion. The article
+introducesanovelvisualmicrophonetechnology,whichusesa
+high-speedcameratocapturethevibrationmodeoftheobject
+undertheactionofsoundwaves,andrestoresthesoundsignal
+byprocessingtherecordedvideowithanalgorithm.
+Specifically,thetechnologyisbasedonthemovementofob-
+jectscausedbysoundwaves,usinghigh-speedcamerastorecord
+themovementpatternsofobjects,andthenprocessingthevideo
+throughalgorithmstorestorethesoundsignal.
+Firstly,theinputvideoisdecomposedintospatialsub-bands
+withdifferentdirectionsandscales,andthelocalmotionsignals
+ofeachpixel,direction,andscalearecalculatedtoobtainthelocal
+motioninformationofobjectsindifferentdirectionsandscales.
+Thespecificcalculationisasfollows:Phasevariationsareusedin
+thecomplexsteerablepyramid[77]representationofvideo V to
+calculatelocalmotion.Decomposeeachframeofvideo V (x, y, t)
+into complex sub-bands corresponding to different scales and
+orientations.Everyscale r anddirection θ canbedescribedas
+4
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+Fig. 1. General process of acoustic eavesdropping based on optical sensors.
+The laser emitter emits a laser beam that irradiates the target object along
+the emitting optical path. The target object reflects the laser light and the
+laserreturnstothesystemalongthereceivingopticalpath.Theoptoelectronic
+deviceonthereceivingopticalpathreceivesthereflectedlasersignal.Theecho
+signalprocessingcircuitanalyzesthereceivedsignalandcalculatesthedistance
+betweenthetargetobjectandthesystem.
+acompleximage,whichcanbeexpressedintermsofamplitude
+A andphase φ as
+A(r, θ,x, y, t)eiϕ(r,θ,x,y,t) (2)
+Bysubtractingthelocalphase φ derivedfromthisequation
+fromthelocalphaseofthereferenceframe t0 (thefirstframeof
+thevideoinmostcases),thephasechangeiscalculated.
+ϕv(r, θ,x, y, t)= ϕ(r, θ,x, y, t)− ϕ(r, θ,x, y, t0) (3)
+Forsmallmotions,thealterationsinphaseareroughlyinline
+withthedisplacementoftheimagestructureacrosstheassoci-
+ateddirectionandscale.
+Then,bycombininglocalmotionsignals,aligningindividual
+motion signalsϕ(r, θ1, t), and performing weighted averaging,
+wherer istheradialcoordinate, θ istheangularcoordinate,and
+t isthetime.Thealignedsignalsaregivenby φ(ri, θi, t −ti),such
+that:
+ti = argmax
+ti
+φ0(r0, θ0, t)T φi(ri, θi, t − ti) (4)
+The weight of each local signal is measured by its (squared)
+amplitude:
+φi(r, θ,t)=
+∑
+x,y
+A(r, θ,x, y)2ϕv(r, θ,x, y, t) (5)
+Thentheglobalmotionsignalis
+ˆs(t)=
+∑
+i
+φi(ri, θi, t − ti) (6)
+Inthisway,theoverallmovementpatternoftheobjectisob-
+tained,andthesoundsignalisfinallyrestored.
+2.2.2. Based on laser sensors
+LidarSensor[78]isatechnologythatusesalaserbeamto
+scanthesurroundingenvironmentandgenerateadistancemap.
+Itcanbeusedinavarietyofapplicationssuchasremotesensing,
+autonomousvehicles,meteorology,astronomy,etc.
+Lidar Ranging
+Lidarsensorsaretypicallyusedtomeasuredistanceanddetect
+targets.TherangingprincipleisshowninFig.1.Specifically,there
+areseveralwaystomeasuretherangebylidar[79].
+Time-of-Flight(ToF). Time-of-Flight[80]isamethodofmea-
+suringdistance.Lidaremitsashortpulseoflaserlightandrecords
+theelapsedtimefromthetimethebeamistransmittedtothe
+timeitisreceived.Sincethespeedoflightisknown,thedistance
+betweenthetargetobjectandthelidarcanbecalculatedbymea-
+suringthetimeofflightofthelight.Itiscommonlyusedinappli-
+cationsthatrequirefastandaccuratedistancemeasurement,such
+asautonomousdriving[81]andintelligenttransportation[82].
+TheformulaforToFranging[83]is
+D = c ∗ ∆t
+2
+(7)
+whereD isthedistanceofthemeasuredobject, c isthespeedof
+light,and ∆t isthetimeofflightofthelaser.
+Pulse Lidar. Thismethod[84]issimilartotheTOF,butthe
+differenceisthatthelidaremitsaseriesofshortpulsesoflaser
+lightandrecordsthelaunchandreturntimeofeachpulse.By
+comparingthetransmittingtimeandreturntimeofeachpulse,it
+ispossibletocalculatethedistancetothetargetobject.Itisoften
+usedinlong-distanceandhigh-precisionrangingscenarios,such
+as geological exploration [85], environmental monitoring [86],
+spatialmapping[87],etc.
+Assuming that the number of count pulses when the echo
+pulsearrivesis n andtherepetitionperiodofthecountpulseis T ,
+thenthedelaytimeoftheechopulserelativetothetransmitted
+pulseis
+∆t = n ∗ T (8)
+Thenthedistanceis
+D = c ∗ ∆t
+2
+= c ∗ nT
+2
+(9)
+Frequency-Modulated Continuous-Wave(FMCW). It uses a
+continuouslaserbeamandappliesmodulationatitsfrequency
+[88].Bymeasuringthefrequencydifferencebetweentheemitted
+frequencyandthereturnedfrequency,thedistancebetweenthe
+targetobjectandthelidarcanbecalculated.Itiswidelyusedin
+theautomotivefield,industrial-rangingapplications,etc.
+Thefollowingisadiscussionofthecasewheretherelative
+velocityvr is0.Assumingthatthedistancefromthedetected
+targettothelidaris R,thedelayofthereceivedsignalofthelidar
+receiveris τ,andthespeedoflightis c,therelationshipbetween
+thedetectionrange R andthedelay τ andthespeedoflight c is
+asfollowswhenthetargetvelocityisignored:
+R = τ ∗ c
+2
+(10)
+tc ishalfofthesweptperiod. fc isthesweptbandwidth.And
+tau is the time from transmission to acceptance. Letfs(t) and
+fe(t)bethefrequencychangefunctionsofthesentandreceived
+signals,respectively,andassumethattherelativevelocity vr is0,
+thentherisingedgeofthesignalhasthefollowingrelationship:
+fS (t)= f0+ fc
+tc
+∗ t
+fE = fS (t − τ)
+(11)
+Andthereisabeatfrequencyfunction:
+fb(t)= fS (t)− fE (t) (12)
+Andbecause R = τ∗c
+2 ,fromthegeometricrelation fb
+τ = fc
+tC
+,we
+candeduce
+R = c
+2
+∗ tc
+fc
+∗ fb (13)
+Fromtheaboveformula(13), R isproportionalto fb.Ifthe
+emittedsignalisacosinewave,thevariationofitstimedomain
+isasfollows:
+uS (t)= ˆuS ∗ cos[2π ∗ fS (t)∗ t + ϕS ] (14)
+5
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+Thechangeofthereceivedsignalinthetimedomainis
+uE (t)= ˆuE ∗ cos[2π ∗ fE (t)∗ t + ϕE ] (15)
+Bringin fe toget:
+uE (t)= ˆuE ∗ cos[2π ∗ fS (t)∗ t − 2π ∗ fb(t)∗ t + ϕE ] (16)
+Phase-Based Lidar. Thismethod[89]calculatesthedistance
+by measuring the phase difference between the emitted laser
+beamandthereturnedbeam.Thechangeinphasedifferenceis
+associated with the distance of the target object. It is suitable
+for medium and close-range measurements, such as industrial
+measurementsandmedicalapplications.
+Specifically,itistomodulatetheintensityofthelightwave
+emitted.Themeasureddistancecanbeexpressedas
+D = c ∗ ∆φ
+2f
+(17)
+whereD isthedistanceofthemeasuredobject, c isthespeed
+of light,∆φ is the phase difference of the laser, andf is the
+modulationfrequencyofthelaser.
+Triangulation. Itusesthegeometricrelationshipbetweenthe
+angle of incidence and the angle of reflection of the laser to
+calculatethedistance.Itissuitableforlow-costsensors,suchas
+thosefoundinroboticcleaners.
+Specifically, the laser emitted by the laser is incident at a
+certainanglewiththenormaloftheobjectsurfacetothesurface
+ofthemeasuredobject,andtheback(scattered)lightisconverged
+andimagedthroughthelensatonepointB,andfinallycollected
+bythephotosensitiveunit.Wesupposetheanglebetweenthe
+incident light AO and the baseline AB isα.AB is the distance
+between the center of the laser and the center of the CCD.
+BF is the focal lengthf of the lens. D is the limit position of
+thereflectedlightimagingonthephotosensitiveunitwhenthe
+measured object is far from the infinity of the baseline. DE is
+the displacement of the spot from the limit position on the
+photosensitiveunit,denotedas x.Whentheopticalpathofthe
+systemisdetermined,the α,AB,and f areallknownparameters.
+Fromthis,weknowthat
+AO = AB ∗ F
+x ∗ α
+(18)
+Whentherelativedisplacementofthemeasuredobjectandthe
+baselineABoccurs, x changesto x′,andthedistanceofthemea-
+suredobject y canbeobtainedfromtheaboveconditionsthat
+y = AB ∗ f ∗ (x − x′)
+xx′ (19)
+Lidar-based Eavesdropping
+Above,wehaveexplainedthemethodofusinglidarforrang-
+ing.Becauselaserscanbeusedforfine-graineddistancemea-
+surements,andthepropagationofsoundthroughamediumin
+theformofmechanicalwavescausessmallphysicalvibrationsof
+nearbyobjects,wecantakeadvantageofthisfeatureforremote
+audioeavesdropping.Alasermicrophonewasdesignedin[90].A
+lasermicrophoneshinesalaserbeamonanobjectclosetothe
+placeoforiginandmeasuresthevibrationscausedbythesound
+torestoretheaudio.Lasermicrophonesmustbemanuallyapplied
+totheirtransmittersandreceiverstoobtaintherequiredinfor-
+mationthroughspecularreflection.In[55],LidarPhoneusesthe
+diffusereflectionoftherobotvacuumcleanerforeavesdropping.
+It uses triangulation to capture tiny vibrations. The signal-to-
+noiseratioofthefinalinputsignalisimprovedbypreprocessing,
+followed by training and prediction. Supervised learning tech-
+niqueswereusedtoextractrelevantfeaturesforclassification.
+Deep learning techniques, especially convolutional neural net-
+works,areusedtoextractprivacy-sensitiveinformation.Acoustic
+eavesdroppingwasfinallyachieved.
+Fig. 2. Lamphone’sthreatmodel.Thesoundcreatesfluctuationsonthesurface
+ofthehangingbulb.Lamphoneusesaremoteelectro-opticalsensortoanalyze
+the frequency response of the hanging bulb to the sound, and the algorithm
+processesittoobtaintherecoveredacousticsignal.
+2.2.3. Based on remote electro-optical sensor
+Inadditiontotheabove-mentionedmethodsusinghigh-speed
+camerasandlidar,somemethodsuseremotephotoelectricsen-
+sors [5] to analyze the vibrations caused by the sound of the
+bulbtoreconstructtheaudio.Lamphoneusesthehanginglight
+bulbasaninformationleakagechannelandanalyzesthelight
+signal reflected by the vibration of the light bulb to steal the
+soundintheroom.TheprincipleisshownintheFig.2.Itcan
+improvethesensitivityofthesystembyincreasingtheinternal
+gainofthesensortooptimizethesignal-to-noiseratioofoptical
+measurements.
+2.3. RF-based acoustic eavesdropping
+Aradiofrequencysignal[91]isahigh-frequencyalternating
+electromagnetic wave that can travel through the air and be
+reflectedbytheionosphereattheouteredgeoftheatmosphere
+to form a long-distance transmission capability. The frequency
+rangeofRFsignalsisgenerallybetween300kHzand300GHz.
+Itiswidelyusedinradarandwirelesscommunication.RF-based
+eavesdroppingattacksareanattackmethodthatusesradiofre-
+quency signals to listen to other people’s communications or
+obtain sensitive information. The principle is to use a special
+wireless receiving device to intercept the radio frequency sig-
+nalsentbythetargetdevice,andthenconvertthesignalinto
+readabledatathroughadecoder,fromwhichtoextractsensi-
+tiveinformationsuchastelephonecallcontent,email,andtext
+messages.TheGreatSealBug[92]wasoneofthefirstacoustic
+eavesdroppingdevicestousepassiveRFtechnologytotransmit
+audiosignals.Theeavesdroppingdeviceisasilver-platedcopper
+cylinder consisting of a central tuning column and a coupling
+disk inside the cylinder. The Great Seal Bug is eavesdropping
+onamplitudemodulationsignalstriggeredbytuning,coupling
+modes,andvibrationsofthediaphragm.
+Therearedifferenttypesandwaysofeavesdroppingbasedon
+RFtechnology,andwehavesummarizedthem.
+2.3.1. Based on WiFi
+[10,56]canidentifyspecificwordsbyanalyzingWiFiReceived
+SignalStrength(RSS)andChannelStateInformation(CSI),respec-
+tively.
+[10] proposed a new acoustic eavesdropping method, ART.
+It uses a reflected or emitted wireless signal to penetrate a
+conventionalsoundproofdevice,stealingsubtlevibrationsfrom
+the target device and converting it into an audio signal. The
+authorsusedwirelessvibrometryforremotesoundcaptureor
+recovery.Becauseaudioemissionscausetinyvibrationsinthe
+speakeritself,theycanresonatewithradiowavesreflectedfrom
+thespeakerorawirelesstransmitterlocatedinthesamelocation
+as the speaker. So contaminated radio waves can be captured
+6
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+Fig. 3. Frame diagram of WiHear. It consists of a transmitter and a receiver
+forsingle-userlipreading.ThetransmitterusesbeamformingtosendaWi-Fi
+signal to the user’s mouth. The receiver extracts and analyzes the reflexes of
+mouthmovements.Thenitexplainsthemouthmovementintwosteps.Onthe
+leftisthemouthmovementanalysisusingfiltering,partialmultipathremoval,
+andwavelettransformtopurifythesignalanddecomposethemohmovement
+profile. On the right is learning-based lip reading, which applies machine
+learningtorecognizepronunciationsandtranslatethemthroughclassification
+andcontext-basederrorcorrection.
+and processed by a tampered receiver to restore the original
+audio played by the speaker. After the audio is collected, the
+requiredaudioisobtainedthroughtheaudioRFconversionand
+demodulationoftheconvertedaudio.
+Specifically,theeffectofvibrationonradioRSSinaudioRF
+conversioncanbeexpressedbythefollowingformula
+RSSL = σ[A2(d0)+ 2A(d0)A′(d0)ˆd + · · · +o(d0)ˆdk] (20)
+where ˆd = d ∗ cosβ andβ istheanglebetweenthedirection
+ofvibrationandthedirectionofreflection. σ isthereflectivity
+(reflectiongain)ofthespeakersurface(0 < σ <1).d0 indicates
+thedistancebetweentheantennaandthespeaker. A(·)isthe
+channel gain function. The squared operation onA(·) models
+signalattenuationduetoround-trippropagation.
+Theeffectofvibrationontheradiophasecanbeexpressedby
+thefollowingformula:
+PhaseL = 2π(d0+ 2d)
+λ0
++ γ (21)
+where the4πd
+λ0
+term contains the audio frequencies from the
+speaker.γ istheinitialphaseofthereflectionpath.Thisformula
+relatesthephaseofaradiosignaltoavibration-induceddisplace-
+ment,whichchangesthelengthofthepaththesignaltravels,
+thuschangingitsphase.
+Audiosignalsareobtainedbyreversedemodulationbycap-
+turingaudio-modulatedradiosamples,splittingsamples,signal
+processing,controllingrangesusingbandpassfilters,andsoon
+[56]introducesasystemcalledWiHear.Theframeisshown
+inFig.3.WiHeardoesn’tneedtodeployanydevicesanduses
+Wi-Fi signals to eavesdrop on people’s conversations. It does
+thisbydetectingandanalyzingtinyradiantreflexesfrommouth
+movements.WiHearutilizesMIMObeamformingtechnologyto
+locateandfocusthemouthwhilehearingmultipleconversations.
+ItutilizesChannelStateInformation(CSI)forpartialmultipath
+removalofcommercialOFDM-basedWi-Fidevices.Partialmulti-
+pathremovalanddiscretewaveletpackettransformwereusedto
+constructthemouthmotionprofile.Leveragemachinelearning
+torecognizepronunciationsandtranslatethemthroughclassi-
+ficationandcontext-basederrorcorrection.WiHearenablesthe
+monitoringandrecognitionofhumanspeechbehavior.
+2.3.2. Based on Ultra-Wide Band
+Ultra-wide Band (UWB) [93] is a wireless communication
+technologythatenablesshort-range,high-bandwidthcommuni-
+cationsusingverylowenergylevelsoveralargeradiospectrum.
+UWBtransmitsinformationbyemittingshortpulsesoveralarge
+bandwidth(>500MHz),enablingpulsepositionortimemodula-
+tion.InformationcanalsobemodulatedonUWBsignals(pulses)
+byencodingthepolarityandamplitudeofthepulsesorbyusing
+quadrature pulses. UWB pulses can be sent intermittently at
+relativelylowpulseratestosupporttimeorpositionmodulation,
+ortheycanbesentatratesuptothereciprocaloftheUWBpulse
+bandwidth.
+UWBwirelesssystems[94]canbeusedtomeasurethe‘‘time
+offlight’’oftransmissionsatdifferentfrequencies,whichhelps
+to overcome multipath propagation, as some frequencies have
+directpaths,whileothershavelongerdelays.Usingcooperatively
+symmetricalbidirectionalmetrologytechnology,distancescanbe
+measured with high resolution and high accuracy. In addition,
+UWBdevicescanalsodeterminewhetheranobjectisstationary,
+near,orfaraway
+AcousticeavesdroppingbasedonUltra-WideBand[95]uti-
+lizesultra-widebandtechnologytotransmitaudiosignals.Itcol-
+lects and converts the sound signal into a digital signal, and
+thenusesUWBtotransmitittothereceiveranddecodeitto
+restoretheoriginalsoundsignal.Itutilizesthehigh-frequency
+band utilization and high-speed data transmission capabilities
+providedbyUWBtechnology,enablingtheeavesdroppingdevice
+totransmitsoundsignalsinawidefrequencyband,andhaving
+acertaindegreeofconcealmentandanti-interferenceability.
+[58] proposed the UWHear system. It uses Impulse Radio
+Ultra-Wideband(IR-UWB)technologytobuildanenhancedaudio
+perceptionsystem.
+ThefollowingdescribesthedatastructureofUWHear.The X-
+axisisthefasttime,whichrepresentstheround-tripToFofthe
+pulsesothatthefasttimecanbeconvertedtothedistancebin.
+TheY -axisisslowtime.Thedatacollectedduringtheresponseis
+calledaframe.Allframesaresortedchronologically,andplaced
+along theY -axis. After finding the distance bin corresponding
+toeachsoundsource,asliceistakenfromthe2Dmatrix,and
+the 1D time series is obtained to estimate the sound source.
+TheIR-UWBradarusesultra-widebandpulsesignalsfordistance
+measurementandrecoverstheacousticinformationofthetarget
+byreceivingandanalyzingtheechosignal.Thetargetaudiois
+recoveredbysendingandreceivingultra-widebandpulsesignals,
+processing pulse-echo signals, time domain analysis, inversion
+algorithms,etc.
+Thereceivedsignalinthisarticleis y(t),whichismodeledas
+aconvolutionofthetransmittedsignalandthechannelimpulse
+response plus additive noise, i.e. the signaly(t) is transmitted
+throughasystem(expressedasthesystemfunction h(t))plusthe
+noisen(t)
+y(t)= x(t)∗ h(t)+ n(t)
+=
+P∑
+p=1
+αpg(t − kTs − Tp − T D
+p (t))
+× cos(2πfc (t − kTs − Tp − T D
+p (t)))+ n(t)
+(22)
+wherex(t)istheinputsignal. P denotestherangeofthesum. ap
+isthecoefficient. g(cdot)isafunction. fc isthefrequencyofthe
+signal.Ts,Tp,and T D
+p aretimedelayparametersincommunication
+systems. The formula describes the transformation of a signal
+during transmission and takes into account both internal and
+externalinfluencesinthesystem.
+UWHeariscapableofsensingaudiovibrationsonthewalland
+operatesinsomenon-line-of-sight(NLOS)conditions.Theability
+to simultaneously recover and separate sounds from multiple
+sources is achieved. Experiments have shown that UWHear is
+effectiveinseparatingthecontentsoftwospeakersthatareonly
+7
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+25cmapart.Itachievesagoodbalancebetweensignalpenetra-
+tionandrangingresolution.However,becauseitssamplingrate
+is1.6kHz,whichislessthantheminimumsamplingrateof3kHz
+(thesamplingrateoflandlines)forasufficientunderstandingof
+humanspeech,itisimpossibletounderstandthelargercorpus
+byintelligentlyunderstandingthenumbersreadbyhumans.
+X-bandUWB[96]isanultra-widebandwirelesscommunica-
+tiontechnologythatusesthefrequencyrangeof812GHz.The
+advantagesofX-bandUWBarehigherresolution,lowerpathloss,
+betterpenetration,andsmallerantennasize.[97]demonstrated
+thefeasibilityofremotelysensingsoundandrecoveringsound
+signalsfromvibrationsourcesbyusingUWBradartechnology.
+X-bandUWBradarisusedtoobservemultipleseparatedsound
+sourcesindifferentranges,andtheirsignalsareseparatedand
+recovered, and the perspective ability of microwave signals is
+used for target monitoring blocked by obstacles. Three unique
+experimentalsetupsareusedtodemonstratethefeasibilityof
+this technique: a passive object in the proximity of the active
+source, the separation of multiple sound sources at different
+rangesoftheradar,andtheblockingofthesoundsourcebya
+dielectricmedium.However,ithasalowaudioresponseandcan
+onlyrecoveraudiobelow400Hz,sotherecoveryofhumanvoice
+isnottakenintoaccount.
+2.3.3. Based on RFID
+RFID[98]isawirelesscommunicationtechnologythatuses
+electromagnetic waves to identify and track tags attached to
+objects,people,oranimals.ThesetagsarecalledRFIDtags[99].
+Itstoresdigitizeddatarelatedtothemarkedobjectandcanbe
+readbyRFIDreaders.[57]demonstratesthepossibilityofusing
+low-costandeasilyoverlookedRFIDtagstoeffectivelyperform
+through-the-wall eavesdropping. A battery-free method called
+Tag-Bug is proposed. Tag-Bug extracts sound features in two
+ways:(i)vibrationeffect,inwhichthesounddirectlycausesthe
+label to vibrate; (ii) Reflection effect, in which the label does
+notvibrate,butperceivesthereflectedsignalofnearbyvibrating
+objects.Inthisarticle,theattackfocusedonthesoundplayed
+bythespeakers,notthesoundofarealpersonspeakingbecause
+real people are speaking mainly cause air movement, not air
+vibrationscausedbysound.
+The signal received by the RFID reader can be divided into
+threeparts:leakagesignal,multipathsignal,andbackscattered
+signal.Amongthem,leakagesignal[100]referstotheleakageof
+apartofthesignalfromthetransmittertothereceiverorfrom
+thereceivertothetransmitterduetotheincompleteisolationof
+thechannelbetweenthetransmitterandthereceiverinwireless
+communication,resultinginsignalinterferenceandperformance
+degradation.Theseleakstothereceiverortransmitterbecome
+leakedsignals.Multipathsignal[101]referstothephenomenon
+ofreflection,diffraction,scattering,andotherphenomenaofthe
+signalduetothesignalencounteringvariousobjectsinthepro-
+cessofpropagation,resultingintheformationofseveraldifferent
+paths to reach the receiver, and the signals of these different
+paths are called multipath signals. Backscattered signal [102]
+referstoatechnologythatusestheenergyofanincidentradio
+frequencysignaltotransmitinformationinwirelesscommunica-
+tion,alsoknownasbackscatteredcommunication.Therefore,the
+receivedsignalisexpressedas
+⎧
+⎨
+⎩
+SL = STX hL
+SE = STX hE,d
+S0 = STX hdhd′ , S1 = STX hdhd′ h1
+(23)
+whereh1 isthemodulationgainofthetag. STX istheCWsignal
+sent by the TX antenna.SL is the leak signal.SE is the multi-
+pathsignal, S0 orS0 isthebackscatteredsignal. hd isthesignal
+attenuationcausedbytheuplinktransmissiondistance. hd′ isthe
+signalattenuationcausedbythedownlinktransmissiondistance.
+AndhE,d istheoverallsignalattenuationduetotheenvironment,
+which is also related to the distanced. To amplify the effects
+of vibrational signals, the authors devised a new signal signa-
+ture called Modulated Signal Differential (MSD) to reconstruct
+soundfromRFsignals.Toimprovethequalityofreconstructed
+voicesforhumanspeechrecognition,theauthorsappliedCondi-
+tionalGenerativeAdversarialNetworks(CGANs)torecoverthe
+full frequency band from part of the reconstructed voice. The
+side-channelattacksdescribedinthearticlecanbelaunchedin
+threedifferentways:medium-basedeavesdropping,aerial-based
+eavesdropping,andreflection-basedeavesdropping.Experiments
+haveshownthatTag-Bugcansuccessfullycapturemonotonous
+soundswhentheloudnessisgreaterthan60dB.Tag-Bugcan
+effectively identify the number of human voices in free-space
+eavesdropping,thru-the-brick-walleavesdropping,andthru-the-
+insulating-glasseavesdropping,aswellasaccuratelyidentifylet-
+tersinfree-spaceeavesdropping.
+2.3.4. Based on mmWave
+Millimeter wave [103] is an electromagnetic wave with a
+wavelength between 1 mm and 10 mm and a frequency be-
+tween30GHzand300GHz.Millimeterwaveshaveawiderange
+of applications in communications, radar, remote sensing, and
+astronomy.
+Thegeneralprincipleofmillimeterwaveforacousticeaves-
+dropping[104]istousemillimeterwaveradartomeasurethe
+vibrationofsoundingobjects,andthenrestorethesoundsignal
+through signal processing or deep learning. Specifically, when
+soundwavespropagatetosound-emittingobjects(suchasloud-
+speakers,glasswindows,etc.),theycausethemtoproducesmall
+displacements that affect the echo phase of millimeter-wave
+radar. Millimeter-wave radar can capture these phase changes
+andconvertthemintoelectricalsignals,whicharethenusedto
+recognizehumanspeech.Amajoradvantageofthisapproachis
+thatitcanworkinavarietyofcomplexenvironments,including
+inthepresenceofnoiseorsoundmitigationmeasures.Thisis
+becausemillimeterwavescanaccuratelycapturetheairfluctu-
+ationsgeneratedbysound,andarehighlyrobusttofactorssuch
+asnoise.
+[60]proposedasystem-levelacousticeavesdroppingsystem
+—MILLIEAR,whichintegratesmillimeter-waveFMCWandgen-
+erativemachinelearningnetworks.Itusesmillimeter-waveradar
+tocapturetinyvibrationscausedbysound,extractinglargeam-
+plitudevibrationsbasedoncoarse-grainedphaseestimationof
+millimeter-wave signals between chirps. However, all chirp-
+room-basedmethodshavelimitationsintermsoflow-frequency
+responseandinaccuracy,sotheauthorsusedgenerativemachine
+learning models to enhance the millimeter-wave radar signal
+reflectedfromthespeakertoreconstructtheoriginalaudio.It
+doesnotrequirephysicalcontactwiththevictim’sdevice/sensor,
+nor doesit requirethe installationof spywareon thevictim’s
+device.Itusesfrequency-modulatedcontinuouswave(FMCW)to
+transmitsignals(refertoEqs.(14),(15))toavibratingspeaker.
+Enhance captured speaker vibrations by generating machine-
+learning models. The model does not require prior knowledge
+ofthewordsintheaudiosignal,andtheeavesdroppingvocab-
+ulary is not restricted by developing a Conditional Generative
+AdversarialNetwork(cGAN).Itusesvirtualsub-chirpstomeasure
+phasechangesandusesmillimeter-waveradarsignalstoextract
+speakervibrationsinthepresenceofmultipathnoise.Theresults
+and evaluations show that the attack is very effective under
+a range of real-world limitations, such as different angles and
+partitions.
+8
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+[61] use millimeter-wave radars to eavesdrop on mobile
+phonevoicecontent.Theauthorscameupwithanattackmodel
+calledmmSpy.Themodelcanbeusedtoclassifyandreconstruct
+speech (such as words and numbers) within mobile phones
+throughdomainadaptationtechniquesbasedonsyntheticand
+realradardata.mmSpyhascreatedamodelbasedonsynthetic
+trainingdatageneratedusingpopularspeechdatasetsatscale.
+Synthetictrainingdataiscombinedwithsmall-scaletrainingdata
+fromrealradartogeneratemmSpy’saudioreconstructionand
+speechclassificationmodels.Thismodelisusedtoclassifyand
+reconstruct speech content. mmSpy proposes a range of tech-
+niques,includingstatisticalnoisecorrection,machinelearning-
+based modeling, and domain adaptation. To account for the
+discrepancies between synthetic and real radar data, mmSpy
+usessmall-scaletrainingdatafromrealradartodomainadapt
+themodel.mmSpysensesthetinyvibrationsproducedbythe
+handset device that the user is listening to during a call by
+detectingphasechangesinthemillimeter-wavesignalreflected
+fromthephone’sbody.mmSpycaneavesdroponaudiocontent
+eveniftheaudioiscompletelyinaudibletohumansandnearby
+microphones.mmSpydemonstratedthefeasibilityofeavesdrop-
+pingoncallsusingearpiecedevices,anddemonstrateditsability
+todetecttinyvibrationsofearpiecedevicesthatcan’tbeheard
+bymicrophonesco-locatedwithradar.
+Both articles deal with techniques for eavesdropping using
+millimeter-waveradar.[60]adoptedacombinationoffrequency-
+modulated continuous-wave (FMCW) ranging and conditional
+generative adversarial networks, which can accurately recon-
+structaudioevenindifferentdistances,angles,andthrough-wall
+scenarios.[61]achievedeavesdroppingonphonecallsbydetect-
+ing the weak vibrations of headphones using millimeter-wave
+radarsignals,anddemonstratedthefeasibilityofreconstructing
+audiosignalsfromradardata.
+[43]introducesthevoiceprinteavesdroppingsystemmmEcho,
+whichusesmillimeter-waveradiosignalstoaccuratelymeasure
+the micron-level vibration of objects caused by sound waves.
+Comparedtopreviousstudies,mmEcho’seavesdroppingmethod
+is highly accurate and does not require machine learning and
+priorknowledge.ThemmEchosystemconsistsofthreemodules:
+ReverberantObjectDetection(ROD),VibrationExtractionandAu-
+dioReconstruction(VA),andAudioNoiseReduction(ANR).Since
+thetraditionalFMCWdistancecalculationformula(13)doesnot
+providemicron-levelresolutionforvibrationmeasurements,the
+authors used the intra-chirp method to estimate the distance
+betweenthetargetobjectandtheradar.Theresultsshowthat
+mmEchocanaccuratelyreconstructaudiofrommovingsourcesat
+variousdistances,orientations,reflectiveobjects,soundproofing
+materials, different languages, and sound levels based on the
+textualinformationprovided.
+2.3.5. Other methods
+[105]usesDopplerradartoidentifyhumanvoicesbycaptur-
+ing micro-Doppler features from laryngeal and oral vibrations.
+TheauthorssucceededinusingDopplerradartocapturetheecho
+signalproducedwhenapersonemittedsevennotesfromDoto
+TiandlettersfromAtoZ.Throughspectrumanalysis,theauthors
+successfully classified these 26 letters using a deep convolu-
+tionalneuralnetworkwithanaccuracyof94%.Toovercomethe
+problemofinsufficientdatavolumeandimproveclassification
+accuracy,theauthorsintroducedtransferlearningandincreased
+theaccuracyto97%usingtheVGG-16model.However,thefre-
+quencyresponseofthemethodproposedinthispaperislimited
+tolessthan200Hz.
+[106]mainlydiscussesanewside-channelattackmethodthat
+obtains the content of a digital screen through liquid crystal
+nematic state sensing. The authors designed a portable, low-
+cost, and energy-efficient 24 GHz millimeter-wave probe, and
+proposedalayeredmodulebasedonend-to-enddeeplearning
+foridentifyingscreencontenttypesandretrievingsensitivein-
+formationondigitalscreens.Theauthorshaveconductedalarge
+numberofexperimentstoshowthattheproposedWaveSpyis
+capableofachievingmorethan99%inferenceaccuracywithin
+5metersthroughthewall,withacentimeter-levelsolutionfor
+screencontent.ExperimentshaveshownthatWaveSpycancarry
+out screen attacks in different open environments with good
+results.Thepaperendswithexperimentalresultsandasummary,
+whichshowsthattheproposedWaveSpysystemhasreliability,
+robustness,andefficiencyinpractice.
+[107] mainly introduces the preliminary work of vibration
+measurementusingmillimeter-waveradar.Inthispaper,wepro-
+poseaMulti-SignalIntegrationModel(MSC)thatdescribesthe
+propertiesofreflectedsignalsintheIn-phaseandQuadrature(IQ)
+domainsandusestheintrinsicconsistencybetweenthesesignals
+to accurately recover the vibrational signature. In the experi-
+ments,theauthorsevaluatedtheperformancebasedontheam-
+plitudeandfrequencyerrorofthevibrationsignal.Thefrequency
+errorreflectsthecorrectnessofthemeasuredvibrationsignal,
+while the amplitude error reflects the accuracy. They discuss
+thelimitationsofmmVibandshowtheimplementationdetails
+and evaluation results. mmVib enables micron-level vibration
+measurements(below500Hz)inindustrialenvironments.
+[108] mainly introduces radio frequency (RF) microphones,
+a sound recovery technology based on millimeter-wave radar
+systems.Theauthorsproposethisemergingsoundrecoverytech-
+niquebyusingamillimeter-wave120GHzinterferometricradar
+system,whichcantrackmicron-scaledisplacementsofvibration
+sources, such as working speakers, and other objects vibrated
+bysoundwaves,suchaswindowglass,inreal-time.Byrecov-
+ering the displacement information from the radar signal, the
+originalaudioinformationcanbestrictlycorrelatedandrecov-
+ered, making it possible to reproduce the sound information.
+Thistechnologyusesanovelalgorithmbasedontrigonometric
+functiontransformationtoperformmillimeter-wavelinearphase
+modulationtoovercomethephaseambiguitycausedbythedis-
+placementofthevibratingobjectbymorethanhalfawavelength.
+Theauthorsusedmillimeter-waveradartodetectvibrationsbe-
+low 1 kHz, and the results showed that the RF microphone
+performedwellatsensingprecisevibrations,buttheradarsensor
+neededtobeveryclosetothespeaker( ≤ 5cm)toeavesdrop.
+[109],themethodofusingnon-contactvoiceprintrecognition
+technologyforspeakerverificationandtheeffectivenessofanti-
+fraudattacksarediscussed.Thispaperintroducesthetraditional
+methodofusingvoiceprintrecognitionforspeakerverification,
+discussesthefeasibilityofusingvoiceprintandlanguagemodels
+asbiometricfeatures,andthedesignmethodofusingmillimeter-
+wave radar to perform speaker verification. Among them, the
+authors can not only verify the speaker in a non-contact and
+unobtrusive way by using millimeter-wave radar for speaker
+verificationbutalsobetterdetectvariousspoofingattacks.The
+systemenablesaccurateandrobustspeakerverificationinIoT
+smarthomeapplicationsandishighlyresistanttofraudattacks.
+However,thesystemdoesnotfocusonspeechreconstructionand
+hasafrequencyresponseoflessthan200Hz.
+[110] mainly discusses the principle of using radar sensors
+tomeasurethesmallvibrationsofobjectscausedbysoundand
+itsapplicationindetectingsoundsignals.Radarsensorsconvert
+objectsintomicrophones,whichdetectandidentifysoundsig-
+nalsbymeasuringthetinyvibrationscausedbysoundpressure
+waves on the surface of the object. This method can not only
+realize the detection of sound signals but also be applied to
+remoteeavesdroppingandsecuritymonitoring.Inthispaper,the
+24GHzFMCWradarisusedtoreconstructtheaudio,butthe
+experimentalevaluationisinsufficient.
+In[59],anend-to-endnoise-resistantspeechsensingsystem,
+WaveEar,isproposed.WaveEarusesa24GHzmmWaveprobe
+9
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+andWave-voiceNetdeepneuralnetworktechnologytoachieve
+noise-resistant voice perception. Wave-voice Net can recover
+noise-free speech from received mmWave signals. The system
+convertsthereflected1-Dtime-domainsignalintoa2-Dspectro-
+gram,thenusesaneuralnetworkbasedontheresidualarchitec-
+turetolearnandestablishthemappingbetweenthemillimeter-
+wavespectrogramandthespeechspectrum,andfinallyusesthe
+phasereconstructionalgorithmtorecoverthespeech.WaveEar
+canreconstructhigh-qualitysoundfromtheuser’sthroatusing
+millimeter-wave radar, but it requires the subject to remain
+stationaryandshort(lessthan2m)awayfromtheradarprobe.
+[111] discusses a new method for measuring the displace-
+ment characteristics of mechanical vibrations using frequency-
+modulatedcontinuous-wave(FMCW)radarsystems.Theauthors
+usedamethodbasedoninstantaneousphaseevaluationrather
+thanaspectrumestimatortoachievehighaccuracyandaccuracy
+indistancemeasurements.ComparedtopreviousFMCWradar
+vibration measurement methods, this method allows for the
+measurementoffrequencieswellabovetheslowrepetitionrate
+oftheradarsystem,similartocontinuouswave(CW)radarorsix-
+portradarsystems.Theadvantageofthismethodisthatmultiple
+targets at different distances can be measured simultaneously
+withouttheneedtouseultrafastbutmostlynoisyandnon-linear
+frequencychirps.
+[112] applies a speech enhancement algorithm to improve
+thevoicesignalcapturedbycustommillimeter-waveradar.The
+performance of radar sensors in detecting speech signals was
+investigatedthroughexperiments,anditsapplicationinspeech
+recognition and speech pathology was discussed. The authors
+successfullyextractedthevibrationsignalsofhumanspeechor-
+gansusingdifferenttechnicalmeanssuchasmicropowerpulse
+radar,ultra-widebandradar,andDopplerradarsystem,andcar-
+ried out experimental evaluation. They experimentally verified
+theeffectivenessofradarsensorsinspeechdetection,including
+thedetectionofspeechsignalssuchasMandarinandtheevalua-
+tionofsignalquality.Throughfieldexperimentsandevaluationof
+theexperimentalresults,theauthorsdiscussedthefeasibilityand
+effectivenessofusingradarsensorsforvoicedetection.Experi-
+mentalresultsshowthattheproposedalgorithmhasachieved
+goodresults intheprocessing ofradarspeech, andhasbetter
+performancecomparedwithotheralgorithmsafteranalyzingthe
+speechsignalsindifferentnoiseenvironments.
+[113]discussesthetechnicalaspectsofmultimodalautomatic
+speechrecognition(ASR)systemsinpublicapplicationsofvoice
+user interfaces (VUIs). The authors used millimeter wave and
+audiosignalstofusetodesignamulti-modeASRsystemcalled
+Wavoicetoachieveaccuratespeechrecognitionincomplexen-
+vironmentssuchasnoiseandmotioninterference.Thesystem
+combinesmillimeterwavesandmicrophonesbyusingmachine
+learning.Theintrinsiccorrelationbetweenmillimeterwaveand
+audio signal is studied through mathematical modeling, and a
+real-timeandanti-interferencemethodforacousticactivityde-
+tectionanduserlocalizationisproposed.Byoptimizingthemulti-
+modalfusionnetworkbasedonattentionmechanismandusing
+cross-modalcalibration,therobustnessandperceptiondistance
+ofWavoiceareimproved,sothatthecharacterrecognitionerror
+ratewithin7metersislessthan1%underunfavorablecondi-
+tions.Overall,thetechnicalaspectsofthispapermainlyinvolve
+the design and optimization of an automatic speech recogni-
+tionsystembasedonmillimeterwaveandaudiosignalfusion
+for application in voice interaction interfaces in public places.
+However,theresearchintheaforementionedpapers[105,107,
+108,110], and [113] lacks comprehensive coverage of the fre-
+quencyresponseofthehumanspeechspectrum(300Hzto3.4
+kHz) [114]. Papers [111,112] depend on specialized hardware
+for line-of-sight audio reconstruction. Papers [59,105,106,109],
+and [113] utilize machine learning [115] and necessitate prior
+knowledge and extensive datasets for model training. Conse-
+quently,noneoftheaforementionedstudiesfulfillthecriteriafor
+acousticeavesdroppinginreal-worldscenarios.
+3. Comparison
+Inthediscussionbelow,wewillcomparethethreedifferent
+eavesdroppingmethodsmentionedinSection3indetailtobetter
+understandtheiradvantagesanddisadvantages.
+Motion sensor-based acoustic eavesdropping can capture
+sound waves by analyzing the tiny movements of an object’s
+surface,whichallowsittobemonitoredwithoutdirectcontact
+with the sound source, improving the concealment of eaves-
+dropping.However,itmaybeaffectedbyenvironmentalfactors.
+Factorssuchasairmovement,movementofotherobjects,etc.,
+caninterferewiththesensor’saccuracy.Inaddition,thereare
+highrequirementsforthesensor’saccuracyandtheprocessing
+algorithm[116].
+Opticalsensor-basedacousticeavesdroppingusesopticalde-
+vices,suchaslasers,tocapturetinyvibrationsonthesurfaceof
+anobjectfromadistance,enablingcovertremoteeavesdropping.
+Thisapproachisparticularlyusefulinsituationswhereasafety
+barrier needs to be crossed or the target cannot be reached.
+Thedisadvantageisthatitrequiresadirectlookatthetarget,
+andthereflectivepropertiesofthetargetsurfacecanaffectthe
+eavesdropping effect. Optical eavesdropping devices are often
+bulky,expensive,andsusceptibletoambientlightandweather
+conditions[117].
+RF-based-based acoustic eavesdropping enables eavesdrop-
+pingonwirelesscommunicationdevicesbycapturingandan-
+alyzing sound information in wireless signals. Some RF-based
+acousticeavesdroppingmethodsarenotevenlimitedbyphysical
+isolation.RFeavesdroppingtechnologycancoverawiderange
+andissuitableforavarietyofwirelesscommunicationproto-
+cols and devices. However, it may require sophisticated signal
+processinganddecryptiontechniquestoextractsoundinforma-
+tion from communications. In addition, RF eavesdropping can
+behamperedbyencryptiontechnologyandanti-eavesdropping
+measures[118].
+4. Future work
+In this section, we discuss the shortcomings of current re-
+searchandpossiblewaystoimprovethem.
+Motion sensor-based acoustic eavesdropping systems such
+as [47] require higher sampling rates to improve the system’s
+accuracy.However,sinceincreasingthesamplingfrequencymay
+increasetheamountofenergyconsumedbysampling,atrade-
+offshouldbemadebetweenaccuracyandenergyefficiency.[50]
+mentionsthatmotionsensorsareonlyaffectedbyspeechsignals
+in certain situations, so more efficient signal processing algo-
+rithmscanbestudiedtoimprovetheabilityofmotionsensors
+tocapturesmallvibrations,therebyimprovingtheaccuracyof
+acousticeavesdroppingthroughambientvibrations.[48]studied
+multi-sensorfusion.Itdoesnotspecificallylookattheimpact
+ofTI-ADCsignalsbutonlyhighlightstherisksofubiquitousIoT
+devices.Inthefuture,itispossibletostudydatafusionalgorithms
+combining different types of sensors, such as accelerometers
+andgyroscopes,toimprovethequalityandaccuracyofsound
+reconstruction.Motionsensor-basedacousticeavesdroppingmay
+requirethedevelopmentofefficientnoisereductionalgorithms
+to reduce the impact of ambient noise on sound capture and
+improveacousticeavesdroppinginnoisyenvironments[119].
+Acousticeavesdroppingbasedonopticalsensors,suchas[5],
+demonstratesthepossibilityofusingopticalsensorsforeaves-
+dropping,butfurtherresearchisneededtoimprovetheperfor-
+manceofeavesdroppingsystems.In[54],whiletheauthorsshow
+10
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+howtoextracttinyvibrationsfromthesurfaceofabodyfrom
+high-speedvideotopartiallyrestorethesound-producingsound,
+further research may still be needed to improve the quality
+andstabilityoftherecoveredsound.Inaddition,intheLidar-
+Phone study, while the researchers successfully implemented
+anattackusinglidarsensorsforeavesdropping,moreresearch
+is likely needed to improve classification accuracy and appli-
+cabilitytodifferentenvironmentalconditions.Therefore,future
+researchdirectionsmayincludeimprovingtechnologytoimprove
+the accuracy of sound reconstruction, improving the stability
+of optical systems [120] to enable them to work stably un-
+derdifferentenvironmentalconditions,studyinghowtocounter
+these side-channel attacks, researching and developing optical
+eavesdroppingtechnologiesthatcanworkeffectivelyatlonger
+distances,andexploringnewdefensemechanismsandprivacy
+protectionmeasures[121].
+RF-basedacousticeavesdroppingcanremotelysenseandre-
+coversound[97],butfurtherresearchisstillneededonhowto
+dealwithcomplexsoundenvironmentsandexpandthemonitor-
+ingrangeinpracticalapplications.Itcanachievesilentliprecog-
+nition[Wecan],butmoreresearchisneededtoimprovetheaccu-
+racyoforalnarrationandthedetectionofmulti-personconversa-
+tions.Itcanachievesilentliprecognition[56],butmoreresearch
+isneededtoimprovetheaccuracyoforalnarrationandthede-
+tectionofmulti-personconversations.Inaddition,itcanrecover
+andseparatesoundsfrommultiplesourcesatthesametime[58],
+butfurtherverificationisrequiredforsensitivityandaccuracy
+forreal-timeapplications.Therefore,futureresearchdirections
+mayincludebutarenotlimitedto,improvingsoundrecovery
+and separation algorithms to improve accuracy and real-time,
+developingmorecovertRFeavesdroppingtechniquestoreduce
+theriskofdetection[122],andresearchingnewRFsignalpro-
+cessingtechnologiestoimprovetheabilityofsignalstopenetrate
+obstaclessuchaswallsandtheresolutionofsoundsignals.
+5. Conclusion
+This work provides a systematic investigation of acoustic
+eavesdroppingmethods.Wecomprehensivelyintroduceandclas-
+sifythevariouscurrentacousticeavesdroppingmethods,namely
+motion sensor-based acoustic eavesdropping, optical sensor-
+basedacousticeavesdropping,andRF-basedacousticeavesdrop-
+ping.Wedescribetherepresentativemethodsindetailandgive
+therelevantformulas.Wethenanalyzetheadvantagesanddis-
+advantagesofthesemethodsanddiscussseveralfutureresearch
+directionsfortheresearchcommunitytoexplore.Thisworkcan
+helpresearchersunderstandtheclassificationandcharacteristics
+ofvariousacousticeavesdroppingmethods,andhelpresearchers
+chooseappropriateacousticeavesdroppingmethodsforresearch
+or application. In addition, this paper also provides reference
+andenlightenmentforfurtherexplorationinthefieldofacoustic
+eavesdropping.
+CRediT authorship contribution statement
+Yiwei Chen: Methodology,Writing–originaldraft. Wenhao
+Li: Investigation, Writing – review & editing.Xiuzhen Cheng:
+Supervision, Writing – review & editing.Pengfei Hu: Funding
+acquisition,Methodology,Supervision,Writing–originaldraft,
+Writing–review&editing.
+Declaration of competing interest
+Theauthorsdeclarethattheyhavenoknowncompetingfinan-
+cialinterestsorpersonalrelationshipsthatcouldhaveappeared
+toinfluencetheworkreportedinthispaper.
+Acknowledgments
+ThisworkwassupportedbytheNationalKeyResearchand
+DevelopmentProgramofChina(2021YFB3100400),theNational
+NaturalScienceFoundationofChina(62202276,62232010),and
+ShandongScienceFundforExcellentYoungScholars(2022HWYQ-
+038)andShandongScienceFund(2023TSGC0105).
+References
+[1] J.D.Rudie,ZachKatz,SamKuhbander,SumanBhunia,Technicalanalysis
+ofthensogroup’spegasusspyware,in:2021InternationalConferenceon
+ComputationalScienceandComputationalIntelligence,CSCI,IEEE,2021,
+pp.747–752.
+[2] Khlopov Oleg Anatolyevich, The cyber security and its role to protect
+criticalinfrastructure,Int.J.Prof.Sci.(3)(2020)5–13.
+[3] JacobLeonKröger,PhilipRaschke,Ismyphonelisteningin?onthefeasi-
+bilityanddetectabilityofmobileeavesdropping,in:DataandApplications
+SecurityandPrivacyXXXIII:33rdAnnualIFIPWG11.3Conference,DBSec
+2019, Charleston, SC, USA, July 15–17, 2019, Proceedings 33, Springer,
+2019,pp.102–120.
+[4] Jiadi Yu, Li Lu, Yingying Chen, Yanmin Zhu, Linghe Kong, An indirect
+eavesdropping attack of keystrokes on touch screen through acoustic
+sensing,IEEETrans.Mob.Comput.20(2)(2019)337–351.
+[5] Ben Nassi, Yaron Pirutin, Adi Shamir, Yuval Elovici, Boris Zadov, Lam-
+phone: Real-time passive sound recovery from light bulb vibrations,
+Cryptol.ePrintArch.(2020).
+[6] A.ShajiGeorge,S.Sagayarajan,Acousticeavesdropping:HowAIscansteal
+yoursecretsbylisteningtoyourtyping,Partn.Univ.Int.Innov.J.1(4)
+(2023)1–14.
+[7] KarinBijsterveld,Eavesdroppingbytheeye:detectingsoundeventsand
+thecultureofacousticintelligence,SoundStud.9(2)(2023)233–252.
+[8] Weigao Su, Daibo Liu, Taiyuan Zhang, Hongbo Jiang, Towards device
+independent eavesdropping on telephone conversations with built-in
+accelerometer, Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+5(4)(2021)1–29.
+[9] AlbertoCompagno,MauroConti,DanieleLain,GeneTsudik,Don’tskype
+& type! Acoustic eavesdropping in voice-over-ip, in: Proceedings of
+the 2017 ACM on Asia Conference on Computer and Communications
+Security,2017,pp.703–715.
+[10] Teng Wei, Shu Wang, Anfu Zhou, Xinyu Zhang, Acousticeavesdropping
+through wireless vibrometry, in: Proceedings of the 21st Annual Inter-
+national Conference on Mobile Computing and Networking, 2015, pp.
+130–141.
+[11] Nirupam Roy, Haitham Hassanieh, Romit Roy Choudhury, Backdoor:
+Makingmicrophoneshearinaudiblesounds,in:Proceedingsofthe15th
+Annual International Conference on Mobile Systems, Applications, and
+Services,2017,pp.2–14.
+[12] Tzipora Halevi, Nitesh Saxena, Acoustic eavesdropping attacks on con-
+strained wireless device pairing, IEEE Trans. Inf. Forensics Secur. 8 (3)
+(2013)563–577.
+[13] Simone Soderi, Acoustic-based security: A key enabling technology for
+wirelesssensornetworks,Int.J.Wirel.Inf.Netw.27(1)(2020)45–59.
+[14] QiuWang,Hong-NingDai,XuranLi,HaoWang,HongXiao,Onmodeling
+eavesdroppingattacksinunderwateracousticsensornetworks,Sensors
+16(5)(2016)721.
+[15] KirstenCrager,AnindyaMaiti,Informationleakagethroughmobilemo-
+tion sensors: User awareness and concerns, in: Proceedings of the
+EuropeanWorkshoponUsableSecurity,EuroUSEC,2017.
+[16] Fatih Erden, Senem Velipasalar, Ali Ziya Alkar, A Enis Cetin, Sensors in
+assisted living: A survey of signal and image processing methods, IEEE
+SignalProcess.Mag.33(2)(2016)36–44.
+[17] Andrea Cherubini, David Navarro-Alarcon, Sensor-based control for col-
+laborative robots: Fundamentals, challenges, and opportunities, Front.
+Neurorobot.(2021)113.
+[18] AmitKumarSikder,GiuseppePetracca,HidayetAksu,TrentJaeger,ASel-
+cukUluagac,Asurveyonsensor-basedthreatstointernet-of-things(iot)
+devicesandapplications,2018,arXivpreprintarXiv:1802.02041.
+[19] YangBai,LiLu,JerryCheng,JianLiu,YingyingChen,JiadiYu,Acoustic-
+based sensing and applications: A survey, Comput. Netw. 181 (2020)
+107447.
+[20] ZhuoChen,Cheng-ChengZhang,BinShi,TaoXie,GuangqingWei,Jun-Yi
+Guo,Eavesdroppingonwastewaterpollution:Detectingdischargeevents
+fromriveroutfallsviafiber-opticdistributedacousticsensing,WaterRes.
+250(2024)121069.
+[21] Muhammed Zahid Ozturk, Chenshu Wu, Beibei Wang, KJ Ray Liu, Ra-
+dioMic: Sound sensing via radio signals, IEEE Internet Things J. 10 (5)
+(2022)4431–4448.
+11
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+[22] XiaoZhang,GriffinKlevering,XinyuLei,YiwenHu,LiXiao,Guan-huaTu,
+Thesecurityinopticalwirelesscommunication:Asurvey,ACMComput.
+Surv.(2023).
+[23] Richard A. Roberts, Clifford T. Mullis, Digital Signal Processing,
+Addison-WesleyLongmanPublishingCo.,Inc.,1987.
+[24] StuartJ.Russell,PeterNorvig,ArtificialIntelligenceaModernApproach,
+London,2010.
+[25] DavidTse,PramodViswanath,FundamentalsofWirelessCommunication,
+CambridgeUniversityPress,2005.
+[26] ZhongyuanFang,FeiGao,HaoranJin,SiyuLiu,WensongWang,Ruochong
+Zhang,ZeshengZheng,XuanXiao,KaiTang,LihengLou,etal.,Areview
+of emerging electromagnetic-acoustic sensing techniques for healthcare
+monitoring,IEEETrans.Biomed.CircuitsSyst.(2022).
+[27] Peter Prince, Andrew Hill, Evelyn Piña Covarrubias, Patrick Doncaster,
+Jake L Snaddon, Alex Rogers, Deploying acoustic detection algorithms
+onlow-cost,open-sourceacousticsensorsforenvironmentalmonitoring,
+Sensors19(3)(2019)553.
+[28] JaeMunSim,YonnimLee,OhbyungKwon,Acousticsensorbasedrecog-
+nitionofhumanactivityineverydaylifeforsmarthomeservices,Int.J.
+Distrib.Sens.Netw.11(9)(2015)679123.
+[29] YingShang,MaochengSun,ChenWang,JianYang,YuankaiDu,JichaoYi,
+WenanZhao,YingyingWang,YanjieZhao,JiashengNi,Researchprogress
+indistributedacousticsensingtechniques,Sensors22(16)(2022)6060.
+[30] GongtianShen,ZhanwenWu,JunjiaoZhang,Advancesinacousticemis-
+sion technology, in: Springer Proc. Phys, Vol. 179, Springer, 2014, pp.
+257–258.
+[31] ConnorBolton,YanLong,JunHan,JosiahHester,KevinFu,Characterizing
+andmitigatingtouchtoneeavesdroppinginsmartphonemotionsensors,
+in: Proceedings of the 26th International Symposium on Research in
+Attacks,IntrusionsandDefenses,2023,pp.164–178.
+[32] SupriyoChakraborty,WentaoOuyang,ManiSrivastava,LightSpy:Optical
+eavesdropping on displays using light sensors on mobile devices, in:
+2017 IEEE International Conference on Big Data, Big Data, IEEE, 2017,
+pp.2980–2989.
+[33] MengyingZhang,GaomiWu,DipengRen,RanGao,Zhi-MeiQi,Xingdong
+Liang,AnopticalMEMSacousticsensorbasedongratinginterferometer,
+Sensors19(7)(2019)1503.
+[34] João GV Teixeira, Ivo T Leite, Susana Silva, Orlando Frazão, Advanced
+fiber-opticacousticsensors,PhotonicSens.4(2014)198–208.
+[35] BoZhang,YunjiangJia,BenleiZhao,XiaosongZhu,YiweiShi,Highlysen-
+sitivephotoacousticgassensorwithmicro-embeddedacousticresonator
+forgasleakagedetection,Opt.Lett.48(16)(2023)4201–4204.
+[36] Wei-HanChen,KannanSrinivasan,Acousticeavesdroppingfrompassive
+vibrations via mmwave signals, in: GLOBECOM 2022-2022 IEEE Global
+CommunicationsConference,IEEE,2022,pp.4051–4056.
+[37] ShawnM.Bullock,Radar,modems,andairdefensesystems:Noiseasa
+datacommunicationprobleminthe1950s,Perspect.Sci.24(1)(2016)
+73–92.
+[38] Bert Cox, Liesbet Van der Perre, Stijn Wielandt, Geoffrey Ottoy, Lieven
+DeStrycker,HighprecisionhybridRFandultrasonicchirp-basedranging
+forlow-powerIoTnodes,EURASIPJ.WirelessCommun.Networking2020
+(1)(2020)1–24.
+[39] Xiangtian Shen, Yuyong Xiong, Songxu Li, Zhike Peng, RFMic-
+phone: Robust sound acquisition combining millimeter-wave radar and
+microphone,IEEESens.Lett.6(11)(2022)1–4.
+[40] Davide Carboni, Alex Gluhak, Julie A McCann, Thomas H Beach, Con-
+textualisingwateruseinresidentialsettings:Asurveyofnon-intrusive
+techniquesandapproaches,Sensors16(5)(2016)738.
+[41] P.Beyer,Non-intrusivedetection,thewayforward,in:SouthernAfrican
+TransportConference,2015.
+[42] PengfeiHu,HuiZhuang,PanneerSelvamSanthalingam,RiccardoSpolaor,
+Parth Pathak, Guoming Zhang, Xiuzhen Cheng, Accear: Accelerometer
+acoustic eavesdropping with unconstrained vocabulary, in: 2022 IEEE
+SymposiumonSecurityandPrivacy,SP,IEEE,2022,pp.1757–1773.
+[43] Pengfei Hu, Wenhao Li, Riccardo Spolaor, Xiuzhen Cheng, mmecho:
+A mmwave-based acoustic eavesdropping method, in: Proceedings of
+the ACM Turing Award Celebration Conference-China 2023, 2023, pp.
+138–140.
+[44] Marco Crocco, Marco Cristani, Andrea Trucco, Vittorio Murino, Audio
+surveillance:Asystematicreview,ACMComput.Surv.48(4)(2016)1–46.
+[45] JohnE.Ball,Lowsignal-to-noiseratioradartargetdetectionusinglinear
+supportvectormachines(L-SVM),in:2014IEEERadarConference,IEEE,
+2014,pp.1291–1294.
+[46] Yao Ge, P.C. Ching, Energy efficiency for proactive eavesdropping in
+cooperativecognitiveradionetworks,IEEEInternetThingsJ.9(15)(2022)
+13443–13457.
+[47] Li Zhang, Parth H Pathak, Muchen Wu, Yixin Zhao, Prasant Mohapatra,
+Accelword: Energy efficient hotword detection through accelerometer,
+in: Proceedings of the 13th Annual International Conference on Mobile
+Systems,Applications,andServices,2015,pp.301–315.
+[48] Jun Han, Albert Jin Chung, Patrick Tague, Pitchln: eavesdropping via
+intelligible speech reconstruction using non-acoustic sensor fusion,
+in: Proceedings of the 16th ACM/IEEE International Conference on
+InformationProcessinginSensorNetworks,2017,pp.181–192.
+[49] NirupamRoy,RomitRoyChoudhury,Listeningthroughavibrationmotor,
+in: Proceedings of the 14th Annual International Conference on Mobile
+Systems,Applications,andServices,2016,pp.57–69.
+[50] S. Abhishek Anand, Nitesh Saxena, Speechless: Analyzing the threat
+to speech privacy from smartphone motion sensors, in: 2018 IEEE
+SymposiumonSecurityandPrivacy,SP,IEEE,2018,pp.1000–1017.
+[51] Yan Michalevsky Dan Boneh, Gabi Nakibly, Gyrophone: Recognizing
+speechfromgyroscopesignals.
+[52] AndrewKwong,WenyuanXu,KevinFu,Harddriveofhearing:Disksthat
+eavesdropwithasynthesizedmicrophone,in:2019IEEESymposiumon
+SecurityandPrivacy,SP,IEEE,2019,pp.905–919.
+[53] Héctor A Cordourier Maruri, Paulo Lopez-Meyer, Jonathan Huang,
+WillemMarcoBeltman,LamaNachman,HongLu,V-Speech:noise-robust
+speechcapturingglassesusingvibrationsensors,Proc.ACMInteract.Mob.
+WearableUbiquitousTechnol.2(4)(2018)1–23.
+[54] AbeDavis,MichaelRubinstein,NealWadhwa,GauthamJMysore,Fredo
+Durand,WilliamTFreeman,Thevisualmicrophone:Passiverecoveryof
+soundfromvideo,2014.
+[55] Sriram Sami, Yimin Dai, Sean Rui Xiang Tan, Nirupam Roy, Jun Han,
+Spyingwithyourrobotvacuumcleaner:eavesdroppingvialidarsensors,
+in:Proceedingsofthe18thConferenceonEmbeddedNetworkedSensor
+Systems,2020,pp.354–367.
+[56] GuanhuaWang,YongpanZou,ZimuZhou,KaishunWu,LionelMNi,We
+canhearyouwithWi-Fi!in:Proceedingsofthe20thAnnualInternational
+ConferenceonMobileComputingandNetworking,2014,pp.593–604.
+[57] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling
+Bu,KaiZhang,SangluLu,Thru-the-walleavesdroppingonloudspeakers
+viaRFIDbycapturingsub-mmlevelvibration,Proc.ACMInteract.Mob.
+WearableUbiquitousTechnol.5(4)(2021)1–25.
+[58] Ziqi Wang, Zhe Chen, Akash Deep Singh, Luis Garcia, Jun Luo, Mani B
+Srivastava, Uwhear: through-wall extraction and separation of audio
+vibrationsusingwirelesssignals,in:Proceedingsofthe18thConference
+onEmbeddedNetworkedSensorSystems,2020,pp.1–14.
+[59] ChenhanXu,ZhengxiongLi,HanbinZhang,AdityaSinghRathore,Huin-
+ing Li, Chen Song, Kun Wang, Wenyao Xu, Waveear: Exploring a
+mmwave-based noise-resistant speech sensing for voice-user interface,
+in: Proceedings of the 17th Annual International Conference on Mobile
+Systems,Applications,andServices,2019,pp.14–26.
+[60] Pengfei Hu, Yifan Ma, Panneer Selvam Santhalingam, Parth H Pathak,
+Xiuzhen Cheng, Milliear: Millimeter-wave acoustic eavesdropping with
+unconstrained vocabulary, in: IEEE INFOCOM 2022-IEEE Conference on
+ComputerCommunications,IEEE,2022,pp.11–20.
+[61] Suryoday Basak, Mahanth Gowda, mmspy: Spying phone calls using
+mmwaveradars,in:2022IEEESymposiumonSecurityandPrivacy,SP,
+IEEE,2022,pp.1211–1228.
+[62] ShijiaZhang,YilinLiu,MahanthGowda,Ispyyou:Eavesdroppingcon-
+tinuousspeechonsmartphonesviamotionsensors,Proc.ACMInteract.
+Mob.WearableUbiquitousTechnol.6(4)(2023)1–31.
+[63] S AbhishekAnand, Chen Wang,Jian Liu, NiteshSaxena, YingyingChen,
+Motionsensor-basedprivacyattackonsmartphones,2019,arXivpreprint
+arXiv:1907.05972.
+[64] Vittorio MN Passaro, Antonello Cuccovillo, Lorenzo Vaiani, Martino
+De Carlo, Carlo Edoardo Campanella, Gyroscope technology and appli-
+cations: A review in the industrial perspective, Sensors 17 (10) (2017)
+2284.
+[65] KaiLiu,WeipingZhang,WenyuanChen,KaiLi,FuyanDai,FengCui,Xi-
+aoshengWu,GaoyinMa,QijunXiao,Thedevelopmentofmicro-gyroscope
+technology,J.Micromech.Microeng.19(11)(2009)113001.
+[66] Anders Persson, How do we understand the coriolis force? Bull. Am.
+Meteorol.Soc.79(7)(1998)1373–1386.
+[67] Chihwan Jeong, Seonho Seok, Byeungleul Lee, Hyeonched Kim, Kukjin
+Chun, A study on resonant frequency and Q factor tunings for MEMS
+vibratorygyroscopes,J.Micromech.Microeng.14(11)(2004)1530.
+[68] Patrick L. Walter, The history of the accelerometer, Sound Vib. 31 (3)
+(1997)16–23.
+[69] Alessandro Sabato, Christopher Niezrecki, Giancarlo Fortino, Wire-
+less MEMS-based accelerometer sensor boards for structural vibration
+monitoring:Areview,IEEESens.J.17(2)(2016)226–235.
+[70] I.ArunFaisal,T.WaluyoPurboyo,A.SiswoRaharjoAnsori,Areviewof
+accelerometer sensor and gyroscope sensor in IMU sensors on motion
+capture,J.Eng.Appl.Sci.15(3)(2019)826–829.
+[71] Zhongjie Ba, Tianhang Zheng, Xinyu Zhang, Zhan Qin, Baochun Li, Xue
+Liu, Kui Ren, Learning-based practical smartphone eavesdropping with
+built-inaccelerometer,in:NDSS,Vol.2020,2020,pp.1–18.
+[72] Mordechai Guri, Yosef Solewicz, Andrey Daidakulov, Yuval Elovici,
+{SPEAKE (a) R}: Turn speakers to microphones for fun and profit, in:
+11thUSENIXWorkshoponOffensiveTechnologies,WOOT17,2017.
+12
+Y. Chen, W. Li, X. Cheng et al. High-Confidence Computing 4 (2024) 100241
+[73] JoséLuísSantos,FaramarzFarahi,HandbookofOpticalSensors,CRCPress,
+2014.
+[74] ThomasD.Rossing,NevilleH.Fletcher,Principlesofvibrationandsound,
+2004.
+[75] Yifei Zou, Zuyuan Zhang, Congwei Zhang, Yanwei Zheng, Dongxiao Yu,
+Jiguo Yu, A distributed abstract MAC layer for cooperative learning on
+internetofvehicles,IEEETrans.Intell.Transp.Syst.(2024).
+[76] Michael Vollmer, Klaus-Peter Möllmann, High speed and slow motion:
+thetechnologyofmodernhighspeedcameras,Phys.Educ.46(2)(2011)
+191.
+[77] JavierPortilla,EeroP.Simoncelli,Aparametrictexturemodelbasedon
+joint statistics of complex wavelet coefficients, Int. J. Comput. Vis. 40
+(2000)49–70.
+[78] J. Kim, K.K. Kwon, Su In Lee, Trends and applications on LiDAR sensor
+technology,Electron.Telecommun.Trends27(6)(2012)134–143.
+[79] Stephen E. Reutebuch, Hans-Erik Andersen, Robert J. McGaughey, Light
+detection and ranging (LIDAR): an emerging tool for multiple resource
+inventory,J.Forestry103(6)(2005)286–292.
+[80] Sergi Foix, Guillem Alenya, Carme Torras, Lock-in time-of-flight (ToF)
+cameras:Asurvey,IEEESens.J.11(9)(2011)1917–1926.
+[81] Jingyun Liu, Qiao Sun, Zhe Fan, Yudong Jia, TOF lidar development in
+autonomousvehicle,in:2018IEEE3rdOptoelectronicsGlobalConference,
+OGC,IEEE,2018,pp.185–190.
+[82] MasaharuImaki,ShumpeiKameyama,EitaroIshimura,MasaharuNakaji,
+Hideo Yoshinaga, Yoshihito Hirano, Line scanning time-of-flight laser
+sensor for intelligent transport systems, combining wide field-of-view
+opticsof30deg,highscanningspeedof0.9ms/line,andsimplesensor
+configuration,Opt.Eng.56(3)(2017)031205–031205.
+[83] Tufan C. Karalar, Jan Rabaey, An rf tof based ranging implementa-
+tion for sensor networks, in: 2006 IEEE International Conference on
+Communications,Vol.7,IEEE,2006,pp.3347–3352.
+[84] JamesD.Spinhirne,Micropulselidar,IEEETrans.Geosci.RemoteSens.
+31(1)(1993)48–55.
+[85] Karen Elizabeth Joyce, SV Samsonov, Shaun R Levick, J Engelbrecht, S
+Belliss,Mappingandmonitoringgeologicalhazardsusingoptical,LiDAR,
+and synthetic aperture RADAR image data, Natural Hazards 73 (2014)
+137–163.
+[86] GuangyuZhao,MingLian,YiyunLi,ZhengDuan,ShimingZhu,LiangMei,
+SuneSvanberg,Mobilelidarsystemforenvironmentalmonitoring,Appl.
+Opt.56(5)(2017)1506–1516.
+[87] J Reitberger, Cl Schnörr, M Heurich, P Krzystek, U Stilla, Towards 3D
+mapping of forests: A comparative study with first/last pulse and full
+waveform LIDAR data, Int. Arch. Photogramm. Remote Sens. Spat. Inf.
+Sci.37(2008)1397–1404.
+[88] AndrewG.Stove,LinearFMCWradartechniques,in:IEEProceedingsF
+(RadarandSignalProcessing),Vol.139,IET,1992,pp.343–350.
+[89] Mustafa Mert Bayer, Ozdal Boyraz, Ranging and velocimetry mea-
+surements by phase-based MTCW lidar, Opt. Express 29 (9) (2021)
+13552–13562.
+[90] RalphP.Muscatell,Lasermicrophone,J.Acoust.Soc.Am.76(4)(1984)
+1284–1284.
+[91] DanielM.Dobkin,TitusWandinger,Aradioorientedintroductiontoradio
+frequencyidentification,RFIDTutor.HighFreq.Electron.(2005)46–54.
+[92] GrahamBrooker,JairoGomez,LevTermen’sgreatsealbuganalyzed,IEEE
+Aerosp.Electron.Syst.Mag.28(11)(2013)4–11.
+[93] Kazimierz Siwiak, Ultra-wide band radio: introducing a new technol-
+ogy, in: IEEE VTS 53rd Vehicular Technology Conference, Spring 2001.
+Proceedings(Cat.No.01CH37202),Vol.2,IEEE,2001,pp.1088–1093.
+[94] G.RobertoAiello,GeraldD.Rogerson,Ultra-widebandwirelesssystems,
+IEEEMicrow.Mag.4(2)(2003)36–47.
+[95] AngelaDigulescu,CristinaDespina-Stoian,DenisStănescu,FlorinPopescu,
+Florin Enache, Cornel Ioana, Emanuel Rădoi, Iulian Rîncu, Alexandru
+Şerbănescu,NewapproachofUAVmovementdetectionandcharacteri-
+zationusingadvancedsignalprocessingmethodsbasedonUWBsensing,
+Sensors20(20)(2020)5904.
+[96] Mohammad Ahmad Salamin, Wael AE Ali, Sudipta Das, Asmaa Zugari,
+Design and investigation of a multi-functional antenna with variable
+wideband/notched UWB behavior for WLAN/X-band/UWB and ku-band
+applications,AEU-Int.J.Electron.Commun.111(2019)152895.
+[97] YuRong,SharanyaSrinivas,AdarshVenkataramani,DanielWBliss,Uwb
+radarvibrometry:Anrfmicrophone,in:201953rdAsilomarConference
+onSignals,Systems,andComputers,IEEE,2019,pp.1066–1070.
+[98] NabilKhalid,RashidMirzavand,AshwinK.Iyer,Asurveyonbattery-less
+RFID-basedwirelesssensors,Micromachines12(7)(2021)819.
+[99] M. Ayoub Khan, Manoj Sharma, Brahmanandha R. Prabhu, A survey of
+RFIDtags,Int.J.RecentTrendsEng.1(4)(2009)68.
+[100] K.Mandal,D.L.Atherton,Astudyofmagneticflux-leakagesignals,J.Phys.
+D:Appl.Phys.31(22)(1998)3211.
+[101] Jeffrey R. Foerster, The effects of multipath interference on the perfor-
+mance of UWB systems in an indoor wireless channel, in: IEEE VTS
+53rdVehicularTechnologyConference,Spring2001.Proceedings(Cat.No.
+01CH37202),Vol.2,IEEE,2001,pp.1176–1180.
+[102] Jin-PingNiu,GeoffreyYeLi,Anoverviewonbackscattercommunications,
+J.Commun.Inf.Netw.4(2)(2019)1–14.
+[103] Cesar Iovescu, Sandeep Rao, The fundamentals of millimeter wave
+sensors,TexasInstrum.(2017)1–8.
+[104] ChaoWang,FengLin,TiantianLiu,ZiweiLiu,YijieShen,ZhongjieBa,LiLu,
+WenyaoXu,KuiRen,mmphone:Acousticeavesdroppingonloudspeak-
+ers via mmwave-characterized piezoelectric effect, in: IEEE INFOCOM
+2022-IEEE Conference on Computer Communications, IEEE, 2022, pp.
+820–829.
+[105] RohanKhanna,DaegunOh,YoungwookKim,Through-wallremotehuman
+voicerecognitionusingdopplerradarwithtransferlearning,IEEESens.
+J.19(12)(2019)4571–4576.
+[106] Zhengxiong Li, Fenglong Ma, Aditya Singh Rathore, Zhuolin Yang,
+BaichengChen,LuSu,WenyaoXu,Wavespy:Remoteandthrough-wall
+screenattackviammwavesensing,in:2020IEEESymposiumonSecurity
+andPrivacy,SP,IEEE,2020,pp.217–232.
+[107] ChengkunJiang,JunchenGuo,YuanHe,MengJin,ShuaiLi,YunhaoLiu,
+Mmvib: micrometer-level vibration measurement with mmwave radar,
+in: Proceedings of the 26th Annual International Conference on Mobile
+ComputingandNetworking,2020,pp.1–13.
+[108] Li Wen, Yuchen Li, Yangtao Ye, Changzhan Gu, Jun-Fa Mao, Audio
+recovery via noncontact vibration detection with 120 GHz millimeter-
+waveradarsensing,in:2021InternationalConferenceonMicrowaveand
+MillimeterWaveTechnology,ICMMT,IEEE,2021,pp.1–3.
+[109] Yudi Dong, Yu-Dong Yao, Secure mmWave-radar-based speaker ver-
+ification for IoT smart home, IEEE Internet Things J. 8 (5) (2020)
+3500–3511.
+[110] Eloi Guerrero, Josep Brugués, Jordi Verdú, Pedro de Paco, Microwave
+microphoneusingageneralpurpose24-GHzFMCWradar,IEEESens.Lett.
+4(6)(2020)1–4.
+[111] Lukas Piotrowsky, Jan Siska, Christian Schweer, Nils Pohl, Using FMCW
+radarforspatiallyresolvedintra-chirpvibrometryintheaudiorange,in:
+2020IEEE/MTT-SInternationalMicrowaveSymposium,IMS,IEEE,2020,
+pp.791–794.
+[112] Fuming Chen, Sheng Li, Chuantao Li, Miao Liu, Zhao Li, Huijun Xue,
+Xijing Jing, Jianqi Wang, A novel method for speech acquisition and
+enhancementby94GHzmillimeter-wavesensor,Sensors16(1)(2015)
+50.
+[113] TiantianLiu,MingGao,FengLin,ChaoWang,ZhongjieBa,JinsongHan,
+Wenyao Xu, Kui Ren, Wavoice: A noise-resistant multi-modal speech
+recognition system fusing mmwave and audio signals, in: Proceedings
+of the 19th ACM Conference onEmbedded Networked Sensor Systems,
+2021,pp.97–110.
+[114] Ronald J. Baken, Clinical measurement of speech and voice, 1987, (No
+Title).
+[115] Zuyuan Zhang, Hanhan Zhou, Mahdi Imani, Taeyoung Lee, Tian Lan,
+Collaborative AI teaming in unknown environments via active goal
+deduction,2024,arXivpreprintarXiv:2403.15341.
+[116] Amit Kumar Sikder, Giuseppe Petracca, Hidayet Aksu, Trent Jaeger,
+A Selcuk Uluagac, A survey on sensor-based threats and attacks to
+smartdevicesandapplications,IEEECommun.Surv.Tutor.23(2)(2021)
+1125–1159.
+[117] Syed Agha Hassnain Mohsan, Alireza Mazinani, Hassaan Bin Sadiq,
+HussainAmjad,Asurveyofopticalwirelesstechnologies:Practicalcon-
+siderations,impairments,securityissuesandfutureresearchdirections,
+Opt.QuantumElectron.54(3)(2022)187.
+[118] Michael Eoin Buckley, Shirook M. Ali, Method and apparatus for anti-
+eavesdropping in vunerable NFC applications, 2016, US Patent 9, 287,
+935.
+[119] Huining Li, Chenhan Xu, Aditya Singh Rathore, Zhengxiong Li, Hanbin
+Zhang, Chen Song, Kun Wang, Lu Su, Feng Lin, Kui Ren, et al., Vocal-
+Print: A mmwave-based unmediated vocal sensing system for secure
+authentication,IEEETrans.Mob.Comput.22(1)(2021)589–606.
+[120] Andres Guesalaga, Benoit Neichel, Maxime Boccas, Celine d’Orgeville,
+FrancoisRigaut,DaniGuzman,JaimeAnguita,Improvingstability,robust-
+ness,andperformanceoflasersystems,in:AdaptiveOpticsSystemsIII,
+vol.8447,SPIE,2012,pp.1519–1529.
+[121] ChrisL.Willis,Boresightstabilityofanopticalsystem,2004,USPatent
+6,781,773.
+[122] Mohammad Vahid Jamali, Hessam Mahdavifar, Covert millimeter-wave
+communication:Designstrategiesandperformanceanalysis,IEEETrans.
+WirelessCommun.21(6)(2021)3691–3704.
+13

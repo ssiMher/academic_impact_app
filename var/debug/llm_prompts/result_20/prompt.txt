@@ -1,0 +1,978 @@
+You are analyzing the citing paper full text.
+Find whether and how this citing paper cites or discusses the cited paper.
+Only report evidence that is explicitly grounded in the provided full text.
+Each finding must include citation_text copied from the full text.
+If the full text only mentions similar keywords but does not clearly discuss the cited paper, return findings=[].
+Do not use bibliography/reference-list entries as findings.
+A reference entry only proves that the cited paper appears in References; it is not evidence of evaluation, use, comparison, or contribution.
+citation_text must come from the main body discussion, not from the References section.
+If the only occurrence of the cited paper is in References, return {"findings": []}.
+If a sentence discusses moire, moiré, aliasing, or similar keywords generally but cannot be attributed to the cited paper, do not return it.
+Do not invent evidence.
+Do not infer praise without textual support.
+For grouped citations, only attribute a claim to the cited paper if the text clearly applies to it.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Each finding must include citation_text copied from the full text, otherwise it will not be saved.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: Visual-Based Out-of-Plane Rotation Measurement Using 3-D Moiré-Based Marker
+CITED_PAPER_TITLE: MoiréPose: ultra high precision camera-to-screen pose estimation based on Moiré pattern
+CITED_PAPER_YEAR: 2022
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3495243.3560537
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Yi Li 0062, Yingying Chen 0001, Yanling Bu, Baoliu Ye, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+- Prioritize claims that the target paper is first, seminal, or pioneering.
+- Prioritize detailed comparison evidence, not passing mentions.
+- Prioritize evidence where the target paper is used as a baseline or benchmark.
+- Prioritize theoretical foundation evidence.
+- Prioritize method foundation evidence.
+- Prioritize long-context citation evidence.
+- Prioritize positive evaluation evidence grounded in citation_text.
+- Prioritize limitation or negative evaluation evidence with original citation_text.
+FULL_EXTRACTED_TEXT:
+IEEE TRANSACTIONS ON INSTRUMENTATION AND MEASUREMENT, VOL. 75, 2026 5000209
+Visual-Based Out-of-Plane Rotation Measurement
+Using 3-D Moir ´e-Based Marker
+Mingzhu Zhu
+ , Maocan Wu
+ , Mingxuan Wei
+ , Bingwei He
+ , Jiantao Liu
+ , and Junzhi Yu
+ , Fellow, IEEE
+Abstract—This article proposes a novel 3-D Moir ´e-based visual
+marker with an explicit geometric model. The proposed marker is
+designed for out-of-plane rotation measurement, which comprises
+two periodic masks etched on the opposite sides of a glass
+wafer. The masks project a Moir ´e pattern on the image plane
+of the observing camera, and this Moir ´e pattern is dramatically
+sensitive to out-of-plane rotation. The key contribution is that we
+ﬁrst explicitly derive, for the ﬁrst time, the geometric relationship
+between the rotation angle and the Moir ´e pattern to build a
+straightforward measurement model, which reveals that the angle
+is simply determined by the Moir ´e phase at the image principal
+point. The accuracy is independent of the observation distance
+and camera intrinsic parameters. Estimation and calibration
+algorithms are given. Experiment demonstrates the superiority,
+which shows an accuracy that is up to 7 times higher than
+traditional visual markers and at least 2 times higher than state-
+of-the-art 3-D Moir ´e-based markers.
+Index Terms—3-D Moir ´e eﬀect, out-of-plane rotation measure-
+ment, visual encoder, visual marker, visual-based measurement.
+I. INTRODUCTION
+D
+ISPLACEMENT measurement methods play an impor-
+tant role in various ﬁelds [1], [2], [3]. They can be
+classiﬁed into optical-based methods [4], mechanical-based
+methods [5], electrical-based methods [6], visual-based meth-
+ods [7], and so on. Visual-based methods are popular because
+they are noncontact, easy to deploy, and with satisfactory
+accuracy.
+Displacement measurement can be divided into linear
+displacement measurement and angular displacement mea-
+surement. The goal of linear displacement measurement is
+Received 21 October 2025; accepted 22 November 2025. Date of pub-
+lication 16 December 2025; date of current version 6 January 2026. This
+work was supported in part by the National Natural Science Foundation of
+China under Grant 62373109, in part by the Major Project of Fujian Provincial
+Health Commission under Grant 2022ZD01006, and in part by the University-
+Industry-Research Joint Innovation Project of Fujian Provincial Department of
+Science and Technology under Grant 2023Y4019. The Associate Editor coor-
+dinating the review process was Dr. Jochen Lang. (Corresponding authors:
+Bingwei He; Jiantao Liu.)
+Mingzhu Zhu, Maocan Wu, Mingxuan Wei, and Bingwei He are
+with the Department of Mechanical Engineering, Fuzhou University,
+Fuzhou 350025, China (e-mail: mzz@fzu.edu.cn; wumaocan5@gmail.com;
+weimingxuan@email.cn; mebwhe@fzu.edu.cn).
+Jiantao Liu is with the College of Mechanical Engineering and Automation,
+Huaqiao University 361021, Xiamen, China (e-mail: liujiantao@gmail.com).
+Junzhi Yu is with the State Key Laboratory for Turbulence and Complex
+Systems, Department of Advanced Manufacturing and Robotics, Col-
+lege of Engineering, Peking University, Beijing 100871, China (e-mail:
+junzhi.yu@ia.ac.cn).
+Digital Object Identiﬁer 10.1109 /TIM.2025.3644552
+Fig. 1. Rotation measurement. Left: in-plane rotation; Right: out-of-plane
+rotation.
+to estimate the 2-D or 3-D translation of a moving tar-
+get based on the images captured by an observing camera.
+Relevant visual-based methods can be classiﬁed into feature-
+based methods [8], Fourier-based methods [9], and correlation-
+based methods [10]. The goal of angular displacement
+measurement is to estimate the angle changes of a rotating
+target relative to a speciﬁed rotation axis. The rotation is
+called in-plane or out-of-plane when its axis is parallel or
+perpendicular to the camera’s optic axis (see Fig. 1). The
+in-plane rotation measurement mainly includes feature-based
+methods [8] and deep learning-based methods [11].
+The out-of-plane rotation measurement is more challenging
+than the in-plane one because the images of the target before
+and after rotation have a signiﬁcantly smaller di ﬀerence (see
+the top-right of each picture in Fig. 1). Traditional methods
+use the perspective-from-n-points (PnP) [12] or correlation-
+based [13] algorithms, which determine the angle based on
+several visual features on the target. However, compared to
+in-plane rotation, these features barely move in the image
+as they primarily change in depth, thus the accuracy is
+unsatisfactory.
+There are more e ﬀective methods for out-of-plane rotation
+measurement, which usually involve new imaging models. For
+instance, Gu et al. [14] designed a meta-surface composed
+of an array of blocks, each exhibiting a unique reﬂective
+property. Under illumination, the meta-surface has a shim-
+mering grayscale variation, which is sensitive to out-of-plane
+rotation. Some drawbacks hinder the practicality of this
+method. First, the meta-surface is di ﬃcult to manufacture.
+Second, its deployment is complicated by the need for a
+controlled light source, speciﬁc measurement conditions, and
+a complex calibration process. Some methods leverage the
+aliasing e ﬀect [15], [16], [17], which arises when a camera
+1557-9662 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and
+similar technologies. Personal use is permitted, but republication /redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+5000209 IEEE TRANSACTIONS ON INSTRUMENTATION AND MEASUREMENT, VOL. 75, 2026
+Fig. 2. Sensitivity of 3-D Moir ´e e ﬀect to viewing angle. The image below
+is obtained by rotating the image by 5 ◦ around the vertical out-of-plane axis.
+captures a target with a periodic pattern whose frequency
+closely matches the camera’s color ﬁlter array. The aliasing
+pattern is sensitive to the pose of the target, introducing
+the potential of an ultraprecise out-of-plane rotation measure-
+ment. However, the reported accuracy does not demonstrate
+superiority when compared to traditional solutions, which
+might be due to the inherently low-quality imaging of alias-
+ing patterns. Furthermore, the working range is limited,
+as the frequencies of the target pattern and the camera’s
+color ﬁlter array must be closely matched. Recently, some
+out-of-plane rotation measurement methods based on 3-D
+Moir´e e ﬀect have achieved a favorable balance among cost-
+eﬀectiveness, easy-to-deployment, and high accuracy. They
+exploit the sensitivity of 3-D Moir ´e e ﬀect to viewing angle
+[18] to achieve high-accuracy out-of-plane rotation measure-
+ment. An example is illustrated in Fig. 2, showing that a
+small out-of-plane rotation causes a signiﬁcant displacement
+in the 3-D Moir ´e pattern, while the shift in pattern corners is
+almost imperceptible (hollow and solid dots indicate a peak
+before and after rotation). To generate 3-D Moir ´e patterns,
+Tanaka [19] mounted a lens array on a periodic stripe pat-
+tern, while Qiu et al. [20] employed two periodic masks
+on opposite sides of a glass wafer, termed u-LentiMark and
+Moir´eTag, respectively. Their reported accuracies, along with
+those of two earlier versions [21], [22], fall in the range of
+about 0.1◦ to 2◦.
+For 3-D Moir ´e-based methods, the key problem is estab-
+lishing the mapping between the Moir ´e patterns and the
+rotation angles. At this point, u-LentiMark [19] uses a look-
+up table and Moir ´eTag [20] relies on a learning-based model.
+Both produce implicit and somewhat ambiguous mappings.
+This leads to two problems. First, these methods might have
+transferability issues, as the performance can be unstable
+across diﬀerent conﬁgurations and environments. Second, the
+factors inﬂuencing the accuracy remain unrecognized, which
+may lead to missed opportunities for potential improvements.
+In this article, we propose a novel 3-D Moir ´e marker for
+out-of-plane rotation measurement. The contributions are as
+follows.
+1) The relationship between 3-D Moir ´e patterns and out-of-
+plane rotation angles is explicitly derived, making this
+kind of method more interpretable and extensible.
+2) The direct and concise relationship between Moir ´e prin-
+cipal phases and out-of-plane rotation angles is revealed.
+Based on this, a measurement method that is inde-
+Fig. 3. System overview.
+pendent of distance and camera intrinsic parameters is
+developed.
+3) The masks are characterized by two intrinsic parameters,
+and a calibration method is provided to compensate for
+fabrication errors in frequency, thickness, and alignment.
+The proposed marker is similar to Moir ´eTag [20] in hard-
+ware, as both consist of two periodic masks etched on the
+opposite sides of a glass wafer. However, we can estimate
+the angle using the phase of only one point, without relying
+on phase di ﬀerences between multiple 3-D Moir ´e patterns.
+As a result, only one pattern is needed, rather than two sets
+with di ﬀerent frequencies. From an application perspective,
+the method o ﬀers the following advantages.
+1) Easy-to-Use: The use of the proposed marker is almost
+the same as using a traditional visual marker, as by
+simply attaching it to the target and then having it in the
+camera’s scope. Then, the rotation angle will be solved
+from the image.
+2) Straightforward Model: The method is designed based
+on an explicit and concise model, which reveals that the
+interested angle is solely determined by the Moir´ e phase
+at the image principal point . The estimation accuracy is
+independent of distance and camera intrinsic parameters.
+This leads to intuitive and reliable algorithms.
+3) High Accuracy: Experiments show that the proposed
+method has an accuracy of about 0.04 ◦. This is signiﬁ-
+cantly higher than traditional visual-based methods and
+state-of-the-art 3-D Moir ´e-based methods.
+II. SYSTEM OVERVIEW
+As illustrated in Fig. 3, the proposed system consists of a
+camera and a marker. The marker is a thin glass wafer with
+size W × H and thickness s. The marker coordinate system
+Om is deﬁned at the bottom-left corner of the glass’s front
+side, with the X- and Y-axes aligned with the horizontal and
+vertical edges, respectively. The camera coordinate system O c
+is deﬁned at the optical center, and the X- and Y-axes are
+parallel to the sensor’s edges. The Z-axes of both O m and Oc
+are facing the direction of the optical axis. Two masks are
+etched on the opposite sides of the wafer, whose transmission
+maps are denoted as Ti, where i = 1,2 represent the front
+and back ones, respectively. In this article, Ti is periodic and
+chessboard-like.
+An out-of-plane rotation angle θ can be described by the
+two included angles between the Z-axis of O c and X- and
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: VISUAL-BASED OUT-OF-PLANE ROTATION MEASUREMENT USING 3-D MOIR ´E-BASED MARKER 5000209
+Y-axes of O m, denoted as α and β, respectively. They satisfy
+tan2 θ = tan2 α + tan2 β. For the simplicity of this article,
+we only discuss α in most cases, because the geometry for
+β is exactly the same. This allows us to limit the discussion
+to 1-D space. In this case, Ti can be regarded as a 1-D cosine
+function, as
+Ti (x) = cos (Φi (x)) , Φi (x) = wx + ϕi (1)
+where w is the circular frequency and ϕ is the initial phase.
+During manufacturing and assembly, it is easy to ensure that
+both masks have the same frequency and stripe direction, thus
+they share the same w. However, precisely aligning stripe
+positions is hard; thus, the two masks are regarded as having
+diﬀerent ϕ.
+In application, the user can ﬁrst attach the marker to the
+interested target, and then ﬁx the camera in an appropriate
+position, thus its optical axis passes through the marker. After
+deployment, the camera observes a Moir ´e pattern S , which is
+then used to estimate the rotation angle θ.
+III. M ODEL
+This section derives the geometrical model between θand S .
+The refraction eﬀect of the wafer is ﬁrst ignored to deduce the
+refraction-free model and then discussed independently.
+A. Refraction-Free Model
+A 1-D example of a camera observing the proposed marker
+with a rotation angle α is illustrated in Fig. 4(a), where β is
+ignored. The intersections of the Z-axis of O c with the image
+plane and the two masks are denoted as P and Pi, where
+i = 1,2 represent the front and back ones, respectively.
+A general image point and its corresponding points on the two
+masks are denoted as X and Xi, respectively. The coordinates
+of P and X in Oc are denoted as Pc = (0, f )T and Xc = (x, f )T,
+where f is the focal length |OcP|. The coordinates of Pi
+and Xi in O m are denoted as Pm
+1 = (p1,0)T, Pm
+2 = (p2,s)T,
+Xm
+1 = (x1,0)T, and Xm
+2 = (x2,s)T. Two auxiliary points Ai
+are deﬁned at the intersections of the Z-axis of O c with the
+horizontal lines passing through Xi. The distances between the
+camera and two masks are deﬁned as zi = |OcPi|. The gaps
+between Ai and Pi is denoted as gi.
+Based on the similarity between triangles △OcXP and
+△OcXiAi and the triangle △XiAiPi, we have
+8
+ˆ<
+ˆ:
+|XiAi|/|OcAi|= |XP|/f
+|XiAi|= |XiPi|cos α
+|OcAi|= zi −gi
+⇒|XiPi|cos α/(zi −gi) = |XP|/f . (2)
+Since X and Xi must lie on the same side relative to P and Pi,
+respectively, and zi −gi must be positive, we can replace |XiPi|
+and |XP| by xi −pi and x without signs. Finally, it gives
+the mapping from a general mask point to the corresponding
+image point, as
+xi → zi −gi
+f cos αx + pi. (3)
+Fig. 4. Measurement model. (a) Without refraction. (b) With refraction.
+Combining (1) and (3), we have the projected transmission
+maps on the sensor T p
+i , as
+T p
+i = cos
+ 
+Φp
+i (x)
+
+, Φp
+i (x) = zi −gi
+f cos αwx + wpi + ϕi. (4)
+Their composite transmission map T is
+T = T p
+1 T p
+2
+= cos
+ 
+Φp
+1 (x)
+
+cos
+ 
+Φp
+2 (x)
+
+= 1
+2 cos
+ 
+Φp
+1 (x) −Φp
+2 (x)
+
++ 1
+2 cos
+ 
+Φp
+1 (x) + Φp
+2 (x)
+
+. (5)
+The Moir ´e pattern S is considered as the low-frequency part
+of T, that is, the left part of the last equation of (5). Speciﬁcally
+S = 1
+2 cos (Φ (x)) , Φ (x) = Φp
+1 (x) −Φp
+2 (x) . (6)
+Combining (4) and (6), we have the unwarped phase of the
+Moir´e pattern S , which is a function of image point x, rotation
+angle α, and distance zi, as
+Φ (x) = w
+f cos α(∆z −∆g) x + w∆p + ∆ϕ (7)
+where ∆z = z1 −z2, ∆g = g1 −g2, ∆ϕ = ϕ1 −ϕ2, and ∆p =
+p1 −p2 = −s tan α. When the interested image point is exactly
+the principal point, as x = 0, then we have
+Φ (0) = −ws tan α+ ∆ϕ. (8)
+It leads to the measurement model
+α= arctan
+Aα −Φ (0)
+B
+
+(9)
+where Aα = ∆ ϕ and B = ws are the system’s internal
+parameters.
+For the other angle β, we have a similar model, as
+β= arctan
+Aβ −Ψ (0)
+B
+
+(10)
+where Aβ = ∆ ψ is the masks’ phase di ﬀerent along the
+Y-axis and Ψ(0) is the unwarped phase of S along the Y-axis.
+Combining both models, we have
+tan2 θ=
+Aα −Φ (0)
+B
+2
++
+Aβ −Ψ (0)
+B
+2
+. (11)
+This model reveals that the desired rotation angle θ is simply
+related to the unwarped Moir ´e phase at the image principal
+point, denoted as ( Φ(0),Ψ(0)), and some internal parameters.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+5000209 IEEE TRANSACTIONS ON INSTRUMENTATION AND MEASUREMENT, VOL. 75, 2026
+(Φ(0),Ψ(0)) is termed as principal phase . Note that neither
+the distance nor the camera intrinsic parameters are included,
+except for the image principal coordinate, which is implicitly
+embedded in the principal phase. However, this coordinate can
+be approximated by the image center with negligible diﬀerence
+(see Section V-B.2). In this way, the proposed method becomes
+completely independent of the camera parameters.
+B. E ﬀect of Refraction
+Taking the refraction e ﬀect of the wafer into account, the
+example in Fig. 4(a) is modiﬁed to Fig. 4(b). For the front
+mask, the refraction has no e ﬀect, while for the back one, the
+corresponding point X2 is shifted to Xr, where Xm
+r = (xr,s)T.
+Denote this shift as r = xr −x2, and modify the mapping
+described in (3) based on this shift, then we have
+x2 + r →z2 −g2
+f cos αx + p2. (12)
+Combining this mapping with (1), we have the projected
+transmission map T p
+2 with refraction distortion, as
+T p
+r = cos
+ 
+Φp
+r (x)
+
+, Φp
+r (x) = Φp
+2 (x) −wr. (13)
+Then, the distorted Moir ´e pattern S r is
+S r = 1
+2 cos (Φr (x))
+Φr (x) = Φp
+1 (x) −Φp
+r (x) = Φ (x) + wr. (14)
+Considering the image principal point again, we have
+Φr (0) = Φ (0) + wr = w (r −s tan α) + ∆ϕ. (15)
+In general, the refraction shift r is s(tan αex−tan αin), where αin
+and αex are the incidence and exit angles, respectively. At the
+principal point, the incidence angle is exactly the rotation
+angle, as the condition αin = αis satisﬁed. With the refraction
+theorem and the small angle assumption αin ∈ (−10◦,10◦),
+we have the condition of n sin αex = sin αin ≈ n tan αex ≈
+tan αin. These two conditions lead to
+r =
+1
+n −1
+
+s tan α. (16)
+Combining this equation with (15), we have
+Φr (0) =
+1
+n −2
+
+ws tan α+ ∆ϕ. (17)
+It can still be written in the form of
+α= arctan
+Aα −Φ (0)
+Br
+
+(18)
+where Br = (2−1/n)ws is still an internal parameter. Therefore,
+the refraction distortion imposes no e ﬀect on the measurement
+model described in (11), within a small angle condition of α∈
+(−10◦,10◦) and β∈(−10◦,10◦), which means θ∈(−10◦,10◦).
+The ﬁnal model is
+tan2 θ=
+Aα −Φ (0)
+Br
+2
++
+Aβ −Ψ (0)
+Br
+2
+. (19)
+This is basically the same with (11).
+Fig. 5. Image-processing workﬂow.
+IV. ALGORITHM
+This section proposes the algorithm used to solve the out-
+of-plane angle θ from the captured image. It is based on the
+model described in (19). The image-processing workﬂow is
+ﬁrst given with known Aα, Aβ, and Br, and the calibration
+process of Aα, Aβ, and Br is introduced later.
+A. Estimation
+An example of the estimation workﬂow is illustrated in
+Fig. 5. The details of each step are given below.
+1) Image Undistortion: The lens distortion is cali-
+brated [23] and then removed from the input image.
+2) Projective Rectiﬁcation: The Moir´e pattern S is cropped
+from the image. However, there is a projective distortion
+in the observed S . The distortion will impair the subpixel
+accuracy of the following steps. Therefore, we rectify the
+image so that the viewing angle faces the marker. This
+is accomplished by imposing a homography that maps
+the four S corners to the four image corners. Note that
+the image principal point is shifted in this step (see the
+green dot in Fig. 5).
+3) Peaks Recovery: The peaks of S are detected by Fourier-
+based techniques, as marked by blue circles in Fig. 5.
+Then, the peaks are reﬁned by quadric surface ﬁt-
+ting [24] to subpixel accuracy, as marked by red crosses
+in the middle of Fig. 5.
+4) Principal Phase Estimation: The peaks are rectiﬁed by
+applying a homography that maps them to a standard
+array, where the coordinates of each peak are represented
+by two integers, each corresponding to a multiple of 2 π,
+as shown in the right of Fig. 5. Then, the homogra-
+phy is applied to the principal point. Its coordinates
+in the standard array, when divided by 2 π, reveal its
+phase within [0 ,2π), denoted as ( ϕ(0),ψ(0)). Then, the
+principal phase with period ambiguity is ( Φ(0),Ψ(0)) =
+(ϕ(0) + 2mπ,ψ(0) + 2nπ), where m and n are unknown
+integers.
+5) Rotation Angle Estimation: With known Aα, Aβ, and
+Br, the principal phase ( Φ(0),Ψ(0)) is used to estimate
+the desired rotation angle θ based on (19). Since the
+period ambiguity is carried over, θ has multiple discrete
+solutions. Currently, there are two approaches to resolve
+this ambiguity. One method relies on the PnP results
+from the four S corners, while the other involves intro-
+ducing multiple S with diﬀerent frequencies. Both have
+some limitations. In this article, we ignore this issue and
+focus on the accuracy improvement brought by the 3-D
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: VISUAL-BASED OUT-OF-PLANE ROTATION MEASUREMENT USING 3-D MOIR ´E-BASED MARKER 5000209
+Moir´e e ﬀect. In the experiments, the correct values of
+m and n are manually given.
+B. Calibration
+To calibrate the internal parameters Aα, Aβ, and Br,
+we mount the marker on an electric rotation stage, whose
+repeatability error is 0.005 ◦. It is hard to obtain the ground
+truth θ because the relative pose between the camera and the
+stage is unknown, but it is easy to obtain the angle increment.
+Therefore, we start from an unknown rotation angle θ0 and
+incrementally rotate the stage by ∆θ. For the marker at the ith
+angle θi = θ0 +i∆θ, the image-processing workﬂow introduced
+above provides a principal phase with period ambiguity, as
+(Φn(0),Ψ(0)) = (ϕi(0) + 2miπ,ψi(0) + 2niπ). Similar to θ, we
+have mi = m0 + ∆mi and ni = n0 + ∆ni, where m0 and n0 are
+unknown but ∆mi and ∆ni are known.
+Given N samples, we have
+tan2 (θ0 + i∆θ) =
+Cα −ϕi (0) −2∆miπ
+Br
+2
++
+Cβ −ψi (0) −2∆niπ
+Br
+2
+i = 1,..., N (20)
+where Cα = Aα −2m0π and Cβ = Aβ −2n0π. There are only 4
+unknowns, including θ0, Cα, Cβ, and Br. Therefore, it can be
+solved when N ≥4.
+The MATLAB optimization toolbox is used to solve the
+optimal Cα, Cβ, and Br. It is possible but unnecessary to solve
+the true Aα and Aβ from Cα and Cβ, because the di ﬀerence
+terms 2m0π and 2n0π can be absorbed by the inherent period
+ambiguity of ( Φ(0),Ψ(0)), which will be eliminated in period
+disambiguity anyway. In practice, we set Aα = mod(Cα/(2π))
+and Aβ = mod(Cβ/(2π)), where mod means taking the
+remainder.
+V. EXPERIMENTS
+A. Simulation Test
+It can be seen based on (19) that, with a ﬁxed principal
+phase error, a larger Br results in a smaller estimation error,
+suggesting a higher mask frequency w and a thicker wafer s.
+However, the calibration process complicates this relationship;
+thus, we investigate the e ﬀect by simulation. For simplicity,
+only the e ﬀect on α is considered by setting β = 0, as the
+impact on β is identical. The conﬁgurations are listed below.
+1) Masks: The initial phases of the masks are trivial, thus
+both are set to 0 for concise, as ϕ1 = ϕ2 = ∆ ϕ = 0.
+Three diﬀerent frequencies and gaps are tested, as w =
+π/20,π/10,π/5 µm−1 and s = 2.5,4.5 mm.
+2) Calibration: The angles used for calibration are θCal =
+−10◦,−9◦,..., 10◦. Therefore, the N, θ0, and ∆θ in (20)
+are 21, −10◦, and 1 ◦, respectively.
+3) Measurement: There are 201 samples used for accuracy
+testing, including θTst = αTst = −10◦,−9.9◦,..., 10◦.
+In both calibration and measurement, given a ground-truth
+angle θCal or θTst, we simulate the ground-truth principal phase
+ΦGT(0) by (8), and then simulate the estimated principal phase
+Fig. 6. Simulation results.
+ϕ(0) by adding an uniform distributed random value δ ranged
+in 2 π[−σ,σ], as ϕ(0) = mod((ΦGT(0) + δ)/(2π)). The noisy
+estimations ϕ(0) are used in calibration to get the noisy internal
+parameters Aα and Br, and then used in measurement to
+estimate the rotation angles θ = α. The estimated angles are
+compared with the ground truth θTst = αTst to investigate the
+accuracy. The period ambiguity problem is ignored.
+The simulation results are displayed in Fig. 6, where the
+absolute errors |θ −θTst| of di ﬀerent σ are shown. As can
+be seen, the estimation accuracy is positively related to w
+and s. It should be noted that in the real world, w and s
+cannot be freely chosen, as overly large values induce optical
+diﬀraction between the two masks, resulting in faded Moir ´e
+patterns. This, however, does not a ﬀect the simulation, and in
+the real world, it is safe as long as ws < 100π, according to
+our experience.
+In practice, the principal phase error can be e ﬀectively
+controlled to σ< 0.1. Under the conditions of w = π/20 µm−1
+and s = 4.5 mm, an estimation error of less than 0.05 ◦ can be
+achieved. Subsequent real-world experimental results demon-
+strate that this prediction is conservative, as the prototype
+can achieve this accuracy with only s = 1 mm. Notably, an
+accuracy of 0.05 ◦ is at least twice that of the best-reported
+results among existing 3-D Moir ´e-based methods [19], [20].
+Furthermore, the entire simulation process does not incor-
+porate any information about distance or camera intrinsic
+parameters. The principal phase is the sole dominant factor.
+B. Real-World Test
+A prototype was fabricated by double-sided etching of
+identical checkerboard patterns on a 5 × 5 cm2 chrome-coated
+quartz glass wafers. The patterning accuracy is 0 .02 µm,
+and the front-to-back alignment accuracy is 0 .5 µm. The
+transmission map Ti has a frequency of w = π/10 µm−1,
+denoted as Ours. The thickness is s = 1 mm. The marker
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+5000209 IEEE TRANSACTIONS ON INSTRUMENTATION AND MEASUREMENT, VOL. 75, 2026
+Fig. 7. E ﬀect of calibration distance.
+is mounted on an electric rotation stage with a resolution
+of 0.001 ◦ and a repeatability error of 0.005 ◦. A camera
+is positioned approximately directly facing the marker for
+imaging. The sensor is IMX264 (2048x2448 pixels) and the
+lens is MVL-MF1618M-5MPE.
+Five distances between the camera and the stage are tested,
+including 0.2, 0.4, 0.6, 0.8, and 1.0 m. A larger distance is
+possible, but it needs a larger wafer to show suﬃcient peaks of
+S in the image. At each distance, the stage rotates from−10◦to
+10◦ in increments of 1 ◦. In summary, there are 5 × 21 = 105
+images in each test. The test is independently conducted 7
+times to get the average results.
+The candidate methods include EPnP [12], EPnP+BA
+(bundle adjustment), and ArUco [25]. The ﬁrst two are
+commonly used in visual measurement, while the latter is
+typically employed in virtual reality applications. For EPnP
+and EPnP+BA, the results are calculated based on the four
+cross points additionally etched on the marker, as shown on
+the left of Fig. 5 (the cross points appear blurred as the camera
+focuses farther to observe the Moir ´e pattern, whereas in EPnP
+and EPnP+BA tests, they are clearly focused). For ArUco, the
+results are calculated based on an ArUco marker with the same
+size. When using Ours, to observe the 3-D Moir ´e pattern, the
+camera is focused at inﬁnity rather than on the marker. This
+also implies that Ours does not su ﬀer from DoF (depth-of-
+ﬁeld) limitations.
+Note that the stage angles cannot be directly used as ground
+truth, because the relative pose between the camera and the
+stage remains unknown. Therefore, for each set of 21 images
+at a given distance, the estimated results are linearly ﬁt to
+the stage angles with a slope of 1. This compensates for the
+unknown relative pose, allowing the stage angles to serve as
+ground truth, and the residuals are regarded as errors.
+1) E ﬀect of Calibration Distance: We investigate how the
+calibration distance a ﬀects the accuracy of Ours. In each test,
+calibration is performed using images from each of the 5
+distances, separately. Each calibration result is then applied
+to estimate the out-of-plane rotation angles of all images.
+The means and standard deviations of the absolute estimation
+errors are presented in Fig. 7. As can be seen, the calibration
+distance has minimal impact on either the mean or the standard
+deviation of errors; thus, this factor is trivial. In the following
+sections, the calibration result at the middle distance, that
+is 0.6 m, is used.
+2) E ﬀect of Principal Point: We claimed that the pro-
+posed method does not require camera intrinsic parame-
+ters, but only the principal phase of the Moir ´e pattern.
+Fig. 8. E ﬀect of principal point o ﬀset.
+Fig. 9. Versus conventional visual-based methods.
+However, the principal phase implicitly encodes the principal
+point of the camera, which is technically part of the intrinsic
+parameters. In practice, the image center can be used as an
+approximation of the principal point to fully eliminate the
+need for calibration, as the two are typically very close.
+Furthermore, the di ﬀerence between them can be absorbed
+by the calibration process and has a negligible impact on the
+ﬁnal results. To evaluate the robustness of the method to prin-
+cipal point approximation, we deliberately introduced o ﬀsets
+ranging from 0 to 100 pixels (about 0%–5% of the image side
+length) to the principal point before performing calibration
+and measurement. The means and standard deviations of the
+absolute estimation errors are presented in Fig. 8. As shown,
+the principal point o ﬀset has no noticeable impact, conﬁrming
+that using the image center instead when the camera intrinsic
+is unavailable is safe and reliable.
+3) Versus Conventional Visual-Based Methods: We conduct
+a comparative analysis of the candidate methods, and the
+results are presented in Fig. 9. As can be seen, ArUco
+exhibits mean and standard deviation errors that are an order
+of magnitude higher than EPnP and EPnP+BA, o ﬀering no
+advantage in terms of accuracy. EPnP and EPnP+BA demon-
+strate signiﬁcantly improved accuracy, where the application
+of BA e ﬀectively suppresses errors and enhances the stability
+of the estimation, as reﬂected in the reduced standard deviation
+(at the distance of 0.2 and 0.4 m, BA results in a very
+slight increase in the standard deviation of EPnP, since lower
+reprojection errors do not always imply lower angular errors).
+As can be seen in Fig. 9, emOurs achieves signiﬁcantly better
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: VISUAL-BASED OUT-OF-PLANE ROTATION MEASUREMENT USING 3-D MOIR ´E-BASED MARKER 5000209
+Fig. 10. Applied noises.
+accuracy at most distances. At 1 m, an improvement of about
+5–7-fold is observed. Moreover, the errors of Ours remain
+nearly constant as the distance increases, whereas the errors
+of EPnP and EPnP+BA increase by approximately 5 to 10
+times from 0.2 to 1 m. This demonstrates the key feature of
+our method, that is, distance-invariant accuracy.
+Note that DoF-free and distance-invariant accuracy may
+appear to suggest that Ours can operate at arbitrary distances.
+In practice, however, the Moir ´e period increases as the dis-
+tance becomes larger. When the marker size is insu ﬃcient to
+accommodate at least two periods in both directions, the peak
+displacement can hardly be tracked, and the rotation angle
+cannot be measured. Their constraint can be approximately
+expressed as d ≤wsW/(4π), where W is the mask width and
+d is the distance from the optical center to the back side of
+the mask. For this experimental setup, it leads to d ≤1.25 m.
+To extend the working distance, a thicker, denser, or larger
+mask would be required.
+4) E ﬀect of Image Noise: We further compare the noise
+robustness with conventional visual-based methods. Based on
+the previous setup, we additionally introduce Gaussian noise
+with standard deviations ϵ = 0,5,10 (relative to the grayscale
+range 0-255; see Fig. 10). The results under di ﬀerent noise
+levels are shown in Fig. 11. As can be seen, the mean and
+variance of the errors from conventional visual-based methods
+increase signiﬁcantly with noise, whereas our method remains
+unaﬀected. This robustness stems from the fact that estimating
+the principal phase involves a larger number of pixels, allowing
+the noise to be averaged out.
+5) E ﬀect of Distortion: We further compare the robustness
+to distortion, which may be of concern when lens quality
+is poor or lens distortion cannot be corrected. We used the
+samples at a distance of 0.6 m from Section V-B.3 and
+gradually applied barrel distortion with a quadratic coe ﬃcient
+k1 = 0 to −0.5. The distortion center was chosen at the image
+bottom-right to maximize its e ﬀect. The mean absolute biases
+caused by the distortion are displayed in Fig. 12. As can be
+seen, ArUco, PnP, and PnP+BA exhibit similar sensitivity
+to distortion, with their estimates signiﬁcantly biased and
+rendered nearly unusable. In contrast, Ours, although aﬀected,
+maintains errors no greater than 0.2 ◦ even under the most
+severe distortion, remaining practically usable. This robustness
+arises because the 3-D Moir ´e pattern used in Ours ampliﬁes
+angular changes into larger pixel displacements, making it less
+sensitive to distortions.
+C. Comparative Analysis of Existing Methods
+The angular errors of several conventional methods and
+state-of-the-art Moir ´e-based methods are listed in Table I.
+The results of the conventional methods are based on Sec-
+tion V-B.3. However, for the three aliasing Moir ´e-based
+methods and the two other 3-D Moir ´e-based methods, strict
+quantitative comparison is impractical due to customized hard-
+ware, the lack of publicly available algorithms, and insuﬃcient
+implementation details. Therefore, we directly cite the errors
+they reported. These values can only reﬂect an approximate
+level of accuracy and should not be regarded as a precise
+basis for comparison when the reported errors of two methods
+are close.
+As shown in Table I, ArUco [25] has an error larger
+than 2◦, this is because the subpixel ambiguity of corners [24].
+In contrast, methods based on cross points achieve errors in
+the range from 0.1 ◦ to 0.2 ◦, whether using PnP or BA. The
+aliasing Moir ´e-based methods yield errors in the range from
+0.2◦to 2◦. These methods exploit the aliasing e ﬀect that arises
+when a camera captures high-frequency patterns, such as the
+pixel array of a display, thereby avoiding the use of visually
+obtrusive artiﬁcial markers. However, in terms of accuracy,
+they oﬀer no advantage over conventional methods.
+Tanaka [19] and Qiu et al. [20] also leveraged the 3-D
+Moir´e eﬀect to measure out-of-plane rotation angles, referred
+to as u-LentiMark and Moir ´eTag, respectively. Despite the
+diﬀerent marker designs, the underlying principle is essentially
+the same. The key distinction is that our method is based
+on an explicit analytical model, whereas u-LentiMark and
+Moir´eTag rely on look-up tables or learning-based approaches.
+This explicit analytical model enables us to calibrate the
+fabrication errors of the markers, uncover and exploit the
+strong correlation between principal phase and rotation angle,
+and ultimately achieve high accuracy, as u-LentiMark and
+Moir´eTag remain within the same range as conventional
+methods, our method achieves errors below 0.05 ◦, corre-
+sponding to at least a twofold improvement in accuracy.
+Nevertheless, the relatively coarse and brute-force approaches
+of u-LentiMark and Moir ´eTag have their own advantage.
+They can ignore the severe refraction e ﬀect at large angles
+and thereby enable a wider measurement range. As a result,
+both u-LentiMark and Moir ´eTag achieve ranges more than
+twice that of ours. Therefore, our method is more appropriate
+for situations where rotation angles are limited but stringent
+accuracy is needed.
+D. Limitation
+The proposed method currently has two limitations. First,
+the angular measurement range is small, as −10◦ to 10◦. This
+is because the measurement model relies on a small-angle
+approximation to circumvent refraction e ﬀects. To extend
+the range, we must directly address the refraction issue and
+develop a refraction correction algorithm. The second issue
+is the lack of a period disambiguation approach. We do
+not rely on conventional ﬁducial markers for disambigua-
+tion, as done in u-LentiMark, because in our case, the
+enhanced accuracy surpasses the resolution limit of such
+markers for resolving phase ambiguity. We also avoid the
+multifrequency approach used in Moir ´eTag, as it signiﬁcantly
+compromises the simplicity and esthetic appeal of the marker.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+5000209 IEEE TRANSACTIONS ON INSTRUMENTATION AND MEASUREMENT, VOL. 75, 2026
+Fig. 11. Versus conventional visual-based methods under noise.
+Fig. 12. Versus conventional visual-based methods under distortion.
+TABLE I
+COMPARISON WITH EXISTING METHODS
+In future work, we will explore other disambiguation methods
+based on pseudo-periodic Moir ´e patterns.
+VI. CONCLUSION
+This article presents a novel visual marker that lever-
+ages the 3-D Moir ´e e ﬀect for high-precision out-of-plane
+rotation measurement. A concise geometric model is derived,
+linking the rotation angle to the Moir ´e phase at the
+image’s principal point. This enables straightforward and
+accurate angle estimation, and the resulting measurements
+are inherently invariant to both distance and camera intrinsic
+parameters.
+Experimental results demonstrate that the proposed method
+achieves an accuracy of approximately 0.05 ◦. Compared
+to ArUco markers commonly used in virtual reality
+applications, our method o ﬀers a two-orders-of-magnitude
+improvement in accuracy. Compared to cross point mark-
+ers widely adopted in visual measurement, the accuracy
+improvement is about 5–7-fold. Moreover, our method out-
+performs other 3-D Moir ´e-based methods by a factor of
+two to three. Real-world experiments demonstrate that the
+method is independent of both distance and camera intrinsic
+parameters.
+This work merely scratches the surface of the potential
+of the 3-D Moir ´e e ﬀect in visual measurement. The unique
+viewpoint-sensitive property of 3-D Moir ´e patterns suggests
+broader possibilities. Future work will focus on extending the
+measurable angular range, developing eﬀective disambiguation
+strategies, and exploring more applications.
+REFERENCES
+[1] A. S. A. Kumar, N. Anandan, B. George, and S. C. Mukhopadhyay,
+“Improved capacitive sensor for combined angular and linear displace-
+ment sensing,” IEEE Sensors J., vol. 19, no. 22, pp. 10253–10261, Nov.
+2019.
+[2] Z. Li, Y . Pei, C. Qu, and F. Yang, “A position and attitude measurement
+method based on laser displacement sensor and infrared vision camera,”
+IEEE Trans. Instrum. Meas. , vol. 71, pp. 1–9, 2022.
+[3] C. Mi, Y . Liu, Y . Zhang, J. Wang, Y . Feng, and Z. Zhang, “A vision-
+based displacement measurement system for foundation pit,” IEEE
+Trans. Instrum. Meas. , vol. 72, 2023, Art. no. 2525715.
+[4] H. Yu, Q. Wan, L. Liang, and C. Zhao, “Analysis and elimination of grat-
+ing disk inclination error in photoelectric displacement measurement,”
+IEEE Trans. Ind. Electron. , vol. 71, no. 6, pp. 6438–6445, Jun. 2024.
+[5] C. Li, S. Yang, Y . Wang, C. Wang, W. Ren, and Z. Jiang, “Measurement
+and characterization of a nano-scale multiple-step height sample using
+a stylus proﬁler,” Appl. Surf. Sci. , vol. 387, pp. 732–735, Nov. 2016.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.
+ZHU et al.: VISUAL-BASED OUT-OF-PLANE ROTATION MEASUREMENT USING 3-D MOIR ´E-BASED MARKER 5000209
+[6] Z. Chen, H. Pu, X. Liu, D. Peng, and Z. Yu, “A time-grating sensor for
+displacement measurement with long range and nanometer accuracy,”
+IEEE Trans. Instrum. Meas., vol. 64, no. 11, pp. 3105–3115, Nov. 2015.
+[7] H. Yu, Q. Wan, C. Zhao, Q. Han, and Z. Mu, “Error compensation for
+low-density circular gratings based on linear image-type angular dis-
+placement measurements,” IEEE Trans. Ind. Electron. , vol. 69, no. 12,
+pp. 13736–13743, Dec. 2022.
+[8] S. Yao, X. Zhang, B. Zhu, H. Li, L. Yu, and S. Fatikow, “A microvision-
+based motion measurement system for nanopositioners using the feature-
+to-phase method,” IEEE Trans. Instrum. Meas. , vol. 72, 2023, Art. no.
+5001411.
+[9] D. Konstantinidis, T. Stathaki, and V . Argyriou, “Phase ampliﬁed cor-
+relation for improved sub-pixel motion estimation,” IEEE Trans. Image
+Process., vol. 28, no. 6, pp. 3089–3101, Jun. 2019.
+[10] G. Wang, Y . Zhou, Z. Wang, J. Zhou, S. Xuan, and X. Yao, “StrainNet-
+LD: Large displacement digital image correlation based on deep learning
+and displacement-ﬁeld decomposition,” Opt. Lasers Eng., vol. 183, Dec.
+2024, Art. no. 108502.
+[11] K.-J. Wang and Y .-J. Yan, “A smart operator assistance system using
+deep learning for angle measurement,” IEEE Trans. Instrum. Meas. ,
+vol. 70, 2021, Art. no. 5019014.
+[12] V . Lepetit, F. Moreno-Noguer, and P. Fua, “EPnP: An accurate O(n)
+solution to the PnP problem,” Int. J. Comput. Vis. , vol. 81, no. 2,
+pp. 155–166, Feb. 2009.
+[13] N. Afsham, M. Najaﬁ, P. Abolmaesumi, and R. Rohling, “A generalized
+correlation-based model for out-of-plane motion estimation in freehand
+ultrasound,” IEEE Trans. Med. Imag. , vol. 33, no. 1, pp. 186–199, Jan.
+2014.
+[14] W. Gu et al., “Optical angle barcodes enabled by a pixelated metasurface
+for absolute micro-angle measurement,” Laser Photon. Rev. , vol. 18,
+no. 2, Feb. 2024, Art. no. 2300831.
+[15] J. Ning et al., “Moir ´epose: Ultra high precision camera-to-screen pose
+estimation based on Moir ´e pattern,” in Proc. Annu. Int. Conf. Mob.
+Comput. Netw., 2022, pp. 106–119.
+[16] J. Ning et al., “Moir ´etracker: Continuous camera-to-screen 6-DoF pose
+tracking based on Moir ´e pattern,” IEEE J. Sel. Areas Commun., vol. 42,
+no. 10, pp. 2642–2658, Oct. 2024.
+[17] J. Ning, L. Xie, Z. Yan, Y . Bu, and J. Luo, “Moir ´evision: A generalized
+Moir´e-based mechanism for 6-DoF motion sensing,” in Proc. Annu. Int.
+Conf. Mob. Comput. Netw. , 2024, pp. 467–481.
+[18] Y . Weissman, The 3D Moir´ e E ﬀect: For Fly-Eye, Lenticular, and
+Parallax-Barrier Setups. Herzliya, Israel: Pop3DArt, 2023.
+[19] H. Tanaka, “Ultra-high-accuracy visual marker for indoor precise
+positioning,” in Proc. IEEE Int. Conf. Robot. Autom. (ICRA), May 2020,
+pp. 2338–2343.
+[20] S. Qiu, H. Amata, and W. Heidrich, “Moir ´etag: Angular measurement
+and tracking with a passive marker,” in Special Interest Group Comput.
+Graph. Interact. Techn. Conf. Conf. Proc. , Jul. 2023, pp. 1–10.
+[21] H. Tanaka, Y . Sumi, and Y . Matsumoto, “Avisual marker for precise
+pose estimation based on lenticular lenses,” in Proc. IEEE Int. Conf.
+Robot. Autom., May 2012, pp. 5222–5227.
+[22] H. Tanaka, Y . Sumi, and Y . Matsumoto, “A high-accuracy visual marker
+based on a microlens array,” in Proc. IEEE/RSJ Int. Conf. Intell. Robots
+Syst., Oct. 2012, pp. 4192–4197.
+[23] Z. Zhang, “A ﬂexible new technique for camera calibration,” IEEE
+Trans. Pattern Anal. Mach. Intell., vol. 22, no. 11, pp. 1330–1334, Nov.
+2000.
+[24] H. Zhang, M. Zhu, B. He, J. Zhang, and J. Yu, “Gradient balance prior
+for centrosymmetric cross-point detection and localization,” IEEE Trans.
+Instrum. Meas., vol. 73, pp. 1–12, 2024.
+[25] S. Garrido-Jurado, R. Mu ˜noz-Salinas, F. J. Madrid-Cuevas, and
+M. J. Mar ´ın-Jim´enez, “Automatic generation and detection of highly
+reliable ﬁducial markers under occlusion,” Pattern Recognit., vol. 47,
+no. 6, pp. 2280–2292, Jun. 2014.
+Mingzhu Zhu received the Ph.D. degree from the
+School of Mechanical Engineering and Automation,
+Fuzhou University, Fuzhou, China, in 2019.
+From 2019 to 2021, he was a Post-Doctoral
+Research Fellow with the BIC-ESAT, College of
+Engineering, Peking University, Beijing, China.
+In 2024, he was a Full Professor with Fuzhou
+University. His current research interest is image
+processing and visual measurement.
+Maocan Wu received the B.E. degree from the
+College of Mechanical and Electrical Engineering,
+Fujian Agriculture and Forestry University, Fuzhou,
+China, in 2024. He is currently pursuing the M.E.
+degree with the School of Mechanical Engineering
+and Automation, Fuzhou University, Fuzhou.
+His current research interest is visual
+measurement.
+Mingxuan Wei received the B.E. degree from
+the College of Mechanical Engineering, Quzhou
+University, Quzhou, China, in 2023. He is currently
+pursuing the M.E. degree with the School of
+Mechanical Engineering and Automation, Fuzhou
+University, Fuzhou, China.
+His current research interest is visual
+measurement.
+Bingwei He received the M.E. and D.E. degrees
+from the School of Mechanical Engineering and
+Automation, Xi’an Jiaotong University, Xi’an,
+Shanxi, China, in 1999 and 2003, respectively.
+From 2004 to 2010, he was a Research Fellow
+with the City University of Hong Kong, Hong Kong.
+From 2013 to 2015, he was a Visiting Scholar with
+the University of Hamburg, Hamburg, Germany.
+In 2005, he was a Full Professor with Fuzhou Uni-
+versity, Fuzhou, China. His current research interests
+include intelligent robots and computer vision.
+Jiantao Liu received the M.E. degree from the
+University of Pittsburgh, Pittsburgh, PA, USA,
+in 2014, and the D.E. degree from Fuzhou Univer-
+sity, Fuzhou, China, in 2019.
+He was a Researcher at MTlab of Meitu Inc.,
+Xiamen, China, and an AI Engineer at Yealink, Xia-
+men. He is currently with the College of Mechanical
+Engineering and Automation, Huaqiao University,
+Xiamen. His main research interests are com-
+puter vision, machine learning, and computational
+mechanics.
+Junzhi Yu (Fellow, IEEE) received the B.E. degree
+in safety engineering and the M.E. degree in preci-
+sion instruments and mechanology from the North
+University of China, Taiyuan, China, in 1998 and
+2001, respectively, and the Ph.D. degree in control
+theory and control engineering from the Institute of
+Automation, Chinese Academy of Sciences, Beijing,
+China, in 2003.
+From 2004 to 2006, he was a Post-Doctoral
+Research Fellow with the Center for Systems and
+Control, Peking University, Beijing. In 2006, he was
+an Associate Professor with the Institute of Automation, Chinese Academy
+of Sciences, where he became a Full Professor in 2012. In 2018, he joined
+the College of Engineering, Peking University, as a Tenured Full Professor.
+His current research interests include intelligent robots, motion control, and
+intelligent mechatronic systems.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 16,2026 at 05:13:39 UTC from IEEE Xplore.  Restrictions apply.

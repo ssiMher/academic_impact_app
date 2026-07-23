@@ -1,0 +1,96 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Some recent works explore using various non-acoustic sensors, such as motion sensors and RF signals, to eavesdrop on speaker-produced sound [1], [2], [3] or human-speaking sound [4], [5].",
+      "reasoning": "The target reference [3] is cited in a grouped citation listing several works that use non-acoustic sensors for sound eavesdropping. The context does not specify the contribution of [3] individually, so it is treated as background with attribution uncertainty.",
+      "keywords": [
+        "non-acoustic sensors",
+        "RF signals",
+        "eavesdropping",
+        "speaker-produced sound"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "reasoning": "In the Related Work section, the context groups RFID-based works including [3] as using RF signals to capture object vibration for sound sensing. This is a general survey without specific details about [3], so it is background.",
+      "keywords": [
+        "RF signals",
+        "RFID",
+        "capture object vibration",
+        "speaker-produced sound"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "reasoning": "Similar to previous, this is a duplicate context in the same Related Work section. It reiterates the grouping without individual emphasis.",
+      "keywords": [
+        "RF signals",
+        "RFID",
+        "capture object vibration",
+        "speaker-produced sound"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Some recent works explore using various non-acoustic sensors, such as motion sensors and RF signals, to eavesdrop on speaker-produced sound [1], [2], [3] or human-speaking sound [4], [5].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "The target reference [3] is cited in a grouped citation listing several works that use non-acoustic sensors for sound eavesdropping. The context does not specify the contribution of [3] individually, so it is treated as background with attribution uncertainty.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "In the Related Work section, the context groups RFID-based works including [3] as using RF signals to capture object vibration for sound sensing. This is a general survey without specific details about [3], so it is background.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[3]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Similar to previous, this is a duplicate context in the same Related Work section. It reiterates the grouping without individual emphasis.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

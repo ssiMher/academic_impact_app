@@ -1,0 +1,34 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Wireless signals have also been exploited by researchers for sound recovery [8]–[13]. Hu et al. [11] introduced mmEcho, which uses mmWave to measure vibrations for eavesdropping, while Hu et al. [10] developed MILLIEAR, which reconstructs audio from vibrations using generative models. Wei et al. [9] demonstrated acoustic eavesdropping using WiFi signals, and Wang et al. [12] expanded eavesdropping through Impulse Radio Ultra-Wideband (IR-UWB) technology with their UWHear system. RFID-based methods have also been explored, with Wang et al. [13] showing how audio can be intercepted via RFID.",
+      "reasoning": "The target reference [13] is cited in a list of wireless signal-based methods for sound recovery. The context provides a brief mention of RFID-based methods without detailed comparison or evaluation, serving as background prior work.",
+      "keywords": [
+        "RFID-based methods",
+        "Wang et al. [13]"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Wireless signals have also been exploited by researchers for sound recovery [8]–[13]. Hu et al. [11] introduced mmEcho, which uses mmWave to measure vibrations for eavesdropping, while Hu et al. [10] developed MILLIEAR, which reconstructs a...",
+      "evidence_type": "detailed_comparison",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[13]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The target reference [13] is cited in a list of wireless signal-based methods for sound recovery. The context provides a brief mention of RFID-based methods without detailed comparison or evaluation, serving as background prior work.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

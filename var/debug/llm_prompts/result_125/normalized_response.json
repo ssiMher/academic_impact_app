@@ -1,0 +1,62 @@
+{
+  "findings": [
+    {
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "To quantify the performance of audio recovery of the five lyrics, we calculate the similarity between the original sound and recovered sound using cross-correlation of audio frequencies [49].",
+      "reasoning": "The citing paper uses the cross-correlation method from [49] (target paper) to evaluate the similarity of audio recovery performance. This is a direct methodological adoption for quantifying sensing results.",
+      "keywords": [
+        "cross-correlation",
+        "audio frequencies"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "method_use",
+      "citation_text": "To quantify the performance of audio recovery of the five lyrics, we calculate the similarity between the original sound and recovered sound using cross-correlation of audio frequencies [49].",
+      "reasoning": "The citing paper uses the method from [49] (Thru-the-wall Eavesdropping on Loudspeakers via RFID) as a benchmark for evaluating audio similarity. While not explicitly calling it representative, the context indicates it is a standard method from a prior work in the field.",
+      "keywords": [
+        "cross-correlation",
+        "audio frequencies"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "To quantify the performance of audio recovery of the five lyrics, we calculate the similarity between the original sound and recovered sound using cross-correlation of audio frequencies [49].",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[49]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper uses the cross-correlation method from [49] (target paper) to evaluate the similarity of audio recovery performance. This is a direct methodological adoption for quantifying sensing results.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "To quantify the performance of audio recovery of the five lyrics, we calculate the similarity between the original sound and recovered sound using cross-correlation of audio frequencies [49].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "method_use",
+      "target_reference_marker": "[49]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "The citing paper uses the method from [49] (Thru-the-wall Eavesdropping on Loudspeakers via RFID) as a benchmark for evaluating audio similarity. While not explicitly calling it representative, the context indicates it is a standard method from a prior work in the field.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

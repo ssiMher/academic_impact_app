@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "Jingyi et al. [40] measure 6-DoF position with moiré.",
+      "evidence_type": "method_foundation",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "The context explicitly mentions [40] as prior work that measures 6-DoF position with moiré, which is the same application area as the citing paper. Although it is presented in a related work survey, it grounds a method that the citing paper builds upon: measuring 6-DoF position with moiré. The citing paper later states 'Moiré vision enables the 6-DoF target position measurement with PnP,' indicating that [40] is a foundation for their method. The citation text directly contains the target reference marker.",
+      "highlight_keywords": ["6-DoF position", "moiré"],
+      "keep": true
+    },
+    {
+      "citation_text": "However, these methods use dedicated frequency domain or dedicated algorithms, which are different approaches from conventional feature points-based CV algorithms.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "This sentence follows the description of [40] and [41], and contrasts their approach with conventional feature-points-based CV algorithms, which is the approach of the citing paper. It signals a limitation of the cited work (use of dedicated frequency domain/algorithms) and positions the citing paper as different. However, it is not a detailed comparison, so classification as background is appropriate.",
+      "highlight_keywords": ["dedicated frequency domain", "dedicated algorithms", "different approaches"],
+      "keep": true
+    }
+  ]
+}

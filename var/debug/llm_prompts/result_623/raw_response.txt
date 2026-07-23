@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[102]",
+  "target_reference_entry": "[102] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该综述在 acoustic eavesdropping via RF 的讨论中，将 Tag-Bug [102] 作为通过 RFID 实现穿墙窃听扬声器振动的代表性工作，在正文和对比表格中提及了其方案、硬件、距离等特性。",
+  "evidences": [
+    {
+      "recommendation": "include",
+      "claim_type": "through_wall_eavesdropping",
+      "evidence_quote": "Similarly, Wang et al. [102] proposed Tag-Bug, a through-wall eavesdropping system based on RFID tags that reconstructs audio by capturing vibrations from loudspeakers.",
+      "evidence_context": "Similarly, Wang et al. [102] proposed Tag-Bug, a through-wall eavesdropping system based on RFID tags that reconstructs audio by capturing vibrations from loudspeakers. This approach attaches RFID tags to various everyday objects",
+      "reference_entry": "[102] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文明确提到 [102] 提出了基于 RFID 的穿墙窃听系统 Tag-Bug，通过捕获扬声器振动重建音频，直接对应 through-wall eavesdropping 和 RFID loudspeaker vibration capability。",
+      "copy_ready_zh": "该综述指出 Tag-Bug [102] 是一个基于 RFID 的穿墙窃听系统，通过捕获扬声器振动来重建音频。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "include",
+      "claim_type": "performance_comparison",
+      "evidence_quote": "Tag-Bug [102] 2021 Loudspeaker 920MHz & 2.4GHz (RFID&USRP N210) 4m ✓ H # CA 2kHz Word Recognition",
+      "evidence_context": "TABLE VIII COMPARISON OF ACOUSTIC EAVESDROPPING VIA RF SIGNALS ... Tag-Bug [102] 2021 Loudspeaker 920MHz & 2.4GHz (RFID&USRP N210) 4m ✓ H # CA 2kHz Word Recognition",
+      "reference_entry": "[102] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "表格对比中明确列出 Tag-Bug [102] 的各项性能参数（音频源、信号类型、距离、穿墙能力、训练需求、指标、采样率、窃听类型），属于 concrete performance comparison。",
+      "copy_ready_zh": "该综述在 acoustic eavesdropping 方案对比表中列出了 Tag-Bug [102] 的关键性能参数，包括工作频率、最大距离、穿墙能力等。",
+      "confidence": "high"
+    }
+  ]
+}

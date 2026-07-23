@@ -1,0 +1,93 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "explicit_target",
+      "citation_text": "Tag-Bug [21] ✗ ✓ ✓ ✗ -",
+      "reasoning": "The table entry lists Tag-Bug [21] with capabilities: not Non-Invasive (✗), but Through Opaque Insulator (✓), Unconstrained Vocabulary (✓), and not Unaided by ML (✗), Mobile Audio Source not listed (-). This is a comparative table entry, describing the cited paper's characteristics without qualitative evaluation.",
+      "keywords": [
+        "Tag-Bug",
+        "[21]"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "explicit_target",
+      "citation_text": "[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim's proximity, which reduces its practicality.",
+      "reasoning": "The citing paper states that [21] relies on RFID tags and cGAN but requires pre-installation of tags in the victim's proximity, which reduces its practicality. This is a clear limitation.",
+      "keywords": [
+        "relies on RFID tags",
+        "cGAN",
+        "pre-install RFID tags",
+        "reduces its practicality"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "these WiFi signal- and impulse radio-based methods [14], [15], [21], [22], [24] suffer a insufficient vibration resolution due to long wavelength and low packet rate.",
+      "reasoning": "The citing paper groups [21] with other methods and states they suffer insufficient vibration resolution. This is a limitation attributed to the group, which includes the target paper. Attribution uncertainty exists due to grouping.",
+      "keywords": [
+        "insufficient vibration resolution",
+        "long wavelength",
+        "low packet rate"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Tag-Bug [21] ✗ ✓ ✓ ✗ -",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "explicit_target",
+      "target_reference_marker": "[21]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": true,
+      "filter_reason": "background_neutral",
+      "generated_strong_evidence": false,
+      "reasoning": "The table entry lists Tag-Bug [21] with capabilities: not Non-Invasive (✗), but Through Opaque Insulator (✓), Unconstrained Vocabulary (✓), and not Unaided by ML (✗), Mobile Audio Source not listed (-). This is a comparative table entry, describing the cited paper's characteristics without qualitative evaluation.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "[21] relies on RFID tags in combination with cGAN for acoustic eavesdropping. However, it needs to pre-install RFID tags in the victim's proximity, which reduces its practicality.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "explicit_target",
+      "target_reference_marker": "[21]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper states that [21] relies on RFID tags and cGAN but requires pre-installation of tags in the victim's proximity, which reduces its practicality. This is a clear limitation.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "these WiFi signal- and impulse radio-based methods [14], [15], [21], [22], [24] suffer a insufficient vibration resolution due to long wavelength and low packet rate.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[21]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper groups [21] with other methods and states they suffer insufficient vibration resolution. This is a limitation attributed to the group, which includes the target paper. Attribution uncertainty exists due to grouping.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

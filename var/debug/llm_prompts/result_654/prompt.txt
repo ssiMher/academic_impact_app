@@ -1,0 +1,1663 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate every active user-defined template using its natural-language goal, configured concepts, required patterns, exclusion terms, and strict rules. Keywords are candidate signals only, not sufficient proof.
+Do not attribute any template concept to the cited paper unless the body evidence clearly anchors that concept to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output prose outside JSON. Template evaluation metadata belongs only in the JSON fields defined below. Do not output Markdown.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low",
+      "matched_template_ids": [1],
+      "template_match_reason": "why the body evidence satisfies the configured template goal",
+      "template_satisfied": true,
+      "template_failure_reason": "why a relevant template was not satisfied, or empty"
+    }
+  ]
+}
+
+Template evaluation rules:
+- Apply each template's natural-language goal to the body quote and surrounding context, not to the References title alone.
+- A plain related-work listing does not satisfy a capability or evaluation template.
+- Respect each template's grouped-citation, target-marker, length, evidence-type, exclusion, and strict rules.
+- Misattributed or reference-mismatched claims must be false_positive or exclude.
+
+CITING_PAPER_TITLE: Moiré Spectral Augmentation and Masked Frequency Modeling for Document Presentation Attack Detection
+CITED_PAPER_TITLE: MoiréPose: ultra high precision camera-to-screen pose estimation based on Moiré pattern
+CITED_PAPER_YEAR: 2022
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3495243.3560537
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Yi Li 0062, Yingying Chen 0001, Yanling Bu, Baoliu Ye, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 75,
+    "name": "custom_custom_24_1",
+    "display_name": "RFID 亚毫米级振动感知佐证",
+    "template_type": "custom",
+    "goal": "判断引用论文是否明确佐证或认可目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力，例如别人引用时提到该文可 detecting sub-millimeter-level vibrations，或通过 RFID capturing sub-mm level vibration 实现穿墙窃听。普通 RFID related work、只列举标题、只在参考文献标题中出现 sub-mm 不算满足。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub-millimeter-level",
+      "millimeter-level",
+      "detecting sub-millimeter-level vibrations",
+      "capturing sub-mm level vibration",
+      "RFID",
+      "RFID tags",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall eavesdropping"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [],
+    "allowed_evidence_types": [
+      "custom"
+    ],
+    "strict_rules": [],
+    "min_citation_text_chars": 0,
+    "min_citation_text_words": 0,
+    "require_target_marker": false,
+    "allow_grouped_citation": true,
+    "auto_include": true,
+    "instruction_text": "只有正文证据明确把 sub-mm/millimeter-level/RFID vibration sensing 语义锚定到目标论文引用编号时才算满足。普通 related work、grouped citation、title-only、reference-only、局限性反馈、reference mismatch 不算满足。",
+    "scoring_rules": {
+      "template_origin": "user_defined",
+      "template_bonus": 15,
+      "min_citation_chars": 0,
+      "min_citation_words": 0,
+      "require_target_marker": false,
+      "allow_grouped_citation": true,
+      "auto_include_in_report": true,
+      "allowed_evidence_types": [],
+      "strict_rules": []
+    },
+    "prompt_fragment": "只有正文证据明确把 sub-mm/millimeter-level/RFID vibration sensing 语义锚定到目标论文引用编号时才算满足。普通 related work、grouped citation、title-only、reference-only、局限性反馈、reference mismatch 不算满足。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+5366 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+Moiré Spectral Augmentation and Masked Frequency
+Modeling for Document Presentation
+Attack Detection
+Changsheng Chen , Senior Member, IEEE , Youjie Li , Bokang Li, Weifan Yu , Baoying Chen ,
+Bin Li , Senior Member, IEEE , and Jiwu Huang , Fellow, IEEE
+Abstract—Document Presentation Attack is an anti-forensic op-
+eration that conceals the forgery traces of image manipulation
+in the digital domain. Existing document presentation attack de-
+tection (DPAD) methods show unsatisfactory performance under
+samples with different contents and qualities. In this work, we focus
+on the DPAD task on screen-recapturing channel and exploit the
+prior knowledge of distortion (i.e., moiré pattern) in the spectral do-
+main to address these limitations. We propose a frequency-domain
+moiré augmentation (FMAG) strategy that enhances the spectral
+components contributed to the moiré distortion, improving the
+generalization performance under different document contents.
+We devise the mask moiré frequency modeling (M 2 FM) scheme to
+reconstruct the moiré-related spectral components in low-quality
+samples under the guidance of the spectral distortion model and a
+pre-trained DPAD classiﬁer. To evaluate the generalization per-
+formance, we collect the diverse Screen Recaptured Document
+Image Dataset with 162 different document contents (SRDID162)
+consisting of 162 genuine document images, as well as 2592 low
+and high-quality recaptured document images, respectively. Our
+experimental protocol involves training with high-quality ID im-
+ages and testing with SRDID162 dataset of diverse contents and
+image qualities. Compared to a SOTA data augmentation ap-
+proach for recaptured natural images, our FMAG & M 2 FM
+approach achieves a signiﬁcant improvement of 49.15% or 22.50
+percentage points in average EER on the generic deep learning
+backbones.
+Index Terms—Document presentation attack detection, domain
+generalization, moiré pattern.
+I. I NTRODUCTION
+D
+IGITAL document images are gaining popularity recently.
+Signiﬁcant research efforts have been made on various
+Received 3 October 2023; revised 22 March 2025; accepted 21 April 2025.
+Date of publication 1 May 2025; date of current version 4 September 2025.
+This work is supported by NSFC under Grant 62371301, Grant U23B2022, and
+Grant U22B2047, in part by Guangdong Provincial Key Laboratory under Grant
+2023B1212060076, and in part by the CCF-Alibaba Innovative Research Fund
+for Young Scholars. (Corresponding author: Bin Li.)
+Changsheng Chen and Jiwu Huang are with the Faculty of Engi-
+neering, Shenzhen MSU-BIT University Shenzhen 518172, China (e-mail:
+cschen@smbu.edu.cn).
+Youjie Li, Bokang Li, and Bin Li are with the Guangdong Key Laboratory
+of Intelligent Information Processing, Shenzhen University, Shenzhen 518060,
+China, and also with the Shenzhen Key Laboratory of Media Security, College
+of Electronics and Information Engineering, Shenzhen University, Shenzhen
+518060, China (e-mail: libin@szu.edu.cn).
+Weifan Yu is with the University of California, San Diego, CA 92093 USA.
+Baoying Chen is with Alibaba Group, Hangzhou 310030, China.
+The data and code of this work is available at https://github.com/chenlewis/
+FMAG-with-MMFM Github.
+Digital Object Identiﬁer 10.1109/TDSC.2025.3566310
+Fig. 1. Examples of tampered document images before and after the recap-
+turing attack. The visual difference between the tampered and pristine regions
+becomes less obvious after recapturing. (a) A document image with regions
+manipulated by Photoshop. The texts in red boxes have been tampered with.
+(b) The screen-recaptured document image of (a). It is a recaptured image with
+weak forensic trace.
+downstream tasks, such as document semantic entity labeling,
+key information extraction, document question answering, and
+document image classiﬁcation [1], [2]. However, these tasks
+focus on extracting information accurately from the document
+image while neglecting the authenticity of the visual data.
+Ensuring the authenticity of a document image is of primary
+importance before performing document AI tasks [3].
+The presentation attack is an attack of low-cost and easy to
+carry out for a document. The threat scenario can be described
+as follows. In an e-government application, a user must submit a
+digital image of one’s identity document (ID) for user authentica-
+tion. An attacker can edit the ID image with image editing tools,
+e.g., Photoshop, or a deep learning-based tool [4], [5], [6],b y
+employing information disclosed in online social networks [7].
+The tampered ID image, containing false information, can be
+reproduced by a displaying or printing device, and captured by
+an imaging device to perform the document presentation attack.
+As shown in Fig. 1, the recapturing process conceals the forgery
+trace in a tampered document image.
+Document presentation attack detection (DPAD) is a chal-
+lenging task, primarily due to the variation of document con-
+tents, acquisition devices, and data collection conditions. By
+1545-5971 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and similar technologi es.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index. html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5367
+investigating the literature on face presentation attack detection,
+we identify that some forensic traces (such as the depth infor-
+mation [8] and physiological cues [9]) employed in detecting
+recaptured face images are not available in document images.
+Thus, DPAD methods should rely on intrinsic visual distortions
+caused by the recapturing process.
+We have identiﬁed some important limitations of the existing
+DPAD methods. First, many existing DPAD techniques [10],
+[11], [12], [13], [14], [15] solely detect recaptured samples
+from the print-recapture channel, while detecting recaptured
+samples from the screen-recaptured channel is also essential.
+Moreover, results from the ﬁrst competition dedicated to PAD for
+ID cards [16] indicate that screen-recaptured attack is the most
+challenging to detect. Second, the generalization performance
+for existing DPAD methods [13], [17], [18] is not satisfactory
+across different document contents, e.g., ID, contracts, certiﬁ-
+cates, and receipts. Third, the DPAD task is an even more difﬁcult
+task for low-quality samples with blurring distortion. This is
+because existing approaches [19], [20], [21] rely on the moiré
+pattern in detecting recaptured images, while moiré pattern is not
+available in the blurred samples with degraded high-frequency
+components.
+In this paper, we employ the model of screen-recaptured dis-
+tortion to address the limitations of existing DPAD approaches.
+First, the distortion model facilitates the augmentation of the
+moiré pattern feature in the frequency domain and general-
+izes the performances of different backbones over different
+document contents. Speciﬁcally, the distortion model of the
+screen-recaptured channel is studied and employed in devising
+the locations of different moiré spectral peaks (MSPs) with prior
+knowledge of the displaying and imaging devices. Based on the
+knowledge of MSPs, we further propose the frequency-domain
+moiré augmentation (FMAG) strategy that enhances the region
+near MSPs while diminishing other spectrums to obtain aug-
+mented samples with distinct features. Such training samples
+yield backbones with good generalization performances over
+different documents with moiré patterns. Second, the distortion
+model guides a spectrum reconstruction model in recovering
+the moiré spectral details and improves the performance under
+document images of different qualities. Notably, we propose the
+mask moiré frequency modeling (M2 FM) scheme that recovers
+the MSPs in the low-quality recaptured samples. The M 2 FM
+model is trained under the joint constraints from the spectral
+distortion model and a pre-trained DPAD classiﬁer based on
+FMAG. The proposed FMAG & M 2 FM method is able to
+detect the recaptured document images with different contents
+and qualities.
+To evaluate the effectiveness of our approach, we construct a
+Screen Recaptured Document Image Dataset with 162 templates
+(SRDID162) with 162 genuine and 5184 recaptured document
+images. Under the challenging cross-domain protocols, we eval-
+uate the proposed FMAG and M 2 FM methods over document
+images of different contents, qualities, and acquisition devices.
+Extensive experimental results conﬁrm the effectiveness of our
+approach. In particular, in a cross-domain evaluation with the
+SRDID162 dataset, the proposed method leads to an average
+improvement of 47.39% and 49.31% on AUC and EER over
+deep models with no data augmentation, respectively.
+Both this paper and our prior work [14] are dedicated to ad-
+dressing the DPAD task. However, there are four key differences
+between them. First, this work investigates screen-recaptured
+distortions, while the previous work focuses on print-recaptured
+distortion. Second, according to the screen-recaptured distor-
+tion, we devise a Moiré Spectral Peaks Localization (MSPL)
+method to locate the relevant spectrum peaks. The MSPL dif-
+fers from the Band-of-Interest Localization method proposed
+in [14] due to different channel distortions. Third, the pro-
+posed M 2 FM scheme signiﬁcantly improves generalization
+performance on low-quality samples. In contrast, the gener-
+alization performance of previous work on low-quality sam-
+ples without spectral peaks has not been explored. Lastly,
+our new SDRD162 dataset includes both high and low-quality
+samples in the screen-recaptured channel, while the dataset
+in [14] covers only high-quality samples in the print-recaptured
+channel.
+The main contributions of this work are as follows.
+r We devise the locations of MSPs from the parameters of
+displaying and imaging devices. Then, we propose the
+FMAG strategy that enhances the spectral components near
+MSPs while diminishing other spectrums. After training
+with our FMAG strategy, the generalization performances
+of the backbones over documents with different contents
+are improved with a 23.48% or 5.35 percentage points
+(p.p.) reduction on average EER in samples with strong
+moiré patterns.
+r We recover the locations of MSPs in low-quality recap-
+tured samples by the proposed M 2 FM method with the
+guidance of a trained DPAD classiﬁer and a frequency
+reconstruction loss tailored according to the locations of
+MSPs. Compared to the generic deep learning backbone
+without data augmentation, the FMAG & M 2 FM approach
+reduces the average EER by 57.27% or 34.39 p.p. on the
+samples without moiré pattern.
+r We build and share a diverse dataset comprising 5346 sam-
+ples of 162 distinct document types, using 16 combinations
+of recapturing devices. This dataset consists of 2592 high
+and low-quality recaptured samples, respectively. It signif-
+icantly enriches the diversity of existing DPAD datasets.
+II. L ITERATURE
+II.-A. Datasets for DPAD Task
+In recent years, several datasets [14], [17], [18], [19], [22],
+[23], [24], [25] have been constructed to support DPAD research
+and evaluation, as shown in Table I. Gonzalez et al. [22] devel-
+oped a large-scale Chilean ID card dataset, which comprises
+three types of attacks: Composite, Print-recapture, and Screen-
+recapture. This dataset contains 6,588 composite samples, 6,972
+print-recaptured samples, and 24,778 screen-recaptured sam-
+ples, respectively. Polevoy et al. [18] introduced the DLC2021
+video dataset, which comprises 290 original video clips of mock
+ID cards and passports, along with 1,134 video clips depicting
+print-recapture and screen-recapture attacks. Chen et al. [17]
+shared the RSCID dataset, which consists of 320 genuine student
+ID card images from ﬁve universities and 2,707 recaptured docu-
+ment images. Benalcazar et al. [19] collected 10,000 transferable
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+5368 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+TABLE I
+AS UMMARY OF THE EXISTING DATASETS FOR THE DPAD TASK
+noise textures from real-world scenario and overlaid them onto
+genuine Chilean ID cards provided by TOC Biometrics company
+to synthesize recaptured document images. Magee et al. [23]
+created a new dataset based on publicly available Brazilian ID
+cards, containing 104 genuine and 832 print-recaptured sam-
+ples. Chen et al. [14] released the RDID162 dataset, which
+includes 162 genuine and 5,184 print-recaptured document im-
+ages across various contents, e.g., certiﬁcates, transcripts, and
+licenses. Chen et al. [24] enriched the sample diversity in their
+previous work [17] and constructed the SCVD dataset. This
+dataset is in video format and consists of 120 genuine video clips,
+along with 300 video clips containing both print-recapture and
+screen-recapture attacks. Recently, Chen et al. [25] published a
+large-scale dataset named ROD, which encompasses a variety
+of ofﬁce documents, e.g., contracts, sales orders and invoices.
+This dataset contains 4,860 genuine and 6,027 screen-recaptured
+samples.
+Due to privacy concerns, most early works [19], [22], [23] are
+conducted on private datasets. In this work, we focus on detect-
+ing recaptured samples speciﬁcally from the screen-recaptured
+channel. Considering that the ROD dataset mainly consists of
+black-and-white ofﬁce document and lacks document images
+with rich background textures, we construct a diverse dataset
+named SRDID162. The dataset consist of 162 genuine and 5,184
+screen-recaptured samples. To advance the development of the
+DPAD, we have decided to share the SRDID162 dataset, aiming
+to facilitate further exploration in DPAD algorithms.
+II.-B. DPAD Methods Under Screen-Recaptured Channel
+There are some traditional methods based on handcrafted
+features for presentation attack detection of natural images,
+such as recaptured detection based on Edge Proﬁles Learning
+Dictionaries (EPLD) [26], Image Statistics (IS) [27], and Local
+Tenary Count of Prediction Error (LTC-PE) [28]. These methods
+performed well on the datasets of recaptured natural images,
+e.g., NTU-ROSE [29] and ICL-COMMSP [26]. However, as
+demonstrated in Section IV-B, the performance of these meth-
+ods is unsatisfactory under document images across different
+contents.
+Recently, Chen et al. [17] proposed a general DPAD scheme
+for different document samples, including those recaptured from
+displays. It is achieved by inspecting the forensic similarity
+between the questioned document image and a genuine refer-
+ence. Polevoy et al. [18] shared a video dataset on recaptured
+IDs (DLC2021). The results of deep learning-based backbones
+are provided as baselines for future research. However, the
+cross-domain experimental results in [17] suggest poor gen-
+eralization performance under document images with different
+contents, e.g., IDs, contracts, and receipts. Many existing DPAD
+methods only consider limited types of document contents [13],
+[30], [31], [32]. Without ﬁnetuning by samples from the target
+domain, the generalization performance of these approaches is
+not satisfactory.
+To improve the generalization performance across different
+content, Benalcazar et al. [19] developed a synthetic document
+image generation scheme by combining moiré patterns extracted
+from images with uniform backgrounds and genuine document
+images. The synthetic document images improve the amount
+and the diversity of training data in the DPAD network. A
+similar moiré pattern synthesis approach has been employed by
+Yang et al. [20] for improving the performance of presentation
+attack detection for natural images. Markham et al. [21] used
+GAN-based generation method to learn pixel grid texture, spatial
+aliasing, and color distortions present in recaptured samples and
+subsequently transferred these characteristics to genuine images.
+Chen et al. [25] proposed the CMA method, which utilizes color
+artifacts as a novel forensic feature to enhance the detection per-
+formance of screen-recaptured document images across black-
+and-white ofﬁce documents. However, as demonstrated by our
+experiment in Section IV-C, existing DPAD methods [19], [21],
+[25] show less satisfactory on low-quality document images.
+This is because many low-quality samples are subject to blurring
+distortion, which is essentially a low-pass ﬁlter. As shown in
+Fig. 1(b), the moiré patterns in high-frequency bands are lost in
+the low-quality samples with weak forensic traces.
+II.-C. Preliminary on the Screen-Recaptured Model
+The recapturing process considered in this work consists of
+displaying and capturing steps, involving various distortions,
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5369
+e.g., pixelation, re-sampling, rotation, scaling, blurring, color
+degradation, and noise. Pixelation refers to the process of dis-
+playing an image by discrete pixels, while re-sampling means
+re-digitizing the displayed image by the imaging sensor with
+different spatial resolutions, or sampling rates. Among various
+distortions, pixelation and re-sampling produce a moiré pattern,
+which is the primary distortion pattern in the recaptured im-
+ages. Other distortions (e.g., light and reﬂection) are handled
+implicitly through the training process. Although we have not
+speciﬁcally designed solutions to address these factors, relevant
+studies [15], [24] have proposed effective approaches dedicated
+to handling poor lighting and reﬂection issues.
+In this section, we will elaborate distortion model behind the
+formation of the moiré pattern by referring to [33], [34].W eﬁ r s t
+analyze the distortion of an image displayed on an LCD screen
+with red, green, and blue subpixels. By referring to the distortion
+of print-capture channel [33], the spatial representation of the
+displayed content in the color channel c can be written as
+Ic
+D(x)=
+∑
+m,n
+δ(x−ma−nb)⊗Dc(x) (1)
+where x =( x,y) speciﬁes both the horizontal and vertical co-
+ordinates in the displayed image, ‘ δ’ is the Dirac delta function,
+a and b denotes the pixel pitches in horizontal and vertical
+directions, respectively, m ∈ [0,M −1],n ∈ [0,N −1]are the
+display pixel indices along the direction of aand b,‘⊗’ denotes
+the convolution operation, and Dc(x) denotes the displayed
+content that varies across different spatial locations xand color
+channel c ∈{ r,g,b }.
+For the re-sampling process, the imaging sensor samples the
+displayed content Ic
+D(x) in Eq. (1) with a sampling rate deter-
+mined by the imaging resolution. Following [33], each color
+channel in a recaptured (i.e., re-sampled and blurred) image can
+be modeled as
+Ic
+R(x)=
+∑
+m,n
+δ(x−Δxr −ma−nb)⊗Dc(x−Δxr)
+⊗Fb(x,σ)·
+∑
+k,l
+δ(x−kdc −lec) (2)
+where Δxr is an offset between the origins of the displaying
+and recapturing processes, Fb(·) is a low pass ﬁlter that blurs
+the captured image with a vector of blurring kernel parame-
+ters σ. Meanwhile, dc,ec specify the re-sampling periods and
+directions in the 2D image sensor plane for channel c, k ∈
+[0,K −1],l ∈ [0,L −1] are the sensor pixel indices along the
+directions of dc and ec, respectively. The spectral representation
+of Ic
+R(x)can be obtained by taking the 2D Fourier transform of
+Eq. (2), which yields
+ˆIc
+R(u)=
+∑
+m,n
+δ(u−mp−nq)· ˆDc(u)·e−j2π·Δxr·u
+· ˆFb(u,σ)⊗
+∑
+k,l
+δ(u−ksc −ltc) (3)
+where u =( u,v) represents the 2D coordinate in the spectral
+domain, p,q are the spectral displaying vectors, and sc,tc are
+the spectral sampling vectors, and the exponential phase shift
+results from the spatial sampling offset. The spatial and spectral
+sampling vectors are related by [34]
+sc = ec ×(dc ×ec)
+||dc ×ec||2 , tc = dc ×(ec ×dc)
+||ec ×dc||2 (4)
+and the spatial and spectral displaying vectors a,b and p,q
+follows the same relation.
+III. T HE PROPOSED METHOD
+III.-A. Moiré Spectral Peaks Localization (MSPL)
+For common displaying and imaging devices, the spatial
+displaying vectors a,b are horizontal and vertical vectors (per-
+pendicular to each other) of equal length, so as the spatial
+re-sampling vectors dc,ec. Let us consider a simple scenario
+where the directions of both sets of vectors a,b and dc,ec are
+the same. It stands for the condition where both the display and
+image sensor planes are parallel. In Section III-A1 to III-A3,w e
+will estimate the locations of three types of moiré spectral peaks
+(MSPs) in the recaptured images.
+III-A1) Moiré Spectral Peaks From Display Pixelation: Con-
+sider a document image region of M ×N pixels (on display),
+recaptured by a digital camera with a resolution of K ×Lpixels.
+The values of M and N can be estimated from K and L by
+the parameters of the display-camera pair, and the distance in
+between. According to the application scenarios, we assume
+that M,N <K,L considering the resolutions of off-the-shelf
+displaying and imaging devices. Therefore, each display pixel
+is projected to multiple imaging sensor pixels. In our case, M
+display pixels in the horizontal direction are re-sampled by K
+display pixels in the same direction. In other words, after display
+pixel re-sampling, M periods of display pixels will appear in the
+captured image along the horizontal dimension of K pixels.
+Theoretical support for the phenomena mentioned above can
+be found in the spectral model in Section II-C. Speciﬁcally, the
+two-dimensional Dirac comb ∑
+m,n δ(u−mp−nq)in Eq. (3)
+suggests the presence of spectral peaks at locations (mp,nq).
+However, due to the low pass property of the blurring ﬁlter in
+imaging devices [35], only the ﬁrst harmonic of the spectral
+peaks along the horizontal and vertical axes are chosen. Thus, we
+identify that the MSPs from display pixelation (DP) are located
+at Pdp =( mp,nq) where m,n ∈{ −1,0,1} and |m| ̸= |n|.
+In the experiment, we compute the 2D Discrete Fourier
+Transform (DFT) for obtaining ˆIc
+R(u). The locations of such
+spectral peaks can be computed from the parameters of display
+devices. Normalizing the image dimension to a unit length,
+the spatial displaying vectors can be deﬁned as a =( 1
+M ,0)
+and b =( 0, 1
+N ). Thus, the spectral displaying vectors can be
+computed by p = b×(a×b)
+||a×b||2 =( M,0). Similarly, q =( 0,N ).
+III-A2) Moiré Spectral Peaks From Frequency Difference:
+The second type of MSPs is generated due to the frequency dif-
+ference (FD) between the pair of displaying and imaging devices
+in the recapturing process [36]. According to Eq. (3), the spectral
+model shows a convolution operation between two Dirac comb
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+5370 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+functions. Due to the linearity property of convolution [37],w e
+denote all multiplicative terms as Γ, that is
+ˆIc
+R(u)=
+[∑
+m,n
+δ(u−mp−nq)·Γ
+]
+⊗
+∑
+k,l
+δ(u−ksc −ltc)
+(5)
+which suggests that the spectral of the displaying content (en-
+closed by the square bracket) is shifted by the re-sampling
+frequency from the imaging devices. Therefore, the MSPs
+due to FD are located at Pfd =( ksc +mp,ltc +nq) where
+m,n,k,l ∈{ −1,0,1},|m| ̸= |n| and |k| ̸= |l|. Due to the blur-
+ring ﬁlter, we again only consider the ﬁrst harmonic of the peaks.
+In the following, we estimate the locations of such MSPs from
+the parameters of both displaying and imaging devices.
+First, we compute the spectral sampling vector from the
+parameters of imaging devices. Consider an imaging device with
+the Bayer color ﬁltering array (CFA) 1, the re-sampling period of
+each color channel is twice the sensor pixel size. By normalizing
+the image dimension to a unit length, the re-sampling vectors
+can be written as dc =( 2/K,0)and ec =( 0,2/L). Following,
+the spectral sampling vectors can be devised as sc =( K/2,0)
+and tc =( 0,L/2).
+Second, we compute the MSPs in each channel by reusing
+our results of p and q in Section III-A1, that is
+(ksc +mp,ltc +nq)=
+(
+kK
+2 +mM,l L
+2 +nN
+)
+. (6)
+It is noted that the indices for 2D Discrete Fourier Transform
+(DFT) are in [−K
+2 , K
+2 −1] and [−L
+2 , L
+2 −1] for horizontal and
+vertical axes, respectively after spectrum shifting to the center
+of symmetry [39]. Thus, only the MSPs (by Eq. (6))i nt h e
+predeﬁned range of the 2D DFT spectrum are observable.
+III-A3) Moiré Spectral Peaks From Near-Integer Multiple:
+The moiré pattern can be canceled if the magnitudes of spatial
+displaying vectors a,b are exact integer multiples of those of
+the spatial re-sampling vectors dc,ec, respectively [26].H o w -
+ever, without careful calibration and adjustment, the mentioned
+condition is not easy to meet when shooting a document image
+casually. The MSPs generated from the near-integer multiple
+(NM) relation between the sampling periods in the displaying
+and imaging devices are, therefore, observable in most recap-
+tured document images.
+In the following, we elaborate on the procedure of estimating
+the locations of MSPs under the NM constraint. Without loss
+of generality, analysis in the horizontal direction is taken as an
+example. First, the sampling periods of displaying and imaging
+devices are ||a|| = 1
+M and ||d|| = 1
+K, respectively. The ratio
+between the two sampling periods in the horizontal direction is
+deﬁned as ηh = ||a||
+||d|| = K
+M . Second, when κ·ηh (where κ> 0is
+an integer) is close to, but not equal to an integer value produced
+by rounding κ·ηh, the MSPs from NM relation appear. Third,
+we solve the value of κ by an optimization approach, that is
+κ∗ =a r gm i n
+κ∈N+
+κ·ηh −⌊κ·ηh +0.5⌋
+ (7)
+1A popular color ﬁlter with red, green, or blue color that is placed over the
+pixels of an imaging sensor to capture color information [38].
+Fig. 2. The Moire pattern introduced by the screen-recaptured process in the
+spectral domain. As elaborated in Section III-A, the moire spectral peaks marked
+by yellow stars can be categorized into three types according to different sources,
+i.e., display pixelation (red), frequency difference (green), and near-integer
+multiple (blue). The circular spectral mask Mc
+P (u) with radius ε is estimated
+by our FMAG in Section III-B.
+where κ∗ is the optimal choice of κ, which produces the strongest
+moiré phenomena among different possible choices, and ‘ ⌊·⌋’
+denotes the ﬂoor function that outputs the greatest integer less
+than or equal to the operand. Finally, the same κ∗ for vertical
+direction is obtained, given that ηv = L
+N ≈ K
+M .
+The locations of the MSPs from NM can be then computed
+by dividing the locations of MSPs from DP (presented in
+Section III-A1)b y κ∗, that is
+Pnm =
+(mp
+κ∗ , nq
+κ∗
+)
+(8)
+where m,n ∈{ −1,0,1} and |m| ̸= |n|. To focus on MSPs lo-
+cated among the high-frequency component, we compute κ ≤ 5
+in our implementation.
+III.-B. Frequency-Domain Moiré AuGmentation (FMAG)
+As shown in Fig. 2, we have estimated the locations of three
+types of MSPs, i.e., Pdp,Pfd and Pnm from the parameters of
+the displaying and imaging devices. In this part, we introduce
+a frequency-domain moiré augmentation (FMAG) strategy that
+improves the generalization moiré detection performance of a
+deep network across different document images. The proposed
+FMAG strategy employs the locations of the MSPs in identifying
+and augmenting the spectral distortions that are related to the
+three types of moiré patterns generated during the recapturing
+process.
+Given that the locations of MSPs are estimated with the
+assumption that the directions of a,b are the same as those of
+dc,ec, respectively (both the display and image sensor planes are
+parallel and aligned), some variations under practical acquisition
+conditions should be considered. Slight rotation, perspective,
+and lens distortion are inevitable in the practical imaging process
+with off-the-shelf displaying and imaging devices. Thus, we
+deﬁne the neighboring region around Pdp,Pfd and Pnm as the
+moiré spectral regions by a binary mask Mc
+P(u) ∈ RK×L that
+is
+Mc
+P(u)=
+{1, ||u−P|| 2 ≤ ε
+0, otherwise (9)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5371
+Fig. 3. The block diagram of our proposed FMAG & M 2 FM framework. (a) The MSPL estimates the spectral mask M
+c
+P (u) and Mc
+P (u) related to recapturing
+distortions, while the FMAG method augments the recapturing distortion with noise addition strategy. (b) The M 2 FM network reconstructs the high-frequency
+spectrum of a document image with the frequency reconstruction loss LF and the DPAD classiﬁcation loss LD, as depicted by green texts. (c) Inference process
+of the proposed FMAG & M 2 FM method.
+where P = {Pdp,Pfd,Pnm}, and ε is a hyper-parameter that
+determines the range of neighboring regions around P. Accord-
+ingly, we deﬁne the inverted mask as M
+c
+P(u)= 1−Mc
+P(u),
+where 1 ∈ RK×L is an all-one matrix.
+Based on Mc
+P(u),F i g . 3(a) illustrates our FMAG strategy
+that operates on different color channel independently. First, we
+ﬁnd the Fourier representation of a recaptured document image
+patch with a single color channel
+ˆIc
+R(u)= F[Ic
+R(x)] =Ac(u)·ej·Pc(u) (10)
+where Ic
+R(x) ∈ RK×L is a single-channel recaptured document
+image patch, F[·] is the Fourier transform, Ac(u) and Pc(u)
+denote the amplitude and phase components of the frequency
+spectrum, respectively. Second, the proposed FMAG strategy
+operates on the amplitude spectrum Ac(u). Speciﬁcally, we add
+noise to the spectral components that are covered by M
+c
+P(u)
+while keeping the other spectral components intact, that is
+˜Ac(u)= M
+c
+P(u)⊙
+[
+α ⊙ Ac(u)+ β
+]
++Mc
+P(u)⊙ Ac(u)
+(11)
+where ‘ ⊙ ’ denotes the dot product operation, α and β are
+random noise matrices of size K ×L pixels. The parameter
+α randomly weakens the amplitude spectrum in the unmasked
+region, and β denotes a noise component that introduces random
+additive perturbation. Each element in α follows a uniform
+distribution U(0.5,0.8), suggesting a random attenuation factor
+between 0.5 and 0.8 at each spectral location. Following [40],t h e
+elements in β are drawn from a standard normal distribution with
+zero means and unit variance. Finally, the augmented sample is
+obtained by
+˜Ic
+R(x)= F−1[˜Ic
+R(u)] =F−1[ ˜Ac(u)·ej·Pc(u)] (12)
+where the augmented amplitude spectrum ˜Ac(u) is combined
+with the original phase spectrum Pc(u) via the inverse Fourier
+transform F−1[·]. It is noted that our FMAG strategy is only car-
+ried out on the recaptured samples in a training set. It introduces
+no additional cost in the inference stage .
+Prior works [40], [41] have proposed similar noise addition
+strategies to improve the domain generalization performance of
+deep models in the ﬁeld of computer vision. However, these
+methods add random noise to the amplitude spectrum without
+considering the locations of different spectral components. Our
+work extends this strategy by identifying important spectral
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+5372 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+regions related to the MSPs, i.e., the region covered by Mc
+P(u).
+Our noise addition operation with accurate targets introduces
+amplitude disturbance to reduce the dependence on domain
+information, such as image content-related information in the
+low-frequency spectrum. The experimental result in Section IV
+demonstrates the effectiveness of the proposed scheme.
+Compared to the approach that solely extracts spectral fea-
+tures, our proposed FMAG method offers two signiﬁcant ad-
+vantages. First, FMAG strategy augments the important features
+in spectral domain and transforms the image back to spatial
+domain. This facilitates the models in learning important spectral
+features and mining other forensic features in spatial domain
+automatically. Second, the spectral feature extraction approach
+assumes that the designed mask for locating MSPs is accurate
+and spectral region outside the mask is not relevant to the DPAD
+task. However, as demonstrated by the results in Section IV-C,
+the low-frequency components of low-quality samples (without
+MSPs) are also important to the DPAD task.
+III.-C. Masked Moiré Frequency Modeling (M 2 FM)
+In Section III-B, we improve the generalization performance
+of the DPAD schemes by employing the FMAG strategy which
+augments the spectral characteristic of moiré patterns in the
+recaptured document images. However, the blurring distortion
+diminishes the MSPs in low-quality samples, which degrades
+the performance of DPAD schemes trained by the FMAG strat-
+egy. This is an important issue since a practical DPAD system
+processes samples with different qualities.
+To deal with the low-quality blurry samples, traditional meth-
+ods may pre-ﬁlter the input samples according to different image
+qualities and deal with the low-quality ones separately. However,
+such a strategy results in an ensemble classiﬁer of different
+DPAD methods which is of high computational complexity.
+Thus, we aim to build an efﬁcient DPAD framework based
+on backbones trained by our FMAG strategy regardless of the
+sample quality.
+Speciﬁcally, we propose to ﬁrst recover the MSPs in the
+low-quality blurry recaptured samples before performing the
+DPAD task. In this part, we reformulate the MSPs recovery as a
+spectral reconstruction task. A low-quality blurry sample, with
+low amplitude in the high-frequency spectrum, is considered a
+low-passed version of the high-quality sample. Then, the MSPs
+recovery process employs the low-quality samples in estimating
+the high-frequency spectrum in the high-quality counterpart.
+Inspired by the Masked Frequency Modeling (MFM) [42]
+that applies a mask to speciﬁc frequency components (e.g.,
+high-frequency/low-frequency information) of an image and
+then uses the unmasked frequency component to reconstruct
+or predict the missing frequencies, we estimate the loss in high-
+frequency components caused by blurring degradation through
+a frequency masking operation. To address this, we propose the
+masked moiré frequency modeling (M 2 FM) scheme to train
+an efﬁcient backbone for the spectrum reconstruction task by an
+accurate masking strategy. Both MFM and our M 2 FM are based
+on the concept of the famous Masked Image Modeling (MIM)
+technique [43], [44], where certain regions of the input image
+are deliberately hidden (masked), and the model is tasked with
+predicting or reconstructing the missing parts.
+Fig. 3(b) illustrates the training process of the proposed M 2
+FM scheme. An input image I(x) (regardless of image quality
+and acquisition channel) is transformed to the Fourier domain,
+yielding the spectrum ˆI(u). The low-frequency mask is there-
+fore deﬁned as ML(u)
+ML(u)=
+{
+1, ||u||2 ≤ τ
+0, otherwise (13)
+where all-zero values are assigned to the high-frequency spec-
+trum with a distance from the origin greater than the threshold
+τ which can be determined experimentally according to the
+spectral property in the training set.
+The input image is masked with a probability of 50% in the
+training process following [42].I ft h em a s ki nE q .(13) is applied,
+the high-frequency spectrum is obscured and the low-frequency
+counterpart is kept unchanged, that is ˆIM(u)= ˆI(u)⊙ ML(u).
+The masked version is converted back to the spatial domain with
+the inverse Fourier transform to yield the degraded document
+image IM(x).
+As a result, both IM(x)and I(x)are employed to train the en-
+coder (a standard ViT-B16 backbone) and decoder (lightweight
+linear layers and a pixel-shufﬂe layer) networks [42], [44] to
+recover the masked high-frequency spectrum, which yields the
+reconstructed verion I′(x). Meanwhile, the frequency masking
+step is skipped with a probability of 50%. The IM(x) will be
+replaced by the input image I(x).
+Two losses are computed for the proposed M 2 FM scheme
+during the training process. First, the reconstructed output I′(x)
+should lead to a correct classiﬁcation result for the DPAD
+network trained by the proposed FMAG strategy shown in
+Section III-B. Thereby, the classiﬁcation loss from the DPAD
+network is employed to guide the training of the encoder and
+decoder networks, that is
+LD = CE
+(
+D[I′(x)],Y
+)
+(14)
+where Y ∈{ 0,1} is the corresponding ground-truth label for
+the input image I(x), D(·) performs the DPAD classiﬁcation
+task with probabilistic output, and operation CE (·) computes
+the cross entropy between the DPAD classiﬁcation probability
+and the label. Second, the reconstructed frequency spectrum
+ˆI′(u)= F
+[
+I′(x)
+]
+should be close to that of the input image,
+with emphasis on the high-frequency spectrum that covered by
+the inverted mask ML(u). Thus, the frequency reconstruction
+loss can be written as
+LF = λ1 ·
+[ˆI(u)− ˆI′(u)
+]
+⊙ ML(u)
+
+2
++λ2 ·
+[ˆI(u)− ˆI′(u)
+]
+⊙ ML(u)
+
+2 (15)
+where λ1 > λ2 are the weights of reconstruction losses for high
+and low-frequency components, respectively.
+The total loss for training our M 2 FM network is therefore
+L = α1 ·LD +α2 ·LF (16)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5373
+Fig. 4. Examples of document images in our SRDID162 dataset. (a) Genuine Chinese document images. (b) Genuine English document images. (c) Recapture d
+document images in SwMP subset (with moiré patterns). (c) Recaptured document images in SwoMP subset (without moiré patterns).
+where α1,α2 are the weights for the DPAD classiﬁcation loss
+and the frequency reconstruction loss, respectively. In the train-
+ing process, the total loss in Eq. (16) is computed over each
+mini-batch of samples.
+The inference process is depicted in Fig. 3(c). A testing image
+is ﬁrst reconstructed by the encoder-decoder pair in M 2 FM and
+then forwarded to the DPAD classiﬁer trained by the FMAG
+strategy. If an image is of resolution higher than the network
+input, it is processed by patches, and the ﬁnal DPAD decision is
+aggregated by the majority voting.
+It is noted that there are two important differences between
+MFM [42] and the proposed M 2 FM. First, we employ the
+DPAD classiﬁer trained by the proposed FMAG strategy in
+Section III-B to guide the reconstruction output, while MFM is
+a self-supervised scheme that does not consider the downstream
+task. Second, we exploit the domain knowledge of the MSPL
+elaborated in Section III-A to emphasize the reconstruction loss
+over regions related to the MSPL, while MFM directly com-
+putes the L2 loss over the whole spectrum. As demonstrated in
+Section IV-D, both the guidance from DPAD classiﬁer and accu-
+rate mask locations provided by MSPL contribute to signiﬁcant
+performance improvement in the cross-domain evaluation.
+IV . DATABASE AND EXPERIMENTAL RESULTS
+In this section, we introduce our recaptured document image
+dataset and other related datasets from previous works. We then
+compare the generalization performance of our method with
+other baseline and state-of-the-art (SOTA) methods.
+IV .-A. The Datasets and Experiment Protocols
+IV-A1) Our SRDID162: We have collected a large-scale
+and comprehensive document image dataset, named Screen
+Recaptured Document Image Dataset with 162 templates (SR-
+DID162), which includes 5346 samples of both genuine and
+recaptured images. The database collection procedure consists
+of three steps. First, we retrieve and gather genuine document
+images with several authoritative search engines. These images
+are obtained by imaging the original hard copies. Next, we
+use image editing software such as Photoshop and GNU Im-
+age Manipulation Program (GIMP) [45] to remove and tamper
+with some key information, such as name, address, and grades.
+Finally, we collect tampered document images by shooting the
+monitor using devices with different hardware speciﬁcations
+to obtain diverse recaptured document images. As shown in
+Fig. 1, the tampering operation alters some critical texts, but the
+recapturing process conceals the forensic traces of the tampered
+area, such as differences in color and edge sharpness. In the
+following, we will present some practical considerations for
+collecting these document images.
+Retrieving Genuine Document Images: To select source im-
+ages for our dataset, we adopt the same genuine document im-
+ages in [14]. As shown in Fig. 4(a) and (b), the documents include
+various types of certiﬁcates, transcripts, and licenses in Chinese
+and English. We preferred samples with high resolution (higher
+than 1500 × 1500 pixels) to allow realistic document image
+editing. These genuine images were retrieved from different
+online sources. Thus, they have undergone unknown distortions
+(such as compression, scaling, and blurring during or before
+uploading).
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+5374 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+TABLE II
+THE DEVICES USED FOR COLLECTING DATABASESRDID162, WHICH
+CONTAINS 5346 SAMPLES
+Settings of Recapturing Devices: We have considered the
+variations of recapturing conﬁgurations in practical situations.
+Our dataset covers 4×4 different combinations of recapturing
+devices, including 4 screens and 4 mobile devices. These devices
+cover a large set of different hardware parameters. The complete
+list of devices used in our experiment is tabulated in Table II.
+Ultimately, 162 genuine images and 5184 recaptured images
+were obtained. Based on the rules in [14], [17], [26], we gathered
+the recaptured images that reﬂect the realistic scenarios during
+the collection of the SRDID162 database.
+r Camera Phones: We set the camera to the highest resolution
+with the best JPEG quality factor.
+r Distance: To collect samples without moiré patterns, we ad-
+justed the capture distance by applying the alias frequency
+maximization method described in [26]. Due to the auto-
+focus mechanism in cameras, we need to slightly re-adjust
+capturing distance to ensure that the moiré patterns have
+been eliminated.
+r Screens: We conﬁgured the display resolution to the highest
+level and adopted the default settings for contrast, satura-
+tion, and brightness.
+r Environmental Light: We used an LED lamp and ﬂuores-
+cent lights in the ofﬁce.
+r Cropping: An automated script has been developed to
+accurately extract the document region from an image.
+The cropping procedure is based on SIFT feature point
+detection and template matching algorithms. The cropped
+region contains a document image with a narrow margin.
+By using a varied collection of different documents, device
+combinations, and acquisition settings, we have created a di-
+verse database that is well-suited for testing the effectiveness
+of domain generalization algorithms across different types of
+documents under practical distortions. As shown in Fig. 4(c)
+and (d), we divide the recaptured images in SRDID162 into
+two groups based on the presence of moiré patterns. Then, the
+genuine images are combined with each group, respectively, to
+yield two subsets, i.e., SwMP (SRDID162 with Moiré Pattern)
+and SwoMP (SRDID162 without Moiré Pattern). Each subset
+contains 162 genuine and 2592 recaptured samples, respectively.
+IV-A2) Other Related Public Datasets: Recaptured Student
+Card Image Dataset (RSCID) [17]: This is a public dataset for
+recaptured document image detection tasks, which consists of
+campus card documents from ﬁve universities. The documents
+were digitally created by Adobe CorelDRAW software and
+printed by third-party manufacturers. The samples are collected
+using diverse devices and are divided into ﬁve subsets: dataset
+D1 to D5, and all the genuine and screen-recaptured samples
+are extracted for our training set.
+It is noted that the recaptured samples within RSCID do
+not exhibit moiré features, and the parameters of the display-
+ing and imaging devices remain unknown. To obtain suitable
+training data for the FMAG method, we additionally collect
+images that possess known acquisition device parameters and
+exhibit moiré patterns. Following the conﬁgurations outlined in
+Section IV-A1, we have recaptured 132 genuine images from
+this dataset by controlling the shooting distances. It ensures
+the generation of diverse moiré features, resulting in a total of
+396 screen-recaptured images. Finally, we merge the genuine
+images from dataset D1 with the 396 Moiré images, referred
+to as dataset DM, to evaluate the performance of our FMAG
+method. Additionally, the original recaptured images (without
+moiré) in D1 are combined with the dataset DM to train the M 2
+FM network.
+Document Liveness Detection Dataset (DLC2021) [18]:T h e
+DLC2021 dataset comprises 1424 video clips of various IDs
+captured using different devices and in diverse acquisition envi-
+ronments, designed for ID forensics tasks. Of these, 290 video
+clips depict original mock IDs, while 400 video clips show
+screen-recaptured documents. These samples are captured using
+two smartphones with default camera settings. Additionally, it
+considered two different resolutions (1080 ×1920 and 2160 ×
+3840 pixels) and two different frame rates (30 and 60 fps) when
+shooting the video clips. For the screen-recaptured channel, two
+ofﬁce desktops and two notebook LCD monitors are employed
+to display the documents. This resulted in recaptured samples
+exhibiting various moiré patterns, making the dataset well-suited
+for our testing set. To mitigate the impact of video compression
+on image quality, we utilized the FFmpeg library [46] to extract
+6 intra-coded frames (I-frames) from each video. Finally, the
+processed DLC2021 dataset comprises 1740 genuine and 2400
+recaptured samples, respectively, which is the testing set in our
+experiment. It is noted that we employed majority voting in
+the testing phase to aggregate individual frame-level results and
+obtain the video-level DPAD decisions.
+IV-A3) Experimental Protocols: After introducing the
+datasets used in our work, we evaluate the performance of
+the proposed method under three cross-domain experimental
+protocols.
+1) Protocol 1: Testing under Moiré Samples. This protocol
+involves recaptured images that exhibit moiré patterns
+in both the training and testing sets. Speciﬁcally, DM →
+DLC2021 and DM → SwMP are carried out, where the
+datasets on the left and right of symbol ‘ →’ represent the
+training and testing datasets, respectively.
+2) Protocol 2: Testing under Non-Moiré Samples .T h e
+training set consists of recaptured images with moiré
+patterns, while the testing set consists of recaptured im-
+ages with no moiré pattern. Speciﬁcally, the experimental
+protocol DM→ SwoMP is carried out.
+3) Protocol 3: Testing under All Samples . We perform the
+experimental protocol DM →SRDID162, which tests the
+model on the whole SRDID162 dataset.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5375
+We summarize the designed experiment protocols as follows.
+For each protocol, the training and testing sets are collected from
+different acquisition devices with different brands and speci-
+ﬁcations. To comprehensively evaluate the proposed method,
+we design protocols that cover scenarios with different difﬁ-
+culty levels. For instance, in the DM → DLC2021 protocol,
+the genuine images in both the DLC2021 and DM datasets
+are come from printed PVC cards. To further demonstrate the
+generalization performance of the proposed method, we also
+cover more challenging scenarios (e.g., DM → SwMP, DM→
+SwoMP, and DM → SRDID162) where the document images
+in the training and testing sets originate from different sources,
+countries, and languages.
+IV .-B. Protocol 1 (Testing Under Moiré Samples)
+The FMAG method aims to enhance the moiré pattern features
+and train a moiré pattern-sensitive DPAD network. It does not
+account for the samples with weak forensic features. To evaluate
+the effectiveness of the FMAG in samples with moiré pattern, we
+consider experimental Protocol 1 in this section employing DM
+as the training set and SwMP and DLC2021 as the testing sets.
+In our training set, the positive (attack) class has signiﬁcantly
+more images than the negative class. To mitigate this issue, we
+adopt the data-level oversampling strategy [47] that duplicates
+the negative class and keep each mini-batch balanced.
+In this protocol, we ﬁrst applied the traditional methods based
+on handcrafted features and Support Vector Machine, such as
+EPLD [26],I S [27], and LTC-PE [28]. For a fair comparison, we
+implement the classiﬁer head for these methods using LibSVM.
+We employ grid search and 10-fold cross-validation to select the
+optimal penalty coefﬁcient and kernel function during training.
+Moreover, we employ some popular transformer-based mod-
+els (ViT-B16 [48],S w i n - B[49],B e i T - B[50],D i N A T - B[51])
+and CNN-based models (FocalNet-B [52], ConvNeXtTiny [53])
+with and without our FMAG method to demonstrate the ad-
+vantage of the proposed method. Within the training set, 20%
+of the samples are reserved as the validation set. We ﬁne-tune
+these ImageNet pre-trained models on dataset DM, replacing
+the original classiﬁer head with two FC layers of 256 and 2
+nodes, respectively, to match our DPAD output dimension. We
+also freeze the weights of the shallow part (layers before the FC
+layers) and update only the classiﬁer head during training. These
+networks utilize 41 K input patches of size 224 ×224pixels, and
+are trained using the Adam optimizer with a batch size of 128.
+The training process lasts for 20 epochs with a learning rate of
+1×10−4 and cross-entropy loss. All methods operate on patches
+and use majority voting to combine the patch-level decisions into
+image-level decisions. Following the previous works [17],t h e
+Area Under the ROC Curve (AUC) and Equal Error Rate (EER)
+are employed as performance evaluation metrics. Additionally,
+the detection performance of DPAD algorithms is standardized
+by ISO/IEC 30107-3. 2 We report relevant metrics, including
+the Attack Presentation Classiﬁcation Error Rate (APCER),
+Bonaﬁde Presentation Classiﬁcation Error Rate (BPCER) and
+BPCERAP. The BPCER AP analyzes the system performance on
+2https://www.iso.org/standard/67381.html
+TABLE III
+EXPERIMENTAL RESULTS FOR TRADITIONAL METHODS BASED ON
+HANDCRAFTED FEATURES IN DM→ SWMP AND DM→ DLC2021,
+RESPECTIVELY
+speciﬁc operating points. Speciﬁcally, BPCER AP represents the
+BPCER value when the APCER is set to 100/AP. In this work,
+we evaluate BPCER 10 and BPCER 20, which correspond to the
+APCER values of 10% and 5%, respectively. The Detection
+Error Tradeoff (DET) curve is also reported.
+Additionally, we include GAN-based image-to-image
+translation methods in our experiments. Based on the
+experimental results reported by Markham et al. [21],w e
+selected CycleGAN [54] for data augmentation, because it has
+demonstrated superior performance in generating high-quality
+images compared to other GAN-based models (i.e., pip2pix [55],
+pix2pixHD [56], and CUT [57]). Speciﬁcally, we utilized
+CycleGAN to simulate color distortions and moire patterns in
+screen-recaptured samples and transfer these characteristics to
+genuine images (without screen-recaptured distortions).
+Another baseline method is based on Transferable Moiré
+Textural Patterns (TMTP) [19]. It is a SOTA data augmentation
+technique employed for the DPAD problem, which collects
+moiré texture from real-world patterns and overlays them onto
+genuine images. In the collecting stage, it used mobile phones
+to capture the real moiré patterns from screen-displayed images
+with pure colors. It varied the capturing distances and angles
+between the phones and screens, as well as used multiple phone
+and screen models, to obtain diverse moiré layers. In this exper-
+iment, we employed pixel-wise multiplication to synthesize the
+original image and the moiré layer, considering the perspective
+transformation operation, which aligns with the methodology
+used in Yang et al. [20]. To allow a fair comparison, the quantity
+of augmented recaptured samples is 53 K for both methods,
+which is similar to that of our FMAG method.
+The conﬁgurations of our FMAG method are outlined in
+Section III-B. The parameters P = {Pdp,Pfd,Pnm} for each
+patch are computed by exploiting the device parameters and
+MSPL. The parameter ε is set to 5 experimentally. After aug-
+mentation, there are four times as many augmented samples as
+the recaptured ones. The amount of augmentation is 44 K, which
+is determined to balance the DPAD performance and computa-
+tional cost. The augmented samples (exampled in Fig. 5(a)),
+together with those from the original dataset, are used to train
+the generic deep models without any data balancing strategies.
+IV-B1) Protocol 1 With DM →SwMP: The experimental re-
+sults of the traditional methods based on hand-crafted features
+are presented in the Table III. All the methods perform poorly
+on the testing set. In the SwMP testing dataset, LTC-PE [28]
+achieves the best AUC of 0.7365 and EER of 33.43% among
+the traditional approaches. The poor performance is attributed to
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+5376 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+Fig. 5. The spatial and spectral visualizations of samples before and after the processing by the our FMAG and M 2 FM, respectively. (a) After processed by
+FMAG, the spectral regions around MSPs are augmented while others are polluted by random noises. (b) After applying M 2 FM, the high-frequency components
+around MSPs are enhanced to mimic the missing high-frequency components due to blurring.
+TABLE IV
+EXPERIMENT RESULTS IN PROTOCOL 1.
+the low generalizability of traditional handcrafted-based meth-
+ods. Compared to natural images, document images exhibit
+signiﬁcantly larger variations across datasets. Document image
+datasets cover different types of documents (e.g., ID cards,
+passports, contracts, and certiﬁcates). The elements, such as
+text, tables, logos, stamps differ a lot across different datasets.
+Our experimental protocol involves training and testing sets with
+completely different document contents and acquisition devices,
+which is more challenging than the experimental protocol con-
+sidered in these works. Thus, traditional handcrafted feature
+extraction methods trained on one document image dataset can
+hardly generalize to another one, due to the large diversity in
+different types of documents. For instance, EPLD [26] extracts
+the blurring features of image edges, which are sensitive to
+the variation of document contents. IS [27] applies a low-pass
+ﬁlter as a preprocessing step, which discards high-frequency
+information and makes it more sensitive to the content features
+in the low-frequency domain.
+A ss h o w ni nT a b l e IV, the EERs of original deep models
+(without the proposed FMAG) are higher than 25% under DM →
+SwMP. As discussed in our prior work [17], the generic deep
+learning backbones suffer from the issue of overﬁtting due to the
+limited size and diversity of the training data. The trained models
+do not generalize well to document in different contents. This is
+because the models extract forensic features related to the DPAD
+task, and also inevitably obtain semantic features that related
+to the document contents. The incorporation of the proposed
+FMAG method has enabled deep models to effectively extract
+distinctive forensic features, thereby signiﬁcantly improving
+DPAD performance. In particular, the AUC of the BeiT-B model
+TABLE V
+EXPERIMENT RESULTS ON VIT-B16 AND SWIN-B BACKBONES IN PROTOCOL 1
+USING BPCER10 AND BPCER20 METRICS
+has increased by 0.1994 to 0.8908, while the EER has improved
+by 16.93 p.p. in this protocol. The average EER is reduced by
+27.98% under this challenging scenario. Additionally, we report
+the BPCER 10 and BPCER20 results for all methods on ViT-B16
+and Swin-B, as shown in Table V. These values follow the same
+trends as those observed with the EER under DM →SwMP. The
+corresponding DET curves are illustrated in Fig. 6(a) and (c).
+It demonstrates that the proposed method has successfully aug-
+mented the moiré spectral features of the recaptured images in
+DM. Importantly, these features exhibit the generalized ability
+across diverse document types and acquisition devices.
+Compared to Benalcazar et al. [19], our proposed method
+exhibits superior performance on all deep models. Although
+both methods enhance moiré patterns in recaptured images,
+the FMAG method achieves better generalization performance
+by introducing noise speciﬁcally to the spectral region covered
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5377
+Fig. 6. Detection Error Trade-off curves for different methods in Protocol 1.
+(a) and (b) represent the results of ViT-B16 backbone. (c) and (d) represent the
+results of Swin-B backbone. The EER is shown in parenthesis for each method.
+Black dot lines represent two operational points BPCER 10 and BPCER 20,
+respectively.
+by the inverted mask M
+c
+P(u), thereby attenuating the domain-
+sensitive features.
+IV-B2) Protocol 1 With DM →DLC2021: DLC2021 is also a
+challenging dataset. In accordance with the experimental setup
+in Section IV-B1, we employed the same conﬁguration for
+DM→ DLC2021in this experiment.
+A ss h o w ni nT a b l e IV, the EERs of original deep models
+(without the proposed FMAG) are higher than 11.0%. After
+incorporating the proposed FMAG method, the performances of
+all deep models have been improved signiﬁcantly. In particular,
+the AUC of the DiNAT-B model has increased by 0.02 to over
+0.94, while the EER is improved by 3.77 p.p. in this protocol.
+The average EER is reduced by 15.48% under this challenging
+scenario. As shown in Table V, these values also exhibit consis-
+tent trends with the EER metric. The corresponding DET curves
+are displayed in Fig. 6(b) and (d).
+It is noted that the DPAD performances under DM →
+DLC2021in Table IV are generally better than those under
+DM→ SwMP shown in Table IV. Two main reasons that con-
+tributed to the performance gaps. First, the video-level decision
+(each with DPAD results from 6 video frames) is adopted for the
+results in the experiment DM →DLC2021. Second, the contents
+in both DM and DLC2021 are IDs that show fewer variations
+compared to those in SwMP.
+Compared to Benalcazar et al. [19], our proposed method
+exhibits superior performance on most deep models, although
+the BPCER20 of the ViT-B16 model has slightly decreased.
+IV .-C. Protocol 2 (Testing Under Non-Moiré Samples) and
+Protocol 3 (Testing Under All Samples)
+This experiment aims to apply the proposed uniﬁed frame-
+work (FMAG with M 2 FM) to a more challenging DPAD
+scenario with non-Moiré Samples. Speciﬁcally, we conduct
+experiments under Protocols 2 and 3. Notably, in Protocols
+2 and 3, the performance of the FMAG method exhibits a
+dramatic decline due to the weak forensic features present in
+the recaptured images within the testing set.
+In this part, we demonstrate the advantage of incorporating
+M2 FM to reconstruct the missing spectral features in the low-
+quality samples before performing DPAD. During the training
+phase, we employ three types of samples, i.e., genuine images in
+DM, recaptured images in DM, and recaptured images without
+moiré in D1. According to the LF in M2 FM, the reconstructed
+spectrum of recaptured images should contain high-frequency
+characteristics corresponding to moiré patterns. Therefore, the
+genuine and recaptured images (with moiré pattern) in DM
+can be directly used as input for training M 2 FM. However,
+for the recaptured images without moiré pattern, we apply the
+TMTP method [19] on these samples to produce synthetic moiré
+spectral peaks in the high-frequency components. We train the
+encoder and decoder while freezing the DPAD network D,
+which has been pre-trained by the FMAG method. Speciﬁcally,
+taking ViT as an example, the encoder comprises 12 Transformer
+layers. The input image is initially divided into 16 ×16 patches
+through a patch embedding layer and processed by the encoder
+to extracts forensic feature with feature dimensions of 768.
+These features are subsequently fed into the decoder for image
+reconstruction. The decoder consists of a lightweight linear
+layer and a pixel-shufﬂe [58] layer. Moreover, we set parameter
+τ =6 4based on prior knowledge of device parameters and the
+MSPL algorithm in Section III-A, which is different from the
+conﬁgurations in [42]. This choice ensures the inclusion of all
+MSPs in the ML(u). To emphasize the restoration of high-
+frequency features, we set the parameters λ1 =2 and λ2 =1 .
+Additionally, considering the importance of classiﬁcation loss,
+which is more signiﬁcant than the visual ﬁdelity of outputs from
+M2 FM network, we experimentally set the parameters α1 =0 .2
+and α2 =1 , respectively.
+Following the previous experimental setup in Section IV-B1,
+we compare FMAG & M 2 FM with FMAG, TMTP, and Cycle-
+GAN. In addition, we also consider CMA [25], which exhibits
+signiﬁcant robustness in detecting screen-recaptured document
+images. CMA introduces chromaticity artifacts as a novel foren-
+sic feature to focus on re-sampling operations in the screen-
+recaptured samples.
+A ss h o w ni nT a b l eVI, the employment of the proposed FMAG
+&M 2 FM method has yielded the best performance across
+Protocols 2 and 3in terms of AUCs and EERs. Similarly, as
+shown in Table VII,F M A G&M 2 FM also outperforms other
+methods in terms of BPCER 10 and BPCER 20 metrics. The
+corresponding DET curves are illustrated in Fig. 7.I nt h eD M→
+SwoMP protocol, with the exception of our proposed FMAG &
+M2 FM method, all other deep models exhibited poor DPAD per-
+formance (average AUC close to 0.5, average EER close to 50%).
+This is attributed to the absence of training samples with weak
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+5378 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+TABLE VI
+EXPERIMENT RESULTS IN PROTOCOLS 2 AND 3
+TABLE VII
+EXPERIMENT RESULTS ON VIT-B16 AND SWIN-B BACKBONE IN PROTOCOL 2
+AND 3W ITH BPCER10 AND BPCER20 METRICS
+Fig. 7. Detection Error Trade-off curves for different methods in Protocols 2
+and 3. (e) and (f) represent the results of ViT-B16 backbone in protocols 2 and 3,
+respectively. (g) and (h) represent the results of Swin-B backbone in protocols 2
+and 3, respectively. The EER is shown in parenthesis for each method. Black dot
+lines represent two operational points BPCER 10 and BPCER20, respectively.
+forensic trace, resulting in poor generalization performance in
+scenarios involving both different document contents and image
+qualities. It is noteworthy that the performance is not satisfac-
+tory when FMAG, TMTP or CycleGAN is incorporated. This
+aligns with our expectations as these methods are sensitive to
+recapturing features in the spectral domain, e.g., Moiré pattern.
+Similarly, CMA demonstrates limited robustness when dealing
+with colorful background texture and low-quality samples. This
+is because the chromaticity features are mainly concentrated at
+the text edges in screen-recaptured samples since they capture
+the imperfect re-sampling phenomena between dark and bright
+pixels. In the samples with colorful background texture or blur-
+ring distortions, the contrast between the dark and bright areas
+are weakened such that DPAD performance of CMA is poor.
+However, upon integrating the M2 FM method, the average AUC
+improved to 0.8055, and the average EER decreased to 25.66%.
+As demonstrated in Fig. 5(b), the proposed method restores
+the missing high-frequency features in low-quality recaptured
+images, recovering the forensic traces in the samples.
+In the DM → SRDID162 protocol, we integrate the results
+from Protocol 1 (DM →SwMP) and II (DM →SwoMP) to eval-
+uate each method on the whole SRDID162 dataset. Compared
+to the original deep models, incorporating our FMAG & M 2 FM
+method leads to an average AUC improvement of 50.01% and an
+average EER reduction of 51.05%. In summary, the experimental
+results demonstrate the proposed FMAG method beneﬁts the
+forensic feature extraction process of generic deep models, and
+the proposed M 2 FM method successfully models the image
+reconstruction process for low-quality images. Therefore, it sig-
+niﬁcantly improves the detection performance in these protocols.
+IV .-D. Ablation Study Under Protocol 3
+In this experiment, we employ two transformer-based back-
+bones, i.e., ViT-B16 and Swin-B, as examples to discuss the
+performance gain from the proposed method module by module.
+Speciﬁcally, we compare the following augmentation conﬁgu-
+rations.
+CONVL: We employ conventional data augmentation tech-
+niques commonly utilized in computer vision models to augment
+the dataset. These techniques encompass cropping, ﬂipping
+(both horizontally and vertically with a probability of 0.5),
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5379
+TABLE VIII
+ABLATION STUDY FOR THE PROPOSED METHOD IN PROTOCOL 3D M→
+SRDID162
+rotation (within the range of 0-180 degrees), contrast adjustment
+(with a probability of 0.5 for auto-contrast), and sharpness
+adjustment (with a probability of 0.5 for auto-sharpness). The
+implementation of these techniques adhered to the default pa-
+rameter settings provided in PyTorch 1.9.0.
+HPF: We directly apply high-pass ﬁlters to the input images
+to highlight the high-frequency features. The radius of the high-
+pass ﬁlter is set to 64, which is consistent with the discussion
+in Section IV-C. This choice ensures all MSPs still remain after
+ﬁltering.
+FMAG w/o MSPL: In this conﬁguration, the frequency-
+domain augmentation technique is applied to the amplitude
+spectrum, disregarding the MSPs estimated by our MSPL
+method. This approach represents a generic domain generaliza-
+tion method, such as [41]. For fairness, the number of augmented
+samples and the selection of the multiplication and addition
+parameters remain consistent with those employed in our FMAG
+method discussed in Section IV-B1.
+FMAG & M 2 FM w/o LD: This conﬁguration employs M 2
+FM to reconstruct the recapturing features in the high-frequency
+domain without considering the guidance from DPAD classiﬁ-
+cation loss. Following Xie et al. [42], we solely employ the
+frequency reconstruction loss to train the M 2 FM network. For
+a fair comparison, the settings of hyper-parameters, such as τ,
+α1 and α2 are consistent with those employed in Section III-C.
+As shown in Table VIII, it is obvious that the proposed
+F M A G&M 2 FM method is the strategy that leads to the best
+performance. In the following, we present the insights from the
+experimental results under different ablation conﬁgurations.
+First, it is important to understand the limitations of tradi-
+tional data augmentation strategies. The CONVL strategy does
+not consider the characteristic of distortions in the document
+recapturing process. On the one hand, a practical document
+authentication scenario does not cover augmentation procedures
+like rotation or cropping. Users must capture the image directly
+in a predetermined frame area and in the correct direction. On
+the other hand, the contrast and sharpness adjustment may atten-
+uate the forensic features, leading to performance degradation.
+Among them, contrast adjustment merely redistributes the pixel
+values by mapping the darkest and brightest pixel values to
+the minimum and maximum values. However, in images with
+relatively weak moiré texture, moiré features will become even
+less discernible. Sharpness adjustment, achieved through a ﬁxed
+ﬁlter, enhances high-frequency components. Nevertheless, it not
+only neglects that the MSPs discussed in Section III-A1 are
+location-speciﬁc for each recaptured image but may also weaken
+the MSPs discussed in Section III-A2 and III-A3. For instance,
+the EER of ViT-B16 increased by 0.53 p.p. under the CONVL
+strategy.
+Second, we discuss the limitation of directly applying a high-
+pass ﬁlter (HPF). Experimental results demonstrate that the HPF
+samples degrade the DPAD performance for the ViT-B16 model
+and Swin-B model compared to the FMAG method (the EERs
+are increased from 38.70% to 40.15%, from 41.33% to 43.21%,
+separately). This is because the high-frequency components not
+only include features related to recapturing attack but also cover
+other high-frequency details of the image, e.g., sharp edge,
+which are irrelevant to the DPAD task.
+Third, we discuss the importance of the MSPL strategy in the
+spectral domain. The FMAG w/o MSPL method performs data
+augmentation in the whole amplitude spectrum. There are slight
+performance improvements for the ViT-B16 model and Swin-B
+model (the EERs are reduced from 40.74% to 39.64%, from
+45.70% to 42.60%, separately) over the CONVL augmentation
+method. However, the performances of FMAG w/o MSPL are
+not as good as the FMAG strategy. This is because FMAG
+w/o MSPL does not exploit the distribution characteristics of
+the moiré distortion in the spectral domain. It indicates that
+the MSPs of recaptured document images, determined by the
+parameters of acquisition devices, contain vital information
+for domain generalization. The FMAG method achieves bet-
+ter performances than FMAG w/o MSPL across two different
+backbones, supporting the importance of our MSPL step.
+Last but not least, we discuss the importance of classiﬁer
+guidance in the proposed FMAG & M 2 FM method. We can
+observe that, without using the classiﬁer loss, the FMAG &
+M2 FM w/o LD method shows an average EER degradation
+of 11.19 p.p. compared to the proposed FMAG & M 2 FM. This
+degradation arises from the fact that our method takes advantage
+of the supervision from the DPAD classiﬁcation result, while the
+FMAG & M 2 FM w/o LD method is self-supervised without
+labeled information. It is noted that our objective is not model
+pre-training but rather the spectral reconstruction process for the
+DPAD task. Therefore, the proposed FMAG & M 2 FM employs
+the DPAD task labels as additional information to supervise the
+reconstruction model and achieve better generalization perfor-
+mance towards samples with weak forensic traces.
+V. C ONCLUSION
+In this work, we propose a DPAD method, named FMAG
+&M 2 FM of good generalization performance on document
+images with different contents and qualities. The proposed
+method is compared with some deep learning-based backbones
+and the existing DPAD methods, including CycleGAN [21],
+TMTP [19], and CMA [25] under challenging cross-domain
+experimental protocols. Experimental results show that the ex-
+isting DPAD methods fail to generalize due to the diversity of
+document sources, countries, and variations in capture condi-
+tions. Meanwhile, the proposed method improves the generic
+deep learning backbones with a reduction of 5.35 and 34.39 p.p.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+5380 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 5, SEPTEMBER/OCTOBER 2025
+on average EERs for high and low-quality samples, respectively.
+The ablation study also demonstrates the importance of different
+components in the proposed FMAG & M 2 FM method.
+However, there are two main limitations of this work. First,
+the proposed method only focuses on the DPAD problem on
+screen-recaptured document images, while neglecting the print-
+recapture ones. Future works should consider more challenging
+scenarios that cover different types of recaptured document
+images. Second, the DPAD methods only focus on detecting
+suspicious recaptured document images, while neglecting other
+forensic tasks. In the future, we plan to exploit the problem
+of forgery localization in recapture document images. Besides
+performing the DPAD task, it is also important to locate the
+tampered regions (if any) in the recaptured document images.
+We believe that the proposed FMAG method and our related
+work [14] can be employed in simulating the recapturing distor-
+tions on manipulated document images.
+REFERENCES
+[1] Y . Huang, T. Lv, L. Cui, Y . Lu, and F. Wei, “LayoutLMv3: Pre-training for
+document AI with uniﬁed text and image masking,” in Proc. 30th ACM
+Int. Conf. Multimedia , 2022, pp. 4083–4091.
+[2] Z. Tang et al., “Unifying vision, text, and layout for universal document
+processing,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. ,
+2023, pp. 19254–19264.
+[3] A. Anand and A. K. Singh, “Dual watermarking for security of COVID-19
+patient record,” IEEE Trans. Dependable Secure Comput. , vol. 20, no. 1,
+pp. 859–866, Jan./Feb. 2023.
+[4] L. Zhao, C. Chen, and J. Huang, “Deep learning-based forgery attack on
+document images,” IEEE Trans. Image Process. , vol. 30, pp. 7964–7979,
+2021.
+[5] H. Chen et al., “DiffUTE: Universal text editing diffusion model,” Adv.
+Neural Inf. Process. Syst. , vol. 36, pp. 63062–63074, 2023.
+[6] Y . Qu, Q. Tan, H. Xie, J. Xu, Y . Wang, and Y . Zhang, “Exploring
+stroke-level modiﬁcations for scene text editing,” in Proc. AAAI Conf.
+Artif. Intell.2023, vol. 37, no. 2, pp. 2119–2127.
+[7] Y . Li, Y . Li, K. Xu, Q. Yan, and R. H. Deng, “Empirical study of face
+authentication systems under OSNFD attacks,” IEEE Trans. Dependable
+Secure Comput., vol. 15, no. 2, pp. 231–245, Mar./Apr. 2018.
+[8] L. Birla, P. Gupta, and S. Kumar, “SUNRISE: Improving 3D mask
+face anti-spooﬁng for short videos using pre-emptive split and merge,”
+IEEE Trans. Dependable Secure Comput. , vol. 20, no. 3, pp. 1927–1940,
+May/Jun. 2023.
+[9] Z. Yu, X. Li, P. Wang, and G. Zhao, “TransRPPG: Remote photoplethys-
+mography transformer for 3D mask face presentation attack detection,”
+IEEE Signal Process. Lett. , vol. 28, pp. 1290–1294, 2021.
+[10] J. Yan and C. Chen, “Cross-domain recaptured document detection with
+texture and reﬂectance characteristics,” in Proc. 2021 Asia-Paciﬁc Signal
+Inf. Process. Assoc. Annu. Summit Conf. , 2021, pp. 1708–1715.
+[11] A. B. Centeno, O. R. Terrades, J. L. Canet, and C. C. Morales, “Recurrent
+comparator with attention models to detect counterfeit documents,” in
+Proc. 2019 Int. Conf. Document Anal. Recognit. , 2019, pp. 1332–1337.
+[12] Z. Hu, C. Chen, W. H. Mow, and J. Huang, “Document recapture detection
+based on a uniﬁed distortion model of halftone cells,” IEEE Trans. Inf.
+Forensics Secur., vol. 17, pp. 2800–2815, 2022.
+[13] C. Chen, L. Zhao, J. Yan, and H. Li, “A distortion model-based pre-
+screening method for document image tampering localization under re-
+capturing attack,” Signal Process., vol. 200, 2022, Art. no. 108666.
+[14] C. Chen, B. Li, R. Cai, J. Zeng, and J. Huang, “Distortion model-based
+spectral augmentation for generalized recaptured document detection,”
+IEEE Trans. Inf. Forensics Secur. , vol. 19, pp. 1283–1298, 2024.
+[15] B. Li and C. Chen, “Robust document presentation attack detection via
+diffusion models and knowledge distillation,” in Proc. Chin. Conf. Pattern
+Recognit. Comput. Vis. , 2024, pp. 278–291.
+[16] J. E. Tapia et al., “First competition on presentation attack detection on ID
+card,” in Proc. 2024 IEEE Int. Joint Conf. Biometrics , 2024, pp. 1–10.
+[17] C. Chen, S. Zhang, F. Lan, and J. Huang, “Domain-agnostic document
+authentication against practical recapturing attacks,” IEEE Trans. Inf.
+Forensics Secur., vol. 17, pp. 2890–2905, 2022.
+[18] D. V . Polevoy et al., “Document liveness challenge dataset (DLC-2021),”
+J. Imag., vol. 8, no. 7, 2022, Art. no. 181.
+[19] D. Benalcazar, J. E. Tapia, S. Gonzalez, and C. Busch, “Synthetic ID
+card image generation for improving presentation attack detection,” IEEE
+Trans. Inf. Forensics Secur., vol. 18, pp. 1814–1824, 2023.
+[20] C. Yang, Z. Yang, Y . Ke, T. Chen, M. Grzegorzek, and J. See, “Doing
+more with Moiré pattern detection in digital photos,” IEEE Trans. Image
+Process., vol. 32, pp. 694–708, 2023.
+[21] R. P. Markham, J. M. E. López, M. Nieto-Hidalgo, and J. E. Tapia, “Open-
+set: ID card presentation attack detection using neural style transfer,” IEEE
+Access, vol. 12, pp. 68573–68585, 2024.
+[22] S. Gonzalez, A. Valenzuela, and J. Tapia, “Hybrid two-stage architecture
+for tampering detection of chipless ID cards,” IEEE Trans. Biometrics.,
+Behav., Identify Sci. , vol. 3, no. 1, pp. 89–100, Jan. 2021.
+[23] J. Magee, S. Sheridan, and C. Thorpe, “An investigation into the applica-
+tion of the meijering ﬁlter for document recapture detection,” J. Adv. Inf.
+Technol., vol. 15, no. 1, pp. 132–137, 2024.
+[24] C. Chen, W. Chen, X. Chen, and H. Li, “A document presentation
+attack detection scheme with optical ﬂow under a ﬂashlight,” in Proc.
+2024 Asia Paciﬁc Signal Inf. Process. Assoc. Annu. Summit Conf. , 2024,
+pp. 1–6.
+[25] C. Chen, L. Lin, Y . Chen, B. Li, J. Zeng, and J. Huang, “CMA: A chro-
+maticity map adapter for robust detection of screen-recapture document
+images,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. , 2024,
+pp. 15577–15586.
+[26] T. Thongkamwitoon, H. Muammar, and P. -L. Dragotti, “An image recap-
+ture detection algorithm based on learning dictionaries of edge proﬁles,”
+IEEE Trans. Inf. Forensics Secur., vol. 10, no. 5, pp. 953–968, May 2015.
+[27] K. Wang, “A simple and effective image-statistics-based approach to
+detecting recaptured images from LCD screens,” Digit. Investigation ,
+vol. 23, pp. 75–87, 2017.
+[28] N. Zhu and Z. Liu, “Recaptured image forensics based on local ternary
+count of high order prediction error,” Signal Process, Image Commun. ,
+vol. 104, 2022, Art. no. 116662.
+[29] H. Cao and A. C. Kot, “Identiﬁcation of recaptured photographs on LCD
+screens,” in Proc. 2010 IEEE Int. Conf. Acoust., Speech Signal Process. ,
+2010, pp. 1790–1793.
+[30] S. González and J. Tapia, “Towards reﬁning ID cards presentation attack
+detection systems using face quality index,” in Proc. 30th Eur. Signal
+Process. Conf., 2022, pp. 1027–1031.
+[31] R. Mudgalgundurao, P. Schuch, K. Raja, R. Ramachandra, and N. Damer,
+“Pixel-wise supervision for presentation attack detection on identity doc-
+ument cards,” IET Biometrics, vol. 11, no. 5, pp. 383–395, 2022.
+[32] J. Li, C. Kong, S. Wang, and H. Li, “Two-branch multi-scale deep
+neural network for generalized document recapture attack detection,”
+in Proc. 2023 IEEE Int. Conf. Acoust., Speech Signal Process. , 2023,
+pp. 1–5.
+[33] C. Chen, M. Li, A. Ferreira, J. Huang, and R. Cai, “A copy-proof scheme
+based on the spectral and spatial barcoding channel models,” IEEE Trans.
+Inf. Forensics Secur., vol. 15, pp. 1056–1071, 2020.
+[34] X. Liu, “Analysis and reduction of moire patterns in scanned halftone
+pictures,” Ph.D. dissertation, Virginia Polytechnic Institute and State Uni-
+versity, Blacksburg, V A, USA, 1996.
+[35] R. Lukac, Single-Sensor Imaging: Methods and Applications for Digital
+Cameras. Boca Raton, FL, USA: CRC Press, 2018.
+[36] J. Ning et al., “MoiréPose: Ultra high precision camera-to-screen pose
+estimation based on Moiré pattern,” in Proc. 28th Annu. Int. Conf. Mobile
+Comput. Netw., 2022, pp. 106–119.
+[37] A. V . Oppenheim, A. S. Willsky, S. H. Nawab, and J. -J. Ding, Signals and
+Systems, vol. 2. Upper Saddle River, NJ, USA: Prentice Hall, 1997.
+[38] H. Cao and A. C. Kot, “Accurate detection of demosaicing regularity for
+digital image forensics,” IEEE Trans. Inf. Forensics Secur. , vol. 4, no. 4,
+pp. 899–910, Dec. 2009.
+[39] R. C. Gonzales and P. Wintz, Digital Image Processing . London, U.K.:
+Addison-Wesley, 1987.
+[40] P. Li, D. Li, W. Li, S. Gong, Y . Fu, and T. M. Hospedales, “A simple feature
+augmentation for domain generalization,” in Proc. IEEE/CVF Int. Conf.
+Comput. Vis., 2021, pp. 8886–8895.
+[41] J. Wang, R. Du, D. Chang, K. Liang, and Z. Ma, “Domain generalization
+via frequency-domain-based feature disentanglement and interaction,” in
+Proc. 30th ACM Int. Conf. Multimedia , 2022, pp. 4821–4829.
+[42] J. Xie, W. Li, X. Zhan, Z. Liu, Y .-S. Ong, and C. C. Loy, “Masked frequency
+modeling for self-supervised visual pre-training,” inProc. Int. Conf. Learn.
+Representations, 2022, pp. 9653–9663.
+[43] Z. Xie et al., “SimMIM: A simple framework for masked image mod-
+eling,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. , 2022,
+pp. 9653–9663.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.
+CHEN et al.: MOIRÉ SPECTRAL AUGMENTATION AND MASKED FREQUENCY MODELING FOR DOCUMENT PRESENTATION ATTACK DETECTION 5381
+[44] K. He, X. Chen, S. Xie, Y . Li, P. Dollár, and R. Girshick, “Masked
+autoencoders are scalable vision learners,” in Proc. IEEE/CVF Conf.
+Comput. Vis. Pattern Recognit. , 2022, pp. 16000–16009.
+[45] The GIMP Development Team, “Gimp,” 2019. [Online]. Available: https:
+//www.gimp.org
+[46] S. Tomar, “Converting video formats with FFmpeg,” Linux J., vol. 2006,
+no. 146, p. 10, 2006.
+[47] M. Buda, A. Maki, and M. A. Mazurowski, “A systematic study of the class
+imbalance problem in convolutional neural networks,” Neural Networks ,
+vol. 106, pp. 249–259, 2018.
+[48] A. Dosovitskiy et al., “An image is worth 16 ×16 words: Transformers
+for image recognition at scale,” in Proc. Int. Conf. Learn. Representa-
+tions, 2021.
+[49] Z. Liu et al., “Swin transformer: Hierarchical vision transformer using
+shifted windows,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recog-
+nit., 2021, pp. 10012–10022.
+[50] H. Bao, L. Dong, S. Piao, and F. Wei, “BEiT: BERT pre-training of image
+transformers,” in Proc. Int. Conf. Learn. Representations , 2021.
+[51] A. Hassani and H. Shi, “Dilated neighborhood attention transformer,”
+2022, arXiv:2209.15001.
+[52] J. Yang, C. Li, X. Dai, and J. Gao, “Focal modulation networks,” in Proc.
+Adv. Neural Inf. Process. Syst. , 2022, vol. 35, pp. 4203–4217.
+[53] Z. Liu, H. Mao, C. -Y . Wu, C. Feichtenhofer, T. Darrell, and S. Xie, “A
+ConvNet for the 2020s,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern
+Recognit., 2022, pp. 11976–11986.
+[54] J. -Y . Zhu, T. Park, P. Isola, and A. A. Efros, “Unpaired image-to-image
+translation using cycle-consistent adversarial networks,” in Proc. IEEE
+Int. Conf. Comput. Vis. , 2017, pp. 2223–2232.
+[55] P. Isola, J. -Y . Zhu, T. Zhou, and A. A. Efros, “Image-to-image translation
+with conditional adversarial networks,” in Proc. IEEE Conf. Comput. Vis.
+Pattern Recognit., 2017, pp. 1125–1134.
+[56] T. -C. Wang, M. -Y . Liu, J. -Y . Zhu, A. Tao, J. Kautz, and B. Catanzaro,
+“High-resolution image synthesis and semantic manipulation with condi-
+tional gans,” in Proc. IEEE Conf. Comput. Vis. Pattern Recognit. , 2018,
+pp. 8798–8807.
+[57] T. Park, A. A. Efros, R. Zhang, and J.-Y . Zhu, “Contrastive Learning for
+Unpaired Image-to-Image Translation,” in Proc. 16th Eur. Conf. Comput.
+Vis., Glasgow, U.K., 2020, pp. 319–345.
+[58] W. Shi et al., “Real-time single image and video super-resolution using
+an efﬁcient sub-pixel convolutional neural network,” in Proc. IEEE Conf.
+Comput. Vis. Pattern Recognit. , 2016, pp. 1874–1883.
+Changsheng Chen (Senior Member, IEEE) received the B.E. degree in software
+engineering from Sun Yat-sen University, Guangzhou, China, in 2008, and the
+Ph.D. degree in electrical and electronic engineering from Nanyang Technologi-
+cal University, Singapore, in 2013. From 2013 to 2015, he was a Postdoctoral Re-
+search Associate with the Department of Electronic and Computer Engineering,
+The Hong Kong University of Science and Technology, Hong Kong. From 2016
+to 2025, he was with the Guangdong Key Laboratory of Intelligent Information
+Processing and the Key Laboratory of Media Security, College of Electronics
+and Information Engineering, Shenzhen University, Shenzhen, China, where he
+is currently an Associate Professor. Since 2025, he has been a Full Professor
+with the Faculty of Engineering, Shenzhen MSU-BIT University, Shenzhen.
+His research interests include multimedia forensics and security, document
+understanding, pattern recognition, and machine learning. He is an Associate
+Editor for IEEE T RANSACTIONS ON INFORMATION FORENSICS AND SECURITY.
+Youjie Lireceived the B.E. degree in electronic information engineering in 2023
+from Shenzhen University, Shenzhen, China, in 2023, where he is currently
+working toward the M.E. degree. His research interests include computer vision
+and multimedia forensics and security.
+Bokang Li received the B.E. degree in communication engineering and the
+M.E. degree in information and communication engineering from Shenzhen
+University, Shenzhen, China, in 2021 and 2024, respectively. His research
+interests include computer vision and multimedia forensics and security.
+Weifan Yu received the B.E. degree in elite innovation experimental class in
+electronic information engineering from Shenzhen University, Shenzhen, China,
+in 2024. He is currently working toward the M.S. degree in computer science
+from the University of California, San Diego, CA, USA. His research interests
+include computer vision and multimedia forensics and security.
+Baoying Chen received the M.Sc. degree from Shenzhen University, Shenzhen,
+China, in 2022. Since 2022, he has been with Alibaba Group, Hangzhou, China,
+where he is currently an AI Security Algorithm Engineer. His research interests
+include multimedia forensics, including AI-generated image/video/audio detec-
+tion, deepfake detection, and image tampering detection.
+Bin Li (Senior Member, IEEE) received the B.E. degree in communication
+engineering and the Ph.D. degree in communication and information system
+from Sun Yat-sen University, Guangzhou, China, in 2004 and 2009, respectively.
+From 2008 to 2009, he was a Visiting Scholar with the New Jersey Institute
+of Technology, Newark, NJ, USA. In 2009, he joined Shenzhen University,
+Shenzhen, China, where he is currently a Professor. He is the Director of
+Guangdong Provincial Key Laboratory of Intelligent Information Processing and
+Shenzhen Key Laboratory of Media Security, Shenzhen. His research interests
+include multimedia forensics, image processing, and deep machine learning. He
+is an Associate Editor for IEEE T RANSACTIONS ON INFORMATION FORENSICS
+AND SECURITY.
+Jiwu Huang (Fellow, IEEE) received the B.S. degree from Xidian University,
+Xi’an, China, in 1982, the M.S. degree from Tsinghua University, Beijing,
+China, in 1987, and the Ph.D. degree from the Institute of Automation, Chinese
+Academy of Sciences, Beijing, in 1998. He is currently a Professor with the
+Faculty of Engineering, Shenzhen MSU-BIT University, Shenzhen, China. He
+has coauthored more than 350 papers in important journals and conferences, with
+Google citations more than 23000 and an H-index of 79. His research interests
+include multimedia forensics and security.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 15,2026 at 14:14:17 UTC from IEEE Xplore.  Restrictions apply.

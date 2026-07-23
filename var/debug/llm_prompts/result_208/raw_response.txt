@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "According to [34], when we focus on the human voice with complicated frequency bands, USRP reader with a higher sampling rate is more suitable for eavesdropping than the COTS RFID reader. Besides, harmonics of RF signal's wavelength is far shorter than that of the fundamental frequency, which is more sensitive to tag displacements[20]. Hence, we choose the USRP N210 reader to monitor the third-order harmonic signals at the frequency of 2761.89MHz with the sampling frequency of 2MHz and utilize the phase acquisition method in [20] for improving the accuracy of voice eavesdropping.",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "reasoning": "The citing paper explicitly cites [34] to justify its choice of USRP reader with higher sampling rate and third-order harmonic monitoring for voice eavesdropping, directly building upon the target paper's method.",
+      "highlight_keywords": ["According to [34]", "USRP reader", "higher sampling rate", "third-order harmonic"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote discusses RFID-based eavesdropping using sub-mm vibration sensing (implied by the harmonic sensitivity to tag displacement) and directly uses the target's findings to justify hardware selection.",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    },
+    {
+      "citation_text": "Tag-Bug[34] utilizes RFID to sense nearby objects vibrations caused by the sound from loudspeaker for voice eavesdropping, but it fails to eavesdrop on live human speech due to large wind noise.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper mentions Tag-Bug [34] in a related work context, describing its limitation (fails on live speech). Although it is a grouped citation, the citation_text contains the target reference marker. The context is a related work listing, and the stance is negative because of the limitation mentioned.",
+      "highlight_keywords": ["Tag-Bug[34]", "fails to eavesdrop on live human speech", "wind noise"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote references RFID-based vibration sensing (sub-mm level) for eavesdropping, which aligns with the template's focus on sub-mm capability, but it is a limitation statement; classified as background due to grouped and limitation context.",
+      "template_satisfied": true,
+      "template_failure_reason": null
+    }
+  ]
+}

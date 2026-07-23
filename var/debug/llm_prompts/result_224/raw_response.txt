@@ -1,0 +1,17 @@
+{
+  "findings": [
+    {
+      "citation_text": "RFID tag can also be used to measure the vibration pattern of a loudspeaker [44]. But, due to its long wavelength (33 cm), it is not a good candidate for tracking mm-level movements.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "reasoning": "The citing paper mentions that the target paper uses RFID to measure loudspeaker vibration, but immediately notes that RFID's long wavelength makes it unsuitable for mm-level tracking. This is a background mention with a negative assessment for the specific application of mm-level movement detection.",
+      "highlight_keywords": ["RFID tag", "vibration pattern", "loudspeaker", "long wavelength", "mm-level movements"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Quote mentions RFID tag and vibration pattern, which are relevant to template 73 (rfid_submm_capability). However, the context does not affirm sub-mm precision; instead it dismisses RFID for mm-level movements. Thus the template is considered not satisfied because the evidence is negative and does not confirm sub-mm capability.",
+      "template_satisfied": false,
+      "template_failure_reason": "Template requires positive recognition of sub-mm vibration sensing, but the citing paper states RFID is 'not a good candidate for tracking mm-level movements', contradicting the template goal."
+    }
+  ]
+}

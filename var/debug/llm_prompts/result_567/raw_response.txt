@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[3]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文将目标论文[3]作为RFID振动感测领域的相关工作，在引言和背景部分将其列为RFID能够感知扬声器振动并实现穿墙窃听的示例。论文主要在相关工作回顾中提及[3]，并未在方法或实验部分直接使用或进行性能对比。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "capability_recognition",
+      "evidence_quote": "On the other hand, some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4].",
+      "evidence_context": "On the other hand, some works use RF signals, such as Wi-Fi[29], mmWave[2], and RFID[3], [4], [30], to capture object vibration for sensing speaker-produced sound[1], [2], [3], [29], [30] or capture body motions for sensing human-speaking sound[4]. However, due to sensor limitations, these methods can sense either speaker-produced or human-speaking sound, but not both simultaneously.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用论文在与许多其他文献的并列引用中提及目标论文，属于分组引用。没有单独描述目标论文的贡献或能力，存在归因风险。因此设为review，claim_type为capability_recognition。",
+      "copy_ready_zh": "该论文将目标论文列为RFID振动感测的代表性工作之一，但未对其能力进行单独强调。",
+      "confidence": "low"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "RFSpy employs Griffin-Lim algorithm [23] to convert sound spectrograms to corresponding time-domain sound waveforms.",
+      "evidence_context": "To recover conversation content, RFSpy employs Griffin-Lim algorithm [23] to convert sound spectrograms to corresponding time-domain sound waveforms. Usually, in the process of reconstructing sound spectrograms from RF signal spectrograms, it is inevitable to occur conversion distortion due to the neural network parameter limitation, which brings noise in the converted time-domain sound waveforms.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” Proc. ACM Interact. Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用的[23]实际上是Griffin-Lim算法，并非目标论文。目标论文的标记是[3]，而此处引用的是[23]。属于false_positive。",
+      "copy_ready_zh": "该处引用了Griffin-Lim算法，与目标论文无关。",
+      "confidence": "high"
+    }
+  ]
+}

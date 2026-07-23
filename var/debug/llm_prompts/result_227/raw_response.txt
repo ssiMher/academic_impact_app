@@ -1,0 +1,43 @@
+{
+  "findings": [
+    {
+      "citation_text": "Some recent works explore using various non-acoustic sensors, such as motion sensors and RF signals, to eavesdrop on speaker-produced sound [ 1, 22, 44–46, 59] or human-speaking sound [7, 39, 51].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [46] is grouped with other references in a list of related work on RF-based sound eavesdropping. The context is general background without specific attribution to the target paper's sub-mm vibration capability.",
+      "highlight_keywords": ["[46]", "RF signals", "eavesdrop on speaker-produced sound"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The citation mentions RFID-based eavesdropping but does not explicitly confirm sub-mm or millimeter-level vibration sensing capability of the target paper. Required patterns like 'sub-mm RFID' or 'millimeter-level sensing' are absent.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit body wording about sub-mm precision or RFID vibration sensing capability attributed to target paper. The citation is a grouped citation lacking attribution."
+    },
+    {
+      "citation_text": "on the other hand, some works use RF signals, such as Wi-Fi [ 48], mmWave [3, 16, 22, 23, 43, 44, 51, 59], and RFID [ 7, 30, 46], to capture surrounding object vibration for sensing speaker-produced sound [3, 22, 23, 30, 44–46, 48]",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [46] is grouped with other RFID works that capture vibrations for speaker-produced sound sensing. The context is a related work listing without specific detail about the target paper's method or sub-mm capability.",
+      "highlight_keywords": ["[46]", "RFID", "capture surrounding object vibration"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The citation groups target paper under RFID vibration sensing but lacks explicit confirmation of sub-mm / millimeter-level precision. Required patterns not met.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit body wording about sub-mm accuracy. The context is a general related work listing with grouped citation."
+    },
+    {
+      "citation_text": "RFID [ 7, 30, 46]",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "Target reference [46] is mentioned in a list of RFID-based sensing works. No further detail or attribution of specific capability.",
+      "highlight_keywords": ["[46]", "RFID"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "Only a grouped citation without any context about sub-mm vibration. Template not satisfied.",
+      "template_satisfied": false,
+      "template_failure_reason": "No explicit body wording about sub-mm precision or technical capability of target paper."
+    }
+  ]
+}

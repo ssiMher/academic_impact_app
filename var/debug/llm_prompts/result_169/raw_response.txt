@@ -1,0 +1,31 @@
+{
+  "findings": [
+    {
+      "citation_text": "More recent work has focused on millimeter-wave (mmWave) radar [87], [88], [89], [90], [91], [92], [93], [94], Radio Frequency Identification (RFID) [95], or by collecting RF emanations from a microphone [96].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target reference [95] is listed among several related works in a grouped citation. The context provides general background on RF-based eavesdropping methods without specific details about the cited paper. The attribution of specific claims to [95] is uncertain due to the grouping.",
+      "highlight_keywords": ["RFID", "[95]"],
+      "keep": true
+    },
+    {
+      "citation_text": "The accuracy of the speech recognition can be as high as 0.94 at 1 m [95] or WER = 0.06 at 2 m [96].",
+      "evidence_type": "detailed_comparison",
+      "stance": "positive",
+      "mention_type": "explicit_target",
+      "reasoning": "This quote directly attributes a specific performance metric (accuracy 0.94 at 1 m) to the target paper [95], comparing it with another work. The stance is positive as it presents the cited paper's achievement as a high accuracy result.",
+      "highlight_keywords": ["accuracy", "0.94", "1 m", "[95]"],
+      "keep": true
+    },
+    {
+      "citation_text": "Our method can recover speech at a source-to-receptor distance of 2 m with WER around 0.2. This performance is not as good as the best prior results of the state-of-the-art side-channel methods, but it can be regarded as a trade-off of attack distance, line-of-sight requirements, and stealthiness.",
+      "evidence_type": "baseline_or_benchmark",
+      "stance": "neutral",
+      "mention_type": "comparison",
+      "reasoning": "Although [95] is not explicitly mentioned in this sentence, it is among the 'best prior results' referenced in the preceding context (accuracy 0.94 at 1 m). The citing paper positions its own performance relative to prior state-of-the-art, implicitly using [95] as a benchmark for comparison.",
+      "highlight_keywords": ["best prior results", "trade-off", "state-of-the-art"],
+      "keep": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "citation_text": "researchers have proposed eavesdropping attacks based on RF technologies, such as WiFi [51], [54], RFID [50], and mmWave [4], [14], [15], [25].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "Target reference [50] is listed as an example of RFID-based eavesdropping attacks, without detailed discussion. It is part of a related work summary, so classified as background.",
+      "highlight_keywords": ["RFID [50]"],
+      "keep": true
+    },
+    {
+      "citation_text": "Reference [50] proposes an RFID-based acoustic eavesdropping method that utilizes RFID tags near the target user. These methods [50], [51], [53], [54] suffer from insufficient vibration resolution due to the long wavelength and low packet rate.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "explicit_target",
+      "reasoning": "The citing paper explicitly discusses [50]'s method and points out a limitation: insufficient vibration resolution. This is a negative evaluation.",
+      "highlight_keywords": ["suffer from insufficient vibration resolution"],
+      "keep": true
+    }
+  ]
+}

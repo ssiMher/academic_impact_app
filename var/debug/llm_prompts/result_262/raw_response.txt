@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25.",
+  "paper_level_summary_zh": "该论文在背景相关工作（2.1节）中将目标论文[23]归类为RF传感型声学窃听方法，仅作为一般性引用提及，未深入讨论或具体评价其亚毫米级振动感知能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Acoustic eavesdropping attacks exploit unintended sound emissions to recover sensitive information such as account details or transaction data, enabling fraud or identity theft [12, 13, 23, 60].",
+      "evidence_context": "In noisy outdoor environments, users are particularly vulnerable because human auditory attention tends to focus on the caller's voice and ignore subtle cues of being monitored [18,29,46]. As a result, acoustic attacks can remain unnoticed even when users are alert to more conventional forms of surveillance. Prior acoustic eavesdropping attacks leverage motion-sensor [12,27,43,60], optical [34,41], and radiofrequency (RF) [13,21] methods. ... Acoustic eavesdropping attacks exploit unintended sound emissions to recover sensitive information such as account details or transaction data, enabling fraud or identity theft [12, 13, 23, 60].",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25.",
+      "why_this_judgment_zh": "该引用出现在引言第一段末尾，仅将目标论文与其它文献一起列为声学窃听攻击的示例，属于背景铺垫，未提供具体技术细节或识别其独特贡献。",
+      "copy_ready_zh": "引用论文在引言中提及目标论文[23]作为声学窃听攻击的一般例子，未专门评价其RFID亚毫米感知能力。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "RF sensing reconstructs audio by capturing tiny vibrations with millimeter waves [13, 21, 47]; motion sensors recover speech by detecting sound-induced micro-vibrations [12, 19, 23, 32, 33, 41, 60].",
+      "evidence_context": "Previous studies on voice communication eavesdropping mainly include RF sensing [13,21,22,47–49,52,53,55,56], motion sensor–based eavesdropping [9, 12, 19, 23, 27, 31–33, 41, 60], and optical sensing [16,34,42]. RF sensing reconstructs audio by capturing tiny vibrations with millimeter waves [13, 21, 47]; motion sensors recover speech by detecting sound-induced micro-vibrations [12, 19, 23, 32, 33, 41, 60]; optical sensing remotely captures audio by sensing surface vibrations [16, 34].",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. 2021. Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25.",
+      "why_this_judgment_zh": "目标论文[23]被归为运动传感器窃听类（motion sensor–based eavesdropping），而引文描述的是运动传感器通过检测声音诱发的微振动来恢复语音，但目标论文实际是RFID振动感知；此分类错误，且引用属普通列举。",
+      "copy_ready_zh": "引用论文在相关工作综述中错误地将目标论文[23]归类为运动传感器窃听，仅作一般性列举，未突出其RFID亚毫米振动感知特性。",
+      "confidence": "medium"
+    }
+  ]
+}

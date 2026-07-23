@@ -1,0 +1,35 @@
+{
+  "findings": [
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "citation_text": "Some methods leverage the aliasing e␣ect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera's color filter array. The aliasing pattern is sensitive to the pose of the target, introducing the potential of an ultraprecise out-of-plane rotation measurement. However, the reported accuracy does not demonstrate superiority when compared to traditional solutions, which might be due to the inherently low-quality imaging of aliasing patterns. Furthermore, the working range is limited, as the frequencies of the target pattern and the camera's color filter array must be closely matched.",
+      "reasoning": "The cited paper is grouped with [16] and [17] as examples of aliasing-based methods. The text states that their reported accuracy does not show superiority over traditional solutions and notes limitations, which is a negative evaluation. Since [15] is part of the group, the negative claim applies to it as well, with attribution uncertainty.",
+      "keywords": [
+        "aliasing",
+        "accuracy does not demonstrate superiority",
+        "inherently low-quality imaging",
+        "working range is limited"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Some methods leverage the aliasing e␣ect [15], [16], [17], which arises when a camera captures a target with a periodic pattern whose frequency closely matches the camera's color filter array. The aliasing pattern is sensitive to the pose o...",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[15]",
+      "citation_text_contains_target_marker": true,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "The cited paper is grouped with [16] and [17] as examples of aliasing-based methods. The text states that their reported accuracy does not show superiority over traditional solutions and notes limitations, which is a negative evaluation. Since [15] is part of the group, the negative claim applies to it as well, with attribution uncertainty.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

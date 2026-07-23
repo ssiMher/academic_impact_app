@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "Pengfei Hu, Hui Zhuang, Panneer Selvam Santhalingam, Riccardo Spolaor, Parth Pathak, Guoming Zhang, and Xiuzhen Cheng. 2022. Accear: Accelerometer acoustic eavesdropping with unconstrained vocabulary. In 2022 IEEE Symposium on Security and Privacy (SP). IEEE, 1757–1773.",
+  "paper_level_summary_zh": "该引用论文在背景介绍中将目标论文作为运动传感器窃听领域的代表性相关工作之一进行列举，未对其亚毫米级感知能力、首次或开创性进行任何明确或单独的阐述，属于普通的相关工作引用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Previous studies on voice communication eavesdropping mainly include RF sensing [13,21,22,47–49,52,53,55,56], motion sensor–based eavesdropping [9, 12, 19, 23, 27, 31–33, 41, 60], and optical sensing [16,34,42].",
+      "evidence_context": "Previous studies on voice communication eavesdropping mainly include RF sensing [13,21,22,47–49,52,53,55,56], motion sensor–based eavesdropping [9, 12, 19, 23, 27, 31–33, 41, 60], and optical sensing [16,34,42].",
+      "reference_entry": "Pengfei Hu, Hui Zhuang, Panneer Selvam Santhalingam, Riccardo Spolaor, Parth Pathak, Guoming Zhang, and Xiuzhen Cheng. 2022. Accear: Accelerometer acoustic eavesdropping with unconstrained vocabulary. In 2022 IEEE Symposium on Security and Privacy (SP). IEEE, 1757–1773.",
+      "why_this_judgment_zh": "引用句使用[23]作为运动传感器窃听的代表之一，但该引用是分组列举，未对目标论文进行任何单独描述。此外，目标论文的标题/内容涉及RFID sub-mm振动，并非运动传感器窃听，因此该引用可能是误标（false_positive）。",
+      "copy_ready_zh": "引用论文仅在背景介绍中将本目标论文与其他运动传感器窃听工作一同列举，未提供任何关于亚毫米级功能或首次的单独陈述。",
+      "confidence": "medium"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "motion sensor–based eavesdropping [9, 12, 19, 23, 27, 32, 33, 43, 60] requires intrusion into the target device, increasing the risk of exposure for the attacker.",
+      "evidence_context": "Motion sensor-based eavesdropping [9, 12, 19, 23, 27, 32, 33, 43, 60] requires intrusion into the target device, increasing the risk of exposure for the attacker.",
+      "reference_entry": "Pengfei Hu, Hui Zhuang, Panneer Selvam Santhalingam, Riccardo Spolaor, Parth Pathak, Guoming Zhang, and Xiuzhen Cheng. 2022. Accear: Accelerometer acoustic eavesdropping with unconstrained vocabulary. In 2022 IEEE Symposium on Security and Privacy (SP). IEEE, 1757–1773.",
+      "why_this_judgment_zh": "引用句将[23]归为运动传感器窃听方法，但目标论文实际是RFID-based方法，不涉及设备侵入。因此该引用可能为误标。",
+      "copy_ready_zh": "引用论文将目标论文错误归类为需要入侵设备的运动传感器窃听方法，与目标论文的实际方法不符。",
+      "confidence": "medium"
+    }
+  ]
+}

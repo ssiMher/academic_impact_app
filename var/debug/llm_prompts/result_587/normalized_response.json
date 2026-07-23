@@ -1,0 +1,46 @@
+{
+  "target_reference_marker": "[30]",
+  "target_reference_entry": "[30] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID\nby capturing sub-mm level vibration,” Proc. ACM Interactive Mobile\nWearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "本文在介绍相关工作部分，将[23]即目标论文归入激光麦克风类别，并指出其属于侵入式攻击（需要安装恶意软件）。未对其亚毫米级精度或RFID能力做具体描述。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Laser microphones[20], [21], [22], [23], [34] use lidar sensors to illuminate vibrating objects and collect reflected signals for audio reconstruction. However, these methods have several drawbacks: ... 4) Certain methods[22], [23] are considered intrusive attacks, requiring malware installation in the victim device to extract laser data.",
+      "evidence_context": "Laser microphones[20], [21], [22], [23], [34] use lidar sensors to illuminate vibrating objects and collect reflected signals for audio reconstruction. However, these methods have several drawbacks: ... 4) Certain methods[22], [23] are considered intrusive attacks, requiring malware installation in the victim's device to extract laser data.",
+      "reference_entry": "C. Wang et al., \"Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,\" Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "引用论文将目标论文错误归类为激光麦克风，并说其需要安装恶意软件才能提取激光数据。这与目标论文实际的RFID被动感知方法不符，属于错误归因，因此判定为false_positive。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文将目标论文[23]误归为激光麦克风类侵入式攻击，未体现其RFID亚毫米级振动感知能力。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[30]",
+      "evidence_reference_marker": "[20]",
+      "evidence_reference_entry_raw": "[20] R. P. Muscatell, “Laser microphone,”J. Acoustical Soc. Amer ., vol. 76,\nno. 4, pp. 1284–1284, 1984.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[30] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID\nby capturing sub-mm level vibration,” Proc. ACM Interactive Mobile\nWearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "and RFID[30] is also utilized for eavesdropping.",
+      "evidence_context": "It is worth noting that the aforementioned eavesdropping attacks are considered invasive attacks, ... Additionally, [22], [23] transforms the lidar sensing radar on a robotic vacuum cleaner into a laser microphone, and RFID[30] is also utilized for eavesdropping.",
+      "reference_entry": "C. Wang et al., \"Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,\" Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "此句中[30]是C. Wang等人的RFID论文，但此处[23]被单独列出并错误归为激光雷达，而RFID引用为[30]，并非目标论文。该句为普通列举，无具体描述。",
+      "copy_ready_zh": "文中列举了RFID用于窃听，但所引[30]并非目标论文。",
+      "confidence": "medium",
+      "target_reference_marker": "[30]",
+      "evidence_reference_marker": "[30]",
+      "evidence_reference_entry_raw": "[30] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID\nby capturing sub-mm level vibration,” Proc. ACM Interactive Mobile\nWearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "reference_match_status": "matched",
+      "reference_match_reason": "reference_entry_matches_target",
+      "normalized_target_reference": "[30] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID\nby capturing sub-mm level vibration,” Proc. ACM Interactive Mobile\nWearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": true,
+      "citation_text_contains_other_marker": false,
+      "target_reference_entry_matches_target": true
+    }
+  ]
+}

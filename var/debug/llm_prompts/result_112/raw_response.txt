@@ -1,0 +1,31 @@
+{
+  "findings": [
+    {
+      "citation_text": "Extensive research has been conducted on acoustic eavesdropping attacks, focusing on capturing vibrations produced by audio sources using various types of sensors, known as \"physical channel\" attacks. One category of attacks involves the analysis of data from motion sensors embedded in mobile devices (such as accelerometers and gyroscopes) to recognize specific words or sentences [1], [2], [30], [59]. In addition, researchers have proposed eavesdropping attacks based on RF technologies, such as WiFi [51], [54], RFID [50], and mmWave [4], [14], [15], [25].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citation groups [50] with other RF-based eavesdropping works in a background survey of related work. This is a routine listing without specific description of the cited paper's capabilities. Attribution is uncertain due to grouped citation.",
+      "highlight_keywords": ["RFID", "eavesdropping", "RF technologies"],
+      "keep": true
+    },
+    {
+      "citation_text": "Reference [50] proposes an RFID-based acoustic eavesdropping method that utilizes RFID tags near the target user.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "explicit_target",
+      "reasoning": "The citing paper explicitly describes [50] as proposing an RFID-based acoustic eavesdropping method using RFID tags. This is a factual summary without evaluation of sub-mm vibration capability. It is background positioning.",
+      "highlight_keywords": ["RFID-based", "acoustic eavesdropping", "RFID tags"],
+      "keep": true
+    },
+    {
+      "citation_text": "These methods [50], [51], [53], [54] suffer from insufficient vibration resolution due to the long wavelength and low packet rate.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The citing paper states that methods including [50] suffer from insufficient vibration resolution, implying a limitation of RFID-based approach. However, this is a grouped critique, so attribution uncertainty exists. The negative stance is clear.",
+      "highlight_keywords": ["insufficient vibration resolution", "long wavelength", "low packet rate"],
+      "keep": true
+    }
+  ]
+}

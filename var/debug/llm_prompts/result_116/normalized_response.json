@@ -1,0 +1,91 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RFID-based methods have also been explored, with Wang et al. [13] showing how audio can be intercepted via RFID.",
+      "reasoning": "The context is a brief listing of wireless signal-based methods in related work, without details on the sub-mm vibration capability. The target reference is mentioned in a grouped citation [8]–[13] and described as 'showing how audio can be intercepted via RFID', which is generic, but the context includes 'However, these systems are often affected by environmental factors and require expensive equipment', implying limitations. No explicit acknowledgment of sub-mm level vibration sensing is present.",
+      "keywords": [
+        "RFID",
+        "audio",
+        "intercepted"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Wireless signals have also been exploited by researchers for sound recovery [8]–[13].",
+      "reasoning": "This is a general statement in the related work section listing wireless methods. The target reference is included in a grouped citation, but no specific detail about sub-mm vibration or through-wall eavesdropping is provided. It simply positions the target work within a broad category.",
+      "keywords": [
+        "Wireless signals",
+        "sound recovery"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Various methods leverage diverse channels to achieve this, such as motion sensors [1]–[7] and wireless signals [8]–[13], both exploiting different vulnerabilities to access sensitive audio data.",
+      "reasoning": "This is from the introduction, grouping the target reference under wireless signals. It is a high-level categorization without specific details about the target's contributions. No mention of sub-mm vibration or through-wall capability.",
+      "keywords": [
+        "wireless signals",
+        "sensitive audio data"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "RFID-based methods have also been explored, with Wang et al. [13] showing how audio can be intercepted via RFID.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[13]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The context is a brief listing of wireless signal-based methods in related work, without details on the sub-mm vibration capability. The target reference is mentioned in a grouped citation [8]–[13] and described as 'showing how audio can be intercepted via RFID', which is generic, but the context includes 'However, these systems are often affected by environmental factors and require expensive equipment', implying limitations. No explicit acknowledgment of sub-mm level vibration sensing is present.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Wireless signals have also been exploited by researchers for sound recovery [8]–[13].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[13]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This is a general statement in the related work section listing wireless methods. The target reference is included in a grouped citation, but no specific detail about sub-mm vibration or through-wall eavesdropping is provided. It simply positions the target work within a broad category.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Various methods leverage diverse channels to achieve this, such as motion sensors [1]–[7] and wireless signals [8]–[13], both exploiting different vulnerabilities to access sensitive audio data.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[13]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "This is from the introduction, grouping the target reference under wireless signals. It is a high-level categorization without specific details about the target's contributions. No mention of sub-mm vibration or through-wall capability.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

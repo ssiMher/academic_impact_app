@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "components/status_badge.html" import status_badge %}
+{% from "components/task_card.html" import task_card %}
+{% from "components/empty_state.html" import empty_state %}
+
+{% block title %}论文分析会话 {{ session.id }}{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">论文分析会话</div>
+      <h1>{{ session.query_text }}</h1>
+      <p>状态：{{ status_badge(session.status) }}</p>
+    </div>
+  </header>
+  <section class="card">
+    <dl class="meta-grid">
+      <div><dt>Query</dt><dd>{{ session.query_text }}</dd></div>
+      <div><dt>Query 类型</dt><dd>{{ session.query_kind }}</dd></div>
+      <div><dt>状态</dt><dd>{{ session.status }}</dd></div>
+    </dl>
+    <div class="quick-links">
+      <form action="/paper-sessions/{{ session.id }}/discover" method="post">
+        <button class="button button-primary" type="submit">创建 discover_paper 任务</button>
+      </form>
+      <form action="/paper-sessions/{{ session.id }}/match-local-pdfs" method="post">
+        <button class="button button-secondary" type="submit">匹配本地 PDF</button>
+      </form>
+      <a class="button button-secondary" href="/paper-sessions/{{ session.id }}/external-citations/import">导入外部引用列表</a>
+      <a class="button button-secondary" href="/paper-sessions/{{ session.id }}/exports/report.md">下载 report.md</a>
+      <a class="button button-secondary" href="/paper-sessions/{{ session.id }}/exports/structured.json">下载 structured.json</a>
+    </div>
+  </section>
+  <section>
+    <div class="section-heading"><h2>最近任务</h2></div>
+    {% if recent_tasks %}
+      {% for task in recent_tasks %}{{ task_card(task) }}{% endfor %}
+    {% else %}
+      {{ empty_state("暂无任务", "运行引用发现或 PDF 匹配后会显示任务状态。") }}
+    {% endif %}
+  </section>
+  <section class="card">
+    <div class="section-heading"><h2>引用论文</h2></div>
+    {% if citing_papers %}
+      <table class="table">
+        <thead><tr><th>ID</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for citing_paper in citing_papers %}
+            <tr>
+              <td>引用论文 #{{ citing_paper.id }}</td>
+              <td>{{ citing_paper.analysis_status }}</td>
+              <td><a href="/citing-papers/{{ citing_paper.id }}">查看</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      {{ empty_state("暂无引用论文", "请先运行 discover_paper 任务。") }}
+    {% endif %}
+  </section>
+{% endblock %}

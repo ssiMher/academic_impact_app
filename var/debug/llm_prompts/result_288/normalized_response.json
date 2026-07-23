@@ -1,0 +1,17 @@
+{
+  "target_reference_marker": "[30]",
+  "target_reference_entry": "C. Wang et al., \"Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,\" Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该引用论文在相关工作部分简要提及目标论文，将其作为RFID用于窃听的例子之一，未展开讨论或评价其具体能力。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Additionally, [22], [23] transforms the lidar sensing radar on a robotic vacuum cleaner into a laser microphone, and RFID[30] is also utilized for eavesdropping.",
+      "evidence_context": "Section II RELATED WORK: It is worth noting that the aforementioned eavesdropping attacks are considered invasive attacks... Non-intrusive eavesdropping attacks are continually being developed... Additionally, [22], [23] transforms the lidar sensing radar on a robotic vacuum cleaner into a laser microphone, and RFID[30] is also utilized for eavesdropping.",
+      "reference_entry": "C. Wang et al., \"Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,\" Proc. ACM Interactive Mobile Wearable Ubiquitous Technol., vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "正文仅提到RFID被用于窃听，未提及sub-mm、振动、through-wall等具体能力，属于普通提及，不满足模板要求。同时，该引用被放在invasive attacks一段，而目标论文实际是非侵入式的，存在归类错误。",
+      "copy_ready_zh": "引用论文仅将目标论文列为RFID窃听的一个例子，未确认其亚毫米级或穿墙能力，不适合作为能力佐证。",
+      "confidence": "high"
+    }
+  ]
+}

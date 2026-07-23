@@ -1,0 +1,67 @@
+{
+  "findings": [
+    {
+      "citation_text": "For example, MediaPipe [1] and DeepPose [34] allow human body posture and movement to be tracked with a regular 2D camera by using deep learning algorithms, and YOLACT allows sensing and tracking of objects in a video [3] without instrumenting the user or the object with active sensors.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "reasoning": "This sentence is about other vision-based methods and does not mention MoiréPose.",
+      "highlight_keywords": ["MediaPipe", "DeepPose", "YOLACT"],
+      "keep": false
+    },
+    {
+      "citation_text": "This Moiré phenomenon has been shown to be effective in various applications, such as pose [21] and camera position [37].",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "grouped_citation",
+      "reasoning": "This sentence cites [21] (MoiréPose) as an example of an effective application of the Moiré phenomenon. It is a grouped citation with [37] (MoiréBoard). The claim is positive but general; the attribution to MoiréPose is uncertain but probable.",
+      "highlight_keywords": ["pose", "[21]"],
+      "keep": true
+    },
+    {
+      "citation_text": "Successful attempts have also been made to employ Moiré patterns for tracking camera and object positions [7, 37], as well as advancing to pose estimation [21, 24, 32, 33].",
+      "evidence_type": "background",
+      "stance": "positive",
+      "mention_type": "grouped_citation",
+      "reasoning": "This sentence mentions pose estimation and cites [21] among others. It groups MoiréPose with other works, indicating it is part of a successful line of research. The attribution is uncertain due to grouping.",
+      "highlight_keywords": ["pose estimation", "[21]"],
+      "keep": true
+    },
+    {
+      "citation_text": "While there have been several attempts to use Moiré patterns for sensing and tracking objects [21], visualizing interactions [31], and analyzing mechanical properties [4], little has been studied about the use of Moiré patterns for indirectly sensing human interactions.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This sentence references [21] as an example of using Moiré patterns for sensing and tracking objects. It is a grouped citation with [31] and [4]. The claim is neutral, stating existing attempts.",
+      "highlight_keywords": ["sensing and tracking objects", "[21]"],
+      "keep": true
+    },
+    {
+      "citation_text": "MoiréTag adopted the validated methodology of calculating real displacement from Moiré pattern displacement and applied it in creating novel tangible user interfaces.",
+      "evidence_type": "method_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "reasoning": "This sentence states that MoiréTag adopted the validated methodology, which likely refers to the methodology from prior works including MoiréPose (cited in [21]). However, the citation text does not explicitly name MoiréPose. The surrounding context references [21] in the previous sentences, but this specific sentence does not cite a reference. Therefore, it is not direct evidence.",
+      "highlight_keywords": ["adopted the validated methodology"],
+      "keep": false
+    },
+    {
+      "citation_text": "We use a similar method to create and detect displacement of Moiré fringes as MoiréBoard [37].",
+      "evidence_type": "method_foundation",
+      "stance": "neutral",
+      "mention_type": "method_use",
+      "reasoning": "This sentence explicitly cites MoiréBoard [37] but not MoiréPose. It does not mention the target paper.",
+      "highlight_keywords": ["MoiréBoard", "[37]"],
+      "keep": false
+    },
+    {
+      "citation_text": "While there have been several attempts to use Moiré patterns for sensing and tracking objects [21], visualizing interactions [31], and analyzing mechanical properties [4], little has been studied about the use of Moiré patterns for indirectly sensing human interactions.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This sentence references [21] as an example of using Moiré patterns for sensing and tracking objects. It is a grouped citation with [31] and [4]. The claim is neutral, stating existing attempts.",
+      "highlight_keywords": ["sensing and tracking objects", "[21]"],
+      "keep": true
+    }
+  ]
+}

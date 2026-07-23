@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[50]",
+  "target_reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” in Proc. ACM IMWUT, vol. 5, 2021, pp. 1–25.",
+  "paper_level_summary_zh": "该文在背景介绍中将目标论文列为基于RF技术的窃听攻击方法之一，认为其存在振动分辨率不足的局限性，属于普通参考文献引用。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In recent years, researchers have exploited RF technologies (e.g., WiFi, RFID, mmWave) to perform eavesdropping attacks. In particular, [51], [54] rely on WiFi Received Signal Strength (RSS) and Channel State Information (CSI), respectively, to identify specific spoken words. Using Impulse Radio Ultra-Wideband, [53] can separate multiple audio sources (household objects) by vibration detection. Reference [50] proposes an RFID-based acoustic eavesdropping method that utilizes RFID tags near the target user. These methods [50], [51], [53], [54] suffer from insufficient vibration resolution due to the long wavelength and low packet rate.",
+      "evidence_context": "In recent years, researchers have exploited RF technologies (e.g., WiFi, RFID, mmWave) to perform eavesdropping attacks. In particular, [51], [54] rely on WiFi Received Signal Strength (RSS) and Channel State Information (CSI), respectively, to identify specific spoken words. Using Impulse Radio Ultra-Wideband, [53] can separate multiple audio sources (household objects) by vibration detection. Reference [50] proposes an RFID-based acoustic eavesdropping method that utilizes RFID tags near the target user. These methods [50], [51], [53], [54] suffer from insufficient vibration resolution due to the long wavelength and low packet rate.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” in Proc. ACM IMWUT, vol. 5, 2021, pp. 1–25.",
+      "why_this_judgment_zh": "引用正文均指向TARGET_REFERENCE_MARKER [50]，但属于普通相关工作的列举，且包含负面评价（insufficient vibration resolution），未明确认可亚毫米级精度，因此判定为false_positive，不以亚毫米能力佐证。",
+      "copy_ready_zh": "该文将目标论文列为基于RFID的窃听方法，但指出其存在振动分辨率不足的局限性，属于普通参考文献引用，未提供亚毫米级能力佐证。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Reference [50] proposes an RFID-based acoustic eavesdropping method that utilizes RFID tags near the target user.",
+      "evidence_context": "In recent years, researchers have exploited RF technologies (e.g., WiFi, RFID, mmWave) to perform eavesdropping attacks. In particular, [51], [54] rely on WiFi Received Signal Strength (RSS) and Channel State Information (CSI), respectively, to identify specific spoken words. Using Impulse Radio Ultra-Wideband, [53] can separate multiple audio sources (household objects) by vibration detection. Reference [50] proposes an RFID-based acoustic eavesdropping method that utilizes RFID tags near the target user. These methods [50], [51], [53], [54] suffer from insufficient vibration resolution due to the long wavelength and low packet rate.",
+      "reference_entry": "C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID by capturing sub-mm level vibration,” in Proc. ACM IMWUT, vol. 5, 2021, pp. 1–25.",
+      "why_this_judgment_zh": "该引用仅在相关工作中简单描述了目标论文的方法，未提及子毫米精度，并且后续给出了负面评价（insufficient vibration resolution），因此不应作为正面证据，也不符合first/pioneering模板。",
+      "copy_ready_zh": "该文在相关工作中将目标论文描述为利用RFID标签进行窃听的方法，但未肯定其亚毫米级精度，并指出其分辨率不足，因此不作为能力认可。",
+      "confidence": "high"
+    }
+  ]
+}

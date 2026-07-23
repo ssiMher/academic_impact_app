@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "citation_text": "researchers have proposed eavesdropping attacks based on RF technologies, such as WiFi [51], [54], RFID [50], and mmWave [4], [14], [15], [25].",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "reasoning": "This context groups RFID [50] alongside WiFi and mmWave as examples of RF-based eavesdropping attacks in a related work overview. It does not provide specific details about the target paper's method or contribution; it is a general listing.",
+      "highlight_keywords": ["RFID [50]", "RF technologies"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions 'RFID [50]' and the general topic of eavesdropping, but does not include explicit sub-mm or millimeter-level vibration sensing terms. The template requires explicit body wording for sub-mm precision; hence the match is partial and fits the 'plain RFID/eavesdropping mentions are representative_work or ordinary_citation only' rule.",
+      "template_satisfied": false,
+      "template_failure_reason": "The quote does not contain explicit sub-mm/millimeter-level or vibration sensing language specific to the target paper's capability. It is a plain grouped citation in a related work listing."
+    },
+    {
+      "citation_text": "Reference [50] proposes an RFID-based acoustic eavesdropping method that utilizes RFID tags near the target user. These methods [50], [51], [53], [54] suffer from insufficient vibration resolution due to the long wavelength and low packet rate.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "explicit_target",
+      "reasoning": "This context explicitly cites [50] and describes its method (RFID-based acoustic eavesdropping using tags near the user) followed by a limitation: insufficient vibration resolution. The citing paper uses this to motivate its own approach. The stance is negative due to the limitation.",
+      "highlight_keywords": ["Reference [50] proposes", "RFID-based acoustic eavesdropping", "insufficient vibration resolution"],
+      "keep": true,
+      "matched_template_ids": [73],
+      "template_match_reason": "The quote mentions 'RFID' and 'vibration resolution', but does not explicitly state sub-mm or millimeter-level capability. The limitation discussed ('insufficient vibration resolution') contrasts with the target's claimed sub-mm precision, but the target's precision is not explicitly affirmed. The template requires explicit body wording for sub-mm precision.",
+      "template_satisfied": false,
+      "template_failure_reason": "The quote does not contain explicit sub-mm/millimeter-level wording. It discusses vibration resolution in a negative context (insufficient) rather than confirming the target's sub-mm capability."
+    }
+  ]
+}

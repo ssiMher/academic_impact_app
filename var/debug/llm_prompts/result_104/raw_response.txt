@@ -1,0 +1,23 @@
+{
+  "findings": [
+    {
+      "citation_text": "[23] utilizes RFID tags and cGAN to perform acoustic eavesdropping, but this approach is less practical as it requires pre-installing RFID tags near the target.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "related_work",
+      "reasoning": "This quote mentions the target paper [23] in the context of wireless-based eavesdropping approaches, highlighting its use of RFID tags and cGAN but also pointing out its practical limitation. It is presented as part of a general overview of related work, not as a direct foundation for the citing paper's method.",
+      "highlight_keywords": ["RFID tags", "cGAN", "acoustic eavesdropping", "less practical"],
+      "keep": true
+    },
+    {
+      "citation_text": "Overall, these methods based on WiFi signals and impulse radio [14], [15], [21], [22], [23] are limited by the inadequate vibration resolution caused by low packet rates and long wavelengths.",
+      "citation_text": "Overall, these methods based on WiFi signals and impulse radio [14], [15], [21], [22], [23] are limited by the inadequate vibration resolution caused by low packet rates and long wavelengths.",
+      "evidence_type": "background",
+      "stance": "negative",
+      "mention_type": "grouped_citation",
+      "reasoning": "The target paper [23] is grouped with other methods (WiFi, impulse radio) and criticized for limited vibration resolution. This is a general limitation statement without specific mention of the target paper's achievements. The citation includes the target marker, so attribution is clear but weak.",
+      "highlight_keywords": ["limited by", "inadequate vibration resolution", "low packet rates", "long wavelengths"],
+      "keep": true
+    }
+  ]
+}

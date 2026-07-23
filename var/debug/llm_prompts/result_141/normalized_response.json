@@ -1,0 +1,64 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Wireless systems based on long-wavelength signals represented by RFID [5], [6] have limited displacement sensitivity.",
+      "reasoning": "The citing paper groups RFID [5] (target) and [6] as long-wavelength wireless systems with limited displacement sensitivity. While it acknowledges the target's approach, it categorizes it as a limitation rather than highlighting sub-mm level capability. Evidence does not explicitly mention sub-mm or fine-grained vibration.",
+      "keywords": [
+        "RFID",
+        "limited displacement sensitivity",
+        "long-wavelength signals"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "RFID [5], [6] is limited in detecting small amplitudes due to its long wavelength.",
+      "reasoning": "In Related Work, the citing paper states that RFID methods (including target [5]) are limited in detecting small amplitudes due to long wavelength. This does not affirm sub-mm level capability; rather it points to a limitation. No explicit mention of sub-mm or fine-grained vibration.",
+      "keywords": [
+        "RFID",
+        "limited in detecting small amplitudes",
+        "long wavelength"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Wireless systems based on long-wavelength signals represented by RFID [5], [6] have limited displacement sensitivity.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[5]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "The citing paper groups RFID [5] (target) and [6] as long-wavelength wireless systems with limited displacement sensitivity. While it acknowledges the target's approach, it categorizes it as a limitation rather than highlighting sub-mm level capability. Evidence does not explicitly mention sub-mm or fine-grained vibration.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "RFID [5], [6] is limited in detecting small amplitudes due to its long wavelength.",
+      "evidence_type": "limitation_or_negative",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[5]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "In Related Work, the citing paper states that RFID methods (including target [5]) are limited in detecting small amplitudes due to long wavelength. This does not affirm sub-mm level capability; rather it points to a limitation. No explicit mention of sub-mm or fine-grained vibration.",
+      "promotion_decision": "saved_background_anchor_upgrade",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    }
+  ]
+}

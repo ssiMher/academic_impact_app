@@ -1,0 +1,25 @@
+<section>
+  <h2>PDF 状态</h2>
+  {% if pdf_asset %}
+    <dl class="meta-grid">
+      <div>
+      <dt>原始文件名</dt>
+      <dd>{{ pdf_asset.original_filename }}</dd>
+      </div>
+      <div>
+      <dt>抽取状态</dt>
+      <dd>{{ pdf_asset.extract_status }}</dd>
+      </div>
+      <div>
+      <dt>文件大小</dt>
+      <dd>{{ pdf_asset.size_bytes }} bytes</dd>
+      </div>
+      <div>
+      <dt>SHA256</dt>
+      <dd>{{ pdf_asset.sha256 }}</dd>
+      </div>
+    </dl>
+  {% else %}
+    <p>尚未上传 PDF。</p>
+  {% endif %}
+</section>

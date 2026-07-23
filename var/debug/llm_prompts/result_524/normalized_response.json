@@ -1,0 +1,27 @@
+{
+  "target_reference_marker": "[21]",
+  "target_reference_entry": "[21] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,”Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+  "paper_level_summary_zh": "该论文在引言中提及RFID语音检测相关工作，将目标论文与RFSpy、RF-Parrot等一起列为RFID-based voice detection的例子，并在表I中将其与其它窃听技术进行比较。但正文未使用[21]进行具体描述或评价，属于普通引用，未提供亚毫米级直接证据。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Existing efforts include mmWave-based voice detection [1]–[6], RFID-based voice detection [7]–[9], and UWB-based voice detection [10].",
+      "evidence_context": "Since voice-based acoustic signals are easily blocked by soundproof materials, direct acoustic eavesdropping from outside a private space is often infeasible. As a result, Radio Frequency (RF)-based communication and sensing technologies have been explored in increasingly sophisticated forms for eavesdropping applications. Existing efforts include mmWave-based voice detection [1]–[6], RFID-based voice detection [7]–[9], and UWB-based voice detection [10].",
+      "reference_entry": "C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, and S. Lu, “Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-mm level vibration,” Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "why_this_judgment_zh": "该引用为群组引用（[7]–[9]），其中[9]可能指目标论文，但引用标记与目标论文不匹配（目标论文在参考文献中为[21]）。引言中仅将其归为RFID-based voice detection的早期工作，未单独描述目标论文的sub-mm能力，属于普通相关文献列举，不应视为能力佐证。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "本文在引言中将目标论文（[21]）与RFSpy、RF-Parrot等并列为RFID语音检测相关技术，但未具体展开其亚毫米级振动感知能力。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[21]",
+      "evidence_reference_marker": "[1]",
+      "evidence_reference_entry_raw": "[1] C. Wang, F. Lin, Z. Ba, F. Zhang, W. Xu, and K. Ren, “Wavesdropper:\nThrough-wall word detection of human speech via commercial mmwave\ndevices,”Proceedings of the ACM on Interactive, Mobile, Wearable and\nUbiquitous Technologies, vol. 6, no. 2, pp. 1–26, 2022.",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[21] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,\n“Thru-the-wall eavesdropping on loudspeakers via rfid by capturing sub-\nmm level vibration,”Proceedings of the ACM on Interactive, Mobile,\nWearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

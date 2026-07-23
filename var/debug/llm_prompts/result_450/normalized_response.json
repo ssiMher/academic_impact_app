@@ -1,0 +1,47 @@
+{
+  "target_reference_marker": "[49]",
+  "target_reference_entry": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+  "paper_level_summary_zh": "引用论文《Quantum Wireless Sensing: Principle, Design and Implementation》在相关工作和原理说明中引用[23]作为Rydberg原子的一般参考资料，没有对目标论文《Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration》的具体能力或贡献进行描述或评价。",
+  "evidences": [
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "evidence_context": "As shown in Figure 2, the basic principle of a quantum receiver is that the electrons of an atom (e.g., Cesium atom) are triggered to higher energy levels to receive RF signals. For example, to receive 2.4 GHz WiFi signals, the electrons are triggered from energy level 6 to energy level 66. In quantum systems, an atom with electrons at high energy levels (i.e., above level 20) is called a Rydberg atom [23].",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用[23]引用的是一本关于Rydberg原子的通用教科书，并非目标论文《Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration》。因此属于错误匹配。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文将[23]作为Rydberg原子的通用定义来源，未涉及目标论文。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[49]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Thomas Gallagher. 2006.Rydberg Atoms. Springer New York, New\nYork, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "evidence_context": "From the macroscopic perspective, conventional receivers receive RF signals using antennas. From the microscopic perspective, quantum receiver received RF signals using the electron energy transition of atoms. Based on the Schrödinger equation [23], E′(t) can be measured in both macroscopic and microscopic perspectives.",
+      "reference_entry": "Thomas Gallagher. 2006. Rydberg Atoms. Springer New York, New York, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "why_this_judgment_zh": "引用[23]引用的是一本关于Rydberg原子的通用教科书，并非目标论文。 原文证据句引用了其他编号，没有引用目标论文编号。",
+      "copy_ready_zh": "引用论文使用[23]作为薛定谔方程的引用来源，与目标论文无关。",
+      "confidence": "high",
+      "postprocess_reason": "cited_other_reference_marker",
+      "target_reference_marker": "[49]",
+      "evidence_reference_marker": "[23]",
+      "evidence_reference_entry_raw": "[23] Thomas Gallagher. 2006.Rydberg Atoms. Springer New York, New\nYork, NY, 235–245. https://doi.org/10.1007/978-0-387-26308-3_14",
+      "reference_match_status": "mismatch",
+      "reference_match_reason": "evidence_marker_not_target_marker",
+      "normalized_target_reference": "[49] ChuyuWang,LeiXie,YuancanLin,WeiWang,YingyingChen,Yanling\nBu, Kai Zhang, and Sanglu Lu. 2022. Thru-the-wall Eavesdropping\non Loudspeakers via RFID by Capturing Sub-mm Level Vibration.\nProceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous\nTechnologies 5, 4 (Dec. 2022), 182:1–182:25.",
+      "citation_text_contains_target_marker": false,
+      "citation_text_contains_other_marker": true,
+      "target_reference_entry_matches_target": false
+    }
+  ]
+}

@@ -1,0 +1,1603 @@
+You are analyzing the citing paper full text with target-reference anchoring.
+Please prioritize TARGET_REFERENCE_CONTEXTS. These contexts are body-text locations that contain the target reference marker.
+If正文中的理论推导、公式建模、模型假设、方法设计或实验比较明确引用 TARGET_REFERENCE_MARKER，即使没有直接出现目标论文标题，也可以作为 theoretical_foundation 或 method_foundation 证据。
+If citation_text contains TARGET_REFERENCE_MARKER, do not return findings=[] just because the cited paper title is absent.
+If context is in References, it cannot be evidence.
+If grouped citations contain TARGET_REFERENCE_MARKER, you may return mention_type="grouped_citation" and must explain attribution uncertainty.
+If Related Work treats the cited paper as a representative example of a method category or technical line, and citation_text contains TARGET_REFERENCE_MARKER, you may return evidence_type="representative_work" with neutral stance.
+If representative_work is not certain, you may keep evidence_type="background" but explain in reasoning that it is representative or field-positioning evidence.
+If context is ordinary related work listing, you may classify it as background.
+If context involves equations, model assumptions, technical derivations, method design, or domain-specific terminology supplied in the context, prioritize theoretical_foundation or method_foundation when supported.
+Only report evidence explicitly grounded in the provided body text.
+Each finding must include citation_text copied from the main body.
+Do not use bibliography/reference-list entries as findings.
+Only output JSON.
+Do not output Markdown.
+Do not output explanatory prose.
+Do not output chain-of-thought or <think> content.
+The top-level JSON object must be {"findings": []}.
+If there is no evidence, return exactly {"findings": []}.
+Return only JSON matching this exact schema:
+{
+  "findings": [
+    {
+      "citation_text": "exact quote from the main body, not References",
+      "evidence_type": "method_foundation | theoretical_foundation | baseline_or_benchmark | detailed_comparison | positive_evaluation | representative_work | first_or_seminal_claim | application_extension | limitation_or_negative | background",
+      "stance": "positive | neutral | negative | mixed",
+      "mention_type": "explicit_target | grouped_citation | related_work | method_use | comparison | reference_only | other",
+      "reasoning": "why this quote is evidence for how the citing paper discusses the cited paper",
+      "highlight_keywords": ["..."],
+      "keep": true
+    }
+  ]
+}
+
+CITING_PAPER_TITLE: FPANet: Frequency-based video demoiréing using frame-level post alignment
+CITED_PAPER_TITLE: MoiréPose: ultra high precision camera-to-screen pose estimation based on Moiré pattern
+CITED_PAPER_YEAR: 2022
+CITED_PAPER_VENUE: MobiCom
+CITED_PAPER_DOI: 10.1145/3495243.3560537
+CITED_PAPER_AUTHORS: Jingyi Ning, Lei Xie 0004, Yi Li 0062, Yingying Chen 0001, Yanling Bu, Baoliu Ye, Sanglu Lu
+TARGET_REFERENCE_MARKER: 
+TARGET_REFERENCE_ENTRY: 
+TARGET_REFERENCE_CONTEXTS:
+(none)
+TARGET_ALIAS_CONTEXTS:
+(none)
+ACTIVE_EVIDENCE_TEMPLATES:
+
+FULL_EXTRACTED_TEXT:
+FPANet: Frequency-based Video Demoir´eing using Frame-level Post Alignment
+Gyeongrok Oha, Sungjune Kima, Heon Gud, Sang Ho Yoonc, Jinkyu Kim*b, Sangpil Kim*a
+aDepartment of Artificial Intelligence, Korea University, South Korea
+bDepartment of Computer Science and Engineering, Korea University, South Korea
+cGraduate School of Culture Technology, KAIST, South Korea
+dLG Display Research Center, South Korea
+Abstract
+Moir´e patterns, created by the interference between overlapping grid patterns in the pixel space, degrade the visual
+quality of images and videos. Therefore, removing such patterns (demoir ´eing) is crucial, yet remains a challenge
+due to their complexities in sizes and distortions. Conventional methods mainly tackle this task by only exploiting
+the spatial domain of the input images, limiting their capabilities in removing large-scale moir ´e patterns. Therefore,
+this work proposes FPANet, an image-video demoir ´eing network that learns filters in both frequency and spatial
+domains, improving the restoration quality by removing various sizes of moir´e patterns. To further enhance, our model
+takes multiple consecutive frames, learning to extract frame-invariant content features and outputting better quality
+temporally consistent images. We demonstrate the e ffectiveness of our proposed method with a publicly available
+large-scale dataset, observing that ours outperforms the state-of-the-art approaches in terms of image and video quality
+metrics and visual experience.
+Keywords: Moir´e Removal, Video Restoration, Signal Processing.
+1. Introduction
+Moir´e patterns are commonly observed in visual con-
+tents, which are taken by ordinary digital cameras, cap-
+turing a screen of a digital display device. This is mainly
+due to frequency aliasing – an interference between
+overlapping grid patterns, such as camera sensor grid
+and display pixel grid or textures on clothes. Such in-
+terference depends on the degree of overlap, result-
+ing in diverse and complex patterns, including stripes,
+curves, and ripples, which are analytically infeasible
+(see Fig. 1). They also significantly degrade the visual
+quality of images and videos, often causing severe color
+distortions of the original content. This makes it chal-
+lenging to remove such moir ´e patterns and restore the
+original content.
+Learning-based approaches have been introduced to
+train a model to filter out visual artifacts and restore
+the original contents automatically. Recently, ConvNet-
+based hierarchical architectures have been explored to
+∗ Corresponding authors: Sangpil Kim (spk7@korea.ac.kr) and Jinkyu
+Kim (jinkyukim@korea.ac.kr)
+VDmoire TIP2018
+(a) (b) (c)
+Figure 1: Examples of video frames or images that have moir´e patterns
+as visual artifacts. Note that (a) and (b) are consecutive frames, which
+are extracted from the publicly available VDmoire dataset, while (c)
+is from the TIP2018 dataset. Target images are shown in the first row,
+and images with moir ´e patterns are shown at the bottom. For better
+visualization, we also provide magnified patches.
+remove various sizes of moir ´e patterns in only spatial
+domain (Sun et al., 2018b; He et al., 2019; Yu et al.,
+2022b). However, these approaches still suffer from the
+elimination of the large-scale moir ´e pattern and the re-
+covery of color distortion.
+An alternative branch of research for demoir ´e fo-
+cuses on leveraging frequency priors, such as the dis-
+crete wavelet domain (DWT) or discrete Fourier trans-
+form (DFT). Recent works (Liu et al., 2020a; Bolun
+Preprint submitted to Neural Networks December 6, 2024
+arXiv:2301.07330v3  [cs.CV]  5 Dec 2024
+Amplitude Phase
+ Phase
+Moire Clean
+(b)(a)
+IFFT IFFT
+Amplitude
+Figure 2: Visualization on the e ffect of amplitude and phase compo-
+nent over moir´e patterns. The orange box generates a synthetic image
+combined with moir ´e image amplitude and clean image phase. The
+green box generates a synthetic image combined with the moir ´e im-
+age phase and clean image amplitude.
+et al., 2021; Zheng et al., 2020) that address artifacts
+across a wide range of frequencies caused by interfer-
+ence suggest that co-learning in the frequency domain
+is useful for handling moir ´e patterns of various sizes
+and shapes. However, a frequency spectrum of the moir´e
+pattern is often intermingled with the original contents.
+Moreover, the camera’s Bayer filter mosaic is imbal-
+anced over the RGB channel, producing different inten-
+sities of moir ´e patterns. Due to the intrinsic complex-
+ities of moir ´e patterns, a naive approach incorporating
+frequency domain into the conventional network is in-
+sufficient to completely separate the desired degraded
+frequency signal.
+To address this issue, we advocate for leveraging am-
+plitude and phase components separately. In our exper-
+iment (see Fig. 2), color distortion or degradation is of-
+ten caused by the signal’s amplitude component, while
+moir´e patterns remain in the phase component. Thus,
+instead of directly utilizing frequency components as
+done in conventional approaches, encoding these com-
+ponents in a separate branch will accelerate the learning
+procedure.
+Thus, we propose a novel module called Frequency
+Selection Fusion (FSF), which first transforms the spa-
+tial information into the frequency domain spectrum us-
+ing Fast Fourier Transform (FFT). Its amplitude and
+phase components are extracted and encoded separately.
+We further apply a selective fusion strategy to merge
+both components. Moreover, to maximize the represen-
+tation power in the spatial domain, we adopt multi-scale
+architecture to improve restoring fine-grained details in
+the spatial domain.
+This is only a part of the story. We further expand
+our work for video demoir ´eing tasks where we now
+take multiple consecutive frames, outputting temporally
+consistently restored images. We argue that leveraging
+multiple frames with similar contents but slightly dif-
+ferent moir ´e patterns is helpful to filter out such dis-
+tortions, while augmented views of original contents
+are used to restore main content features. Thus, a key
+module for video demoir ´eing models is aligning multi-
+ple consecutive frame inputs. Conventional aligning ap-
+proaches (Chan et al., 2021, 2022) used recurrent ar-
+chitectures (e.g. use bidirectional or uni-directional re-
+current units followed by using an image warping tech-
+nique), but they are prone to accumulate misalignment
+errors in a long sequence input, resulting in poor restora-
+tion performance. Enlarging receptive fields by apply-
+ing deformable convolution (Dai et al., 2017; Tian et al.,
+2020; Wang et al., 2019; Dai et al., 2022) is an al-
+ternative way to align features of multiple consecutive
+frames. However, aligning features without removing
+moir´e patterns often yields a large misalignment error,
+as shown in Fig. 3. Thus, to address this issue, we pro-
+pose an improved alignment module called Post Align
+Module (PAM). Unlike existing approaches that use an
+alignment module in the early stage (and are separated
+from the main network), we apply such an alignment
+module in the multiple intermediate stages where more
+distortions are getting removed. This allows the align-
+ment module to be robust against moir´e distortions.
+Our proposed FPANet effectively integrates two sig-
+nificant components within a unified network for video
+demoir´eing. First, we effectively remove moir´e patterns
+with amplitude and phase components under the sig-
+nificant observation of the frequency domain. Second,
+we precisely encode temporal cues of the neighboring
+frames considering the underlying misalignment from
+the undesired artifacts. To demonstrate the effectiveness
+of our methods, we conducted numerous ablation stud-
+ies and show competitive results in various evaluation
+metrics, peak signal-to-ratio (PSNR), structural simi-
+larity (SSIM), Learned Perceptual Image Patch Sim-
+ilarity (LPIPS), Frechet Video Distance (FVD), and
+Feature-SIMilarity (FSIM). To quantitatively evaluate
+FPANet, we compare the di fference between ground
+truth clean images and estimated images. Furthermore,
+we observed that our proposed methods are e ffective
+in removing moir ´e patterns and reconstructing a fine-
+2
+Frame 3Frame 2
+ImageFeature (w/o moire)(before alignment)Feature (w/o moire)(after alignment)Feature (w/ moire)(after alignment)
+Flow
+Figure 3: Example for misalignment caused by moir ´e patterns. Aligned features between reference frame (Frame 2) and target frame (Frame 3)
+with or without moir ´e patterns are listed in the first row. To measure the accuracy for alignment, we calculate optical flow using PWC-Net (Sun
+et al., 2018a), illustrating the relative motion by the color coding that indicates the motion vectors (direction and magnitude) with color intensity.
+detailed image compared with previous state-of-the-art
+methods. Our main contributions are summarized as fol-
+lows:
+• We propose a novel building module called Fre-
+quency Selection Fusion (FSF), which consists
+of two modules: (i) Frequency Selection Mod-
+ule (FSM) and (ii) Cross Scale Fusion Module
+(CSFM). Based on an in-depth examination of
+moir´e patterns, our FSF transforms the input into
+the frequency domain spectrum and operates on
+their amplitude and phase components separately
+to remove large-scale moir ´e patterns without cre-
+ating undesired color artifacts. In our extensive ex-
+periments, we demonstrate that these modules are
+effective in removing moir´e patterns without creat-
+ing noticeable visual artifacts.
+• To deal with multiple consecutive frames for video
+demoir´eing tasks, we introduce an advanced tem-
+poral feature alignment module (PAM) deployed in
+the multiple intermediate stages to remove various
+types of moir´e distortions.
+• We compare our model with current state-of-
+the-art approaches on a publicly available video
+demoir´eing dataset called VDmoire, and ours out-
+performs existing approaches in various image
+and video quality metrics, such as PSNR, SSIM,
+LPIPS, FVD, and FSIM.
+2. Related Works
+2.1. Moir´ e Removal
+The interference between two similar signals creates
+moir´e pattern. In particular, when taking a picture of a
+display, the moir´e pattern is caused by the misalignment
+between the grid of the display and the camera filter.
+Moir´e patterns that are not present in the original image
+can seriously degrade the image quality because of the
+shape, which looks like a ripple, ribbon, or stripe, and
+the color change. With the advances of deep learning
+and neural network, several works (Sun et al., 2018b;
+He et al., 2019; Kim et al., 2020; Peng et al., 2024;
+Du et al., 2024; Cheng and Fu, 2024) deeply explore
+the architectural design to address moir ´e patterns of
+various sizes through the hierarchical pipeline. Among
+these, DMHN (Cheng and Fu, 2024) addresses the im-
+age hiding task by utilizing the moir ´e patterns through
+deep neural networks, enhancing the e ffectiveness of
+concealing and recovering hidden images. In addition,
+FHDe2Net (He et al., 2020) and ESDNet (Yu et al.,
+2022b) are designed for demoir´eing high-resolution im-
+ages, with dimensions such as 3840×2160. FDNet (Liu
+et al., 2020b) restores a clean image given a degraded
+image, aided by a defocused moir ´e image. Further-
+more, MRGAN (Yue et al., 2021) proposes an unsuper-
+vised method leveraging Generative Adversarial Net-
+work (Goodfellow et al., 2014) without using explicit
+moir´e and clean image pairs. Apart from the exten-
+sive investigations on spatial domain, the frequency do-
+3
+main is also widely adopted to handle large-scale moir´e
+patterns through wavelet transform (Liu et al., 2020a)
+and implicit Discrete Cosine Transform (DCT) (Zheng
+et al., 2019; Bolun et al., 2021; Dai et al., 2023). How-
+ever, these methods still su ffer from removing moir ´e
+patterns clearly because they do not sufficiently leverage
+the property of moir´e patterns in the Fourier domain.
+As an extension of image demoir´eing research, video
+demoir´e is firstly introduced by (Dai et al., 2022), by
+restoring videos using relation-based consistency loss.
+DTCENet (Liu et al., 2024) utilizes the invertible frame-
+work for better video restoration quality. However, since
+the moir´e patterns not only desaturate the colors across
+the entire image but also obscure the recognition of ob-
+ject shapes, this method can not fully recover the orig-
+inal color and fine-grained details. A concurrent work,
+DTNet (Xu et al., 2024), solely leverages the manually
+selected spectrum based on basic directions obtained
+from the Discrete Cosine Transform (DCT). Neverthe-
+less, they still overlook compositional interaction of am-
+plitude and phase in forming moir´e patterns.
+In this paper, we concentrate on the video demoir ´e
+that has been explored less in the former literature. Our
+proposed methods are the first works in demoir´e task to
+remove moir´e texture and recover the original color in
+the frequency domain using amplitude and phase. In ad-
+dition, we design Post Align Module (PAM) to leverage
+the neighboring frames as auxiliary information without
+disruption.
+2.2. Learning in the Frequency Domain
+Recently, learning in the frequency domain has been
+widely studied in various fields (Yuan et al., 2019;
+Mao et al., 2021; Chi et al., 2020, 2019; Yang and
+Soatto, 2020; Yu et al., 2022a; Cai et al., 2021; Qin
+et al., 2021; Rao et al., 2021; Suvorov et al., 2022;
+Zou et al., 2021; Zhou et al., 2022; Jiang et al., 2021).
+Some of these methods (Mao et al., 2021; Chi et al.,
+2020, 2019) applied the spectral block correspondence
+to the vanilla convolution block where they utilize each
+grid value, which is associated with the frequency com-
+ponents. This is advantageous for leveraging a much
+larger receptive field than conventional convolution op-
+erations. Also, FcaNet (Qin et al., 2021) proposed fre-
+quency channel attention using the discrete cosine trans-
+form (DCT) to compress each feature over pre-defined
+DCT bases. Cai et al. (Cai et al., 2021) suggests the use-
+fulness of amplitude and phase information for gener-
+ating photo-realistic images in the generative models.
+Given this, Focal Frequency Loss (Jiang et al., 2021) is
+utilized as a regularizer for the generative models. Also,
+FSDGN (Yu et al., 2022a) and Fourmer (Zhou et al.,
+2023) show similar motivation on amplitude and phase
+information of diverse degradation factors (such as haze
+and rain). However, those architectural designs fail to
+fully exploit both information with unidirectional flow
+(i.e. frequency to spatial), and neglect a thorough inves-
+tigation on moir´e patterns. LaMa (Suvorov et al., 2022)
+shows remarkable performance in the inpainting task
+with Fast Fourier Convolution (Chi et al., 2020), which
+has the advantage of recovering repetitive structures
+such as fences. We also follow this line of work where
+we exploit amplitude and phase components separately
+via our proposed Frequency Selection Module (FSM)
+for the video demoir´eing task.
+2.3. Multi-frame Encoding and Alignment
+Techniques for encoding multiple consecutive frames
+can mainly be categorized into two ways: (i) window-
+based and (ii) recurrent-based methods. Window-based
+approaches (Wang et al., 2019; Liu et al., 2021; Li et al.,
+2020; Dudhane et al., 2022; Tian et al., 2020; Chadha
+et al., 2020) often use deformable convolution to have
+enlarged receptive field followed by encoding concate-
+nated multiple frames. For example, TDAN (Tian et al.,
+2020) predicts offsets of the convolution kernel to align
+multi-frame features, EDVR (Wang et al., 2019) used
+Pyramid Cascade Deformable (PCD), which is the hi-
+erarchical architecture to facilitate precise o ffset pre-
+diction, which is widely adopted in the field of video
+restoration task (Wang et al., 2019; Liu et al., 2021;
+Dudhane et al., 2022; Dai et al., 2022; Tian et al., 2020).
+Recurrent-based methods often utilize recurrent
+units for encoding a sequence of frames: e.g. Ba-
+sicVSR (Chan et al., 2021) and BasicVSR ++ (Chan
+et al., 2022) leverage bidirectional flow to align multiple
+frames over time. However, dealing with long-term de-
+pendency issues remains challenging with the recurrent
+architectures, and their aligning performance is sub-
+optimal. Thus, in this paper, we pursue to align fea-
+tures between neighboring frames without the interfer-
+ence of moir´e patterns and computational burden. Thus,
+we present the Post Align Module (PAM) that aligns
+nearby features more accurately, and it can be easily
+plugged into a conventional convolution block.
+3. Method
+In this paper, we propose a novel video demoir ´eing
+method called FPANet (Frequency-based video demoir´e
+using frame-level Post Alignment). Following existing
+work, our model also adopts encoder-decoder archi-
+tecture, which encodes an input image with moir ´e to
+4
+a high-level feature representation, retaining geometric
+structural information for restoring high-quality images.
+Instead of taking a single image It at a certain timestep
+t, our model takes the previous It−1 and the next frame
+It+1 as well. Thus, it takes three consecutive frames as
+input: I = {It−1,It,It+1}. Given this, our model is trained
+to produce a restored image Pt.
+As shown in Fig. 4, our model consists of the follow-
+ing two main components: (i) Frequency Selection Fu-
+sion (FSF) and (ii) Post Align Module (PAM). Our core
+module, FSF block, leverages spatial-frequency dual-
+domain features with two submodules: Frequency Se-
+lection Module (FSM) and Cross Scale Fusion Mod-
+ule (CSFM). FSM first converts the incoming spatial-
+domain features into frequency-domain features, then
+its amplitude and phase components are separately pro-
+cessed to remove moir ´e patterns, retaining geometric
+structural information (Sect. 3.2). After processing fre-
+quency representation, multi-scale features for restoring
+both global and fine-grained features are incorporated in
+FSF using CSFM (Sect. 3.3).
+Lastly, PAM effectively aligns multiple consecutive
+frames with reducing visual artifacts (Sect 3.4).
+3.1. Preliminary
+Moir´e PatternMoir´e pattern, which arises when mul-
+tiple repetitive structures overlap, is a well-known phe-
+nomenon that significantly degrades the quality of vi-
+sual content. To investigate the moir ´e pattern, we first
+consider two monochrome images which have periodic
+grating shapes. According to the (Amidror, 2009; Ning
+et al., 2022), a simple cosinusoidal grating formulation
+follows as:
+Gi(x,y) = 1
+2 + 1
+2cos(2πfi(xcosθi + ysinθi)), i ∈{1,2},
+(1)
+where the f indicates frequency and θ is the direction
+of periodic stripes (illustrated in the 1 st row of Fig. 5).
+To obtain the superposition Gm(x,y) as shown in Fig. 5
+(top right), we multiply two grating functions, G1 ×G2:
+Gm(x,y) = (1
+2 + 1
+2cos(2πf1[xcosθ1 + ysinθ2]))×
+(1
+2 + 1
+2cos(2πf1[xcosθ2 + ysinθ2])).
+(2)
+Upon expanding Eq. 2, we can represent the newly gen-
+erated impulse (i.e., the moir´e impulse) as follows:
+1
+8cos2π( f1[xcosθ1 + ysinθ1] −f2[xcosθ2 + ysinθ2])+
+1
+8cos2π( f1[xcosθ1 + ysinθ1] + f2[xcosθ2 + ysinθ2]),
+(3)
+where we present only two terms excluding the ex-
+isting frequency impulse. Consequently, we can de-
+compose moir´e specific structures into frequency com-
+ponent Fm(u,v), by applying a 2-dimensional Fourier
+Transform on Eq. 3.
+Additionally, in the frequency domain, we can easily
+explain the moir ´e pattern graphically based on Fourier
+approach. To express the grating images as spectral rep-
+resentations in the frequency domain, we apply a 2-
+dimensional Fourier Transform and visualize the results
+S 1(u,v) and S 2(u,v) in 2nd row of Fig. 5. According to
+the Fourier theorem (Bracewell and Bracewell, 1986),
+the product of each grating function can be replaced by
+convolution of the spectral representation (i.e., S m = S 1
+∗S 2). Thus, the convolution of the respective spectra
+generates two pairs of impulses and the original impulse
+as shown in spectrum S m of Fig. 5 (bottom right). Note
+that we observe the additional frequency impulse (f1+ f2
+and f1 −f2) that correspond to each term of Eq. 3 and vi-
+sualize them as red and blue dots in Fig. 5. Thus, moir´e
+patterns, which are not presented in original structures,
+not only exhibit visually distinct appearances but also
+demonstrate di fferent properties in the frequency do-
+main.
+Fourier Transform One key component behind our
+model is encoding an input image in the frequency do-
+main. Thus, we first explain how we convert a spatial
+domain feature F(x,y) ∈RH×W×3 into frequency com-
+ponents F(u,v). One common way to achieve this is via
+Discrete Fourier Transform (DFT), which decomposes
+spatial information (i.e. images) into frequency compo-
+nents using the following equation:
+F(u,v) =
+W−1X
+x=0
+H−1X
+y=0
+F(x,y) ·e−i2π( x
+W u+ y
+H v) , (4)
+where H and W indicate the height and width of the
+image, respectively. This frequency informationF(u,v)
+can further be decomposed into amplitude FA(u,v) and
+phase FP(u,v) components as follows:
+FA(u,v) =
+q
+Re2(u,v) + Im2(u,v)
+FP(u,v) = arctan(Im(u,v)/Re(u,v))
+(5)
+where Re(u,v) and Im( u,v) denote the real and imagi-
+nary value of complex Fourier coe fficient, respectively
+(i.e. F(u,v) = Re(u,v) + Im(u,v)).
+3.2. Frequency Selection Module (FSM)
+As shown in Fig. 4, our model consists of multiple
+Frequency Spatial Fusion (FSF) blocks in series, each
+5
+…
+DecoderDecoder
+FSF Block Conv2d (stride=2)PixelShufflePost Align ModuleNearby Frame FeatureOffset Flow
+PAMPAMPAM
+𝒜{"#$,"&$}( 𝒜{"#$,"&$}) 𝒜{"#$,"&$}$
+𝒪"#$(
+𝒪"&$( 𝒪"&$)
+𝒪"#$)
+ℱ{"#$,","&$}* Intermediate features of Input sequence𝒪"#$* Previous frame offset𝒪"&$* Next frame offset𝒜{"#$,"&$}* Aligned featuresof nearby frames
+[𝐼"#$,𝐼",𝐼"&$] 𝑃"$
+𝑃")𝑃"(
+ℱ{"#$,","&$}$ ℱ{"#$,","&$}) ℱ{"#$,","&$}(
+ℱ{"#$,","&$}( ℱ{"#$,","&$}) ℱ{"#$,","&$}$
+Figure 4: An overview of our proposed FPANet. FPANet is based on an encoder-decoder architecture design. Frequency Selection Fusion (FSF)
+block is the core part of FPANet that is responsible for removing moir ´e patterns using frequency domain information. Also, Post Align Mod-
+ule (PAM) is used for leveraging temporal information between nearby frames.
+𝑣
+𝑢 𝜃! 𝜃"
+𝑓#−𝑓#
+𝑣
+𝑢
+𝑣
+𝑢−𝑓!
+𝑓!
+−𝑓!
+𝑓!
+𝑓#−𝑓#
+𝑔𝑟𝑎𝑡𝑖𝑛𝑔𝑠𝐺# 𝑔𝑟𝑎𝑡𝑖𝑛𝑔𝑠𝐺! 𝑠𝑢𝑝𝑒𝑟𝑝𝑜𝑠𝑖𝑡𝑖𝑜𝑛𝐺"
+𝑆𝑝𝑒𝑐𝑡𝑟𝑢𝑚𝑆# 𝑆𝑝𝑒𝑐𝑡𝑟𝑢𝑚𝑆! 𝑆𝑝𝑒𝑐𝑡𝑟𝑢𝑚𝑆"
+𝑓#+𝑓!
+𝑓#−𝑓!−𝑓#−𝑓!
+−𝑓#+𝑓!𝑚𝑜𝑖𝑟𝑒𝑖𝑚𝑝𝑢𝑙𝑠𝑒
+Figure 5: Example for moir ´e pattern caused by the superposition of
+two gratings and their spectrum. Red and blue dot indicate the moir ´e
+impulse which is not appeared in the existing spectrum in the fre-
+quency domain
+of which contains two components: (i) Frequency Se-
+lection Module (FSM) and (ii) Cross Scale Fusion Mod-
+ule (CSFM). In this section, we explain the details of the
+FSM, and we will explain the CSFM in the next section.
+Note that Hi, Wi, and Ci represent the height, width, and
+channel dimensions ati-th stage, respectively. As shown
+in Fig. 6 (left), the i-th FSM block takes as an input a
+(spatial domain) feature Fi(x,y) ∈RHi×Wi×Ci , outputting
+an encoded feature of the same dimension with a skip
+connection, i.e. FSM(Fi(x,y)) + Fi(x,y). The first step in
+the FSM block transforms the spatial features into fre-
+quency features Fi(u,v) ∈RHi×(⌊Wi
+2 ⌋+1)×Ci using 2D Fast
+Fourier Transform (FFT) (Brigham and Morrow, 1967).
+We only take half of the matrix to improve computa-
+tional efficiency because 2D FFT produces a conjugate
+symmetric Hermitian matrix.
+The resulting frequency features are then decom-
+posed into amplitude FA
+i (u,v) ∈ RHi×(⌊Wi
+2 ⌋+1)×Ci and
+phase FP
+i (u,v) ∈ RHi×(⌊Wi
+2 ⌋+1)×Ci components using
+Eq. 5. Given these features, we apply a selective fusion
+strategy to filter out moir ´e patterns e ffectively, which
+generally depends on both amplitude and phase com-
+ponents. Inspired by prior works (Li et al., 2019; Za-
+mir et al., 2022; Fan et al., 2023; Liu et al., 2019), we
+(channel-wise) concatenate both features, followed by
+1 ×1 and 3 ×3 convolution layers in series to encode
+combined information. Then, we generate confidence
+maps (αi ∈RCi and βi ∈RCi ) using a global average
+pooling (GAP) layer, another 1 ×1 convolution layer,
+and a softmax layer. These (channel-wise) confidence
+maps are then multiplied by FA
+i (u,v) and FP
+i (u,v) ac-
+cordingly. Lastly, we apply 2-D Inverse Fast Fourier
+Transform (IFFT) to transform frequency features into
+spatial features as follows:
+FSM(Fi(x,y)) = IFFT(Conv(αi ⊙FA
+i (u,v)),
+Conv(βi ⊙FP
+i (u,v))))
+(6)
+6
+SoftmaxS
+Conv Conv
+C
+GAP
+ConvConv
+Conv
+I F F T
+⨀
+⨀
+F F TAmplitudeTransformPhaseTransform
+SFEB
+SFEB
+SFEB
+GAP
+GAP
+GAP
+MLPC ⨀
+FSM CSFM
+⨁⨁
+FSF Block
+×12
+×14
+C ⨁ ⨀x2 Scale Upx4 Scale UpConcatenationElement-wise SumChannel-wise Multiplication 1x1 3x3 SGSCA1x1
+SFEB
+SG SCASimple GateSimplified Channel Attention
+S
+S
+GAPGlobal AveragePooling
+Figure 6: An overview of Frequency Selection Fusion Module, which consists of two main building blocks: (i) Frequency Selection Module
+(FSM) and (ii) Cross Scale Fusion Module (CSFM). FSM converts spatial information into frequency domain components and then encodes such
+frequency information to remove various types of moir ´e patterns e ffectively. CSFM processes a given spatial domain feature in a multi-scale
+processing manner.
+where ⊙is channel-wise multiplication.
+3.3. Cross Scale Fusion Module (CSFM)
+As shown in Fig. 6 (right), we further use Cross Scale
+Fusion Module (CSFM) to encode multi-scale features.
+As suggested by recent works (Sun et al., 2018b; Bolun
+et al., 2021; Zheng et al., 2020; Yu et al., 2022b; Zhang
+et al., 2022), such a multi-scale encoding is advanta-
+geous to restore fine-grained visual details. Following
+Yu et al. (Yu et al., 2022b), we use the pyramid feature
+architecture to encode multi-scale features (i.e. orig-
+inal, ×1/2 down-scaled, and ×1/4 down-scaled fea-
+tures). However, we use a Simple Feature Extraction
+Block (SFEB) instead of dilated residual dense block
+due to improving the computational efficiency. In Fig. 6
+(bottom right), we illustrate SFEB, which consists of
+five layers including 1 ×1 and 3 ×3 convolution lay-
+ers, Simple Gate (SG), and Simplified Channel Atten-
+tion (SCA) (Chen et al., 2022). After extracting multi-
+scale features from SFEB, we apply the Dynamic Fu-
+sion method (Yu et al., 2022b) in the same way to cali-
+brate each scale feature into a unified feature map main-
+taining important information.
+3.4. Post Align Module (PAM)
+Recent feature alignment methods (Wang et al., 2019)
+using Pyramid Cascade Deformable (PCD) or its defor-
+mation need to utilize a separated module and align each
+feature before reconstructing high-quality frames. How-
+ever, moir´e patterns are different in both size and prop-
+erties compared with the other artifacts such as blur, rain
+streak, and Gaussian noise. Specifically, moir ´e patterns
+lead to severe color degradation and confused texture,
+which is an undifferentiated original texture.
+Therefore, we propose the Post Align Module (PAM)
+for aligning features between nearby frames without the
+interference of moir´e patterns. As shown in Fig. 7, PAM
+is placed in the decoder per each stage. PAM uses fea-
+tures that are the output of each stage encoders over the
+sequence of frames I = {It−1,It,It+1}as an input. We
+define each input as Fs
+{t−1,t,t+1}, where s denotes each
+stage (e.g. s ∈{1,2,3}). At the first stage of the PAM,
+we calculate learnable o ffset O{t−1,t+1} using the output
+of the last stage of encoder F{t−1,t,t+1}:
+O{t−1,t+1}= Conv([F{t−1,t+1},Ft]), (7)
+where Conv(·) represents the general convolution op-
+eration and [ ·,·] indicates the concatenation operation.
+7
+Concatenation
+PAM
+DConv
+3x3 Conv
+1x1 Conv
+⨁
+PAM
+𝒜𝑡+1
+𝑠
+𝒜𝑡−1
+𝑠
+𝓍
+ℱ𝑡
+𝑠
+ℱ𝑡−1
+𝑠 ,ℱ𝑡+1
+𝑠
+ℱ{𝑡−1,𝑡+1}
+𝑠
+ℱ𝑡
+𝑠
+𝒜{𝑡−1,𝑡+1}
+𝑠
+𝒪𝑡∈{𝑡−1,𝑡+1}
+𝑠
+Concatenation
+𝒪{𝑡−1,𝑡+1}
+𝑠
+Figure 7: Schematic for Post Align Module (PAM). It is plugged into
+the decoder of the whole architecture to fuse multiple features. The
+dotted line indicates the skip connection from the encoder, and the
+solid line represents the straightforward flow in the module.
+Because the direction of the o ffset is identical and only
+changes magnitude regardless of the scales, we utilize
+the previously predicted learnable o ffset using bilinear
+interpolation. We formulate the following process:
+Os
+{t−1,t+1}= Conv([Conv([Fs
+{t−1,t+1},Fs
+t ]),Up(Os−1
+{t−1,t+1})]),
+(8)
+where Up(·) indicates the bilinear upscaling operation.
+Formally, given learnable o ffset O{t−1,t+1}, we apply
+deformable convolution in order to align features ac-
+cording to the motion of objects. The overall PAM pro-
+cess is represented as:
+As
+{t−1,t+1}= Dconv(Fs
+t ,Os
+{t−1,t+1}), (9)
+where Arepresents the aligned feature and Dconv(·)
+denotes the deformable convolution (Dai et al., 2017).
+Last, obtained aligned features A{t−1,t+1}and upsampled
+features x from the previous block are processed using
+a conventional fusion method that consists of concate-
+nation and convolution operation for leveraging each in-
+formation. Note that the PAM can be easily plugged into
+the decoder to obtain the aligned features over neighbor-
+ing frames.
+3.5. Loss Function
+We train our model end-to-end using the following
+three loss functions: (i) Multi-scale L1-based spatial do-
+main loss, (ii) Multi-scale perceptual loss, and (iii) L1-
+based frequency domain loss. Our Multi-scale L1-based
+pixel-wise loss Ls quantifies the pixel-wise differences
+between the target image and the restored image, which
+is defined as follows:
+Ls =
+X
+t
+∥Pt −ˆIt∥1 (10)
+where ˆIt is the ground-truth (target) image without
+moir´e patterns, and Pt is the restored image by our pro-
+posed method.
+Following (Yu et al., 2022b), we also use multi-
+scale perceptual loss by utilizing ImageNet pre-trained
+VGG19 (Simonyan and Zisserman, 2014) network. We
+extract high-level feature representations from the inter-
+mediate layer and train a model to minimize the feature-
+level difference between the target and the predicted im-
+ages. We define multi-scale perceptual loss as follows:
+Lvgg =
+X
+t
+∥VGG19(Pt) −VGG19( ˆIt)∥1 (11)
+where VGG19(·) denotes the pre-trained network.
+Lastly, we also use aL1-based frequency domain loss,
+which quantifies differences between frequency compo-
+nents (i.e. amplitude and phase) of the target and re-
+stored images. Our loss function is defined as follows:
+Lfreq =
+X
+t
+∥FA(Pt) −FA( ˆIt)∥1 + ∥FP(Pt) −FP( ˆIt)∥1
+(12)
+where FAand FPrepresent amplitude and phase com-
+ponents. Concretely, we use the following loss function
+L:
+L= Ls + λvggLvgg + λfreqLfreq (13)
+where λvgg and λfreq are the hyper-parameters to control
+the strength of each loss term.
+4. Experiments
+4.1. Experimental Setup
+Implementation Details We train our model end-to-
+end with AdamW (Loshchilov and Hutter, 2017) opti-
+mizer with the initial learning rate set to 10 −3 and β1 =
+0.9,β2 = 0.999 for 80 epochs. We use cyclic cosine
+annealing learning rate schedule (Loshchilov and Hut-
+ter, 2016) that enables partial warm restart optimization,
+generally improving the convergence rate in gradient-
+based optimization. To train the model on the video
+demoir´e task, we conduct single-frame and multi-frame
+experiments with the following settings. Specifically,
+at the multi-frame experiments, we randomly sample
+three consecutive frames with batch size 8 and crop a
+8
+Data-V1 Data-V2GT
+TCLiPhone
+Figure 8: Example of sampled frames in VDmoire (Dai et al., 2022) that is divided into two types of datasets conforming to different characteristics.
+The frame captured by two different types of device pairs (TCL and iPhone) is listed in each row. In addition, each column represents an example of
+two versions of the dataset (V1 and V2) before and after refinement, respectively, except for the second column, which indicates the ground truth.
+Table 1: Quantitative comparison with the state-of-the-art image (Ronneberger et al., 2015; Sun et al., 2018b; Yu et al., 2022b; Liu et al., 2020a;
+Zheng et al., 2020) and video (Dai et al., 2022; Liu et al., 2024; Xu et al., 2024) demoir ´eing approaches. We use the publicly available VDmoire
+dataset (which contains TCL-V1 and iPhone-V2 splits) for this experiment. Note that we use bold to highlight the best scores in multi-frame
+experiments and underline the best scores in single-frame experiments among di fferent models. ↑represents a higher score is better, while ↓
+indicates a lower score is better. Abbr. Freq: use the frequency components, Multi: use the multiple consecutive frame inputs
+Method Freq Multi TCL-V1 iPhone-V2
+PSNR↑ SSIM↑ LPIPS↓ PSNR↑ SSIM↑ LPIPS↓
+DMCNN (Sun et al., 2018b) - - 20.321 0.703 0.321 21.816 0.749 0.496
+UNet (Ronneberger et al., 2015) - - 20.348 0.720 0.225 21.678 0.790 0.338
+WDNet (Liu et al., 2020a) ✓ - 20.576 0.697 0.234 23.971 0.834 0.205
+MBCNN (Zheng et al., 2020) ✓ - 21.534 0.740 0.260 24.060 0.849 0.211
+ESDNet (Yu et al., 2022b) - - 22.026 0.734 0.199 25.064 0.853 0.165
+VDmoire (Dai et al., 2022) - ✓ 21.725 0.733 0.202 25.230 0.860 0.157
+DTCENet (Liu et al., 2024) - ✓ 21.881 0.744 0.181 25.381 0.876 0.148
+DTNet (Xu et al., 2024) ✓ ✓ 21.846 0.734 0.178 25.317 0.846 0.164
+Ours (single frame only) ✓ - 21.577 0.772 0.189 25.215 0.875 0.157
+Ours ✓ ✓ 21.953 0.784 0.173 25.446 0.883 0.146
+384×384 patch for training. In the single-frame experi-
+ments, we randomly sample a single frame and leverage
+it repetitively instead of consecutive frames. To get the
+final result in test time, we utilize the original resolution
+for all datasets followed by (Dai et al., 2022). Note that
+we perform a grid search to find a better hyperparame-
+ter set using a mini version dataset (≈20%): we set λvgg
+and λfreq to 0.1. Moreover, we set the number of FSF
+blocks at the encoding and decoding stage to [2, 2, 4]
+for each scale. The entire architecture also contains 12
+FSF blocks between the encoder and decoder.
+Evaluation MetricsWe use the following three evalu-
+ation metrics: (1) Peak Signal to Noise Ratio (PSNR),
+(2) Structural Similarity index (SSIM) (Wang et al.,
+2004), and (3) Learned Perceptual Image Patch Simi-
+larity (LPIPS) (Zhang et al., 2018). These metrics are
+widely used in the image demoir ´eing task (as well as
+other image restoration tasks) to quantify the quality of
+generated outputs. PSNR quantifies pixel-level similar-
+ity, while SSIM (Wang et al., 2004) uses structural in-
+formation (from pixel intensities, luminance, and con-
+trasts), providing a more human-like perception met-
+9
+Table 2: Quantitative comparison in terms of FVD (Unterthiner et al.,
+2018) and FSIM (Zhang et al., 2011) metrics to further analyze the
+quality of generated videos (or image frames). Note that lower FVD
+and higher FSIM scores are better.
+Method FVD ↓ FSIM↑
+DMCNN (Sun et al., 2018b) 992.86 0.857
+UNet (Ronneberger et al., 2015) 928.81 0.878
+WDNet (Liu et al., 2020a) 697.28 0.895
+MBCNN (Zheng et al., 2020) 694.28 0.857
+VDmoire (Dai et al., 2022) 697.09 0.911
+ESDNet (Yu et al., 2022b) 633.93 0.906
+Ours 633.87 0.967
+ric. Lastly, LPIPS (Zhang et al., 2018) measures per-
+ceptual similarity by comparing high-level visual rep-
+resentations from pre-trained networks (e.g., ImageNet
+(Deng et al., 2009) pre-trained).
+4.2. Dataset
+To evaluate the e ffectiveness of our proposed meth-
+ods, we use the following publicly available dataset,
+i.e. VDmoire (Dai et al., 2022) dataset. This provides
+a video demoir´eing dataset, which provides 290 source
+videos and corresponding videos with moir ´e patterns.
+To obtain such pairs, the 720p (1080 ×720) source
+videos are displayed on the MacBook Pro display (or
+Huipu v270 display). At the same time, a hand-held
+camera (iPhoneXR or TCL20 pro camera) captures the
+screen to create moir ´e patterns in the recorded frames.
+Further, to reduce the effect of the misaligned frame cor-
+respondences, they estimate the homography matrix us-
+ing the RANSAC algorithm to align two frames. De-
+spite these e fforts, errors of spatial alignment between
+the captured frame and ground truth still remain (see
+first row in Fig. 8). To handle this problem, they present
+a refined new dataset using optical flow. But, this dataset
+also has the problem of showing distortion caused by in-
+accurate optical flow (see second row in Fig. 8). To com-
+pare ours with the former state-of-the-art methods in di-
+verse settings, we utilize two di fferent datasets (TCL-
+V1 and iPhone-V2). Note that we call TCL-V1 and
+iPhone-V2 based on the cameras used (i.e. TCL20 pro
+camera and iPhone XR camera).
+4.3. Quantitative Evaluation
+As we summarized in Table 1, we start by quan-
+titatively comparing the quality of generated outputs
+with state-of-the-art approaches, including UNet (Ron-
+neberger et al., 2015), DMCNN (Sun et al., 2018b), ES-
+DNet (Yu et al., 2022b), WDNet (Liu et al., 2020a),
+MBCNN (Zheng et al., 2020), and VDmoire (Dai et al.,
+2022). Note that VDmoire (Dai et al., 2022) and ours
+utilize multi-frame inputs, while others are based only
+on single-frame image input. Also, we use the VD-
+moire dataset (Dai et al., 2022) for this evaluation, and
+the same hyper-parameters commonly used for image
+demoir´eing, such as patch size, are used in this exper-
+iment for a fair comparison, while we use the default
+values for the other hyper-parameters.
+We observe in Table 1 that our proposed method
+generally outperforms the other approaches in all met-
+rics (except PSNR on TCL-V1 data) over other state-
+of-the-art approaches, both image- and video-based.
+Specifically, compared with the state-of-the-art video
+demoir´eing methods, ours shows significant perfor-
+mance gain in PSNR, SSIM, and LPIPS metrics. Such a
+gain is also apparent in other perceptual evaluation met-
+rics, i.e. SSIM and LPIPS. This indicates that ours pro-
+duces more realistic and high perceptual quality. More-
+over, amplitude and phase components enhance the effi-
+cacy of moir´e pattern removal in comparison to the DT-
+Net, which solely employs the Discrete Cosine Trans-
+form (DCT).
+4.3.1. Temporal Consistency
+Consistent with the recent work (Dai et al., 2022),
+we observe that using multiple consecutive input frames
+is helpful to improve the overall quality of video
+demoir´eing (compare the bottom two rows vs. others in
+Table 1). Note that even without utilizing multi-frame
+image inputs, our proposed method still outperforms the
+other existing approaches, which justifies the e ffective-
+ness of using amplitude and phase components as in our
+Frequency Selection Module (FSM) for removing moir´e
+patterns.
+Following existing works (Cho et al., 2022; Sko-
+rokhodov et al., 2022), we further use two metrics to
+analyze the quality of video outputs: FVD (Unterthiner
+et al., 2018) and FSIM (Zhang et al., 2011). FVD adapts
+Frechet Inception Distance (FID) to capture the tempo-
+ral coherence of a video, while FSIM emphasizes low-
+level features in IQA metric inspired by the human vi-
+sual system (HVS). As shown in Table 2, our model out-
+performs the other existing approaches in terms of both
+metrics, demonstrating that our outputs are more similar
+to the target distribution of the entire video sequences,
+maintaining per-pixel and structural visual information.
+10
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+VDmoire
+TargetOurs
+ESDNetMBCNN
+WDNetSource DMCNN
+DTNet
+DTNet
+DTNet
+Figure 9: Qualitative comparison on the TCL-V1. The red and green boxes zoom in on frames to obviously compare the results.
+11
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+VDmoire
+TargetOurs
+ESDNetMBCNN
+WDNetSource DMCNN
+DTNet
+DTNet
+DTNet
+Figure 10: Qualitative comparison on the iPhone-V2. The red and green boxes zoom in on frames to obviously compare the results.
+12
+DMCNN(25.24 dB)
+OursSource
+ESDNetWDNetMBCNNVDMoireUNetDMCNNUNet(26.52 dB)WDNet(28.13 dB)MBCNN(28.89 dB)
+VDmoire(27.30 dB)ESDNet(28.79 dB)Ours(29.22 dB)Target
+Figure 11: (left) Comparison of the luminance (Y channel in YCbCr color space) with state-of-the-art approaches (right) and their box plots of
+PSNR values.
+Corr: 0.602 Corr: 0.703 Corr: 0.746 Corr: 1.000
+2
+4
+6
+8
+10
+12
+(x1000)
+2
+4
+6
+8
+10
+12
+2
+4
+6
+8
+10
+12
+2
+4
+6
+8
+10
+12
+50
+Pixel Value
+100 150 200 250 50
+Pixel Value
+100 150 200 250 50
+Pixel Value
+100 150 200 250 50
+Pixel Value
+Source VDmoire Ours Target
+100 150 200 250
+Histogram
+Source VDmoire Ours
+0.8
+0.6
+0.4
+0.2
+0.0
+Correlation
+(a) (b)
+Figure 12: (a) We provide a sample of images (top) and their color histograms (bottom). Red, blue, and green lines indicate histograms for each
+RGB component: the x-axis represents the pixel values in [0, 255], while the y-axis denotes the number of pixels. (b) Box plots for correlation
+between the color distributions of the input and the target images.
+Table 3: We provide our ablation study to analyze the effect of individual building blocks: (i) Amplitude and Phase, (ii) FSM, (iii) CSFM, and (iv)
+PAM. We measure PSNR and SSIM for each combination of our four components with the number of parameters (Params). Note that✓ represents
+that the module is deployed.
+Components Model 1 Model 2 Model 3 Model 4 Model 5 Model 6 (Ours)
+Amplitude & Phase (Sect. 3.2) - - ✓ ✓ ✓ ✓
+FSM (Sect. 3.2) - - - ✓ ✓ ✓
+CSFM (Sect. 3.3) - ✓ ✓ - ✓ ✓
+PAM (Sect. 3.4) - ✓ ✓ ✓ - ✓
+Params (M) 37.98 59.95 58.44 58.51 64.97 68.89
+PSNR↑/SSIM↑ 20.51/0.75 21.00 /0.76 21.42 /0.77 21.73 /0.77 21.13 /0.77 21.95/0.78
+4.4. Qualitative Analysis
+Further, we qualitatively compare the quality of the
+restored images with the state-of-the-art approaches:
+UNet (Ronneberger et al., 2015), DMCNN (Sun et al.,
+2018b), ESDNet (Yu et al., 2022b), WDNet (Liu
+et al., 2020a), MBCNN (Zheng et al., 2020), and VD-
+moire (Dai et al., 2022).
+13
+Table 4: We provide our ablation study to demonstrate the e ffect of
+each loss term (Ls, Lvgg, and Lfreq).
+Loss function PSNR ↑ SSIM↑ LPIPS↓
+Ls 21.653 0.770 0.240
+Ls + Lvgg 21.896 0.780 0.185
+Ls + Lfreq 21.883 0.781 0.207
+Ls + Lvgg + Lfreq (Ours) 21.953 0.784 0.173
+4.4.1. E ffect on Restoring Fine-grained Details
+As shown in Fig. 9 and 10, we provide (randomly
+sampled) restored output images as well as a source im-
+age (see top left, which clearly has moir ´e patterns) and
+a target image (see bottom right). At the bottom of the
+figure, we provide two magnified image regions (see red
+and green boxes in the source image) for an e ffective
+comparison. Our proposed FPANet shows better im-
+age restoration quality, preserving fine-grained details
+(e.g., sharper edges). Compared with conventional ap-
+proaches, such as UNet (Ronneberger et al., 2015), DM-
+CNN (Sun et al., 2018b), WDNet (Liu et al., 2020a), and
+MBCNN (Zheng et al., 2020), which often fail to filter
+out large-scale moir ´e patterns, our method e ffectively
+removes various sizes of moir ´e patterns without show-
+ing visually obvious artifacts across the image. Impor-
+tantly, WDNet (Liu et al., 2020a) and MBCNN (Zheng
+et al., 2020) also rely on the frequency domain compo-
+nents using wavelet transform and implicit Discrete Co-
+sine Transform, respectively. This may confirm that our
+method clearly outperforms the other frequency-based
+approaches, e ffectively dealing with various artifacts.
+We provide more diverse examples in Appendix A.
+Further, following Kim et al. (2016); Dong et al.
+(2016); Mao et al. (2016), we analyze the image’s lu-
+minance channel (Y channel in YCbCr color space) to
+compare the restoration quality, comparing the ability to
+restore fine-grained features. We also measure PSNR to
+evaluate the performance on the Y channel. As shown in
+Fig. 11, we visualize a source/target image and restored
+image patches from existing methods and ours. For bet-
+ter visualization, we only provide an enlarged image
+patch (see full-size images in the supplemental mate-
+rial). Our proposed method recovers the subtle texture
+details without showing obvious visual artifacts across
+the frame, which is confirmed by box plots of PSNR
+values (see Fig. 11 (right)).
+4.4.2. Robustness against Color Degradation
+ESDNet (Yu et al., 2022b) and VDmoire (Dai et al.,
+2022) also provide a compelling quality demoir ´eing,
+but we observe VDmoire (Dai et al., 2022) often su ffer
+from color shifts, probably due to a lack of the model’s
+color restoration power. VDmoire (Dai et al., 2022) de-
+pends on the pixel’s statistical information (i.e. mean
+and variance) across the multiple consecutive frames
+for temporal consistency, which makes it difficult to re-
+store accurate pixel value per frame, resulting in mak-
+ing toned-down images. However, ours, which uses the
+Frequency Spatial Fusion (FSF) module, shows fewer
+artifacts in color degradation. We also observe that ES-
+DNet (Yu et al., 2022b) often generates images with
+low visual acuity, failing to restore the original visual
+contents. This is more apparent in examples shown in
+Fig. 10 (see some blurry characters, which is not the
+case for ours). These confirm that our proposed method
+effectively deals with moir´e restoration with fewer arti-
+facts, such as color degradation, lack of sharpness, and
+remaining large-scale moir´e patterns. We provide more
+diverse examples in Appendix A.
+Further, we also compare RGB color histograms with
+VDmoire to compare the amount of color degradation
+as shown in Fig. 12 (a). To quantify the color degrada-
+tion, we measure the average correlation (for each chan-
+nel) with those of the target (clear) image. A source
+image with moir ´e patterns shows the smallest correla-
+tion value, 0.602, while our proposed method shows the
+highest correlation value, 0.746, which is better than
+VDmoire. In Fig. 12 (b), we provide box plots of such
+correlations for all test images, further confirming that
+our proposed method is more robust to color degrada-
+tion.
+4.5. Ablation Study
+4.5.1. E ffect of Individual Modules
+Our proposed model consists of four main compo-
+nents: (i) Amplitude and Phase, (ii) FSM (Frequency
+Selection Module), (iii) CSFM (Cross Scale Fusion
+Module), and (iv) PAM (Post Align Module). To ana-
+lyze their contribution, we conduct an ablation exper-
+iment with various combinations of several building
+blocks based on Model 1, which utilizes the UNet ar-
+chitecture composed of residual block (He et al., 2016).
+Note that we use the TCL-V1 dataset for this experi-
+ment. We observe in Table 3 that each building com-
+ponent equally improves the overall image demoir ´eing
+performance in terms of PSNR and SSIM. For exam-
+ple, removing each building block decreases the overall
+performance (compare Model 6 vs. Model 2, 3, 4, and
+14
+Table 5: We provide our ablation study to demonstrate (left) the effect of Frequency Selection Module (FSM) module while calculating confidence
+map in terms of each variant and (right) the e ffect of our Frequency Selection Fusion (FSF) module by replacing it with existing frequency-based
+building blocks: (i) FFC (Chi et al., 2020) and (ii) DeepRFT (Mao et al., 2021).
+Methods PSNR ↑ SSIM↑ LPIPS↓ Params (M)
+FSM (w/Single Cm) 21.658 0.780 0.180 68.64
+FSM (w/o Fusion Cm) 21.676 0.781 0.173 83.47
+FSM (w/Fusion Cm)21.953 0.784 0.173 68.89
+Methods PSNR ↑ SSIM↑ LPIPS↓ Params (M)
+Ours w/FFC (Chi et al., 2020) 20.893 0.744 0.199 64.57
+Ours w/DeepRFT (Mao et al., 2021) 21.305 0.757 0.191 57,46
+Ours w/FSF 21.953 0.784 0.173 68.89
+5). Specifically, we notice that the comparison results
+of Model 2, Model 3, and Model 4 demonstrate that
+the performance gain mainly stems from each frequency
+component and Frequency Selection Module (FSM) de-
+sign rather than the increase of parameters.
+4.5.2. E ffect of Loss Functions
+Recall from Sect. 3.5; we train our model with the fol-
+lowing three loss terms: (i) Multi-scale spatial domain
+loss Ls, (ii) Multi-scale perceptual loss Lvgg, and (iii)
+Frequency domain loss Lfreq. We also conduct an abla-
+tion study with different combinations of the loss terms
+to see their individual impacts. As shown in Table 4,
+we observe all loss terms have noticeable effects on the
+overall performance, and using all loss terms provides
+the best performance in all three metrics. The multi-
+scale perceptual loss function especially helps generate
+more realistic images.
+Encoder
+(Layer #1)
+Decoder
+(Layer #14)
+Frequency Domain Spatial Domain
+Target
+ Ours
+Source
+Figure 13: Visualize the features in both the frequency and spatial
+domains obtained from the Frequency Selection Module (FSM). The
+red box highlights the specified region of interest.
+4.5.3. E ffect of Frequency Spatial Fusion (FSF) block
+We propose a novel encoding module called the Fre-
+quency Spatial Fusion module, which utilizes frequency
+domain components and geometric structural informa-
+tion. In this section, we present a deep analysis of FSF
+module.
+Analysis on Frequency Selection Module (FSM)In
+Sect. 3.2, we apply a confidence map that comes from a
+combined feature map on amplitude and phase respec-
+tively to enhance the e ffectiveness of utilizing two re-
+lated properties. In Table 5 (left), each variant of FSM
+is followed by: (i) 1st row (w/ Single Cm) indicates that
+adopts only one confidence map for both amplitude and
+phase and (ii) 2 nd row (w/o Fusion Cm) denotes that
+performs a confidence map in terms of each property
+without the fusion stage. We observe that the proposed
+combined confidence map leveraging each strongly cor-
+related property, amplitude, and phase, brings a perfor-
+mance gain in all metrics.
+Visualization of selected frequency bandsWe also
+provide the visualization of features obtained from the
+Frequency Selection Module (FSM). To visualize the
+frequency domain feature, we select the top 30 chan-
+nels extracted from FSM that exhibit the highest corre-
+lation with the content. Then, we apply a channel-wise
+average pooling to the obtained feature map. Addition-
+ally, to obtain the spatial domain feature map, we ap-
+ply the inverse Fourier transform using the acquired fre-
+quency and phase features. As shown in the Fig. 13,
+we observe that features extracted from the early layers
+capture information with regard to the entire content.
+On the other hand, features from the final layer empha-
+size highly moir ´e-correlated frequency bands, indicat-
+ing that our proposed FSM plays a crucial role in disen-
+tangling moir´e patterns from the original contents in the
+frequency domain.
+Effect of Frequency Spatial Fusion (FSF)To further
+demonstrate the e ffectiveness of our FSF module, we
+replace it with existing frequency-based encoding mod-
+ules: FFC (Chi et al., 2020) and DeepRFT (Mao et al.,
+2021), which directly use the frequency components
+with spatial domain features instead of dealing with am-
+plitude and phase components separately. As shown in
+15
+Table 6: We provide our ablation study to demonstrate the e ffect of
+our Post Align Module (PAM) module, where E and D indicate the
+location of PAM (i.e., encoder and decoder stage).
+Methods PSNR ↑ SSIM↑ LPIPS↓ Params (M)
+Ours w/PCD (Wang et al., 2019) 21.507 0.780 0.184 64.53
+Ours w/PAM (E) 21.806 0.784 0.175 69.54
+Ours w/PAM (D) 21.953 0.784 0.173 68.89
+Table 7: Quantitative comparison with the state-of-the-art image
+demoir´eing approaches on TIP2018 dataset (Sun et al., 2018b).
+Method PSNR ↑ SSIM↑ LPIPS↓ Params (M)
+UNet (Ronneberger et al., 2015) 26.49 0 .864 0 .432 2.35DMCNN (Sun et al., 2018b) 26.77 0 .871 0 .341 1.43MopNet (He et al., 2019) 27.75 0 .895 0 .378 58.57WDNet (Liu et al., 2020a) 28.08 0 .904 0 .213 3.36MBCNN (Zheng et al., 2020) 30.03 0 .893 0 .095 14.19ESDNet (Yu et al., 2022b) 30.11 0 .920 0 .072 10.62
+Ours 30.46 0.923 0.070 21.72
+Table 5 (right), we report the results over multi-frame
+experiments and number of the parameters. Although
+our full architecture has more parameters than others,
+it is clear that amplitude and phase properties lead to
+performance gain on demoir´e through comparison with
+Model 3 and Model 4 in Table 3 rather than directly us-
+ing frequency feature.
+4.5.4. E ffect of Temporal Feature Alignment by PAM
+We further compare our temporal feature alignment
+method Post Align Module (PAM) with existing Pyra-
+mid Cascade Deformable technique (Wang et al., 2019),
+which is utilized in VDmoire (Dai et al., 2022) to ex-
+tract implicitly aligned features between consecutive
+frames. As we summarized in Table 6, our proposed
+method outperforms the alternative in all metrics, in-
+cluding PSNR, SSIM, and LPIPS: 0.45 dB, 0.004, and
+0.009 gains in PSNR, SSIM, and LPIPS, respectively.
+Additionally, we report the performance when the po-
+sition of PAM is changed from the decoder to the en-
+coder. The difference between PCD and pre-align is that
+pre-align combines the auxiliary features from nearby
+frames inside the main architecture, whereas PCD does
+so before the main architecture. The results demonstrate
+that post-align technique is effective in demoir´e task es-
+pecially in pixel-level distortion (PSNR) while main-
+taining perceptual quality (SSIM and LPIPS) compared
+with pre-align.
+4.5.5. Demoir´ e in Image Domain
+Analysis on TIP2018 datasetTo validate the ability
+of our proposed method in the demoir ´e task, especially
+the FSF module, which considers amplitude and phase
+properties simultaneously, we extend the experiments
+into the image domain. We train our model with an im-
+age demoir ´e benchmark dataset, called TIP2018 (Sun
+et al., 2018b), which consists of 135,000 image pairs.
+Further, we apply a similar setting with a single-frame
+experiment except for the number of blocks. For the
+image domain experiment, we change the number of
+blocks from [2, 2, 4] to [2, 2, 2] in each stage and 12
+to 2 in the bottleneck. Table 7 shows the demoir´e results
+compared with the existing image demoir ´e approaches.
+Our proposed method achieves the best scores in PSNR,
+SSIM, and LPIPS, 30.46 dB, 0.923, and 0.070, which
+are higher than those of the previous state-of-the-art
+methods. Moreover, we present a qualitative compari-
+son in Fig. 14 with other competing methods. The re-
+covered images produced by our method demonstrate
+that the moir´e pattern is well removed, and they are vi-
+sually closer to the ground truth.
+Analysis on non-screen-captured moir´e image We
+also conduct additional experiments to validate the
+effectiveness of our methods on non-screen-captured
+moir´e degraded images. Since there are no publicly
+available datasets for the experiment, we manually col-
+lect the texture-degraded images from the web. Al-
+though the apples to apples comparison is not possible
+due to the absence of ground truth, our results demon-
+strate that moir ´e patterns present on fabrics are e ffec-
+tively removed, as clearly indicated in Fig. 15.
+4.6. Future Works
+Although our proposed approach demonstrates effec-
+tiveness in removing moir ´e patterns with comprehen-
+sive understanding in frequency domain, we utilize sim-
+ple multi-scale features in the spatial domain. We rec-
+ommend further research to extend the task by incorpo-
+rating the advanced feature fusion pipeline to enhanc-
+ing spatial features. Furthermore, we propose enhancing
+the capabilities of amplitude and phase characteristics
+through a sophisticated integration with spatial domain
+features.
+5. Conclusion
+We introduced a novel video demoir ´eing method
+called FPANet by proposing the following two com-
+ponents: (i) Frequency Selection Fusion (FSF) and (ii)
+Post Align Module (PAM). In proposed FSF block,
+FSM utilizes amplitude and phase components in the
+frequency domain to address undesired color changes
+and large-scale moir ´e patterns, while CSFM is used
+to capture multi-scale features to recover both global
+16
+TargetOursESDNetMBCNNWDNetMopNetDMCNNUNetSource
+Figure 14: Qualitative comparison on TIP2018 dataset (Sun et al., 2018b). Please zoom in for details.
+OutputSource
+ OutputSource
+Zoom Zoom
+Figure 15: Visualization of the output using web-crawled images showing moir´e patterns on fabrics. Red box indicates the zoomed area.
+and fine-grained features. Lastly, PAM is utilized to
+align features from multiple consecutive frames with re-
+duced visual artifacts. We demonstrated the e ffective-
+ness of using our proposed method with a public video
+demoir´eing dataset called VDmoire, and ours gener-
+ally outperforms existing state-of-the-art approaches in
+terms of various image and video quality metrics, such
+as PSNR, SSIM, LPIPS, FVD, and FSIM.
+Acknowledgements
+This work was supported by LG Display Research
+Center 50%. This work was also supported by Institute
+of Information & communications Technology Plan-
+ning & Evaluation (IITP) grant funded by the Korea
+government(MSIT) (2022-0-00043, 15%, IITP-2024-
+2020-0-01819, 10%), the National Research Council
+of Science & Technology (NST) grant by the Korea
+government (MSIT) (No. CRC21011, 16%), Culture,
+Sports, and Tourism R&D Program through the Korea
+Creative Content Agency grant funded by the Ministry
+of Culture, Sports and Tourism in 2024 (International
+Collaborative Research and Global Talent Development
+for the Development of Copyright Management and
+Protection Technologies for Generative AI, RS-2024-
+00345025, 8%), and Institute of Information & com-
+17
+munications Technology Planning & Evaluation (IITP)
+grant funded by the Korea government(MSIT) (No.
+2019-0-00079, Artificial Intelligence Graduate School
+Program(Korea University), 1%).
+Author contributions
+Conceptualization: Gyeongrok Oh, Heon Gu, Jinkyu
+Kim, Sangpil Kim; Methodology: Gyeongrok Oh,
+Jinkyu Kim, Sangpil Kim; Formal analysis and investi-
+gation: Gyeongrok Oh, Sungjune Kim, Sang Ho Yoon,
+Heon Gu, Jinkyu Kim, Sangpil Kim; Writing - origi-
+nal draft preparation: Gyeongrok Oh, Sungjune Kim,
+Jinkyu Kim, Sangpil Kim; Supervision: Jinkyu Kim,
+Sangpil Kim;
+Appendix A. More Qualitative Results
+18
+VDmoire
+TargetOurs
+ESDNetMBCNN
+WDNetSource DMCNN
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DTNet
+DTNet
+DTNet
+Figure 16: Qualitative comparison on the TCL-V1. The red and green boxes zoom in on frames to obviously compare the results.
+19
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+VDmoire
+TargetOurs
+ESDNetMBCNN
+WDNetSource DMCNN
+DTNet
+DTNet
+DTNet
+Figure 17: Qualitative comparison on the TCL-V1. The red and green boxes zoom in on frames to obviously compare the results.
+20
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+VDmoire
+TargetOurs
+ESDNetMBCNN
+WDNetSource DMCNN
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DTNet
+DTNet
+DTNet
+Figure 18: Qualitative comparison on the TCL-V1. The red and green boxes zoom in on frames to obviously compare the results.
+21
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+VDmoire
+TargetOurs
+ESDNetMBCNN
+WDNetSource DMCNN
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DTNet
+DTNet
+DTNet
+Figure 19: Qualitative comparison on the TCL-V1. The red and green boxes zoom in on frames to obviously compare the results.
+22
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+VDmoire
+TargetOurs
+ESDNetMBCNN
+WDNetSource DMCNN
+DMCNN WDNet MBCNN ESDNet
+VDmoire Ours Target
+DTNet
+DTNet
+DTNet
+Figure 20: Qualitative comparison on the iPhone-V2. The red and green boxes zoom in on frames to obviously compare the results.
+23
+References
+I. Amidror. The Theory of the Moir´ e Phenomenon: Volume I: Periodic
+Layers, volume 38. Springer Science & Business Media, 2009.
+Z. Bolun, Y . Shanxin, Y . Chenggang, T. Xiang, Z. Jiyong, S. Yaoqi,
+L. Lin, L. Ales, and S. Gregory. Learning frequency domain priors
+for image demoireing. IEEE Transactions on Pattern Analysis and
+Machine Intelligence, 2021.
+R. N. Bracewell and R. N. Bracewell. The Fourier transform and its
+applications, volume 31999. McGraw-Hill New York, 1986.
+E. O. Brigham and R. E. Morrow. The fast fourier transform.
+IEEE Spectrum, 4(12):63–70, 1967. doi: 10.1109 /MSPEC.1967.
+5217220.
+M. Cai, H. Zhang, H. Huang, Q. Geng, Y . Li, and G. Huang. Fre-
+quency domain image translation: More photo-realistic, better
+identity-preserving. In Proceedings of the IEEE/CVF International
+Conference on Computer Vision, pages 13930–13940, 2021.
+A. Chadha, J. Britto, and M. M. Roja. iseebetter: Spatio-temporal
+video super-resolution using recurrent generative back-projection
+networks. Computational Visual Media, 6:307–317, 2020.
+K. C. Chan, X. Wang, K. Yu, C. Dong, and C. C. Loy. Basicvsr:
+The search for essential components in video super-resolution and
+beyond. In Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, pages 4947–4956, 2021.
+K. C. Chan, S. Zhou, X. Xu, and C. C. Loy. Basicvsr ++: Improving
+video super-resolution with enhanced propagation and alignment.
+In Proceedings of the IEEE/CVF Conference on Computer Vision
+and Pattern Recognition, pages 5972–5981, 2022.
+L. Chen, X. Chu, X. Zhang, and J. Sun. Simple baselines for image
+restoration. arXiv preprint arXiv:2204.04676, 2022.
+X. Cheng and Z. Fu. Image hiding and restoration via deep moir ´e
+networks. IEEE Signal Processing Letters, 2024.
+L. Chi, G. Tian, Y . Mu, L. Xie, and Q. Tian. Fast non-local neural
+networks with spectral residual learning. In Proceedings of the
+27th ACM International Conference on Multimedia , pages 2142–
+2151, 2019.
+L. Chi, B. Jiang, and Y . Mu. Fast fourier convolution. Advances in
+Neural Information Processing Systems, 33:4479–4488, 2020.
+J. Cho, S. Kim, and K. Sohn. Memory-guided image de-raining using
+time-lapse data. IEEE Transactions on Image Processing, 2022.
+J. Dai, H. Qi, Y . Xiong, Y . Li, G. Zhang, H. Hu, and Y . Wei. De-
+formable convolutional networks. In Proceedings of the IEEE in-
+ternational conference on computer vision, pages 764–773, 2017.
+P. Dai, X. Yu, L. Ma, B. Zhang, J. Li, W. Li, J. Shen, and X. Qi. Video
+demoireing with relation-based temporal consistency. In Proceed-
+ings of the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, pages 17622–17631, 2022.
+Q. Dai, X. Cheng, L. Zhang, and L. Sun. Adaptive multispectral en-
+coding network for image demoir ´eing. IEEE Transactions on In-
+strumentation and Measurement, 72:1–14, 2023.
+J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei. Imagenet:
+A large-scale hierarchical image database. In 2009 IEEE Confer-
+ence on Computer Vision and Pattern Recognition, pages 248–255,
+2009. doi: 10.1109/CVPR.2009.5206848.
+C. Dong, C. C. Loy, and X. Tang. Accelerating the super-resolution
+convolutional neural network. In European conference on com-
+puter vision, pages 391–407. Springer, 2016.
+Z. Du, L. Peng, Y . Wang, Y . Cao, and Z.-J. Zha. Fc3dnet: A fully con-
+nected encoder-decoder for e fficient demoir’eing. arXiv preprint
+arXiv:2406.14912, 2024.
+A. Dudhane, S. W. Zamir, S. Khan, F. S. Khan, and M.-H. Yang.
+Burst image restoration and enhancement. In Proceedings of the
+IEEE/CVF Conference on Computer Vision and Pattern Recogni-
+tion, pages 5759–5768, 2022.
+S. Fan, W. Liang, D. Ding, and H. Yu. Lacn: A lightweight attention-
+guided convnext network for low-light image enhancement. Engi-
+neering Applications of Artificial Intelligence, 117:105632, 2023.
+I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley,
+S. Ozair, A. Courville, and Y . Bengio. Generative adversarial nets.
+Advances in neural information processing systems, 27, 2014.
+B. He, C. Wang, B. Shi, and L.-Y . Duan. Mop moire patterns using
+mopnet. In Proceedings of the IEEE/CVF International Conference
+on Computer Vision (ICCV), October 2019.
+B. He, C. Wang, B. Shi, and L.-Y . Duan. Fhde 2 net: Full high defini-
+tion demoireing network. In Computer Vision–ECCV 2020: 16th
+European Conference, Glasgow, UK, August 23–28, 2020, Pro-
+ceedings, Part XXII 16, pages 713–729. Springer, 2020.
+K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image
+recognition. In Proceedings of the IEEE conference on computer
+vision and pattern recognition, pages 770–778, 2016.
+L. Jiang, B. Dai, W. Wu, and C. C. Loy. Focal frequency loss for image
+reconstruction and synthesis. In Proceedings of the IEEE/CVF In-
+ternational Conference on Computer Vision, pages 13919–13929,
+2021.
+J. Kim, J. K. Lee, and K. M. Lee. Accurate image super-resolution us-
+ing very deep convolutional networks. In Proceedings of the IEEE
+conference on computer vision and pattern recognition , pages
+1646–1654, 2016.
+S. Kim, H. Nam, J. Kim, and J. Jeong. C3net: Demoir´eing network at-
+tentive in channel, color and concatenation. In Proceedings of the
+IEEE/CVF Conference on Computer Vision and Pattern Recogni-
+tion Workshops, pages 426–427, 2020.
+W. Li, X. Tao, T. Guo, L. Qi, J. Lu, and J. Jia. Mucan: Multi-
+correspondence aggregation network for video super-resolution.
+In European conference on computer vision , pages 335–351.
+Springer, 2020.
+X. Li, W. Wang, X. Hu, and J. Yang. Selective kernel networks. In
+Proceedings of the IEEE/CVF conference on computer vision and
+pattern recognition, pages 510–519, 2019.
+L. Liu, J. Liu, S. Yuan, G. Slabaugh, A. Leonardis, W. Zhou,
+and Q. Tian. Wavelet-based dual-branch network for image
+demoir´eing. In European Conference on Computer Vision, pages
+86–102. Springer, 2020a.
+L. Liu, S. Yuan, J. Liu, L. Bao, G. Slabaugh, and Q. Tian. Self-
+adaptively learning to demoir´e from focused and defocused image
+pairs. Advances in Neural Information Processing Systems , 33:
+22282–22292, 2020b.
+L. Liu, J. An, S. Yuan, W. Zhou, H. Li, Y . Wang, and Q. Tian. Video
+demoir´eing with deep temporal color embedding and video-image
+invertible consistency. IEEE Transactions on Multimedia, 2024.
+S. Liu, R. Gang, C. Li, and R. Song. Adaptive deep residual network
+for single image super-resolution. Computational Visual Media, 5:
+391–401, 2019.
+Z. Liu, W. Lin, X. Li, Q. Rao, T. Jiang, M. Han, H. Fan, J. Sun, and
+S. Liu. Adnet: Attention-guided deformable convolutional network
+for high dynamic range imaging. In Proceedings of the IEEE/CVF
+Conference on Computer Vision and Pattern Recognition , pages
+463–470, 2021.
+I. Loshchilov and F. Hutter. Sgdr: Stochastic gradient descent with
+warm restarts. arXiv preprint arXiv:1608.03983, 2016.
+I. Loshchilov and F. Hutter. Decoupled weight decay regularization.
+arXiv preprint arXiv:1711.05101, 2017.
+X. Mao, C. Shen, and Y .-B. Yang. Image restoration using very deep
+convolutional encoder-decoder networks with symmetric skip con-
+nections. Advances in neural information processing systems, 29,
+2016.
+X. Mao, Y . Liu, W. Shen, Q. Li, and Y . Wang. Deep residual
+fourier transformation for single image deblurring. arXiv preprint
+arXiv:2111.11745, 2021.
+J. Ning, L. Xie, Y . Li, Y . Chen, Y . Bu, B. Ye, and S. Lu. Moir´epose:
+24
+ultra high precision camera-to-screen pose estimation based on
+moir´e pattern. In Proceedings of the 28th Annual International
+Conference on Mobile Computing And Networking , pages 106–
+119, 2022.
+Y .-T. Peng, C.-H. Hou, Y .-C. Lee, A. J. Yoon, Z. Chen, Y .-T. Lin, and
+W.-C. Lien. Image demoir ´eing via multi-scale fusion networks
+with moir´e data augmentation. IEEE Sensors Journal, 2024.
+Z. Qin, P. Zhang, F. Wu, and X. Li. Fcanet: Frequency channel at-
+tention networks. In Proceedings of the IEEE /CVF international
+conference on computer vision, pages 783–792, 2021.
+Y . Rao, W. Zhao, Z. Zhu, J. Lu, and J. Zhou. Global filter networks for
+image classification. Advances in Neural Information Processing
+Systems, 34:980–993, 2021.
+O. Ronneberger, P. Fischer, and T. Brox. U-net: Convolutional net-
+works for biomedical image segmentation. In International Con-
+ference on Medical image computing and computer-assisted inter-
+vention, pages 234–241. Springer, 2015.
+K. Simonyan and A. Zisserman. Very deep convolutional networks
+for large-scale image recognition.arXiv preprint arXiv:1409.1556,
+2014.
+I. Skorokhodov, S. Tulyakov, and M. Elhoseiny. Stylegan-v: A con-
+tinuous video generator with the price, image quality and perks of
+stylegan2. In Proceedings of the IEEE/CVF Conference on Com-
+puter Vision and Pattern Recognition, pages 3626–3636, 2022.
+D. Sun, X. Yang, M.-Y . Liu, and J. Kautz. Pwc-net: Cnns for optical
+flow using pyramid, warping, and cost volume. In Proceedings of
+the IEEE conference on computer vision and pattern recognition ,
+pages 8934–8943, 2018a.
+Y . Sun, Y . Yu, and W. Wang. Moir´e photo restoration using multireso-
+lution convolutional neural networks.IEEE Transactions on Image
+Processing, 27(8):4160–4172, 2018b.
+R. Suvorov, E. Logacheva, A. Mashikhin, A. Remizova, A. Ashukha,
+A. Silvestrov, N. Kong, H. Goka, K. Park, and V . Lempitsky.
+Resolution-robust large mask inpainting with fourier convolutions.
+In Proceedings of the IEEE /CVF Winter Conference on Applica-
+tions of Computer Vision, pages 2149–2159, 2022.
+Y . Tian, Y . Zhang, Y . Fu, and C. Xu. Tdan: Temporally-deformable
+alignment network for video super-resolution. In Proceedings of
+the IEEE/CVF Conference on Computer Vision and Pattern Recog-
+nition, pages 3360–3369, 2020.
+T. Unterthiner, S. van Steenkiste, K. Kurach, R. Marinier, M. Michal-
+ski, and S. Gelly. Towards accurate generative models of video: A
+new metric & challenges. arXiv preprint arXiv:1812.01717, 2018.
+X. Wang, K. C. Chan, K. Yu, C. Dong, and C. Change Loy. Edvr:
+Video restoration with enhanced deformable convolutional net-
+works. In Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition Workshops, pages 0–0, 2019.
+Z. Wang, A. Bovik, H. Sheikh, and E. Simoncelli. Image quality
+assessment: from error visibility to structural similarity. IEEE
+Transactions on Image Processing , 13(4):600–612, 2004. doi:
+10.1109/TIP.2003.819861.
+S. Xu, B. Song, X. Chen, and J. Zhou. Direction-aware video demoire-
+ing with temporal-guided bilateral learning. In Proceedings of
+the AAAI Conference on Artificial Intelligence , volume 38, pages
+6360–6368, 2024.
+Y . Yang and S. Soatto. Fda: Fourier domain adaptation for seman-
+tic segmentation. In Proceedings of the IEEE /CVF Conference
+on Computer Vision and Pattern Recognition , pages 4085–4095,
+2020.
+H. Yu, N. Zheng, M. Zhou, J. Huang, Z. Xiao, and F. Zhao. Frequency
+and spatial dual guidance for image dehazing. In European Con-
+ference on Computer Vision, pages 181–198. Springer, 2022a.
+X. Yu, P. Dai, W. Li, L. Ma, J. Shen, J. Li, and X. Qi. Towards efficient
+and scale-robust ultra-high-definition image demoir´eing. In Euro-
+pean Conference on Computer Vision , pages 646–662. Springer,
+2022b.
+S. Yuan, R. Timofte, G. Slabaugh, and A. Leonardis. Aim 2019 chal-
+lenge on image demoireing: Dataset and study. In 2019 IEEE/CVF
+International Conference on Computer Vision Workshop (ICCVW),
+pages 3526–3533, 2019. doi: 10.1109/ICCVW.2019.00437.
+H. Yue, Y . Cheng, F. Liu, and J. Yang. Unsupervised moir ´e pattern
+removal for recaptured screen images. Neurocomputing, 456:352–
+363, 2021.
+S. W. Zamir, A. Arora, S. Khan, M. Hayat, F. S. Khan, M.-H. Yang,
+and L. Shao. Learning enriched features for fast image restoration
+and enhancement. arXiv preprint arXiv:2205.01649, 2022.
+L. Zhang, L. Zhang, X. Mou, and D. Zhang. Fsim: A feature similarity
+index for image quality assessment. IEEE transactions on Image
+Processing, 20(8):2378–2386, 2011.
+R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang. The
+unreasonable effectiveness of deep features as a perceptual metric.
+In Proceedings of the IEEE conference on computer vision and
+pattern recognition, pages 586–595, 2018.
+T. Zhang, J. Li, and H. Fan. Progressive edge-sensing dynamic scene
+deblurring. Computational Visual Media, 8(3):495–508, 2022.
+B. Zheng, Y . Chen, X. Tian, F. Zhou, and X. Liu. Implicit dual-domain
+convolutional network for robust color image compression artifact
+reduction. IEEE Transactions on Circuits and Systems for Video
+Technology, 30(11):3982–3994, 2019.
+B. Zheng, S. Yuan, G. Slabaugh, and A. Leonardis. Image demoireing
+with learnable bandpass filters. In Proceedings of the IEEE /CVF
+Conference on Computer Vision and Pattern Recognition , pages
+3636–3645, 2020.
+M. Zhou, J. Huang, K. Yan, H. Yu, X. Fu, A. Liu, X. Wei, and
+F. Zhao. Spatial-frequency domain information integration for pan-
+sharpening. In European Conference on Computer Vision , pages
+274–291. Springer, 2022.
+M. Zhou, J. Huang, C.-L. Guo, and C. Li. Fourmer: An efficient global
+modeling paradigm for image restoration. In International Confer-
+ence on Machine Learning, pages 42589–42601. PMLR, 2023.
+W. Zou, M. Jiang, Y . Zhang, L. Chen, Z. Lu, and Y . Wu. Sdwnet:
+A straight dilated network with wavelet transformation for image
+deblurring. In Proceedings of the IEEE/CVF International Confer-
+ence on Computer Vision, pages 1895–1904, 2021.
+25

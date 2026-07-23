@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}创建学者分析会话{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">新建工作台</div>
+      <h1>创建学者分析会话</h1>
+      <p>输入学者名称、DBLP pid 或可解析标识。系统会根据当前配置选择 Fake、DBLP、OpenAlex 或 OpenAI-compatible provider。</p>
+    </div>
+  </header>
+
+  <section class="card">
+    <form action="/scholar-sessions" method="post" class="inline-form">
+      <label class="form-label" for="author_ref">学者名称或标识</label>
+      <input class="form-control" id="author_ref" name="author_ref" type="text" required placeholder="例如：Grace Hopper 或 DBLP pid">
+      <button class="button button-primary" type="submit">创建学者分析会话</button>
+    </form>
+  </section>
+
+  <section class="stat-grid">
+    <article class="stat-card">
+      <div class="stat-label">第一步</div>
+      <p>解析学者身份并保存 publications。</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">第二步</div>
+      <p>选择 publications，扩展引用边。</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">第三步</div>
+      <p>构建深度分析队列，准备 PDF 并运行全文分析。</p>
+    </article>
+  </section>
+{% endblock %}

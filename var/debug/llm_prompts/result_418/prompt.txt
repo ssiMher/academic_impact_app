@@ -1,0 +1,1727 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: PowerEar: An Audio Eavesdropping Attack on Mobile Devices Through USB Power Side Channel
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+624 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+PowerEar: An Audio Eavesdropping Attack on
+Mobile Devices Through USB
+Power Side Channel
+Riccardo Spolaor
+ , Member, IEEE, Heyuan Shi
+ , Zekun Miao, Guoming Zhang
+ , Yanni Yang
+ ,
+Xiuzhen Cheng
+ , Fellow, IEEE, and Pengfei Hu
+Abstract—With the increasing popularity of voice-centric
+applications, acoustic eavesdropping attacks pose a signiﬁcant
+threat to user privacy. Although smartphones require explicit
+user permission to access the microphone, such attacks can
+bypass this restriction by exploiting power consumption data
+through compromised power supplies, such as USB adapters,
+public charging stations, and power banks. However, previous
+attempts can only recognize a limited set of hotwords or digits.
+To address this limitation, we introduce PowerEar, an acoustic
+eavesdropping attack that leverages the power side channel to
+reconstruct any audio reproduced by the built-in loudspeaker of
+a mobile device with an unconstrained vocabulary. Our approach
+relies on a combination of signal processing and generative
+techniques to learn the mapping between power consumption
+and audio playback, enabling the reconstruction of such audio
+through spectrogram enhancement. To validate the eﬀectiveness
+of PowerEar attack, we carry out a comprehensive set of exper-
+iments using audio samples from various public personalities.
+Our results obtained through objective and subjective evaluations
+clearly demonstrate that PowerEar can successfully recover user
+speeches from power consumption data in comprehensive realistic
+settings, including speech utterances of individuals and diﬀerent
+devices, mobile operating systems, activities, charging technology,
+battery, and volume levels.
+Index Terms—Audio eavesdropping, mobile devices, power
+channel, side channel, audio reconstruction.
+I. INTRODUCTION
+T
+HE issue of sound eavesdropping has long been a persis-
+tent threat, jeopardizing the privacy and conﬁdentiality of
+sensitive user information. This threat becomes even more seri-
+ous with the widespread adoption of voice-centric applications
+Received 7 February 2025; revised 18 October 2025; accepted 5 December
+2025. Date of publication 17 December 2025; date of current version 5 January
+2026. This work was supported in part by the National Natural Science
+Foundation of China under Grant 62350410480, Grant 62202274, Grant
+62202276, Grant 62422208, and Grant 62572286; in part by the Natural Sci-
+ence Foundation of Shandong Province under Grant ZR2024MF149 and Grant
+ZR2024MF108; and in part by Shandong Science Fund for Excellent Young
+Scholars under Grant 2022HWYQ-038. The associate editor coordinating the
+review of this article and approving it for publication was Dr. Stjepan Picek.
+(Corresponding author: Guoming Zhang.)
+This work involved human subjects or animals in its research. Approval
+of all ethical and experimental procedures and protocols was granted by the
+Ethical Review Board of the School of Computer Science and Technology of
+Shandong University.
+The authors are with the School of Computer Science and Technology,
+Shandong University, Qingdao 266237, China (e-mail: rspolaor@sdu.edu.cn;
+202335224@mail.sdu.edu.cn; miao
+zekun@mail.sdu.edu.cn; guom-
+ingzhang@sdu.edu.cn; yanniyang@sdu.edu.cn; xzcheng@sdu.edu.cn;
+phu@sdu.edu.cn).
+Digital Object Identiﬁer 10.1109/TIFS.2025.3645562
+on mobile devices, such as voice over IP, video conferencing,
+and voice assistants. Although encryption protects our digital
+communication over the Internet, the “last hop” of acoustic
+communication systems, namely the audio played by loud-
+speakers, remains unencrypted.
+Extensive research has been conducted on acoustic eaves-
+dropping attacks, focusing on capturing vibrations produced
+by audio sources using various types of sensors, known as
+“physical channel” attacks. One category of attacks involves
+the analysis of data from motion sensors embedded in mobile
+devices (such as accelerometers and gyroscopes) to recognize
+speciﬁc words or sentences [1], [2], [30], [59]. In addition,
+researchers have proposed eavesdropping attacks based on
+RF technologies, such as WiFi [51], [54], RFID [50], and
+mmWave [4], [14], [15], [25]. In recent years, some work
+has explored the possibility of exploiting the power chan-
+nel of smartphones to classify digits and a few hotwords
+in wired [52], wireless [27] and multiport [33] charging
+scenarios. However, it is crucial to acknowledge that these
+works are primarily limited to a small and predetermined
+set of words, rendering them inadequate in reconstructing
+unknown audio content. Consequently, exhaustive acoustic
+eavesdropping remains unattainable through these methods.
+In this paper, we propose a novel eavesdropping attack
+called PowerEar, which leverages information from the power
+channel to reconstruct audio signals. By collecting power data
+from a USB power supply (e.g., charging adapter, power
+bank), PowerEar eavesdrops on the audio played through the
+built-in loudspeaker of the device (e.g., smartphone, tablet)
+connected to such a power supply. We develop a framework
+based on signal processing and Generative Adversarial Net-
+work (GAN) to uncover the correspondence between power
+data and the underlying audio. In particular, we ﬁrst process
+the power consumption trace to obtain an audio-like signal
+and generate its spectrogram. We then utilize a process based
+on GAN to train a model that learns the power-to-audio
+relationship, thus reconstructing the audio from the power
+data. Through a limited training set, our framework is capable
+of learning the mapping between power consumption and
+the corresponding phonemes they represent. As a result, we
+can reconstruct any audio signal, such as words, digits, and
+sentences, even if they were not included in the training
+data. Our framework learns to generate comprehensive audio
+spectrograms based on the given power consumption spectro-
+1556-6021 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and
+similar technologies. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 625
+grams. The enhanced spectrograms generated by the model,
+in conjunction with the Griﬃn-Lim algorithm [9], allow us to
+reconstruct clear and intelligible audio.
+Our PowerEar attack extends beyond the limitations of
+a speciﬁc pre-trained set of words or phrases, thereby sig-
+niﬁcantly escalating the risks associated with an attacker
+exploiting PowerEar to (i) reconstruct the content of a con-
+versation with the remote interlocutor during voice and video
+calls; (ii) eavesdrop on a user’s voice memos or commands
+played back by the mobile device, potentially compromising
+conﬁdential data, such as passwords, appointment reminders,
+and social security numbers; (iii) track the user’s location
+from the audio instructions of a voice-based navigation app
+(e.g., Google Maps, Amap); and (iv) intercept voice-based
+veriﬁcation codes commonly utilized in two-factor authenti-
+cation, providing unauthorized access to the user’s account.
+By exploiting these vulnerabilities, the PowerEar attack sig-
+niﬁcantly raises the level of risk of information leakage in a
+wide range of everyday scenarios.
+Contributions. We provide the following contributions:
+• We introduce PowerEar, 1 an innovative eavesdropping
+system that uses power consumption data to accurately
+reconstruct the speech played through the built-in loud-
+speaker of a charging mobile device. Unlike existing
+approaches that only recognize speciﬁc predetermined
+words or phrases, our method breaks new ground
+by recovering audio content with an unconstrained
+vocabulary.
+• Our proposed eavesdropping method eﬀectively converts
+the power consumption data of mobile devices into
+intelligible audio. We achieve this by combining signal
+processing and generative-based spectrogram enhance-
+ment techniques to learn the correspondence between the
+audio reproduced from a mobile device’s speaker and
+the resulting power traces, despite interference caused
+by other hardware and software components of a mobile
+device.
+• We perform an extensive evaluation of the PowerEar
+attack, using an audio dataset that includes recordings of
+48 individuals (spanning six languages) and three audio
+datasets. PowerEar achieves accurate audio reconstruction
+according to diﬀerent performance metrics, including an
+average Mel-Cepstral Distortion (MCD) of 2.7 (lower
+values represent better audio reconstruction), a high Mean
+Opinion Score (MOS) of 4.2 (indicating good audio
+intelligibility), and a Word Error Rate (WER) below 11%
+(lower values indicate better word-level accuracy). We
+also evaluate the performance of PowerEar in diﬀerent
+settings, such as spoken language, mobile device, mobile
+operating system, battery, volume level, and wireless
+charging. Furthermore, we show that PowerEar eﬀectively
+reconstructs the audio even if no victim’s speech audio
+samples and no information on the target mobile device
+are available or known during the training phase.
+1We provide the source code of our framework and examples of original
+audio and reconstructed audio with PowerEar in https://powerear.spolaor.com
+(or alternatively https://riki8686.github.io/PowerEar).
+II. RELATED WORK
+Researchers have demonstrated the feasibility of side-
+channel analysis to achieve acoustic eavesdropping and infer
+private information from mobile devices. In what follows,
+we examine the state-of-the-art of acoustic eavesdropping via
+physical channels in Section II-A and power channel-based
+attacks on mobile devices in Section II-B. We then describe
+previous attempts to infer audio content using the power
+channel in Section II-C.
+A. Audio Eavesdropping Using Physical Channels
+In this section, we review audio eavesdropping methods
+based on motion sensors and radio frequency-based analysis.
+1) Motion Sensor-Based Methods: Several works analyze
+data from motion sensors on mobile devices (e.g., accelerome-
+ter, gyroscope) [1], [2], [30], [59] to recognize speciﬁc spoken
+words or sentences and infer user-sensitive information, such
+as speaker’s identity or gender. Reference [10] fuse sensor
+data to eavesdrop on sound in a room, and AccEar [16]
+relies on accelerometer data to eavesdrop on the built-in
+loudspeaker of a mobile device. Other work eavesdrops via
+magnetic hard drive readings [22] and vibrating motors [41].
+The main weakness of the above motion sensor-based methods
+is their intrusive nature, since they typically assume that a
+complicit/spyware app is installed on the target device to
+collect/send sensor data to the adversary.
+2) Radio Frequency-Based Methods: In recent years,
+researchers have exploited RF technologies (e.g., WiFi, RFID,
+mmWave) to perform eavesdropping attacks. In particular,
+[51], [54] rely on WiFi Received Signal Strength (RSS)
+and Channel State Information (CSI), respectively, to identify
+speciﬁc spoken words. Using Impulse Radio Ultra-Wideband,
+[53] can separate multiple audio sources (household objects)
+by vibration detection. Reference [50] proposes an RFID-
+based acoustic eavesdropping method that utilizes RFID tags
+near the target user. These methods [50], [51], [53], [54]
+suﬀer from insuﬃcient vibration resolution due to the long
+wavelength and low packet rate. Regarding mmWave tech-
+nology, mmSpy [4] can identify speciﬁc keywords or digits
+(i.e., closed-world) during phone calls from vibrations induced
+by the earpiece. Furthermore, [14], [15], [25] reconstruct the
+audio played by a PC loudspeaker and the sound-induced
+vibrations on surrounding objects.
+B. Power Channel on Mobile Devices
+In recent years, researchers have investigated possible secu-
+rity threats from physical channel-based attacks on mobile
+devices [47]. Among those channels, the power (side) channel
+considers the electrical quantities (e.g., voltage, current drawn,
+power, impedance) of a mobile device measured at its internal
+(battery) or external power source (powerbank or adapter).
+Charger-Surfer [6] analyzes the current drawn by a smart-
+phone from the USB cable to perform keystroke inference
+to guess PINs and passwords. Similarly, [58] measures power
+consumption during the loading phase of websites to extract
+their power-based ﬁngerprints, which are later used for iden-
+tiﬁcation. PowerID [45] is a power channel-based protection
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+626 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+framework that ﬁngerprints USB peripherals (such as ﬂash
+drives, WiFi and Bluetooth adapters) and recognizes type,
+model, activities, and unique devices. PowerApp [44] analyzes
+the power channel of a charging mobile device to infer
+apps and user actions. Reference [29] considers three power
+channel attacks that detect speciﬁc actions: detecting incoming
+calls, inferring visited websites, and inferring keystrokes. In
+addition, CovertPower [43], [46] establishes a power-based
+covert channel to exﬁltrate user data through timed CPU
+bursts.
+Other related work considers alternative places to measure
+the power consumption of mobile devices. Reference [26]
+measures the energy consumption of a device from a malicious
+battery that embeds a rogue controller chip. PowerSpy [31]
+analyzes the data from the built-in power meter on smart-
+phones to infer location information and achieve real-time
+tracking. Video Aﬁcionado [11] relies on the electric current
+data from the Android APIs to recognize the videos that
+are playing on the mobile device. XPorter [33] measures the
+voltage ﬂuctuations caused by a charging device on an adjacent
+port of a multiport power adapter to infer the activities of the
+device under charge.
+Wireless charging technology has also recently raised
+interest among security researchers in the power channel.
+Reference [56] assesses the potential security and privacy
+vulnerabilities of Qi wireless charging technology. Reference
+[23] demonstrates that the power channel of a wireless charger
+leaks enough information to achieve website ﬁngerprinting.
+Reference [27] analyzes the voltage dynamics to infer sen-
+sitive activities on a mobile device, such as passcode login,
+keystrokes, app starting, and loudspeaker playback. References
+[34] and [35] measure the magnetic ﬁeld and coil whine
+emitted by a wireless charger to infer user activities, such as
+keystrokes, launch of apps, and interactions.
+C. Power Channel-Based Acoustic Leakages
+Three works investigate potential audio leakage by mobile
+devices over the power side channel. GhostTalk [52] attacks
+voice assistants over a charging cable, which can inject and
+eavesdrop on audio after modifying a shared power bank.
+Speciﬁcally, GhostTalk-SC analyzes power traces while play-
+ing audio to classify digits from zero to nine in a closed-world
+scenario. In wireless charging settings, [27] can achieve 97%
+accuracy in classifying digits (0-(9) and a limited set of
+hotwords. In addition, [33] only brieﬂy mentions the presence
+of voltage leaks from the loudspeaker of a charging phone on
+a multiport charger.
+In summary, [27], [52] can only classify digits or hotwords
+in closed-world settings, i.e., they do not recognize any
+words out of those already considered at the training time.
+Therefore, none of them can actually achieve eavesdropping,
+as they only output labels (i.e., digits or hotwords) rather than
+audio content. Our PowerEar is not limited by close-world
+settings, but it fully reconstructs high-ﬁdelity and intelligible
+audio from power traces. We are the ﬁrst to design a power
+channel-based framework that eavesdrops on the audio played
+by a mobile device’s built-in loudspeaker by reconstruct-
+ing comprehensible audio and an unconstrained vocabulary.
+Furthermore, we demonstrate the robustness of our approach in
+cross-individual, cross-device, and other challenging scenarios.
+III. P RELIMINARIES
+In this section, we introduce the principles of power supply
+and loudspeakers in mobile devices, and the properties of
+human speech.
+A. Powering Mobile Devices
+The USB interface is the de facto standard for data transmis-
+sion and charging mobile devices [42], such as smartphones
+and tablets. A common USB 2.0 cable consists of a pair of
+wires for serial data transfer ( D+ and D−), and a pair for
+power (+5V and GND). The newer USB 3.x and C include
+additional data transfer pairs, but the power transfer wires
+remain unchanged. While a device is connected to a power
+supply (e.g., adapter), the electrical current necessary to power
+the device components (e.g., CPU, loudspeaker, display) is
+drawn directly from the power supplier instead of the battery,
+which is in charging state [13]. During the charging state,
+most of the current provided goes to charge the battery, i.e.,
+constant current (CC) phase. When the battery reaches the
+constant voltage (CV) phase around 80% of charge, the current
+absorbed by the battery gradually decreases and reaches zero
+at full charge capacity (FCC). In the CV and FCC phases, we
+can measure current ﬂuctuations due to activities of the device
+components.
+B. Built-in Loudspeaker in Mobile Devices
+In general, a smartphone has two built-in loudspeakers.
+The upper front earpiece is used mainly for voice calls. The
+loudspeaker is more powerful than the earpiece and is used
+in a wider range of applications, such as a video call, playing
+music/podcast, voice assistant, and navigation. In a nutshell,
+a loudspeaker is composed of four main components: (i) a
+diaphragm is a rigid component whose movement produces
+sound waves; (ii) a voice coil is an insulated copper wire coil
+mounted to the diaphragm; (iii) a magnet is often made of
+neodymium and produces a permanent magnetic ﬁeld; and
+(iv) a spider stabilizes the diaphragm by preventing side
+movements. An electric current passing through the voice
+coil causes the diaphragm to oscillate, producing high- and
+low-pressure waves. The current amplitude and frequency
+determine the dislocation and speed of the diaphragm, thus
+the shape of the sound waves produced. As playing sound
+on a built-in loudspeaker requires an electric current, we can
+measure ﬂuctuations in the current drawn by a loudspeaker
+when a device is connected to a power supply.
+C. Fundamentals of Human Speech
+Typically, the fundamental frequencies of the human voice
+range from 300Hz to 3.4kHz [3]. We can divide human speech
+into fundamental elements called phonemes [36]. The English
+language has a total of 48 phonemes that can be bisected into
+20 vowels and 28 consonants [3], [38]. As we can observe in
+Figure 1, vowels have their main frequency components below
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 627
+Fig. 1. Spectrograms for the original audio of phonemes and the resulting
+power traces.
+2kHz (see Figure 1a), while labial and fricative consonants can
+reach frequencies up to 8kHz [40] (see Figure 1c).
+The built-in loudspeaker of a mobile device causes current
+ﬂuctuations that are related to the audio it plays. Therefore, we
+measure the resulting power traces, for which we report the
+spectrograms of the vowels in Figure 1b and the consonants
+in Figure 1d. Unfortunately, such power traces only partially
+retain the characteristics of original phonemes, but we make
+two observations: (i) it is possible to distinguish distinct
+phonemes in both spectrograms of audio and power trace; and
+(ii) a phoneme in an audio signal produces a power trace that
+has a unique pattern. Therefore, we aim ﬁrst to learn the power
+trace-to-audio correspondence to then use it to reconstruct the
+audio reproduced by the built-in loudspeaker given a power
+trace.
+IV. POWER EAR: OUR EAVESDROPPING ATTACK
+Our attack aims to eavesdrop on the audio reproduced by
+the built-in loudspeaker on the victim’s mobile device. We
+provide an overview of the components of our PowerEar attack
+in Figure 2. In this section, we deﬁne the threat model and
+describe in detail the components of our PowerEar attack.
+A. Threat Model
+We consider a threat model where the victim is charging
+the battery of its mobile device by connecting it to a publicly
+available USB power supply (e.g., outlet, adapter, power bank),
+like in the following realistic scenarios: (i) a charging station in
+a public area (e.g., airport, shopping mall); (ii) a USB outlet
+in a hotel room, train, or rental car; (iii) a rental or shared
+powerbank; and (iv) a USB power adapter not owned or led
+by a third party. The USB power supply appears normal and
+provides the expected charging capability. When charging its
+mobile device, the victim can perform daily activities, such as
+Fig. 2. Overview of the PowerEar attack.
+listening to music or podcasts, watching a video, or calling.
+However, the victim is unaware that an adversary concealed
+a sensor that passively monitors the current drawn by the
+connected mobile device. In particular, such a sensor can be
+hidden inside the power supply chassis and does not aﬀect the
+ordinary charging speed.
+Our attack aims to reconstruct the audio reproduced by
+such a loudspeaker by analyzing the power traces of the
+mobile device under charge. To successfully perform this
+attack, we make the following assumptions. We assume that
+the mobile device is in the charging state and has reached a
+suﬃciently high battery level to enter the CV or FCC phases
+(see Section III-A). However, the adversary does not have
+prior knowledge about the model of the connected mobile
+device or the opportunity to collect the power proﬁle of such
+a device beforehand. We also assume that the victim’s audio-
+related activities utilize the built-in loudspeaker. However, the
+adversary has no prior knowledge about the audio content nor
+the utterances of individuals whose voices are reproduced by
+the loudspeaker. In addition, the victim can use a power-only
+cable or apply a data blocking device (e.g., USB condom)
+since the adversary does not rely on the USB data line.
+B. Power Trace Acquisition 1O
+The ﬁrst component of our PowerEar attack consists of
+measuring the power consumption of a charging mobile
+device. We deﬁne as power trace the series of consecutive
+readings from the electrical current sensor deployed by the
+adversary in the power supply. To obtain a reading, an analog-
+to-digital converter (ADC) is necessary since the output of a
+current sensor is typically an analog signal. According to its
+capabilities, it is possible to conﬁgure the ADC to work at
+a certain conversion speed (i.e., sampling rate) and resolution
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+628 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+measured in bits. For an ADC with a resolution of r bits, the
+value of the least signiﬁcant bit (LSB) is V = (Vmax −Vmin)/2r
+where Vmin and Vmax are the upper and lower extremes of the
+ADC measurement range, respectively. Selecting the proper
+sampling rate plays a pivotal role in the power trace acquisition
+process. According to the Nyquist-Shannon sampling theorem,
+to accurately represent a signal σ and its properties, it is
+necessary that the minimum sampling rate fs is at least twice
+the highest frequency fmax of the signal σ.
+In the context of mobile device charging, the power con-
+verter within a USB adapter adjusts current and voltage [5]
+by performing high-frequency oscillations with on-oﬀ cycles
+(e.g., pulse-width modulation [48]) or resonance circuits (e.g.,
+Qi Wireless charging standard uses a dual resonance circuit
+that works at 100kHz and 1MHz [55]). When the current
+sensor signal contains high-frequency components and the
+ADC sampling rate is low, aliasing eﬀects may occur (i.e.,
+incorrect mapping of high-frequency components in lower-
+frequency ranges). To mitigate the aliasing eﬀect, we collect
+power traces with a sampling rate of fs = 32kHz, which is
+equivalent to twice the sampling rate fmax = 16kHz of the
+W A V audio ﬁles played by the built-in loudspeaker during
+data collection (see Section V-A).
+C. Feature Engineering 2O
+The second component processes the collected power trace
+and converts it into the related spectrogram.
+Power Trace Processing.After acquiring the power data, we
+convert the power data P into an audio-like signal Aw(t) =
+(P(t) ·α)/(max |P|)where the scaling factor α corresponds to
+the maximum amplitude for 16-bit PCM (Pulse Code Mod-
+ulation) audio (i.e., α = 32767). It is worth noting that
+this mapping is linear and does not introduce frequency
+distortion. We apply a low-pass ﬁlter with a cut-oﬀ frequency
+equal to8,192Hz (i.e., 13-bit frequency resolution) to remove
+high-frequency noise while ensuring the preservation of full
+frequency spectrum for human speech, including labial and
+fricative consonants [40]. In particular, this ﬁlter removes
+high-frequency interference from (i) the above mentioned
+voltage regularization technologies in USB power adapters
+and (ii) hardware components of a mobile device other than
+the loudspeaker, such as the CPU, networking interfaces and
+display refresh [6]. In addition, we apply a Wiener ﬁlter [8] to
+reduce unwanted noise caused by the operating system and
+other processes running on the mobile device. To visually
+assess the eﬀect of power trace processing, we report in
+Figure 3 an example of power trace spectrograms before and
+after our processing steps.Moreover, we study the eﬀect of
+these ﬁlters through the ablation study in Appendix C.
+Spectrogram Generation. Given that our model requires a
+two-dimensional image as input, we transform a power trace
+into an image-like spectrogram. First, we divide the power
+trace into ﬁxed-length segments through a sliding window
+with length 2 seconds and 50% overlap. Subsequently, each
+segment undergoes the Short-Time Fourier Transform (STFT),
+expressed as follows:
+S p(t, f ) =
+Z ∞
+−∞
+s(τ) ·w(τ−t) ·e−j fτ dτ (1)
+Fig. 3. Spectrograms before and after signal processing.
+where f corresponds to the frequency, S p(t, f ) denotes the
+spectral representation, s(τ) is the input power trace, w(τ−t)
+represents the window function. In particular, we use the Hann
+function as a discrete window function.
+D. Model Training 3O
+The objective of this component is to learn a mapping
+between the power trace spectrograms Pas the input domain
+and the audio spectrograms Aas output domain (henceforth,
+we omit to specify that we refer to spectrograms for simplic-
+ity). During the training process, our dataset contains pairs of
+original audio A ∈Aand the resulting power traces P ∈P.
+Given a new instance P′ at test time, a trained model G
+generates an output A′∈Afollowing the distribution p(A|P′).
+To train such a model G, we rely on the generative adversarial
+network paradigm.
+1) Generative Adversarial Networks: In a nutshell, a Gen-
+erative Adversarial Network (GAN) consists of a game-like
+challenge between a Generator G that produces new data
+from a random vector x and a Discriminator D that aims
+to distinguish between the output of G(x) and the original
+data in the ground truth. During training, G improves its
+generating ability in each round (epoch) until it successfully
+deceives D by producing an output indistinguishable from the
+original data.Conditional GAN (cGAN) [32] can restrict the
+data generated by G according to an input condition which, in
+our domain, is a power trace P. D still aims to distinguish the
+original data from the output of G, but also correlates G(x|P)
+with the condition P. During training, G aims to deceive D
+(i.e., maximize its output value) by generating G(x|P) while
+learning such a correlation, while D discriminates between
+G(x|P) and the original A that produced P, i.e., D outputs a
+low value when P and A are diﬀerent and a high value when
+they are similar. Therefore, the discriminator loss function for
+the cGAN can be expressed as
+LGAN(G,D) = EP,A∈(P,A)[log D(P,A)]
++ Ex,P∈P{log[1 −D(P,G(x |P))]}. (2)
+Moreover, an additional loss function compares the output of
+G with the original audio A using ℓ1 norm
+L1(G) = EP,A∈(P,A),x∥A −G(x |P)∥1. (3)
+Therefore, we combine the above loss functions balanced by
+a term λ to ﬁnd an optimal G as
+G = arg min
+G
+max
+D
+LGAN(G,D) + λL1(G). (4)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 629
+Fig. 4. Components of the BicycleGAN Architecture.
+2) Training Architecture: cGAN-based models [32] gen-
+erate a deterministic output A′ given an input P. However,
+this makes the mapping P → A′ sensitive to noise in the
+input power trace P, thus producing an inaccurate output A′.
+To address this limitation, our aim is to learn the mapping
+G : (P,β) →A that should sample A′from the true conditional
+distribution given P by also learning a latent low-dimensional
+random vector β that represents stochastic noise in input P.
+In particular, β is randomly sampled from a prior Gaussian
+distribution N(β) = N(0,I). To learn the mapping G, we
+adopt the BicycleGAN architecture [60], which combines
+two conditional GAN-based models: Variational AutoEncoder
+(cV AE-GAN) and Latent Regressor (cLR-GAN). As shown in
+Figure 4, these models work together and update each other’s
+components.We compare the performance of BicycleGAN
+architecture to other methods in Appendix B.
+a) cVAE-GAN: is a directed graphical generative model
+based on [24] extended to work in conditional settings. In
+Figure 4a, we show its components and steps for the training
+process. This model assumes that the latent random vector
+β comes not only from a prior distribution N(β) but also
+from a conditional distribution Q(β|A) given the original audio
+A as the ground truth. To incorporate β into the learning
+process, the model maps A to β using an encoder E
+).
+The conditional distribution Q(β|A) coincides with the encoder
+output E(A), hence we can sample β ∼E(A). In step
+ , G
+receives in the input the power trace P (resulting from A)
+concatenated with β and generates A′ as output. In step
+ ,
+we use D to compare the ground truth A with the output
+A′ = G(z | P). Hence, we reformulate and combine Eq. 2
+and Eq. 3 where β∼E(A) as
+LV AE(G,D,E,λ)
+= EP,A∈(P,A)[log(D(P,A))]+
++ EP,A∈(P,A),β∼E(A)[log(1 −D(P,G(P,β)))]+
++ λ EP,A∈(P,A),β∼E(A)∥A −G(z |P)∥1. (5)
+Since A is unknown at test time, we force the latent dis-
+tribution E(A) as close as possible to N(β) by computing
+a loss based on the Kullback–Leibler divergence DKL [21]
+as LKL(E) = EA∈A[DKL(E(A)||N(0,I))], regulating its impact
+using the parameter λKL. Finally, we can formulate the objec-
+tive function for the cV AE-GAN in terms of the losses as
+G,E = arg min
+G,E
+max
+D
+LV AE(G,D,E,λV AE)+λKLLKL(E). (6)
+In summary, cV AE-GAN performs a cycle A →β→A′.
+b) cLR-GAN: is a conditional version of the latent regres-
+sor model in [7]. In Figure 4b, we illustrate the steps of the
+cLR-GAN training process. The model focuses on learning the
+latent random vector β and enforces its use by G. In step
+,
+we sample β from the known distribution N(β). We then use
+G to map βand P to the output A′in step
+ . Subsequently, in
+step
+ ,E aims to reconstruct the latent vector β starting from
+A′ as input, i.e., β′ = E(G(β |P)). While in cV AE-GAN E
+infers a Gaussian distribution, here E is used to estimate β′To
+evaluate this process, we use a loss based on the ℓ1 norm:
+LLR(G,E) = EP∈P,β∼N(β)∥β−E(G(β|P)∥1. (7)
+Therefore, we use D to compare A and the generated A′ in
+step
+ . Finally, we combine the loss functions in Eq. 2 and
+Eq. 7 (regulated using λLR) to obtain the following objective
+function
+G,E = arg min
+G,E
+max
+D
+LGAN(G,D) + λLRLLR(G,E). (8)
+In summary, cLR-GAN represents a β→A′→β′ cycle.
+c) BicycleGAN: combines the above models, alternating
+their cycles A →β→A′ and β→A′ →β′ at each epoch. In
+addition, these models share the same neural networks G, E,
+and D. Therefore, we can formulate the ﬁnal objective function
+by combining Eq. 6 and Eq. 8 to obtain
+G,E = arg min
+G,E
+max
+D
+LGAN(G,D) + λKLLKL(E)+
++ LV AE(G,D,E,λV AE) + λLRLLR(G,E). (9)
+3) Details of Implementation: We provide details on the
+implementation of neural networks in our architecture.
+a) Generator G: We implement G using the U-Net
+architecture [39], which can process 256x256 grayscale
+images.Such an architecture consists of the symmetric
+structure shown in Figure 5.G aims to capture global
+information from the input image through ﬁve down-
+sampling steps (on the left side) and reconstructs an output
+image using four up-sampling steps (on the right side)
+while preserving jump connections to enhance detail reten-
+tion.One down-sampling step consists of two convolutional
+layers (with 3x3 size kernels and ReLU) followed by
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+630 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+Fig. 5. Network architecture of the Generator G. For each down-sampling
+and up-sampling convolutional layer, we denote the kernel size (e.g., 3x3
+pixels) and the number of feature channels in output (e.g., 64). Copy and crop
+indicates the process of copying a convolutional layer’s output and cropping
+it to ﬁt the corresponding target convolutional layer’s input size.
+a max pooling layer (2x2), doubling the feature chan-
+nels at each step (from 64 to 1024). In contrast, one
+up-sampling step consists of an up-convolution layer (2x2),
+which halves the number of feature channels in each step
+(from 1024 to 64), followed by two convolutional layers
+(3 ×3, ReLU). To control the image generation, G supports
+the injection of the latent vector β in intermediate and input-
+only layers, where β is concatenated with the input image of
+a layer.
+b) Encoder E: We implement E using ResNet-style
+blocks [12] to extract the latent vector β from the original
+audio A. E also processes 256x256 grayscale images and
+outputs the mean and variance of a Gaussian distribution. This
+allows for the sampling of β, allowing for the generation of
+diverse outputs through V AE.
+c) Discriminator D: We implement D using two Patch-
+GAN architectures [17] to capture both global and local image
+characteristics. The ﬁrst discriminator operates on the full
+image size (256 ×256), while the second operates on a down-
+scaled version (128×128). They consist of three convolutional
+layers and apply a patch-wise discrimination strategy. During
+training, the output of D is calculated as the average of
+responses obtained by a convolutional pass through the entire
+input image. This approach allows for an accurate assessment
+that captures nuances in diﬀerent regions of the input image.
+E. Audio Reconstruction 4O
+This ﬁnal component of PowerEar produces an audio signal
+from a power trace acquired in 1O. We prepare the power trace
+by applying the same process described in 2O. Therefore, for
+each segment of the power trace, we obtain a spectrogram to
+be given as input to G, which we trained in 3O. The latter
+outputs a spectrogram of the reconstructed audio.
+Spectrogram to audio.On the spectrogram enhanced by
+G, we apply the Griﬃn-Lim vocoder [9] to synthesize the
+corresponding speech waveform. The Griﬃn-Lim algorithm
+Fig. 6. Experimental setup for power trace collection.
+can reconstruct the speech waveform using a known amplitude
+spectrum and an unknown phase spectrum through an itera-
+tive process. The process commences with the introduction
+of a phase spectrum, from which a new speech waveform
+is synthesized using this phase spectrum and the known
+amplitude spectrum derived from the spectrogram generated
+by G. Employing the Inverse Short-Time Fourier Transform
+(ISTFT), we iterate the process by performing STFT on the
+newly synthesized speech waveform to calculate the new
+phase spectrum. This iterative synthesis continues until a
+satisfactory waveform signal is achieved or the number of
+iterations reaches the speciﬁed upper limit. Finally, we merge
+the resulting waveform signals to obtain the reconstructed
+audio ﬁle as the ﬁnal output.
+V. EXPERIMENTAL EVALUATION
+In this section, we evaluate the performance of our Pow-
+erEar attack. First, we describe the setup of our experiments in
+Section V-A in terms of hardware and software, audio dataset,
+and evaluation metrics. Second, we discuss the parameter
+selection for our training process in Section V-B. Then, we
+evaluate and discuss the performance of audio reconstruction
+in various settings in Section V-C.
+A. Experimental Settings
+1) Hardware and Software Setup: To collect power traces,
+we use a modiﬁed USB extender cable and a NI USB-6210
+DAQ. We modify the extender cable by splicing a 0.1Ω
+shunt resistor onto the GND wire. Note that no hardware
+modiﬁcation is necessary to the USB power supply or the
+device under test. We use the DAQ to measure the voltage drop
+(diﬀerential analog inputs) at the extremities of the resistor and
+conﬁgure the acquisition speed at 32K samples per second.
+The DAQ is connected via USB interface to a Lenovo Legion
+laptop Intel i9-12900H @ 2.50GHz CPU 16GB RAM running
+Windows 11 and NI DAQmx 2025Q1 framework. We show
+our experimental setup for power trace collection in Figure 6.
+For power trace processing and model training, we use a
+server with Intel Xeon E5-2699v4 @ 2.20GHz CPU 512GB
+RAM and an NVIDIA GeForce RTX 3090 GPU running
+Ubuntu 22.04.3 LTS. We implement our scripts using the
+Python v3.8 programming language and the PyTorch v1.8.1
+and SciPy v1.10.1 libraries.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 631
+TABLE I
+THE AUDIO DATASET USED TO EVALUATE POWER EAR
+2) Audio Dataset: We collect audio samples from a total of
+48 individuals whose utterances are publicly available on the
+Internet. In particular, we include four individuals for each of
+the six languages considered, i.e., English (En), Chinese (Ch),
+Italian (It ), French (Fr ), Spanish (Sp), and German (Ge). We
+partition the audio recording of each of the ﬁrst 24 individuals
+into a 80% training set and a 20% test set. In addition, we
+consider the audio of the remaining 24 individuals as a test
+set only. In Table I, we list the individuals, embedded links,
+and lengths (in seconds) of the audio source ﬁles. Individuals’
+ID are composed of their language (e.g., En), male (M) or
+female (F ), and progressive number (training and test sets)
+or letter (test set only). Note that each individual in Table I
+contains the URL to the audio source on YouTube.
+In addition, we consider the three popular audio datasets
+also reported in Table I. The RA VDESS [28] dataset (EmD)
+includes emotional speech2: EmD1 contains audio from speak-
+ers 03 to 24 spoken with emotions 3 to 8 while EmDa includes
+speakers 01 and 02 spoken with emotions 1 and 2. The VCTK
+[49] dataset (AcD) considers diﬀerent English accents: AcD2
+includes audio from eight speakers (from p226 to p233) with
+northern and southern England accents while AcDb includes
+speakers with Scottish (p237), American (p360 and p361) and
+Australian (p326 and p374) accents. The SNSD [37] dataset
+(NoiD) allows superimposing various types of environmental
+noise on clean speech 3: NoiD3 includes speech in noisy or
+public environments (e.g., airport, vacuum cleaner, bus) while
+NoiDc includes speech with diﬀerent types of noise (i.e.,
+neighbor, typing, air conditioner). Note that PowerEar recon-
+structs audio with a high ﬁdelity to the original audio played
+by the loudspeaker; therefore, PowerEar also reconstructs the
+environmental noise present in the original audio. We also
+2The emotions in the RA VDESS dataset are neutral (1), calm (2), happy
+(3), sad (4), angry (5), fear (6), disgust (7) and suprise (8).
+3We generate audio using Speech-to-Noise ratios ranging from 0 to 20dB.
+TABLE II
+EXPERIMENTAL MOBILE DEVICES , OPERATING SYSTEMS , USB CHARGER
+INFORMATION AND WIRELESS CHARGING (WC)
+partition EmD1, AcD2, and NoiD3 into a 80% training set
+and a 20% test set, while using EmDa, ACDb, and NoiDc as
+test sets only.
+Each audio ﬁle is in 16-bit PCM W A V format with a
+sampling rate of 16kHz. We play audio (and video) using VLC
+Player v3.5.4 for Android and v3.5.10 for iOS. For simplicity,
+we henceforth refer to the audio from training or test sets of
+individuals as training audio or test audio, respectively.
+3) Experimental Devices: We consider 22 mobile devices
+equipped with the latest version available for their stock
+operating system. In Table II, we provide detailed information
+on the experimental devices. We do not remove any apps
+installed by default, modify the original settings, or stop any
+app running in the background by default. For each device,
+we use the standard fast charging USB power supply provided
+in the original packaging. In Table II, we indicate with N/A
+when a device does not come with an out-of-the-box charger.
+In this case, we use a Remax charger (5V = 3A, 33W) as a
+wired power supply. In wireless charging experiments, we use
+a Xiaomi Vertical Wireless Charger 20W.
+4) Evaluation Metrics: We consider three metrics to assess
+the audio-reconstruction performance.
+Mel-Cepstral Distortion (MCD) [20] is an objective signal-
+level metric that evaluates the similarity between the original
+and the reconstructed audio. MCD measures the distortion in
+the Mel-Frequency Cepstral Coeﬃcients (MFCC), which are
+indicative of the spectral characteristics of the audio. A lower
+MCD value indicates that the reconstructed audio has higher
+ﬁdelity to the original audio. MCD is calculated as:
+MCD = 10
+√
+2
+ln10
+vuut
+MX
+m=1
+[co(m) −cr(m)]2 (10)
+where co is an MFCC of the original audio and cr is the one
+of reconstructed audio, M is the order of Mel-Cepstrum. It is
+worth noting that reconstructed audio with MCD below 7 can
+usually be recovered by speech recognition systems [57].
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+632 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+Word Error Rate (WER) is an objective metric to evaluate
+the word-level intelligibility of a reconstructed audio. In par-
+ticular, WER measures the dissimilarity between the words of
+the original audio and those of a reconstructed audio. A lower
+WER indicates a higher word-level accuracy in speech recon-
+struction. To calculate WER, we ﬁrst input one minute long
+segments of the original audio and the related reconstructed
+audio into iFlytek Speech-To-Text 4and obtain the transcrip-
+tions as output. We then measure WER = 100·[(S +D+I)/N]
+as a percentage, with S substitutions (i.e., words that are
+incorrectly substituted), D deletions (i.e., omitted words), I
+insertion (i.e., words incorrectly inserted/added), and N as the
+total number of words in the original audio.
+Mean Opinion Score (MOS) is a subjective evaluation metric
+that is used to measure the intelligibility and general quality
+of reconstructed audio with a discrete number. 5We conducted
+this subjective evaluation with a user study approved by the
+Ethical Review Board of the School of Computer Science and
+Technology of Shandong University and following the ITU-T
+P.808 recommendations [18]. This study involved 20 female
+and 20 male participants of an age ranging from 18 to 40 years.
+Participants are ﬂuent in English, Chinese, Italian, French
+and some understand Spanish or German. We recruited them
+among university students and faculty through group chats and
+mailing lists. Participants received the experiment instructions
+in advance, participated when they wanted, and could interrupt
+or quit at any time. The experiment lasted approximately
+15 minutes for each participant.
+B. Training Parameters
+We train our models following the BicycleGAN training
+process for a total of 100 epochs. In the ﬁrst 50 epochs,
+we set for all our neural networks a relatively low learning
+rate of 2 ·10−4 to limit the pace of each update of internal
+parameters. This would reduce the risk of skipping local
+optimum or excessive loss value oscillations. In the second
+50 epochs, we dynamically adjust the learning rate using
+the Adam optimizer [19]. This allows a fast response to
+new gradient information while maintaining enough inertia to
+smooth out ﬂuctuations.We set the hyperparameters for the
+losses at λV AE= 1.0, λLR = 0.5, and λKL = 10−3. We provide
+further details on the selection of the number of epochs and
+hyperparameter tuning in Appendix A.
+C. Evaluation of Audio Reconstruction
+In this section, we provide a comprehensive evaluation of
+our PowerEar attack, which focuses on assessing its per-
+formance under various conditions and realistic scenarios,
+among which diﬀerent individuals, mobile devices, languages,
+activities, and charging technologies.
+1) Overall Audio Reconstruction Performance: We pre-
+liminarily evaluated the PowerEar performance in audio
+reconstruction in simpliﬁed settings where the power proﬁle
+of the device and the speech utterances of an individual are
+4iFlytek Speech-To-Text - https://www.iﬂytek.com/
+5MOS has a quality scale from 1 to 5: bad (1), poor (2), fair (3), good (4)
+or excellent (5).
+Fig. 7. Spectrograms for an audio sample from EnM1 (original audio), the
+related power trace after processing, and the reconstructed audio (MCD 2.54,
+WER 8.7%, and MOS 4.2).
+Fig. 8. Audio reconstruction for speciﬁc individuals.
+available. Therefore, we train and test our model using the
+power traces of Nova while playing the audio of EnM1 at
+the maximum volume level. In Figure 7, we show from top
+to bottom the textual transcription and spectrograms of the
+original audio, the related power trace, and the audio recon-
+structed using PowerEar. We can observe that the spectrogram
+of the power data is quite dissimilar to the one of the original
+audio, but retains some of its characteristics. In addition, we
+can clearly see the high similarity between the spectrograms of
+the original and reconstructed audio throughout the frequency
+spectrum.
+2) Individual-Speciﬁc Audio Reconstruction: In this anal-
+ysis, our objective is to reconstruct the audio of speciﬁc
+individuals. Therefore, we build an individual-speciﬁc model
+for each individual using their own training data. In particular,
+we consider a sample of twelve individuals consisting of one
+male and one female individual for each language (e.g., EnF1
+and EnM1 for the English language). For each individual, we
+ﬁrst train a model using the training audio of that individual
+and related power traces collected using Nova. We then test
+the audio-reconstruction performance with test audio of the
+same individual collected from the same device.
+We report the performance in terms of MCD in Figure 8a,
+WER in Figure 8b and MOS in Figure 8c. For all individuals
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 633
+Fig. 9. Audio reconstruction across diﬀerent languages and datasets.
+considered, MCD does not exceed 2.6 while WER is below
+10% (i.e., on average one mistaken word every ten), with
+the exception of German-speaking individuals (still below
+12.5%), probably due to the presence of compound words in
+the German language. In general, MOS is higher than 3.75,
+indicating that reconstructed audio has good intelligibility.
+3) Cross-Individual and Cross-Settings Generalizability:
+Although di ﬀerent languages and accents can diﬀer in the
+number and distribution of phonemes, human speech also
+presents characteristics (e.g., pitch, intonation, pronuncia-
+tion) that can greatly diﬀer between individuals. Furthermore,
+speakers’ emotional states and the presence of environmental
+noises could also inﬂuence the reconstructed audio quality.
+Therefore, we study the impact on audio reconstruction of
+diﬀerent individuals and settings such as spoken languages,
+emotions, and noisy environments.
+In this experiment, we build nine models: one for each
+of the six languages and the three datasets considered. For
+each language, we train a model using training audio of two
+male and two female individuals (e.g., EnF1, EnF2, EnM1,
+EnM2 for the English language), whose power traces are
+collected using Nova. Then, we test the performance using the
+power traces collected from the same device while playing
+test audio of the same four individuals (Known) and four
+additional individuals (e.g., EnFa, EnFb, EnMa, and EnMb for
+the English language) whose language is the same but speech
+utterances are not present in the training set (Unknown) to
+test the generalizability of audio reconstruction. We apply the
+same process to EmD, AcD and NoiD datasets individually to
+study generalizability across diﬀerent emotions, accents, and
+environmental noises, respectively.
+From the results of this analysis reported in Figure 9,
+we obtain several insights: (i) the MCD is always below
+3.1 for the Known individuals; (ii) the female voices are
+slightly more diﬃcult to reconstruct than the male voices; and
+(iii) more importantly, PowerEar can reconstruct the audio of
+unknown individuals with an MCD that does not exceed 4.1;
+(iv) emotions slightly a ﬀect audio reconstruction as average
+MCD has around 0.5 increase on test audio spoken with
+emotions unknown at the training time;(v) diﬀerent English-
+language accents have a negligible impact on the acoustic
+ﬁdelity of the reconstructed audio;and (vi) while the presence
+of known environmental noise in training audio has a marginal
+impact on the audio reconstruction performance (average
+MCD is below 3), PowerEar can also reconstruct high-ﬁdelity
+audio even when the test audio contains unknown types
+of noise (average MCD only increase by 0.2).In summary,
+PowerEar generalizes well across individuals and in audio that
+Fig. 10. Audio reconstruction of device-speciﬁc models.
+includes emotional speech, diﬀerent accents and environmental
+noise.
+4) Device-Speciﬁc Audio Reconstruction: In addition to the
+audio played by the built-in loudspeaker, power traces are
+also inﬂuenced by the hardware (e.g., screen, battery, CPU,
+WiFi) and software (e.g., installed apps, running services, OS
+version) components of a mobile device. For this reason, we
+evaluate our method on 22 mobile devices, among which 15
+Android and 7 Apple iOS.
+For each device, we train a device-speciﬁc model using only
+the power traces collected from that device while playing the
+training audio of the English-speaking individuals (i.e., EnF1,
+EnF2, EnM1, and EnM2).We then test these device-speciﬁc
+models using the power traces collected using the same
+device while playing the test audio of the same individuals.In
+Figure 10, we report the results of this experiment in terms of
+MCD and WER.We can observe that the average MCD does
+not vary signiﬁcantly between diﬀerent devices, remaining
+below 4 for all devices considered. On the one hand, the
+average WER is below 9% for most Android devices, with
+the exception of Utnk with an average WER of 10.1%.The
+iOS devices present a higher WER than most Android devices,
+especially for older models (i.e., Ip6, Ip7, and IpSE). However,
+their average WER remains below 12%, which still indicates
+good overall intelligibility.These results show that PowerEar
+reconstructs high-quality audio independently of the mobile
+device.
+5) Cross-Device Transferability: In a realistic scenario, an
+adversary may not know the speciﬁc model or brand of the
+target device in advance. Therefore, we study the transfer-
+ability of our generative models by performing a cross-device
+evaluation. Considering a device-speciﬁc model trained under
+the settings in Section V-C.4, we test it using power traces
+collected from all other devices in Table II individually. We
+show the results in terms of MCD in Figure 11 where a column
+indicates the device-speciﬁc model and a row identiﬁes the
+device under test from which the power traces are collected
+while playing the test audio. For these results, we can draw
+the following insights: (i) the average MCD across all devices
+is 3.89 (reaching at most 5.2), which indicates a generally
+good cross-device transferability; (ii) models trained using
+data from newer iOS devices (i.e., Ip11 and above) achieve
+excellent transferability, since their average MCD increases
+by 0.8 at most; and (iii) the model trained with Op10 data
+has the highest cross-device transferability, as it achieves an
+MCD of 3.49 on average on test data from the other devices. In
+summary, PowerEar achieves good cross-device transferability,
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+634 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+Fig. 11. Transferability across diﬀerent devices.
+Fig. 12. Audio reconstruction varying the battery level, volume level,
+sampling rate and charging technology (i.e., wired and wireless charging).
+as in most cases MCD does not signiﬁcantly increase from the
+one of the device-speciﬁc model.
+6) Impact of Volume: The volume of audio outputted by
+a loudspeaker is proportional to the intensity of the current
+that ﬂows through the coil to move the diaphragm. Thus, a
+low volume level can aﬀect the quality of the reconstructed
+audio. Therefore, we evaluate the robustness of PowerEar at
+diﬀerent volume levels. In this experiment, we ﬁrst collect the
+power traces of a device (i.e., Nova, Sx14, and Op8) while
+playing the training audio of English-speaking individuals at
+the maximum volume level. For each device considered, we
+build a device-speciﬁc model using the above training data. We
+then collect power traces from the same devices while playing
+test audio of the same individuals at various volume levels
+(i.e., between 60% and 100%). In Figure 12a, we report the
+results varying the volume level in terms of the output acoustic
+intensity in decibel (dB). As expected, we can observe that
+MCD decreases with increasing volume levels and that this
+behavior is consistent across the three devices considered.
+7) Impact of Battery Level: In this experiment, we inves-
+tigate how battery level aﬀects audio reconstruction. We
+empirically assess that in CC phase (around 80%) we cannot
+observe any current ﬂuctuations while the loudspeaker playing
+audio, making audio reconstruction not possible. We further
+discuss the implications of this limitation in Section VI-A.
+First, we discharge Nova, Sx14, and Op8 until around 80% of
+the remaining battery (i.e., towards the end of the CC phase
+and before the CV phase). Then, we connect them to the
+power supply and play the test audio of EnM1, while logging
+the battery level. We divide the resulting power trace into 60
+second-long segments, which we label with the related battery
+level. Finally, we reconstruct the audio of these segments using
+a device-speciﬁc model trained using power traces collected at
+100% battery level while playing training audio from English-
+speaking individuals except EnM1 (i.e., EnF1, EnF2, and
+EnM2). We report the results varying the battery level in
+Figure 12b. Although MCD reaches a relatively high value
+at the 85% battery level (i.e., around 6), MCD decreases with
+increasing battery level for the three devices considered.
+8) Impact of Sampling Rate: We assess how the sampling
+rate of power trace acquisition aﬀects the audio-reconstruction
+performance. In this experiment, we ﬁrst build a model using
+training audio from English-speaking individuals collected on
+Nova at the same sampling rate as our baseline (i.e., 32kHz).
+While playing the test audio of EnM1, we collect power traces
+from the same device at diﬀerent sampling rates ranging from
+1kHz to 32kHz. Figure 12c shows the audio reconstruction
+performance by varying the sampling rate. As expected, the
+mean and variance of MCD increase with decreasing sampling
+rate. However, we achieve an average MCD lower than 5.2
+even at 1kHz, while achieving an average MCD below 4.1 for
+a sampling rate of or above 10kHz. Therefore, PowerEar can
+reconstruct audio from power traces even at sampling rates
+lower than the one used for training.
+9) Impact of Wired and Wireless Charging: As wireless
+charging is gaining popularity, we investigate the possibility
+of reconstructing audio from the power traces of a wireless
+charger. In particular, we evaluate the transferability of models
+trained under wired charging to wireless charging settings. In
+this experiment, we build four device-speciﬁc models from
+power traces collected from three Android devices (i.e., Mate,
+Op10, Op12) and an iOS device (i.e., Ip12) in wired charging
+settings while playing the training audio of English-speaking
+individuals. We evaluate these models in both wired and
+wireless charging settings while playing the test audio of
+EnM1. We show the results of the model transferability from
+wired to wireless charging in Figure 12. The MCD of Android
+devices increases moderately between 0.4 and 1.2 from wired
+to wireless charging settings, while we notice an increase of
+1.5 for the iOS device (i.e., Ip12). Nonetheless, the average
+MCD remains still below 4.2. The observed increase in MCD
+can be attributed to the power transfer method inherent in
+wireless charging technology. Therefore, we can conﬁrm that
+PowerEar can reconstruct audio in wireless settings and is
+moderately resistant to domain shift from wired to wireless
+charging.
+10) Impact of User Activities: In this section, we assess the
+impact of various user activities related to audio reproduction.
+As user activities consume energy, they can have an impact
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 635
+Fig. 13. Audio reconstruction with ongoing activities.
+on power traces, aﬀecting the quality of reconstructed audio.
+Since the screen is one of the main energy-hungry components
+of a mobile device, we can divide the user activities considered
+with the screen oﬀ and the screen on. We enable WiFi to
+provide connectivity to activities that require Internet access.
+For voice and video calls, we use the WeChat v8.0.43 app.
+In this experiment, we ﬁrst train a model using power traces
+collected from Nova (with the screen turned oﬀ) while playing
+the training audio of English-speaking individuals. We then
+test such a model on the power traces from the test audio of the
+same individuals while performing the activities considered.
+a) Activities with screen oﬀ: We consider the reproduc-
+tion of audio from local data storage (i.e., Audio oﬄine), audio
+streaming from a remote source (i.e., Audio streaming), and
+a Voice call taken over the Internet. We report the results in
+Figure 13a. We can observe a moderate increase in MCD due
+to the introduction of WiFi connectivity in Audio streaming
+and Voice call. However, we note that the average MCD
+remains below 4.6 for all activities considered, even under
+the Voice call scenario.
+b) Activities with screen on: We also consider activities
+related to audio when the device screen is turned on. In the
+Audio only activity, we use the built-in loudspeaker to simply
+reproduce audio from the VLC app while the screen is on. We
+use the same app to reproduce a video from the device memory
+(i.e., Video oﬄine) and streaming from a remote source (i.e.,
+Video streaming) while we aim to reconstruct the audio content
+of such a video. To track the user’s location, we also aim to
+reconstruct the audio from a voice Navigation while using
+the Amap v13.06.1 app with active GPS and ﬁne location
+services. Finally, we consider a Video call placed using the
+WeChat app. We report the results of these experiments in
+Figure 13b. As expected, the MCD of Screen on activities is
+generally higher than most Screen oﬀ activities due to the high
+power consumption of the screen. However, we can observe
+that MCD does not exceed 4.5, with the exception for the
+Video call activity, which average MCD still remains below
+4.9 with a quite low variance.
+In summary, PowerEar can eﬀectively reconstruct the audio
+from a device’s power trace under various everyday audio-
+related activities, which leakage of audio content may severely
+hinder the user privacy.
+D. A Compact System for Power Trace Collection
+We develop the prototype for a compact and low-cost power
+trace collection system based on a microcontroller. We show
+Fig. 14. Our compact power trace collection system.
+the schema in Figure 14a and the setup in Figure 14b for
+our compact system. We measure the current by attaching a
+SparkFun ACS723 Hall eﬀect low-current sensor to the GND
+wire of the USB cable. The microcontroller is manufactured by
+HelTec and is equipped with a dual-core ESP32 @ 240MHz
+processor with integrated WiFi. One CPU core acquires sensor
+data using the built-in Analog-to-Digital Converter (ADC) at
+a sampling rate of 10kHz and 12bit resolution. The other core
+manages data buﬀering and streaming over WiFi using the
+UDP protocol. This system is small enough to be concealed
+in a power bank, and its total cost is less than 35USD.
+In this experiment, we consider a model trained using the
+training audio of all English- and Chinese-speaking individuals
+with the setup in Section V-A. Then, we test PowerEar on the
+data collected using our compact setup, while Nova plays the
+test audio of the same individuals. We report the performance
+of the audio reconstruction in terms of MCD and WER in
+Figure 14c. For all the individuals considered, the average
+MCD and WER do not exceed 4.5 and 15%, respectively,
+despite the use of a diﬀerent sensor, lower ADC resolution,
+and sampling rate.
+VI. DISCUSSION AND LIMITATIONS
+In this section, we discuss the limitations of PowerEar attack
+and possible countermeasures.
+A. Battery Level and Attack Window
+Due to a similar threat model, our PowerEar attack shares
+the same limitation in terms of battery level as all other power
+channel-based attacks on mobile devices. In particular, this
+limitation is present for attacks in both wired [6], [29], [33],
+[43] and wireless charging scenarios [23], [27], [34], [35].
+As we explain in Section III-A, it is not possible to observe
+the current variation while the mobile device is in the CC
+phase due to the properties of Li-ion batteries. Therefore, we
+can perform our attack only once the device is in the CV
+or FCC phases. In Section V-C.7, we experimentally assess
+how PowerEar’s audio reconstruction performance improves
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+636 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+Fig. 15. Schematics and circuits of the hardware ﬁlters and the resulting power traces. We denote with None the power trace without an applied ﬁlter.
+with increasing battery level. Hence, our attack feasibility
+window starts from the mobile device entering the CV phase
+until it is disconnected. However, we emphasize that such
+a time limitation only applies to the “inference” part of the
+attack procedure, not to the training, which can be done in
+advance using another device and audio from other individuals.
+In fact, our attack achieves cross-individual and cross-device
+transferability (see sections V-C.3 and V-C.5, respectively).
+B. Countermeasures
+Researchers have investigated methods to counteract the
+leakage of private information through power channels via
+software or hardware countermeasures.
+1) Software Countermeasures: aim to randomize the power
+consumption of the device using energy-aggressive apps to
+obfuscate leakages in wired [29], wireless [27], or multiport
+[33] charging scenarios. Unfortunately, while being eﬀective,
+these countermeasures also aﬀect the eﬃciency of battery
+charging as they introduce charging time and resource (e.g.,
+CPU, memory) overheads. However, a simple yet eﬀective
+countermeasure is to set the mobile device to stop charging
+once it reaches the CV phase (e.g., Wise charging feature in
+ColorOS v13).
+2) Hardware Countermeasures: typically involve external
+electronic circuitry, as it is not realistic to rely on manufactur-
+ers to redesign their charging solutions and protocols. Ni et al.
+in [33] propose a device to be installed on the USB port, which
+smooths power ﬂuctuations employing an LC-based ﬁlter and
+a low dropout voltage regulator (i.e., AMS1117). Cronin et al.
+in [6] suggest removing high-frequency components with a
+low-pass ﬁlter into a device’s charging circuit.
+To evaluate the eﬀectiveness of these defenses, we imple-
+ment three passive low-pass ﬁlters (i.e., RC, LC, CLC ﬁlters)
+and a voltage regulator-based (Reg) defense [33], which
+schematics and circuits are reported in ﬁgures 15(a)-(d). In
+particular, we select the values for resistors, inductors, and
+capacitors to achieve a cutoﬀ frequency below 250Hz, thus
+excluding the frequency range of human speech [3]. How-
+ever, these ﬁlters cause a voltage drop VD = VIN -VOUT that
+prevents VOUT from reaching the 5V necessary to not hinder
+the device’s charging performance. VD can be signiﬁcant
+especially with a high current I since VD = R ·I, where R
+is the resistance of a ﬁlter. While the voltage drop on the RC
+ﬁlter is minimal, it is non-negligible in the LC, CLC, and
+Reg ﬁlters because of the inductors’ DC resistance (DCR).
+Therefore, we can attain VOUT ≈5V by increasing the voltage
+in VIN accordingly. In Figure 15e, we report power traces
+measured while playing audio without (i.e., None) and with
+low-pass ﬁlters. We can observe that these ﬁlters prevent
+audio leakage by signiﬁcantly attenuating frequencies above
+250Hz; therefore, they are eﬀective countermeasures against
+our attack.
+VII. C ONCLUSION
+In this paper, we propose PowerEar, a power channel-based
+acoustic eavesdropping method that reconstructs the audio
+played by the built-in loudspeaker of a mobile device with
+high ﬁdelity and an unconstrained vocabulary. An adversary
+can exploit PowerEar capabilities to seriously hinder user
+privacy by eavesdropping while using the mobile device for
+audio-related activities, such as making video or voice calls,
+listening to audio messages, watching videos, or using voice-
+assisted navigation. PowerEar method relies on a combination
+of signal processing and generative adversarial networks to
+ﬁrst learn the underlying power trace-to-audio mapping and
+then reconstruct the audio played on the mobile device from
+its power traces. We extensively evaluated the eﬀectiveness of
+PowerEar using audio recordings from 48 individuals that span
+six languages, three audio speech datasets, and power traces
+collected from a wide range of mobile devices (i.e., 15 Android
+and 7 iOS devices) in various settings (e.g., wireless and
+wired charging, battery, and volume level), and audio-related
+activities (e.g., navigation, voice/video call, and audio/video
+streaming).
+APPENDIX A
+HYPERPARAMETER SELECTION
+To ensure a high-quality audio reconstruction, we tune the
+hyperparameters for model training.
+A. Preparation
+In this assessment, we consider power traces collected from
+Nova while playing the training audio of English-speaking
+individuals. We subdivide this training set into 90% actually
+used in the training process and 10% used as a validation
+set, maintaining the same proportion of data across individuals
+(i.e., stratiﬁcation).
+B. Number of Epochs
+A low number of epochs risks underﬁtting and poor audio
+reconstruction quality, while an excessive number of epochs
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 637
+Fig. 16. Audio reconstruction performance varying hyperparameters.
+may cause overﬁtting and loss of generalizability. We deter-
+mine the appropriate number by studying the MCD of the
+validation set as the epochs increased in Figure 16a. MCD
+ﬁrst gradually decreases until it reaches a minimum in 100
+epochs and then increases in 150 and 200 epochs, where it may
+overﬁt the training data. In Figure 16c, we can also observe
+the high similarity between the original and reconstructed
+audio at 100 epochs. Therefore, we select 100 as a reasonable
+number of epochs to achieve audio reconstruction without
+losing generalizability.
+C. Regulating the Losses
+Using the validation set, we also tune the hyperparameter for
+the training process. In particular, the BicycleGAN architec-
+ture involves three main hyperparameters related to the impact
+of the losses: λV AE, λLR, and λKL. Since they are related by a
+scaling factor, we ﬁx λV AE= 1 and vary the values of λLR and
+λKL. In Figure 16b, we report the reconstruction performance
+after 100 epochs. We can observe that, while varying λLR has
+a negligible impact on MCD, selecting λKL = 10−3 reduces
+MCD by at least 0.4 compared to λKL = 10−2 and 10 −1.
+Therefore, we select the hyperparameters λKL = 10−3 and
+λLR = 0.5 to train our models.
+APPENDIX B
+MODEL COMPARISON
+To select the most suitable generative method, we compare
+three architectures: Diﬀusion (Df ) [61], cGAN (cG) [32],
+and BicycleGAN (BG) [60]. For each of the three devices
+and generative methods considered, we collect power traces
+while playing training and test audio of English-speaking
+individuals, partition them into training and validation data,
+Fig. 17. Analysis on model selection and processing components.
+and tune the hyperparameters using the process in AppendixA.
+The hyperparameters used for Df are 100 diﬀusion steps and
+50 epochs, and cGAN is 200 epochs (100 epochs with 10 −4
+learning rate and 100 epochs with Adam optimizer). For each
+device and generative method, we train a device-speciﬁc model
+using training data of such a device, and reconstruct audio
+from test data. In Figure 17a, we report the results for the
+model comparison. While BicycleGAN outperforms Df on all
+devices, it also moderately reduces the MCD of cGAN by up
+to 0.35.
+APPENDIX C
+ABLATION STUDY
+We conduct an ablation study to assess the eﬀect of ﬁlters
+used in signal processing on the quality of audio reconstruc-
+tion. In particular, we process power traces applying four
+distinct conﬁgurations: baseline ( None), Wiener ﬁlter (Wien)
+only, Low-Pass ﬁlter (LP) only, and both ﬁlters (LP & W).
+For this analysis, we train and test a device-speciﬁc model
+using the same settings in Appendix B in terms of the devices
+considered and training/validation audio partitioning. In Fig-
+ure 17b, we observe that while the LP ﬁlter alone achieves
+the largest reduction in MCD, the Wiener ﬁlter only achieves
+a minor MCD reduction from the baseline. In addition, the two
+combined ﬁlters achieve an MCD of around 2.65, yielding a
+marginal MCD reduction of at most 0.13 over the LP ﬁlter.
+REFERENCES
+[1] S. A. Anand and N. Saxena, “Speechless: Analyzing the threat to speech
+privacy from smartphone motion sensors,” in Proc. IEEE Symp. Secur.
+Privacy (SP), May 2018, pp. 1000–1017.
+[2] Z. Ba et al., “Learning-based practical smartphone eavesdropping with
+built-in accelerometer,” in Proc. Netw. Distrib. Syst. Secur. Symp., 2020,
+pp. 1–18.
+[3] R. J. Baken and R. F. Orlikoﬀ, Clinical Measurement of Speech and
+Voice. Boston, MA, USA: Cengage Learning, 2000.
+[4] S. Basak and M. Gowda, “MmSpy: Spying phone calls using mmWave
+radars,” in Proc. IEEE Symp. Secur. Privacy (SP), May 2022,
+pp. 995–1012.
+[5] C. Basso, Switch-Mode Power Supplies SPICE Simulations and Practi-
+cal Designs, 1st ed., New York, NY , USA: McGraw-Hill, 2008.
+[6] P. Cronin, X. Gao, C. Yang, and H. Wang, “Charger-surﬁng: Exploiting
+a power line side-channel for smartphone information leakage,” in Proc.
+30th USENIX Security Symp. (USENIX Security), 2021, pp. 681–698.
+[7] J. Donahue, P. Kr ¨ahenb¨uhl, and T. Darrell, “Adversarial feature
+learning,” in Proc. ICLR, 2016, pp. 1–18.
+[8] M. A. Elfattah et al., “Speech enhancement with an adaptive Wiener
+ﬁlter,” J. Speech Technol., vol. 17, no. 1, pp. 53–64, 2013.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+638 IEEE TRANSACTIONS ON INFORMATION FORENSICS AND SECURITY , VOL. 21, 2026
+[9] D. Griﬃn and J. Lim, “Signal estimation from modiﬁed short-time
+Fourier transform,” in Proc. IEEE Int. Conf. Acoust., Speech, Signal
+Process., Jul. 1983, pp. 804–807.
+[10] J. Han, A. J. Chung, and P. Tague, “Pitchln: Eavesdropping via
+intelligible speech reconstruction using non-acoustic sensor fusion,” in
+Proc. 16th ACM/IEEE Int. Conf. Inf. Process. Sensor Netw., Apr. 2017,
+pp. 181–192.
+[11] J. He et al., “Video aﬁcionado: We know what you are watching,” IEEE
+Trans. Mobile Comput., vol. 21, no. 8, pp. 3041–3052, Aug. 2022.
+[12] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for
+image recognition,” in Proc. IEEE Conf. Comput. Vis. Pattern Recognit.
+(CVPR), Jun. 2016, pp. 770–778.
+[13] M. A. Hoque, M. Siekkinen, J. Koo, and S. Tarkoma, “Full charge
+capacity and charging diagnosis of smartphone batteries,” IEEE Trans.
+Mobile Comput., vol. 16, no. 11, pp. 3042–3055, Nov. 2017.
+[14] P. Hu, W. Li, R. Spolaor, and X. Cheng, “MmEcho: A mmWave-based
+acoustic eavesdropping method,” in Proc. IEEE Symp. Secur. Privacy
+(SP), May 2023, pp. 1840–1856.
+[15] P. Hu, Y . Ma, P. S. Santhalingam, P. H. Pathak, and X. Cheng,
+“MILLIEAR: Millimeter-wave acoustic eavesdropping with uncon-
+strained vocabulary,” inProc. IEEE Conf. Comput. Commun., May 2022,
+pp. 11–20.
+[16] P. Hu et al., “AccEar: Accelerometer acoustic eavesdropping with
+unconstrained vocabulary,” in Proc. IEEE Symp. Secur. Privacy (SP),
+May 2022, pp. 1757–1773.
+[17] P. Isola, J.-Y . Zhu, T. Zhou, and A. A. Efros, “Image-to-image translation
+with conditional adversarial networks,” in Proc. IEEE Conf. Comput.
+Vis. Pattern Recognit., Jul. 2017, pp. 1125–1134.
+[18] Subjective Evaluation of Speech Quality With a Crowdsourc-
+ing Approach, document P.808, 2021. [Online]. Available: https://
+handle.itu.int/11.1002/1000/14665
+[19] D. P. Kingma and J. Ba, “Adam: A method for stochastic optimization,”
+2014, arXiv:1412.6980.
+[20] R. Kubichek, “Mel-cepstral distance measure for objective speech qual-
+ity assessment,” in Proc. IEEE Pac. Rim Conf. Commun. Comput. Signal
+Process., vol. 1, Jun. 1993, pp. 125–128.
+[21] S. Kullback and R. A. Leibler, “On information and suﬃciency,” Ann.
+Math. Statist., vol. 22, no. 1, pp. 79–86, 1951.
+[22] A. Kwong, W. Xu, and K. Fu, “Hard drive of hearing: Disks that
+eavesdrop with a synthesized microphone,” in Proc. IEEE Symp. Secur.
+Privacy (SP), May 2019, pp. 905–919.
+[23] A. S. La Cour, K. K. Afridi, and G. E. Suh, “Wireless charging power
+side-channel attacks,” in Proc. ACM SIGSAC Conf. Comput. Commun.
+Security, 2021, pp. 651–665.
+[24] A. B. L. Larsen, S. K. Sønderby, H. Larochelle, and O. Winther,
+“Autoencoding beyond pixels using a learned similarity metric,” inProc.
+33rd Int. Conf. Mach. Learn., vol. 48, Feb. 2016, pp. 1558–1566.
+[25] W. Li et al., “Acoustic eavesdropping from sound-induced vibrations
+with multi-antenna mmWave radar,” IEEE Trans. Mobile Comput.,
+vol. 24, no. 8, pp. 7693–7708, Aug. 2025.
+[26] P. Lifshits et al., “Power to peep-all: Inference attacks by malicious
+batteries on mobile devices,” in Proc. PET, 2018, pp. 141–158.
+[27] J. Liu et al., “Privacy leakage in wireless charging,” IEEE Trans.
+Dependable Secure Comput., vol. 21, no. 2, pp. 501–514, Mar. 2024.
+[28] S. R. Livingstone and F. A. Russo, “The ryerson audio-visual database
+of emotional speech and song (RA VDESS): A dynamic, multimodal set
+of facial and vocal expressions in North American English,” PLoS ONE,
+vol. 13, no. 5, May 2018, Art. no. e0196391.
+[29] R. Matovu, A. Serwadda, A. V . Bilbao, and I. Griswold-Steiner,
+“Defensive charging: Mitigating power side-channel attacks on charging
+smartphones,” in Proc. 10th ACM Conf. Data Appl. Secur. Privacy, Mar.
+2020, pp. 179–190.
+[30] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” in Proc. 23rd USENIX Secur. Symp.,
+2014, pp. 1053–1067.
+[31] Y . Michalevsky, A. Schulman, G. A. Veerapandian, D. Boneh, and
+G. Nakibly, “PowerSpy: Location tracking using mobile device power
+analysis,” in Proc. 24th USENIX Security Symp. (USENIX Security) ,
+2015, pp. 785–800.
+[32] M. Mirza and S. Osindero, “Conditional generative adversarial nets,”
+2014, arXiv:1411.1784.
+[33] T. Ni, Y . Chen, W. Xu, L. Xue, and Q. Zhao, “XPorter: A study of the
+multi-port charger security on privacy leakage and voice injection,” in
+Proc. 29th Annu. Int. Conf. Mobile Comput. Netw., Oct. 2023, pp. 1–15.
+[34] T. Ni et al., “Exploiting contactless side channels in wireless charging
+power banks for user privacy inference via few-shot learning,” in Proc.
+29th Annu. Int. Conf. Mobile Comput. Netw., Oct. 2023, pp. 1–15.
+[35] T. Ni et al., “Uncovering user interactions on smartphones via contactless
+wireless charging side channels,” in Proc. IEEE Symp. Secur. Privacy
+(SP), May 2023, pp. 3399–3415.
+[36] J. J. Ohala, “Phonetic explanations for sound patterns,” in A Figure of
+Speech. Evanston, IL, USA: Routledge, 2014, pp. 23–38.
+[37] C. K. A. Reddy, E. Beyrami, J. Pool, R. Cutler, S. Srinivasan, and
+J. Gehrke, “A scalable noisy speech dataset and online subjective test
+framework,” in Proc. Interspeech, Sep. 2019, pp. 1816–1820.
+[38] H. Rogers, The Sounds of Language: An Introduction to Phonetics.
+Evanston, IL, USA: Routledge, 2014.
+[39] O. Ronneberger, P. Fischer, and T. Brox, “U-Net: Convolutional net-
+works for biomedical image segmentation,” inProc. 18th Int. Conf. Med.
+Image Comput. Comput.-Assist. Intervent., vol. 9351. Cham, Switzer-
+land: Springer, 2015, pp. 234–241.
+[40] S. Rosen and A. Fourcin, “Frequency selectivity and the perception
+of speech,” in Frequency Selectivity in Hearing, B. C. J. Moore, Ed.,
+Academic, 1986, pp. 373–487.
+[41] N. Roy and R. Roy Choudhury, “Listening through a vibration motor,”
+in Proc. 14th Annu. Int. Conf. Mobile Syst., Appl., Services, Jun. 2016,
+pp. 57–69.
+[42] L. Sherman. (2010). The Basics of Usb Battery Charging: A Sur-
+vival Guide. [Online]. Available: https://www.analog.com/en/technical-
+articles/the-basics-of-usb-battery-charging.html
+[43] R. Spolaor, L. Abudahi, V . Moonsamy, M. Conti, and R. Poovendran,
+“No free charge theorem: A covert channel via USB charging cable on
+mobile devices,” in Proc. ACNS, 2016, pp. 83–102.
+[44] R. Spolaor, N. Feng, Y . Liu, X. Cheng, and P. Hu, “PowerApp: Mobile
+apps and user actions identiﬁcation via USB power channel analysis,”
+in Proc. IEEE Int. Conf. Commun., Jun. 2025, pp. 1–6.
+[45] R. Spolaor, H. Liu, F. Turrin, M. Conti, and X. Cheng, “Plug and power:
+Fingerprinting USB powered peripherals via power side-channel,” in
+Proc. IEEE Conf. Comput. Commun., May 2023, pp. 1–10.
+[46] R. Spolaor, Y . Xu, V . Moonsamy, M. Conti, and X. Cheng,
+“CovertPower: A covert channel on Android devices through USB
+power line,” IEEE Trans. Dependable Secure Comput., vol. 22, no. 5,
+pp. 4911–4926, Sep. 2025.
+[47] R. Spreitzer, V . Moonsamy, T. Korak, and S. Mangard, “Systematic
+classiﬁcation of side-channel attacks: A case study for mobile devices,”
+IEEE Commun. Surveys Tuts., vol. 20, no. 1, pp. 465–488, 1st Quart.,
+2017.
+[48] J. Sun, “Pulse-width modulation,” in Dyn. Control Switched Electron.
+Syst., 2012, pp. 25–61.
+[49] C. Veaux, J. Yamagishi, and K. MacDonald, “CSTR VCTK corpus:
+English multi-speaker corpus for CSTR voice cloning toolkit,” Centre
+Speech Technol. Res. (CSTR), Univ. Edinburgh, Edinburgh, U.K., 2019,
+doi: 10.7488/ds/2645.
+[50] C. Wang et al., “Thru-the-wall eavesdropping on loudspeakers via RFID
+by capturing sub-mm level vibration,” in Proc. ACM IMWUT, vol. 5,
+2021, pp. 1–25.
+[51] G. Wang, Y . Zou, Z. Zhou, K. Wu, and L. M. Ni, “We can hear you with
+Wi-Fi!,” IEEE Trans. Mobile Comput., vol. 15, no. 11, pp. 2907–2920,
+Nov. 2016.
+[52] Y . Wang, H. Guo, and Q. Yan, “GhostTalk: Interactive attack on
+smartphone voice system through power line,” in Proc. Netw. Distrib.
+Syst. Secur. Symp., 2022, pp. 1–15.
+[53] Z. Wang, Z. Chen, A. D. Singh, L. Garcia, J. Luo, and M. B. Srivastava,
+“UWHear: Through-wall extraction and separation of audio vibrations
+using wireless signals,” in Proc. 18th Conf. Embedded Netw. Sens. Syst.,
+2020, pp. 1–14.
+[54] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” in Proc. 21st Annu. Int. Conf. Mobile
+Comput. Netw., Sep. 2015, pp. 130–141.
+[55] Wireless Power Consortium.(2021). Qi Speciﬁcations. [Online].
+Available: https://www.wirelesspowerconsortium.com/knowledge-base/
+speciﬁcations/download-the-qi-speciﬁcations/
+[56] Y . Wu, Z. Li, N. Van Nostrand, and J. Liu, “Time to rethink the
+design of qi standard? Security and privacy vulnerability analysis of
+qi wireless charging,” in Proc. Annu. Comput. Secur. Appl. Conf., Dec.
+2021, pp. 916–929.
+[57] C. Yan, G. Zhang, X. Ji, T. Zhang, T. Zhang, and W. Xu, “The feasibility
+of injecting inaudible voice commands to voice assistants,” IEEE Trans.
+Dependable Secure Comput., vol. 18, no. 3, pp. 1108–1124, May 2021.
+[58] Q. Yang, P. Gasti, G. Zhou, A. Farajidavar, and K. S. Balagani, “On
+inferring browsing activity on smartphones via USB power analy-
+sis side-channel,” IEEE Trans. Inf. Forensics Security, vol. 12, no. 5,
+pp. 1056–1066, May 2017.
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.
+SPOLAOR et al.: PowerEar: AN AUDIO EA VESDROPPING ATTACK ON MOBILE DEVICES 639
+[59] L. Zhang, P. H. Pathak, M. Wu, Y . Zhao, and P. Mohapatra, “AccelWord:
+Energy eﬃcient hotword detection through accelerometer,” in Proc. 13th
+Annu. Int. Conf. Mobile Syst., Appl., Services, May 2015, pp. 301–315.
+[60] J.-Y . Zhu et al., “Toward multimodal image-to-image translation,” in
+Proc. 31st Int. Conf. Neural Inf. Process. Syst., 2017, pp. 465–476.
+[61] Y . Zhu et al., “Denoising diﬀusion models for plug-and-play image
+restoration,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit.,
+Jan. 2023, pp. 1219–1229.
+Riccardo Spolaor (Member, IEEE) received the
+Ph.D. degree from the University of Padua, Italy, in
+2018. He was a Research Associate at the University
+of Oxford, U.K., from 2018 to 2019. He has been
+an Associate Professor with the School of Com-
+puter Science and Technology, Shandong University,
+China, since 2019. He has published more than 30
+papers in top international conferences and jour-
+nals, such as IEEE S&P, NDSS, IEEE INFOCOM,
+IEEE TRANSACTIONS ON INFORMATION FOREN -
+SICS AND SECURITY , IEEE T RANSACTIONS ON
+DEPENDABLE AND SECURE COMPUTING , and IEEE TRANSACTIONS ON
+MOBILE COMPUTING . His main research interests include the security of
+mobile devices and physical channel analysis.
+Heyuan Shi received the B.Sc. degree in computer
+science and technology from the School of Com-
+puter Science and Technology, Shandong University,
+Qingdao Campus, China, in 2023, where he is
+currently pursuing the M.Sc. degree. His research
+interests include the IoT security, side channel anal-
+ysis, and mobile computing.
+Zekun Miao is currently pursuing the B.Sc. degree
+with the School of Computer Science and Technol-
+ogy, Shandong University, Qingdao Campus, China.
+During his studies, he carried out several projects for
+software and data structure design courses, including
+a railway scheduling system and a Qingdao Metro
+database. He received the Internet+ Competition
+School Award and ranked in the top 8.51% in the
+32nd CCF Computer Software Ability Certiﬁcation.
+Guoming Zhang received the bachelor’s degree
+from the College of Transportation, Ludong Uni-
+versity, in 2013, the master’s degree from the
+School of Mechanical Engineering, Beijing Institute
+of Technology, supervised by Prof. Jie Hu, and
+the Ph.D. degree from the Department of Electri-
+cal Engineering, Zhejiang University, supervised by
+Prof. Wenyuan Xu and Donglian Qi. His research
+interests include the IoT security and acoustic com-
+munication. He won the Best Paper Awards of ACM
+CCS 2017 and Qshine 2019.
+Yanni Yang received the B.E. and M.Sc. degrees
+from the Ocean University of China, Qingdao, in
+2014 and 2017, respectively, and the Ph.D. degree
+in computer science from The Hong Kong Polytech-
+nic University in 2021. In 2019, she visited MIT
+Media Lab as a Visiting Student. She is currently an
+Assistant Professor with the School of Computing
+Science and Technology, Shandong University. She
+has published over 20 papers in top academic con-
+ferences and journals. Her research interests include
+wireless human sensing, pervasive and mobile com-
+puting, and the Internet of Things.
+Xiuzhen Cheng (Fellow, IEEE) received the M.S.
+and Ph.D. degrees in computer science from the Uni-
+versity of Minnesota Twin Cities in 2000 and 2002,
+respectively. She worked as the Program Director of
+the U.S. National Science Foundation (NSF) from
+April 2006 to October 2006 (full-time) and from
+April 2008 to May 2010 (part-time). She is currently
+a Professor with the School of Computer Science
+and Technology, Shandong University. Her current
+research interests include wireless and mobile secu-
+rity, cyber-physical systems, wireless and mobile
+computing, sensor networking, and algorithm design and analysis. She is a
+member of ACM. She received the NSF CAREER Award in 2004. She has
+served on the editorial boards for several technical journals and the technical
+program committees for various professional conferences/workshops. She has
+also chaired several international conferences.
+Pengfei Hu received the Ph.D. degree in computer
+science from UC Davis. He is currently a Professor
+with the School of Computer Science and Tech-
+nology, Shandong University, China. His research
+interests include the IoT security, AI security, and
+mobile computing. He has published over 30 papers
+in premier conferences and journals on these topics,
+e.g., IEEE S&P, ACM CCS, IEEE INFOCOM, and
+IEEE TRANSACTIONS ON MOBILE COMPUTING .
+He served as the TPC for numerous prestigious
+conferences and an Associate Editor for IEEE
+TRANSACTIONS ON WIRELESS COMMUNICATIONS and IEEE INTERNET OF
+THINGS JOURNAL .
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 07:39:20 UTC from IEEE Xplore.  Restrictions apply.

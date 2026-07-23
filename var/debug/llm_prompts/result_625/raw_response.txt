@@ -1,0 +1,37 @@
+{
+  "target_reference_marker": "[43]",
+  "target_reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-the-wall eavesdropping on loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25, Dec. 2021.",
+  "paper_level_summary_zh": "本引用论文将目标论文归类为基于毫米波雷达的声学窃听攻击相关工作，并在表格和引用列表中将其作为代表性工作之一。",
+  "evidences": [
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Recent studies have demonstrated the feasibility of using mmWave radar for side-channel attacks by capturing acoustic or mechanical vibrations to reconstruct private information [6, 10, 13, 17, 18, 26, 28, 35, 41, 49].",
+      "evidence_context": "Recent studies have demonstrated the feasibility of using mmWave radar for side-channel attacks by capturing acoustic or mechanical vibrations to reconstruct private information [6, 10, 13, 17, 18, 26, 28, 35, 41, 49]. These attacks can be categorized based on acoustic source types: active acoustic sources (e.g., loudspeakers, human throats) and passive acoustic sources (e.g., tables, light bulbs). Active-source attacks directly detect vibrations from the speaker or device.",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-the-wall eavesdropping on loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25, Dec. 2021.",
+      "why_this_judgment_zh": "引用论文在相关工作中将目标论文列为多篇引用之一，属于普通相关工作列举，未单独描述目标论文的具体贡献或能力。证据中未明确提及 sub-mm、RFID、loudspeaker 等目标论文关键词。",
+      "copy_ready_zh": "引用论文将目标论文列为基于毫米波雷达的侧信道攻击相关工作之一。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "review",
+      "claim_type": "ordinary_reference",
+      "evidence_quote": "Representative acoustic eavesdropping studies are summarized in Table 1.",
+      "evidence_context": "Representative acoustic eavesdropping studies are summarized in Table 1.",
+      "reference_entry": "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, Yanling Bu, Kai Zhang, and Sanglu Lu. Thru-the-wall eavesdropping on loudspeakers via RFID by Capturing Sub-mm Level Vibration. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 5(4):1–25, Dec. 2021.",
+      "why_this_judgment_zh": "目标论文出现在表格中，但表格仅列出代表性工作，无具体描述或评价。属于表格引用，不能作为积极证据。",
+      "copy_ready_zh": "引用论文在对比表格中将目标论文列为代表性声学窃听研究之一。",
+      "confidence": "high"
+    },
+    {
+      "recommendation": "exclude",
+      "claim_type": "false_positive",
+      "evidence_quote": "according to the Nyquist theorem [23], frequency components up to 4 kHz can be captured.",
+      "evidence_context": "In our configuration, the resulting audio sampling rate is 8 kHz, implying that, according to the Nyquist theorem [23], frequency components up to 4 kHz can be captured.",
+      "reference_entry": "HJ Landau. Sampling, data transmission, and the nyquist rate. Proceedings of the IEEE, 55(10):1701–1706, 1967.",
+      "why_this_judgment_zh": "引用论文正文中的标记 [23] 对应的是 Nyquist 定理的参考文献，而非目标论文。这是一个典型的假阳性。",
+      "copy_ready_zh": "引用论文中的 [23] 标记指向 Nyquist 定理文献，不是目标论文。",
+      "confidence": "high"
+    }
+  ]
+}

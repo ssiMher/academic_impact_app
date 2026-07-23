@@ -1,0 +1,1382 @@
+You are performing fulltext_template_direct report analysis.
+Read the complete citing paper full text. Do not rely on keyword hits alone.
+Find the cited paper in the References section. Identify TARGET_REFERENCE_MARKER and TARGET_REFERENCE_ENTRY.
+Find all body-text locations that cite TARGET_REFERENCE_MARKER.
+Evaluate the current active templates using the full paper context.
+Do not attribute first / pioneering / sub-mm / RFID / capability words to the cited paper unless the body evidence clearly anchors those words to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.
+Strong reference alignment rules:
+- Every evidence_quote must be a body-text quote, not a References entry.
+- The citation marker in evidence_quote must be TARGET_REFERENCE_MARKER. If the quote cites another marker, set recommendation="exclude" and claim_type="false_positive".
+- TARGET_REFERENCE_ENTRY must be the reference entry for the cited paper and must contain the cited paper title or DOI.
+- If the body quote uses [23] but [23] is a software project, dataset, hardware manual, or a different paper, exclude it as false_positive.
+- Do not use a target paper title that appears only in the References entry as body evidence.
+If first modifies another paper or method, recommendation must be exclude or review, not include.
+If sub-mm or millimeter-level does not clearly apply to the cited paper, do not write that the cited paper received third-party sub-mm recognition.
+If evidence is ordinary related work, classify it as ordinary_reference and set recommendation="review" or "exclude", never "include".
+Grouped citations, table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation="include" unless the sentence separately describes the target paper.
+recommendation="include" is allowed only for: direct sub-mm precision claims, through-wall eavesdropping capability, RFID loudspeaker/speaker vibration capability, concrete method use, concrete baseline/performance comparison. All other claims must be review or exclude.
+If evidence is negative or limitation feedback, classify it as limitation_feedback and do not make it a positive highlight.
+Deduplicate semantically identical evidence quotes. If one quote could fit multiple claim types, keep only the strongest claim type.
+Do not output debugging information. Do not output Markdown. Return only JSON.
+The JSON must be report-ready and match this schema exactly:
+{
+  "target_reference_marker": "[23]",
+  "target_reference_entry": "full reference entry for the cited paper",
+  "paper_level_summary_zh": "brief Chinese summary of how this citing paper treats the cited paper",
+  "evidences": [
+    {
+      "recommendation": "include | review | exclude",
+      "claim_type": "submm_precision_claim | capability_recognition | through_wall_eavesdropping | rfid_loudspeaker_vibration | method_use | performance_comparison | limitation_feedback | ordinary_reference | false_positive",
+      "evidence_quote": "exact body-text quote, not References",
+      "evidence_context": "longer body context around the quote",
+      "reference_entry": "matching reference entry",
+      "why_this_judgment_zh": "why this quote supports this claim type; mention attribution risk if any",
+      "copy_ready_zh": "formal Chinese statement that can be copied into a report without overclaiming",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+
+RFID/sub-mm template distinctions:
+- Direct sub-mm precision evidence requires body text explicitly saying sub-mm / submillimeter / millimeter-level and anchoring it to the cited paper.
+- RFID loudspeaker vibration capability evidence requires body text confirming loudspeaker/speaker/acoustic/voice vibration sensing for the cited paper.
+- Through-wall eavesdropping evidence requires body text confirming through-wall/eavesdropping capability for the cited paper.
+- Concrete method/performance comparison requires a body quote that uses the target marker as a method, baseline, implementation source, comparison object, or performance metric.
+- Plain related-work listing should be ordinary_reference.
+- Limitation or negative statements should be limitation_feedback.
+- Misattributed claims should be false_positive or exclude.
+
+CITING_PAPER_TITLE: OISMic: Acoustic Eavesdropping Exploiting Sound-induced OIS Vibrations in Smartphones
+CITED_PAPER_TITLE: Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing Sub-mm Level Vibration
+CITED_PAPER_YEAR: 2021
+CITED_PAPER_VENUE: Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.
+CITED_PAPER_DOI: 10.1145/3494975
+CITED_PAPER_AUTHORS: Chuyu Wang, Lei Xie 0004, Yuancan Lin, Wei Wang 0002, Yingying Chen 0001, Yanling Bu, Kai Zhang, Sanglu Lu
+ACTIVE_EVIDENCE_TEMPLATES:
+[
+  {
+    "template_id": 73,
+    "name": "rfid_submm_capability",
+    "display_name": "RFID 亚毫米级感知能力佐证",
+    "template_type": "rfid_submm_capability",
+    "goal": "判断引用论文是否明确确认、概括、使用或评价目标论文实现了 RFID 亚毫米级/sub-mm/millimeter-level 振动感知能力。",
+    "positive_keywords": [
+      "sub-mm",
+      "submillimeter",
+      "sub-millimeter",
+      "sub millimeter",
+      "millimeter-level",
+      "mm-level",
+      "fine-grained vibration",
+      "tiny vibration",
+      "micro-vibration",
+      "vibration sensing",
+      "RFID",
+      "RFID tag",
+      "loudspeaker vibration",
+      "speaker vibration",
+      "through-wall",
+      "eavesdropping",
+      "acoustic sensing",
+      "voice sensing",
+      "audio sensing",
+      "high-precision sensing"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "sub-mm RFID",
+      "RFID vibration sensing",
+      "millimeter-level sensing"
+    ],
+    "allowed_evidence_types": [
+      "precision_claim",
+      "capability_recognition",
+      "method_use",
+      "representative_work",
+      "limitation_feedback",
+      "ordinary_citation"
+    ],
+    "strict_rules": [
+      "body evidence only, not References",
+      "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+      "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+      "grouped citation requires attribution_risk"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "rfid_submm_capability",
+      "allowed_evidence_types": [
+        "precision_claim",
+        "capability_recognition",
+        "method_use",
+        "representative_work",
+        "limitation_feedback",
+        "ordinary_citation"
+      ],
+      "strict_rules": [
+        "body evidence only, not References",
+        "sub-mm precision requires explicit body wording or target title Sub-mm plus anchored RFID/vibration body context",
+        "plain RFID/eavesdropping mentions are representative_work or ordinary_citation only",
+        "grouped citation requires attribution_risk"
+      ]
+    },
+    "prompt_fragment": "RFID 亚毫米级感知模板：只有正文原文明确支持 sub-mm/millimeter-level 或 RFID 振动/声学感知能力并锚定目标论文时才判定满足；普通 RFID related work 不得包装成亚毫米能力佐证。"
+  },
+  {
+    "template_id": 74,
+    "name": "first_or_pioneering_claim",
+    "display_name": "首次/开创性明确表述",
+    "template_type": "first_or_pioneering_claim",
+    "goal": "判断引用论文正文是否明确称目标论文为 first / pioneering / earliest / seminal / first-of-its-kind / for the first time / 首次 / 开创性。",
+    "positive_keywords": [
+      "first",
+      "the first",
+      "pioneering",
+      "earliest",
+      "first-of-its-kind",
+      "seminal",
+      "for the first time",
+      "首次",
+      "开创性",
+      "率先",
+      "最早"
+    ],
+    "negative_keywords": [],
+    "required_patterns": [
+      "the first",
+      "for the first time",
+      "pioneering work",
+      "seminal work"
+    ],
+    "allowed_evidence_types": [
+      "first_or_pioneering_claim",
+      "first_or_seminal_claim"
+    ],
+    "strict_rules": [
+      "requires explicit first/pioneering expression in body text",
+      "do not infer from publication year",
+      "ordinary related work does not satisfy this template"
+    ],
+    "scoring_rules": {
+      "template_bonus": 30,
+      "template_key": "first_or_pioneering_claim",
+      "allowed_evidence_types": [
+        "first_or_pioneering_claim",
+        "first_or_seminal_claim"
+      ],
+      "strict_rules": [
+        "requires explicit first/pioneering expression in body text",
+        "do not infer from publication year",
+        "ordinary related work does not satisfy this template"
+      ]
+    },
+    "prompt_fragment": "首次/开创性模板：只有正文原文明确出现 first/pioneering/seminal/earliest/for the first time 等表达时才判定满足；不得根据年份或引用量推断。"
+  }
+]
+FULL_EXTRACTED_TEXT:
+OISMic: Acoustic Eavesdropping Exploiting
+Sound-induced OIS Vibrations in Smartphones
+Ziyu Shao, Yuchen Su, Yicong Du, Shiyue Huang, Tingyuan Yang, Hongbo Liu *, Yanzhi Ren
+University of Electronic Science and Technology of China, China
+{202322081442, 202221081034, 202112081362, 202411081726, 202321081434 }@std.uestc.edu.cn,
+hongbo.liu@uestc.edu.cn, renyanzhi05@uestc.edu.cn
+Bo Liu
+Auburn University, USA
+liubo19831214@gmail.com
+Huan Dai
+Suzhou University of Science and Technology, China
+daihuanjob@163.com
+Shuai Li
+University of Oulu, Finland
+daihuanjob@163.com
+Abstract—Optical image stabilization (OIS), powered by a
+special micro-electromechanical structure in the camera lenses to
+compensate for the optical distortion caused by camera shakes,
+has become an indispensable feature in many smartphones.
+However, we discover that this seemingly benign component
+can be exploited to eavesdrop on nearby audio signals, posing
+a signiﬁcant threat to people’s privacy during conversations or
+phone calls. Speciﬁcally, the OIS component can be inﬂuenced
+by external acoustic stimuli leading to slight vibrations, and at
+the same time, the coil and magnetized components inside the
+OIS induce electromagnetic leakage as they vibrate, according
+to Faraday’s Law of Electromagnetic Induction. This electro-
+magnetic leakage contains voice information that can be used to
+recover the audio signals if intercepted by individuals with mali-
+cious intent. Inspired by the above discovery, we proposeOISMic,
+a new acoustic eavesdropping attack that takes advantage of
+sound-induced OIS vibrations on smartphones. Unlike other
+existing acoustic eavesdropping attacks, eavesdropping exploiting
+OIS vibrations not only overcomes the constraints imposed by
+system permissions for many sensor-based approaches but is also
+immune to ultrasonic jammer that hinders the methods relying
+on microwave or light reﬂections to sense sound-induced vibra-
+tions. To execute this non-trivial attack in practical scenarios,
+we developed a prototype circuit that has a compact design
+capable of capturing the electromagnetic leakage caused by OIS
+vibrations. After converting the collected leaked electromagnetic
+signals into audio signals, a software-based phase-locked loop
+(PLL) method is developed to enhance the representation of
+voice components. Meanwhile, to reconstruct the weak audio
+signals, we also designed a diffusion-based neural network
+to learn the distribution of electromagnetic noise within the
+audio spectrum. Extensive experiments indicate thatOISMic can
+accurately reconstruct voice under various scenarios, achieving
+an average word correct rate of 90.57% across different devices.
+Index T erms—Optical image stabilizers, side-channel eaves-
+dropping, privacy leakage.
+I. I NTRODUCTION
+Motion-induced blur effects and optical distortion are the
+key issues affecting the camera imaging quality, thus image
+stabilization technology emerged in response and now is
+widely adopted in handheld shooting devices (e.g., smart-
+phones) to combat camera shake. Optical image stabilizers
+(OIS) [1], as a representative image stabilization technology,
+*
+Corresponding author: Hongbo Liu (e-mail: hongbo.liu@uestc.edu.cn)
+
+	
+
+
+ 
+	
+ 
+
+
+
+
+
+
+
+
+Fig. 1: Illustration of OISMic exploiting sound-induced OIS
+vibrations for acoustic eavesdropping.
+are powered by a special micro-electromechanical structure
+that drives the camera lenses to shift or tilt for optical compen-
+sation during the photography process. Initially exclusive to
+high-end camera modules, OIS has now become a ubiquitous
+and indispensable feature in smartphones as it delivers the best
+image effect in most cases compared to other image stabiliza-
+tion technologies [2]. Although the displacement and rotation
+of the OIS module are usually controlled by an internal motor,
+our in-depth study found that the OIS is also highly sensitive
+to external acoustic stimuli and will produce subtle vibrations
+as external sound changes. Along with the vibration, the coils
+and magnetized metal components inside OIS will cause slight
+disturbances in the surrounding magnetic ﬁeld, resulting in
+electromagnetic leakage. If such electromagnetic leakage can
+be sensed and properly processed, it will be exploited to
+recover the original audio signal that may contain sensitive
+information for many malicious purposes.
+Inspired by the aforementioned discovery, we seek a new
+acoustic eavesdropping attack that leverages the sound-induced
+OIS vibration in smartphones for covert voice recovery, even
+in the presence of ultrasonic interference, as shown in Figure
+1. Unlike existing sensor-based eavesdropping that utilizes
+built-in inertial sensors (i.e., the accelerometer and gyroscope)
+in smartphones [3], [4], our method bypasses some common
+systematic limitations, such as raw data access restricted by
+system permissions and low sampling rates. Furthermore,
+other eavesdropping attacks, which exploit microwave or light
+reﬂections to capture sound-induced vibrations, are highly sus-
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+k,(((
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+k,(((
+2024 21st Annual IEEE International Conference on Sensing, Communication, and Networking (SECON) | 979-8-3315-1918-6/24/$31.00 ©2024 IEEE | DOI: 10.1109/SECON64284.2024.10934876
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+
+
+
+(a) Front view
+
+	
+
+
+	
+
+
+(b) Isometric view
+Fig. 2: The movable structure of OIS modules.
+ceptible to ultrasonic jammers [5], while OIS-based eavesdrop-
+ping is immune to ultrasonic jamming signals according to the
+selective frequency response principle [6]. Thus, this reveals
+the potential of the OIS module to serve as an unintentional
+side channel for acoustic eavesdropping, posing a signiﬁcant
+threat to user privacy and property security.
+Although the idea looks intuitive, several key challenges
+should be addressed before realizing such an acoustic eaves-
+dropping attack. First, to avoid revealing attack intentions,
+the hardware needs to be designed compactly, allowing it
+to be easily hidden within various commercial devices or
+in inconspicuous locations. Moreover, the electromagnetic
+environment near the OIS is very complex, making the ex-
+traction of weak audio signals quite challenging. Therefore, it
+requires advanced noise reduction models speciﬁcally tailored
+to address such electromagnetic noises given the limited
+performance of traditional methods.
+To cope with the above challenges, we propose a lightweight
+and practical acoustic eavesdropping attack, OISMic, that is
+able to stealthily sense the subtle electromagnetic leakage
+caused by the sound-induced OIS vibrations and recover
+original audio signals. Speciﬁcally, we developed a prototype
+circuit that features a compact design and adopts a dual-coil
+differential mode to suppress common-mode noise, enabling
+the reception of weak OIS electromagnetic radiation. We also
+designed a software-based phase-locked loop (PLL) method to
+remove frequency and phase errors, thereby enhancing the rep-
+resentation of voice components. Furthermore, to achieve ac-
+curate voice reconstruction, we applied wavelet transform and
+short-time Fourier transform (STFT) to extract time-frequency
+features, and utilized a diffusion-based neural network for
+voice recovery. We also conduct a series of experiments to
+validate our theoretical ﬁndings and assess the effectiveness of
+the proposed eavesdropping technique. The main contributions
+of OISMic are summarized as follows:
+- We report a new observation that the OIS components
+in smartphones are sensitive to sound-induced vibrations and
+can produce electromagnetic leakage, where the original voice
+is embedded. This critical discovery forms the foundation of
+OISMic, an acoustic eavesdropping attack capable of capturing
+voices from smartphones and live speech.
+- We build a prototype system capable of capturing the
+subtle electromagnetic leakage induced by OIS vibrations. The
+circuit features a compact design, making it easy to conceal
+within various commercial devices (e.g., wireless chargers or
+power banks) or in inconspicuous locations.
+- We propose leveraging a software-based PLL and a
+diffusion-based model to process electromagnetic signals cap-
+tured by the OIS system. Our approach enhances the represen-
+
+
+
+
+	
+	
+
+
+Fig. 3: The setup of preliminary experimental scenarios.
+tation of voice components, effectively converting them into
+clear and intelligible voice.
+- Extensive experiments are conducted to investigate the
+effectiveness of OISMic under various scenarios. The results
+demonstrate that OISMic can accurately reconstruct voice and
+bypass ultrasonic interference.
+II. P RELIMINARIES
+To achieve acoustic eavesdropping with OIS modules in
+smartphones, we seek to answer the key question: How does
+electromagnetic leakage occur and vary in OIS modules under
+external sound?
+A. Eletromagnetic Leakage in OIS Modules under External
+Sound
+Commercial smartphone cameras typically incorporate an
+optical image stabilization (OIS) module for enhanced image
+stability, primarily comprising sensors and motors (i.e., voice
+coil motors), as illustrated in Figure 2. To mitigate image
+blurring caused by camera shake, the sensors detect minute
+movements, and the motors precisely adjust the optical path
+of the lens. Interestingly, our ﬁndings reveal that, in addition
+to the mechanical adjustments by the motors, sound waves can
+also induce component displacement within the OIS module.
+Speciﬁcally, when an external sound source approaches the
+internal coil of the OIS module, the resultant sound pressure
+causes the coil to have slight vibrations, following the same
+variation pattern in both amplitude and frequency as the
+external sound. As shown in the following equation, given
+the sound pressure P and the force-bearing area of the OIS
+module ΔS, the motion-induced displacement can be modeled
+as:
+x = P ·ΔS
+C , (1)
+where C denotes the parameter related to mechanical proper-
+ties. According to Faraday’s law, the vibrations of the coils and
+other magnetized metal components (i.e., lens and spring parts,
+as shown in Figure 2(b) inside OIS alter the magnetization
+ΔM of the surrounding magnetic ﬁeld, thereby inducing
+an electromotive force (EMF) and causing electromagnetic
+leakage. Considering the displacement x of OIS modules in
+Equation 1, the total induced EMF is given as:
+E = −N
+rArμΔM · d
+dt
+(P ·ΔS
+C
+)
+, (2)
+where Nr represents the number of turns in the receiving
+coil, Ar is the area of the receiving coil, and μ is magnetic
+permeability. Equation 2 clearly indicates that the induced
+EMF E is linear to the variations of exteral sound wave P.
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+Fig. 4: OIS responses with different experiments.
+Along with this speculation, as long as the changes in magne-
+tization is obtained, we can infer the changes in audio signal
+and thereby the embeded sensitive information. The above
+theoretical analysis indicates that electromagnetic leakage in
+OIS modules can be exploited to recover audio signals.
+B. Experimental Validation
+In order to further validate the aforementioned theoretical
+analysis, we formulated three key research questions about
+OIS voice information leakage:
+Exp-1. Does electromagnetic leakage from the OIS module
+exist and can it be captured? As shown in Figure 3, we used a
+speaker to play a 75 dB 0-2 kHz sweep signal as a reference,
+placed inside a high-permeability µ-metal shield to eliminate
+electromagnetic interference. The speaker was positioned 1
+m away from the device under test (iPhone 8) to simulate
+common usage scenarios and ensure sound propagation. The
+iPhone 8 was ﬁxed with its camera facing downwards, while
+the receiving coil was secured under the table, directly beneath
+the iPhone 8’s camera. The distance between the two was kept
+at 15 mm, with a wooden tabletop in between, to effectively
+capture the weak electromagnetic signals produced by the OIS
+module. To prevent the receiving coil from being affected
+by potential electromagnetic leakage from the speaker, we
+used additional high-permeability materials for extra shielding.
+This experimental setup aims to accurately detect and analyze
+the electromagnetic leakage signals generated by the OIS
+module, while ensuring the controllability of the experimental
+environment and the reliability of the results. The purpose
+of this experiment is to verify the existence and capturability
+of electromagnetic leakage caused by the OIS module when
+subjected to external audio signals. The results in Figures 4(a)
+and 4(b) show that the coil captured electromagnetic leakage
+and converted it into a 0-2 kHz sweep signal without non-
+linear effects. The spectrogram reveals a declining frequency
+response, indicating that the OIS module responds weakly
+to high-frequency sounds and converts more effectively at
+lower frequencies. Signal quality and strength decrease with
+increasing frequency, highlighting the challenges in extracting
+voice information using this method.
+Exp-2. Is the OIS module speciﬁcally responsible for the ob-
+served electromagnetic leakage? We further veriﬁed whether
+this phenomenon was caused by the OIS camera module. To
+do this, we removed the camera module from the iPhone 8 and
+conducted tests under the same experimental conditions. The
+result, as shown in Figure 4(c), strongly suggests that after
+removing the OIS camera module, the previously observed
+conversion phenomenon from audio signals to electromagnetic
+leakage almost completely disappears. This result further
+conﬁrms that the OIS module played a crucial role in the
+acoustic-electromagnetic conversion observed earlier. Without
+the OIS module, the phone is almost incapable of converting
+audio signals into detectable electromagnetic leakage.
+Exp-3. Can the OIS-based electromagnetic leakage capture
+complex audio signals from various sources? We used a piano
+as the sound source because it does not generate electro-
+magnetic leakage. During the experiment, sounds emitted by
+the speaker and piano were recorded simultaneously using a
+receiving coil and a microphone. The results are shown in Fig-
+ure 4(d). The OIS module effectively transduced piano audio
+into electromagnetic emissions, performing well at lower fre-
+quencies but showing reduced sensitivity and increased noise
+at higher frequencies. Future improvements should focus on
+specialized signal reception circuits, low-noise ampliﬁers, and
+advanced audio enhancement algorithms. These advancements
+could signiﬁcantly improve system efﬁciency and broaden its
+application in acoustic-electromagnetic conversion.
+The above experiments rule out the possibility of other
+side-channels that may cause voice information leakage and
+conﬁrm our theoretical analysis and the feasiblity of acoustic
+eavesdropping exploiting sound-induced OIS vibrations.
+C. Attack Model
+Based on preliminary insights, we propose an attack model
+where the attacker aims to covertly capture and reconstruct
+the nearby voice information by leveraging the built-in OIS
+module of a smartphone. To ensure the stealth of the attack,
+the attacker usually disguises itself as seemingly harmless
+everyday equipment (e.g., wireless charger, power bank, and
+etc.), or hides in a place where the user usually does not
+pay attention (e.g., the back of a table.). In the meanwhile,
+the attacker also needs to be placed in the proximity of a
+smartphone (i.e., few centimeters.) to ensure that the induced
+magnetic ﬁeld disturbance of OIS can be sensed. The target
+of eavesdropping includes both the voice from a smartphone
+and live voice, and the attack is activated when the victims
+approach and make a sound. Since the nearby sound will cause
+the OIS to vibrate and then induce electromagnetic leakage
+in its internal coils and magnetized metal components, the
+attacker should be able to effectively capture such magnetic
+ﬁeld changes with specially designed coils and circuits and
+restore the original audio signals from the victims through
+2024 21st Annual IEEE International Conference on Sensing, Communication, and Networking (SECON)2024 21st Annual IEEE International Conference on Sensing, Communication, and Networking (SECON)
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+
+	
+
+
+
+
+
+
+	
+		
+
+
+
+
+
+
+	
+
+	
+  
+ 
+
+	
+
+	
+
+
+
+
+	
+ 
+
+
+
+
+	
+
+	
+
+
+
+
+
+  
+ 
+" 
+
+" 
+
+ 
+
+
+ !
+
+
+
+Fig. 5: Overview of OISMic.
+
+
+
+
+
+
+ 
+
+
+	
+
+
+
+
+
+
+
+
+
+	
+
+
+	
+
+	
++
+
++
+
++
+
++
+
+	
+
+
+
+
+
+	
+(a) Schematic diagram of the OISMic hardware circuit.
+
+
+
+
+
+	
+(b) Prototype
+Fig. 6: Hardware design.
+appropriate signal processing algorithms. Without loss of
+generality, we also assume the existence of ultrasonic jammers
+near the victims to hinder other traditional eavesdropping
+methods.
+III. OISM IC DESIGN
+A. Overview
+The basic idea of OISMic is to leverage sound-induced
+OIS vibrations on smartphones for achieving covert voice
+eavesdropping. To capture the weak electromagnetic leakage
+caused by OIS vibrations, we developed a specialized Electro-
+magnetic Leakage Harvesting module, which has a compact
+hardware design employing multi-turn coils and ferrite cores
+for efﬁcient signal reception and a differential ampliﬁer to sup-
+press common-mode noise. Once the leaked electromagnetic
+signals are collected and converted into electric signals, where
+the original audio is embedded, we applied PLL-based V oice
+Enhancement to remove frequency and phase errors, thereby
+improving the representation of voice components. Finally, we
+develop a Diffusion-based V oice Denoisingmodule aiming to
+learn the distribution of electromagnetic noise within the audio
+spectrum. After the denoising process, weak audio signals
+can be extracted from their noisy background to recover
+original voice information. Figure 5 illustrates our OISMic
+voice eavesdropping system.
+B. Electromagnetic Leakage Harvesting
+To capture the unique side-channel signals from the OIS
+module, the hardware conﬁguration of OISMic mainly consists
+of a receiving coil and a signal processing circuit.
+Coil Design. To capture high-ﬁdelity signals and reduce
+interference, we implemented a series-connected dual-coil
+design, with ferrite cores placed at the center of each coil.
+The dual coils are wound in opposite directions, causing the
+electromotive forces generated by external interference signals
+in the two coils to cancel each other out, thereby reducing
+common-mode noise. This dual-coil setup is connected to the
+Signal Input port of the OISMic hardware circuit, serving as
+a differential signal input.
+Signal Processing Circuit Design. To effectively process
+the electromagnetic signals received by the coil from the OIS
+system, we have designed an efﬁcient signal acquisition and
+processing circuit. The electromagnetic leakage signals gener-
+ated by the OIS stabilization module are extremely weak and
+mixed with signiﬁcant noise. Therefore, we need a circuit that
+can accurately amplify the signal and effectively suppress the
+noise. This circuit mainly consists of a differential ampliﬁer,
+post-stage ampliﬁer, DC blocking and low-pass ﬁlters, as illus-
+trated in Figures 6(a) and 6(b). Our front end uses the INA849
+instrumentation ampliﬁer, which can receive and amplify the
+differential components of the input signal while suppressing
+common-mode noise. Through a precise resistor network and
+high-precision operational ampliﬁers, the INA849 ensures high
+gain accuracy and low noise performance. The differential
+input design effectively ampliﬁes the difference between the
+two input signals, signiﬁcantly enhancing the signal-to-noise
+ratio. After ampliﬁcation by the INA849, the signal proceeds
+to the post-stage ampliﬁcation circuit for further enhancement.
+Utilizing a standard operational ampliﬁer, this stage ensures
+the signal reaches the desired amplitude. The signal, routed
+through resistors and coupling capacitors, undergoes additional
+reﬁnement, improving its strength and clarity. Finally, the
+circuit includes a DC blocking and low-pass ﬁlter section
+to eliminate DC components and high-frequency noise. The
+DC blocking capacitor removes any DC component from the
+output signal, while the low-pass ﬁlter retains low-frequency
+components and removes high-frequency noise, enhancing
+signal quality and stability. For data output, the information
+can be transmitted via a wireless microphone module or stored
+locally, offering ﬂexible options for data handling and analysis.
+C. PLL-based Voice Enhancement
+To analyze the audio signal and its noise inﬂuence, we
+focused on the 0-5 kHz frequency range, which covers the
+fundamental frequencies of human speech and most of its
+harmonics. We applied STFT to generate the spectrogram for
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+1234
+Time (s)
+0
+1
+2
+3
+4
+5Frequency (kHz)
+-120
+-100
+-80
+-60
+-40
+(a) Frequency domain
+012345
+Frequency (kHz)
+-100
+-80
+-60
+-40
+-20
+Amplitude (dB)
+(b) Time domain
+Fig. 7: Electromagnetic noise near the OIS module.
+time-frequency analysis, as shown in Figure 7(a). Addition-
+ally, we calculated the single-sided spectrum from the FFT
+results to better visualize the overall frequency distribution, as
+presented in Figure 7(b). Detailed analysis of the spectrogram
+and signal intensity distribution revealed noise spread across
+the entire spectrum, not just in high-frequency areas. Strong
+noise components were observed at 0.8 kHz and 1.6 kHz,
+along with irregular short-term pulse noise, indicating OISMic
+received complex environmental electromagnetic interference.
+Notably, noise affects the critical audio frequency range (0.3-
+3 kHz), potentially impacting clarity and intelligibility. Given
+this widespread noise distribution, simple ﬁltering techniques
+may be insufﬁcient. Advanced noise reduction and voice
+enhancement algorithms tailored for electromagnetic noise
+environments are necessary to improve audio signal quality.
+PLL Computational Implementation. In severe electro-
+magnetic noise, it is impossible to obtain the audio signal
+through denoising models directly. To address this issue,
+we introduce phase-locked loop (PLL) technology, leveraging
+the synchronization effects known to exist in the auditory
+system to robustly extract and enhance the audio signal. The
+auditory system ﬁrst decomposes the input signal using a
+bank of band-pass ﬁlters and then employs a group of PLLs
+to capture frequency information present at speciﬁc moments
+in time. Subsequently, this frequency distribution information
+is converted into a synchronization effect-based spectrogram
+representation. This approach not only effectively suppresses
+electromagnetic noise but also enhances the clarity and quality
+of the audio signal.
+First, the input audio signal is decomposed using a set of
+carefully designed band-pass ﬁlters. These ﬁlters are biologi-
+cally inspired [7] and feature asymmetric, overlapping charac-
+teristics. To ensure they effectively target the electromagnetic
+characteristics of the audio signal, they are further modiﬁed
+accordingly. Consequently, these ﬁlters cover the frequency
+range from 50 Hz to 8000 Hz. Speciﬁcally, 387 FIR ﬁlters of
+order 2048 are used.
+Next, the output of each ﬁlter is connected to a PLL.
+A PLL consists of a voltage-controlled oscillator (VCO), a
+phase detector (PD), and a loop ﬁlter, which are used to
+obtain synchrony information and frequency estimation of the
+signal. The PLL parameters are optimized to achieve the best
+performance under noisy conditions.
+Figure 8(a) illustrates the operation of the PLL. The input
+signal is ﬁrst compared with the output signal of the VCO
+using a PD, generating a phase error signal. This error signal,
+
+
+
+
+
+
+
+ 
+
+
+
+	
+ 
+  
+  
+  
+	 
+ 
+ 
+ 
+
+
+(a) Operation of PLL
+0 0.5 1 1.5 2 2.5
+Time (s)
+-1
+0
+1Amplitude
+(b) Captured audio
+0 0.5 1 1.5 2 2.5
+Time (s)
+-1
+0
+1Amplitude
+(c) Output of PLL
+Fig. 8: PLL-based V oice Enhancement.
+represented by cos(θi(t)), is processed by the loop ﬁlter to
+control the VCO’s frequency, synchronizing it with the input
+signal. The signal then undergoes a 90-degree phase shift,
+represented by sin(θ
+o(t)), and low-pass ﬁltering, generating
+a lock indicator signal lock(t), which shows whether the
+PLL has locked onto the input signal. Simultaneously, the
+frequency calculation module converts the phase error signal
+into frequency information freq(t) at the current time point.
+Next, the frequency outputs of the PLLs are validated by
+comparing the lock signals with adjacent PLLs to ensure that
+only reliable frequency estimates are used. Speciﬁcally, for
+each PLL at time n, the following conditions must be satisﬁed:
+⎧
+⎪⎨
+⎪⎩
+thr
+1 < locki(n)
+lockmax(n),
+thr2 > |VCO i(n)− 1
+2 (VCO i−1(n)+ VCO i+1(n))|,
+(3)
+where lockmax(n) is the maximum lock indicator value of
+all PLLs at time n, and thr1 and thr2 are experimentally
+determined thresholds.
+The validated frequencies are used to construct the spectral
+representation. First, these frequency data are ﬁtted using
+polynomial regression to calculate the frequency drift trend
+within each analysis frame, capturing the frequency variation
+over time. Then, using these ﬁtted results, a spectrogram is
+created, with each frequency assigned a weight based on the
+strength of its lock signal. Finally, the enhanced spectral repre-
+sentation is used to reconstruct the corresponding audio signal,
+outputting the ﬁnal enhanced speech. Through these steps, the
+PLL system not only enhances the clarity and strength of the
+audio signal but also maintains high robustness in complex
+electromagnetic noise environments, as demonstrated by the
+results shown in Figures 8(b) and 8(c).
+D. Diffusion-based Voice Denoising
+The purpose of OISMic is to reconstruct the original audio
+via the electromagnetic data. Considering that the audio signal
+embedded in the electromagnetic signals is very weak and
+complicated by the presence of excessive noise signals, we
+adopt a diffusion-based variant model to enhance the spectro-
+gram of the data by eliminating the noise.
+Signal-to-spectrogram Conversion. After processing with
+the PLL, we calculate the continuous wavelet transform
+(CWT) and the STFT for each sample to generate the cor-
+responding spectrogram, which serves as input data for subse-
+quent processing. The spectrogram provides a time-frequency
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+
+ 
+
+	
+	
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+	
+	
+
+          
+         ⎡⎤= − + ∇ +⎣⎦      
+      =+   
+
+Fig. 9: Diffusion-based voice denoising model.
+representation of audio signals through multi-resolution anal-
+ysis, allowing our model to capture audio features at different
+time scales. This multi-resolution approach signiﬁcantly en-
+hances the performance and quality of voice reconstruction.
+Diffusion Model. Diffusion models are a type of generative
+model known for their ability to produce data by iteratively
+reﬁning noise. Typically, these models are trained to accept
+speciﬁc forms of conditioning, most commonly text, and
+cannot easily adapt to other modalities without retraining.
+However, our objective is to transform the spectrogram of
+electromagnetic signals into the STFT spectrogram of the
+corresponding audio. To achieve this, we integrate denoising
+and audio reconstruction tasks into the forward and reverse
+processes of diffusion-based generative models, enabling them
+to handle audio signals that are affected by electromagnetic
+noise. Figure 9 illustrates our model architecture, which con-
+sists of both the Forward Process and the Reverse Process.
+Forward Process. The forward process involves a stochas-
+tic diffusion procedure {x
+t}T
+t=0 governed by a linear stochastic
+differential equation (SDE):
+dxt = f(xt,y)dt+g(t)dw, (4)
+where xt is the of the process at time t, y is the noisy or
+reverberant voice, and w is a standard Wiener process. The
+function f(xt,y) guides the evolution of the process, while
+the diffusion coefﬁcient g(t) modulates the level of Gaussian
+white noise introduced at each time step. Our model adjusts
+the drift coefﬁcient to transition the process mean from clean
+voice x0 to noisy voice y.
+Reverse Process. The reverse process is described by the
+following SDE:
+dxt =
+[
+−f(xt,y)+ g(t)2∇xt logpt(xt|y)
+]
+dt+g(t)d¯w, (5)
+where the score ∇xt logpt(xt|y) is approximated using a U-
+Net architecture. By incorporating this score model into the
+reverse SDE, we can effectively reconstruct clean voice from
+the noisy signals.
+Objective. We derive the objective function for training the
+score model. Given that the SDE describes a Gaussian process,
+the mean and variance of the process state can be derived from
+known initial conditions. This allows for direct sampling of
+states x
+t at arbitrary time steps t given x0 and y:
+p0t(xt|x0,y)= N(xt;μ(x0,y,t),σ(t)2I), (6)
+where N denotes the circularly-symmetric normal distribution,
+ 
+
+		
+	
+
+
+
+	
+
+Fig. 10: Setup.
+and I denotes the identity matrix. The mean μ(x0,y,t) and
+variance σ(t)2 can be determined in closed form. Using score
+matching techniques, the training objective is formulated as:
+argmin
+θ
+Et,(x0,y),z,xt|(x0,y)
+[
+
+s
+θ(xt,y,t)+ z
+σ(t)
+
+
+
+2
+2
+]
+, (7)
+where θ represents the model parameters, the score model is
+denoted as sθ(xt,y,t), z ∼N (z;0,I), and the expectation
+is approximated by sampling all random variables at each
+training step.
+Through this diffusion-based model, we effectively process
+and reconstruct weak audio signals embedded in electromag-
+netic data. Despite severe noise interference and low signal
+strength, our model generates clearly understandable, high-
+quality audio output.
+IV . P
+ERFORMANCE EV ALUATION
+A. Setup
+We designed a specialized hardware device to conduct
+acoustic eavesdropping attacks. The hardware part of our
+OISMic system includes a designed differential-mode signal
+receiver and a signal ampliﬁcation circuit to capture and
+convert the leaked near-ﬁeld electromagnetic signals into au-
+dio signals. The target mobile device is placed on a table,
+while the differential-mode signal receiving coil of OISMic is
+concealed underneath the table for eavesdropping, as shown
+in Figure 10. The captured audio signals are transmitted to a
+personal computer, where the audio data is initially processed
+through the PLL voice enhancement algorithm and further
+enhanced using a diffusion model. The audio processing and
+enhancement codes are implemented in Python. In our experi-
+ments, participants read sentences aloud with male and female
+voices ranging from 65 to 85 dB. We also use an isolated
+electromagnetic channel speaker and record the human voices
+using a high-end microphone as a reference signal. This setup
+ensures accurate analysis of the eavesdropped audio signals’
+quality and performance.
+B. Metrics
+To comprehensively analyze signal processing and quality
+assessment using microphone recordings as reference sig-
+nals, we employ various metrics, including signal-to-noise
+ratio (SNR), peak signal-to-noise ratio (PSNR), mean opinion
+score (MOS), and word correct rate (WCR). These param-
+eters quantitatively and qualitatively evaluate signal quality.
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+0.5 1 1.5 2
+Time (s)
+0
+1
+2
+3
+4Frequency (kHz)
+-120
+-100
+-80
+-60
+-40
+(a) Original
+0.5 1 1.5 2
+Time (s)
+0
+1
+2
+3
+4Frequency (kHz)
+-120
+-100
+-80
+-60
+-40
+(b) Audio input
+0.5 1 1.5 2
+Time (s)
+0
+1
+2
+3
+4
+5Frequency (kHz)
+-120
+-100
+-80
+-60
+-40
+(c) Denoised output
+0 0.5 1 1.5 2
+Time (s)
+-1
+0
+1Amplitude
+(d) Diffusion model input
+0 0.5 1 1.5 2
+Time (s)
+-1
+0
+1Amplitude
+(e) Denoised output
+Fig. 11: Diffusion-based voice denoising result.
+SNR represents the ratio between the signal and the noise,
+expressed in decibels (dB), with a higher SNR indicating
+better signal quality. PSNR demonstrates strong performance
+in the evaluation of speech noise reduction, serving as an
+objective metric for assessing speech clarity. A higher PSNR
+value corresponds to better speech signal quality. MOS is a
+subjective evaluation method used to assess audio and video
+quality, where multiple evaluators rate the quality, and the
+average score is calculated, usually ranging from 1 to 5,
+with 5 representing the highest quality. WCR evaluates speech
+recognition accuracy, representing the percentage of correctly
+recognized words.
+C. Voice Enhancement and Denoising
+OISMic demonstrates excellent OIS electromagnetic leak-
+age signal acquisition and recovery capabilities. Our system
+combines a PLL-based V oice Enhancement algorithm with a
+Diffusion-based V oice Denoising model, enabling the recon-
+struction of high-ﬁdelity audio signals during eavesdropping
+while effectively eliminating most of the noise interference in
+the OIS electromagnetic leakage signals.
+The PLL-based V oice Enhancement algorithm plays a cru-
+cial role in the signal preprocessing stage. As shown in
+Figure 8(c), this algorithm exhibits strong anti-interference
+capabilities and voice enhancement effects, providing a more
+stable and clear input signal for the Diffusion-based V oice
+Denoising model. Figure 11 illustrates the processing results
+of the Diffusion-based V oice Denoising model. The noise
+level in the reconstructed signal is signiﬁcantly reduced, and
+its characteristics closely resemble those of signals directly
+captured by microphones.
+D. System Robustness of OISMic.
+Overall Performance. We evaluated the overall perfor-
+mance of OISMic on various devices and found that it exhib-
+ited good adaptability in acoustic eavesdropping attacks. In a
+controlled experimental environment, we conducted over 150
+attacks on each device, with a default sound intensity of 65-75
+decibels for each attack. The devices used in the experiments
+included the latest smartphones, such as Samsung S24 Ultra,
+iPhone 15 Pro, and some devices equipped with different
+speciﬁcations of OIS cameras. The experimental results show
+that OISMic maintained high performance across different
+(a) SNR/PSNR (b) MOS/WCR
+Fig. 12: Impact of speaker volume.
+(a) SNR/PSNR (b) MOS/WCR
+Fig. 13: Impact of materials.
+devices, demonstrating its excellent adaptability and ﬂexibility.
+As shown in Table I, the average signal-to-noise ratio (SNR)
+of the reconstructed signals exceeded 10 decibels, with some
+speech segments even exceeding 15 decibels. At the same
+time, the system’s average peak signal-to-noise ratio (PSNR)
+reached 30.65 decibels, indicating very high reconstruction
+signal quality. In addition, the system performed well in the
+mean opinion score (MOS) and achieved an average word
+correct rate (WCR) of 90.57% across different devices. These
+metrics conﬁrm that OISMic can effectively suppress noise
+while preserving key features of the audio signal, which
+is crucial for subsequent speech recognition and content
+understanding. OISMic performed better on newly released
+smartphones, possibly attributed to their more advanced and
+sensitive OIS cameras. The intercepted and enhanced signals
+were highly similar to sounds recorded with a microphone,
+demonstrating that OISMic can achieve efﬁcient, stable, and
+reliable attacks across various devices and environments.
+Impact of V olume. To evaluate the performance of the
+OISMic system across different audio volumes, we conducted
+tests with volumes ranging from 65 to 85 dB. As shown
+in Figure 12, the system’s performance gradually improves
+as the volume increases. Notably, when the volume exceeds
+75 dB, the system demonstrates signiﬁcantly better results in
+both audio quality (SNR and PSNR) and speech recognition
+accuracy (WCR and MOS). This indicates that the OISMic
+system has an advantage in processing higher volume audio
+TABLE I: Experiment devices and results.
+Num. Device Manufacturer SNR MOS WCR
+1 Pixel 1 Google 10.25 3.1 89.65%
+2 7 Pro OnePlus 11.31 3.5 88.03%
+3 Galaxy S24 Ultra Samsung 12.83 4.2 92.07%
+4 iPhone 15 Pro Apple 12.27 4.1 91.88%
+5 iPhone 15 Pro Max Apple 13.16 4.3 92.74%
+6 Huawei MatePad Huawei 12.48 3.6 89.75%
+7 iPad Air 3 Apple 11.31 3.4 89.85%
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+(a) SNR/PSNR (b) MOS/WCR
+Fig. 14: Impact of electromagnetic leakage.
+(a) SNR/PSNR (b) MOS/WCR
+Fig. 15: Impact of phone orientation.
+signals, while also being able to adapt to different speech
+volumes within a certain range, providing good ﬂexibility for
+practical application scenarios.
+Impact of Materials. To evaluate the effect of different
+materials on the OIS-Mic system’s recording performance, we
+tested common materials at thicknesses of 5 mm, 10 mm,
+15 mm, and 30 mm, placed between the smartphone and the
+receiving coil. The results show that SNR and PSNR decreased
+as material thickness increased, as depicted in Figure 13.
+Both wood and paper exhibited a steady decline in SNR and
+PSNR with increased thickness due to their sound-absorbing
+properties. Glass showed variable performance, with thinner
+glass allowing better audio transmission and thicker glass
+signiﬁcantly attenuating the signal. Metal barriers resulted in
+the lowest SNR and PSNR values across all thicknesses, re-
+ﬂecting and scattering audio waves more than other materials.
+These ﬁndings highlight the importance of barrier material and
+thickness in optimizing the OIS-Mic system’s performance for
+effective audio capture.
+Impact of Electromagnetic Leakage. To assess the ro-
+bustness of the OISMic system in real-world environments, we
+evaluated the impact of electromagnetic leakage from common
+electronic devices on its performance. As shown in Figure
+14, we tested monitors, PCs, WiFi routers, and chargers. The
+results demonstrate that the system’s performance remained
+stable across different device environments. In all scenarios,
+SNR maintained around 10 dB, PSNR stayed above 30 dB
+(Figure 14(a)), WCR was approximately 90%, and MOS
+ranged between 3.5 and 4 (Figure 14(b)). These ﬁndings
+indicate that the OISMic ststem exhibits good robustness in
+everyday usage environments, with electromagnetic leakage
+from common electronic devices having minimal impact on
+its performance.
+Impact of Phone Orientation. To study the impact of
+phone orientation, we tested angles ranging from 0 to 90
+degrees while maintaining a ﬁxed distance from the OISMic
+device and maintaining a consistent external volume. As
+
+
+
+	
+
+
+
+
+
+
+
+(a) iPhone 15 Pro (b) SNR (c) SNR/PSNR
+Fig. 16: Impact of positional offset.
+12345
+Time (Seconds)
+0
+1
+2
+3
+4
+5Frequency (kHz)
+                                             dB
+-120
+-110
+-100
+-90
+-80
+-70
+-60
+-50
+	
+
+
+	
+(a) Microphone captured
+-0.5
+0
+0.5
+Amplitude
+0 0.5 1 1.5 2
+Time (s)
+-0.5
+0
+0.5Amplitude
+		
+
+	
+(b) Waveform (c) SNR/PSNR
+Fig. 17: Performance under anti-recording device.
+shown in Figure 15, the SNR varied between approximately 9
+dB and 16 dB at different orientations. The Word Correct Rate
+(WCR) showed a slight decrease as the angle increased, but
+remained at a relatively good level for most orientations. These
+results demonstrate that OISMic maintains reasonable per-
+formance against eavesdropping attacks under various phone
+orientations, with the best performance observed when the
+phone is placed ﬂat (0° orientation).
+Impact of Positional Offset. We evaluated the effect of
+device-to-OISMic coil positional offset on intercepted audio
+quality. Tests with various devices on a desktop, with the coil
+underneath, were conducted within ±50 mm from the center
+at 5mm increments along multiple angles (Fig. 16(a)). Results
+(Fig. 16(b), 16(c)) show an effective working range of ±3.5
+cm. Multiple measurements ensured reliability. These ﬁndings
+demonstrate OISMic’s robustness, maintaining performance
+under non-ideal placement and not requiring precise phone
+positioning for effective audio capture.
+Performance under Anti-Recording Device. Finally, we
+evaluated the effectiveness of the OISMic system against
+ultrasonic recording jammers commonly used in high-security
+environments. At an average volume of 75 dB, we tested
+multiple smartphones with OIS cameras and external coil
+devices, placing the jammer 0.5 m away from the phone and
+adjusting the interference power levels. The results indicate
+that as the interference power increases, the SNR/PSNR of
+MEMS microphones drops signiﬁcantly, while the OISMic
+system remains stable, as shown in Figures 17(b) and 17(c).
+These ﬁndings demonstrate that even in environments with
+anti-recording measures, the OISMic system can still effec-
+tively conduct covert audio recording.
+V. R
+ELATED WORK
+Motion Sensor-based. The widespread deployment of mo-
+tion sensors in smart devices has raised global security
+concerns regarding acoustic eavesdropping. Researchers ex-
+tensively investigate the feasibility of using built-in motion
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.
+sensors on mobile phones, such as accelerometer [3], gy-
+roscope [4], and inertial measurement unit (IMU) [8], for
+acoustic eavesdropping. For example, Accelword [9] shows
+that accelerometers can detect voice commands from a phone
+speaker. Other studies [10] further validate that sound vibra-
+tions can be captured by various motion sensors, compro-
+mising sound security in everyday settings [11]. However,
+practical limitations exist, as these attacks require the motion-
+sensing device to be close to the target, posing a challenge in
+maintaining concealment in real-world scenarios.
+Optical Sensor-based.Optical sensors like photodiodes and
+phototransistors offer alternative acoustic eavesdropping meth-
+ods. They detect subtle surface deformations caused by sound
+vibrations, using light intensity measurements to reconstruct
+audio signals. For example, Davis et al. [12] utilizes high-
+speed cameras to capture object movements caused by sound
+waves and restore the original sound using computer vision
+algorithms. Lamphone [13] leverages photoelectric sensors to
+gather vibration data from light bulbs to spy on indoor sounds.
+Overall, these approaches typically rely on a well-established
+acoustic side channel with direct observation and adequate
+lighting, which limits their practicality in everyday scenarios.
+Wireless-based. Wireless-based approaches spy on voice
+information by analyzing wireless signals reﬂected from vi-
+brating objects. For instance, Wei et al. [14] inspects subtle
+disturbances on a target loudspeaker and recovers the audio
+signal by analyzing the received signal strength (RSS) read-
+ings of WiFi packets. Moreover, researchers also use RFID
+tags [15] and mmWave radar [16] to detect reﬂected vibration
+signals for eavesdropping. These methods enable acoustic
+eavesdropping through physical barriers on various wireless
+devices, but require stable wireless conditions and advanced
+signal processing, potentially lacking robustness in complex
+environments.
+Unlike previous works, OISMic uses magnetic side-channel
+signals for acoustic eavesdropping, leveraging the OIS module
+in phones to covertly intercept audio without needing proxim-
+ity to the target or sacriﬁcing its stealthiness. Furthermore,
+this method has no requirements for illumination or line of
+sight, posing a signiﬁcant security threat to sensitive voice
+information.
+VI. C
+ONCLUSION
+In this paper, we proposeOISMic, a new acoustic eavesdrop-
+ping attack that exploits the leaked electromagnetic signals
+caused by the built-in OIS vibrations on smartphones. To
+intercept the weak electromagnetic leakage induced by OIS
+vibrations, we developed a compact prototype circuit operating
+at dual-coil differential mode to suppress common-mode noise.
+To effectively recover weak audio signals in complex electro-
+magnetic environments, we designed a software-based PLL
+method and a diffusion-based model for boosting the voice
+component and denoising, respectively. Extensive experiments
+have demonstrated that OISMic can accurately reconstruct
+audio for achieving an average WCR of 90.57% across dif-
+ferent devices, with our prototype device achieving a SNR of
+10.25 dB from the OIS electromagnetic leakage. Furthermore,
+even when subjected to interference from ultrasonic jammers,
+OISMic still achieves high speech recognition accuracy. This
+implies that an attacker could potentially eavesdrop on users’
+private conversations to steal sensitive information, such as
+passwords, locations, and phone numbers, posing signiﬁcant
+threats to user privacy and property security.
+To counter this vulnerability, we recommend enhancing the
+electromagnetic shielding of OIS components, developing sig-
+nal obfuscation techniques to mask electromagnetic leakage,
+and considering the replacement of magnetic structure optical
+image stabilization modules with new technologies, such as
+SMA-based optical stabilization.
+R
+EFERENCES
+[1] Fabrizio La Rosa, Maria Celvisia Virz `ı, Filippo Bonaccorso, and Marco
+Branciforte., “Optical image stabilization.” 2015, https://www.st.com/
+resource/en/white
+paper/ois white paper.pdf.
+[2] S. W. Teare and S. R. Restaino, Introduction to image stabilization .
+SPIE Press, 2006, vol. 73.
+[3] P. Hu, H. Zhuang, P. S. Santhalingam, R. Spolaor, P. Pathak, G. Zhang,
+and X. Cheng, “Accear: Accelerometer acoustic eavesdropping with
+unconstrained vocabulary,” in 2022 IEEE Symposium on Security and
+Privacy (SP). IEEE, 2022, pp. 1757–1773.
+[4] Y . Michalevsky, D. Boneh, and G. Nakibly, “Gyrophone: Recognizing
+speech from gyroscope signals,” in 23rd USENIX Security Symposium
+(USENIX Security 14) , 2014, pp. 1053–1067.
+[5] Y . Chen, M. Gao, Y . Li, L. Zhang, L. Lu, F. Lin, J. Han, and K. Ren, “Big
+brother is listening: An evaluation framework on ultrasonic microphone
+jammers,” in IEEE INFOCOM 2022 - IEEE Conference on Computer
+Communications, 2022, pp. 1119–1128.
+[6] Y . Zhang, H. Cheng, J. Tian, and S. Chen, “Frequency-selected bifunc-
+tional coding acoustic metasurfaces,” Physical Review Applied , vol. 14,
+no. 6, p. 064057, 2020.
+[7] K. Wang and S. A. Shamma, “Auditory analysis of spectro-temporal
+information in acoustic signals,” IEEE Engineering in Medicine and
+biology Magazine, vol. 14, no. 2, pp. 186–194, 1995.
+[8] M. Gao, Y . Liu, Y . Chen, Y . Li, Z. Ba, X. Xu, and J. Han, “Iner-
+tiear: Automatic and device-independent imu-based eavesdropping on
+smartphones,” in IEEE INFOCOM 2022-IEEE Conference on Computer
+Communications. IEEE, 2022, pp. 1129–1138.
+[9] L. Zhang, P. H. Pathak, M. Wu, Y . Zhao, and P. Mohapatra, “Accelword:
+Energy efﬁcient hotword detection through accelerometer,” in Proceed-
+ings of the 13th Annual International Conference on Mobile Systems,
+Applications, and Services , 2015, pp. 301–315.
+[10] S. A. Anand and N. Saxena, “Speechless: Analyzing the threat to speech
+privacy from smartphone motion sensors,” in 2018 IEEE Symposium on
+Security and Privacy (SP) . IEEE, 2018, pp. 1000–1017.
+[11] N. Roy and R. Roy Choudhury, “Listening through a vibration motor,”
+in Proceedings of the 14th Annual International Conference on Mobile
+Systems, Applications, and Services , 2016, pp. 57–69.
+[12] A. Davis, M. Rubinstein, N. Wadhwa, G. J. Mysore, F. Durand, and
+W. T. Freeman, “The visual microphone: Passive recovery of sound
+from video,” ACM Transactions on Graphics (TOG) , vol. 33, no. 4, pp.
+1–10, 2014.
+[13] B. Nassi, Y . Pirutin, A. Shamir, Y . Elovici, and B. Zadov, “Lamphone:
+Real-time passive sound recovery from light bulb vibrations,”Cryptology
+ePrint Archive, 2020.
+[14] T. Wei, S. Wang, A. Zhou, and X. Zhang, “Acoustic eavesdropping
+through wireless vibrometry,” in Proceedings of the 21st Annual Inter-
+national Conference on Mobile Computing and Networking , 2015, pp.
+130–141.
+[15] C. Wang, L. Xie, Y . Lin, W. Wang, Y . Chen, Y . Bu, K. Zhang, and S. Lu,
+“Thru-the-wall eavesdropping on loudspeakers via RFID by capturing
+sub-mm level vibration,”Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies, vol. 5, no. 4, pp. 1–25, 2021.
+[16] T. Liu, M. Gao, F. Lin, C. Wang, Z. Ba, J. Han, W. Xu, and K. Ren,
+“Wavoice: A noise-resistant multi-modal speech recognition system
+fusing mmwave and audio signals,” in Proceedings of the 19th ACM
+Conference on Embedded Networked Sensor Systems, 2021, pp. 97–110.
+VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21VW$QQXDO,(((,QWHUQDWLRQDO&RQIHUHQFHRQ6HQVLQJ&RPPXQLFDWLRQDQG1HWZRUNLQJ6(&21
+Authorized licensed use limited to: Nanjing University. Downloaded on June 21,2026 at 08:38:56 UTC from IEEE Xplore.  Restrictions apply.

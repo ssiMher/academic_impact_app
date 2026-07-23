@@ -1,0 +1,88 @@
+{
+  "findings": [
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Most related studies utilized millimeter waves to penetrate low-loss wall materials (such as wood, glass, and soundproofing materials) to directly or indirectly detect the content played in speakers behind walls [18], [19], [20] rather than the lip movements.",
+      "reasoning": "This sentence groups three references, including [18] (the target paper), and describes them as detecting content played in speakers behind walls. It does not explicitly mention sub-mm vibration or RFID, but the context indicates they are related to through-wall audio eavesdropping. The mention is grouped, so attribution uncertainty exists.",
+      "keywords": [
+        "detect the content played in speakers behind walls",
+        "millimeter waves"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Millimeter-wave radar, characterized by its short wavelength and high sensitivity can detect the minute vibrations of a speaker. However, its sensing capability is limited, and it cannot penetrate through the thicker brick walls.",
+      "reasoning": "This sentence describes the capability of millimeter-wave radar to detect minute vibrations of a speaker, which aligns with the target paper's sub-mm vibration sensing. Although not explicitly citing [18], it characterizes the type of sensing that the target paper achieves, and is in the same paragraph that includes [18] in the previous sentence. It serves as background for the limitations of such approaches.",
+      "keywords": [
+        "minute vibrations of a speaker"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Millimeter waves can even detect vibrations of vocal cords, a capability beyond the reach of through-wall radar.",
+      "reasoning": "This sentence appears in Section IV-B, discussing the sensitivity of mmWave vs. through-wall radar. It mentions the capability of mmWave to detect vibrations, which is related to the target paper's sub-mm vibration sensing, but does not cite the target directly. It provides context for the sensitivity required.",
+      "keywords": [
+        "detect vibrations"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Most related studies utilized millimeter waves to penetrate low-loss wall materials (such as wood, glass, and soundproofing materials) to directly or indirectly detect the content played in speakers behind walls [18], [19], [20] rather than...",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "no_target_reference_marker_available",
+      "generated_strong_evidence": false,
+      "reasoning": "This sentence groups three references, including [18] (the target paper), and describes them as detecting content played in speakers behind walls. It does not explicitly mention sub-mm vibration or RFID, but the context indicates they are related to through-wall audio eavesdropping. The mention is grouped, so attribution uncertainty exists.",
+      "promotion_decision": "filtered_target_anchor_validation",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "Millimeter-wave radar, characterized by its short wavelength and high sensitivity can detect the minute vibrations of a speaker. However, its sensing capability is limited, and it cannot penetrate through the thicker brick walls.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "no_target_reference_marker_available",
+      "generated_strong_evidence": false,
+      "reasoning": "This sentence describes the capability of millimeter-wave radar to detect minute vibrations of a speaker, which aligns with the target paper's sub-mm vibration sensing. Although not explicitly citing [18], it characterizes the type of sensing that the target paper achieves, and is in the same paragraph that includes [18] in the previous sentence. It serves as background for the limitations of such approaches.",
+      "promotion_decision": "filtered_target_anchor_validation",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Millimeter waves can even detect vibrations of vocal cords, a capability beyond the reach of through-wall radar.",
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "no_target_reference_marker_available",
+      "generated_strong_evidence": false,
+      "reasoning": "This sentence appears in Section IV-B, discussing the sensitivity of mmWave vs. through-wall radar. It mentions the capability of mmWave to detect vibrations, which is related to the target paper's sub-mm vibration sensing, but does not cite the target directly. It provides context for the sensitivity required.",
+      "promotion_decision": "filtered_target_anchor_validation",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    }
+  ]
+}

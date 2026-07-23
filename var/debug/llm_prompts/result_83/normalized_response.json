@@ -1,0 +1,292 @@
+{
+  "findings": [
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "citation_text": "Recent work, such as MoiréVib and MoiréPose [30, 31], has showcased the power of moiré amplification for motion sensing.",
+      "reasoning": "Cited as a representative example of moiré amplification for motion sensing. Grouped with [30], so attribution uncertainty.",
+      "keywords": [
+        "MoiréVib",
+        "moiré amplification",
+        "motion sensing"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "The spatial frequency of the resulting moiré pattern is given by f_m = |f1 - f2| [1, 30, 31].",
+      "reasoning": "Directly cites MoiréVib for the core formula governing moiré pattern spatial frequency, which is foundational to the theoretical model.",
+      "keywords": [
+        "spatial frequency",
+        "moiré pattern",
+        "f_m = |f1 - f2|"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "Formally, gratings 1 and 2 have nearly identical spatial frequencies, denoted as f1 and f2, respectively. The spatial frequency of the resulting moiré pattern is given by f_m = |f1 - f2|[1, 30, 31].",
+      "reasoning": "Citing MoiréVib alongside other references for the fundamental moiré theory used to derive amplification.",
+      "keywords": [
+        "spatial frequencies",
+        "f_m = |f1 - f2|"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "The combined optical intensity at position p_m is modeled as the product of their individual intensities [1, 30, 31]: I(p_m,t) = I1(p_m,t) I2(p_m).",
+      "reasoning": "MoiréVib is cited as support for the multiplicative intensity model in the general moiré pattern derivation.",
+      "keywords": [
+        "product of their individual intensities",
+        "moiré pattern",
+        "I(p_m,t)"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "citation_text": "Its components along the X- and Y-axes can be represented as a spatial frequency vector f1 [1, 30, 31]: f1 = [f_x1, f_y1]^T = f1 [|cos θ1|, |sin θ1|]^T.",
+      "reasoning": "Cites MoiréVib for the spatial frequency vector formulation, essential for modeling arbitrary orientations.",
+      "keywords": [
+        "spatial frequency vector",
+        "f1"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "baseline_or_benchmark",
+      "stance": "neutral",
+      "mention_type": "comparison",
+      "citation_text": "prior work has proposed using two cameras to increase the frame rate from 30∼60 fps up to around 300 fps [31].",
+      "reasoning": "Mentions MoiréVib's dual-camera approach as a baseline that achieves only 300 fps, highlighting its insufficiency for audio. Sets up the challenge that MoiréEar addresses.",
+      "keywords": [
+        "two cameras",
+        "frame rate",
+        "300 fps"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "Prior work has relied on analyzing video frames [30–32, 45]; however, such methods are limited by low sample rates, which are insufficient for reconstructing audio signals at kilohertz frequencies.",
+      "reasoning": "MoiréVib is grouped with other prior works as relying on video frames; used as background to motivate the photodiode approach.",
+      "keywords": [
+        "video frames",
+        "low sample rates"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "background",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "For a typical camera, the measurement frame rate is limited to tens of frames per second [27, 31].",
+      "reasoning": "Cites MoiréVib as an example of camera-based moiré sensing with limited frame rate, reinforcing the limitation.",
+      "keywords": [
+        "frame rate",
+        "tens of frames per second"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "citation_text": "More recently, Ning et al. [31] presented MoiréVib, enabling high-accuracy vibration sensing in dynamic environments.",
+      "reasoning": "Described as a representative recent work in moiré-based sensing. Stance is neutral as it's a factual description.",
+      "keywords": [
+        "MoiréVib",
+        "high-accuracy vibration sensing"
+      ],
+      "keep": true
+    },
+    {
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "comparison",
+      "citation_text": "Although these works highlight the strong potential of moiré-based sensing, their performance remains constrained by controlled setups, dedicated gratings, and limited sample rates. Consequently, existing moiré-based sensing approaches are not yet suitable for capturing full-bandwidth speech information.",
+      "reasoning": "Points out limitations of prior moiré-based sensing, including MoiréVib (via grouped reference), contrasting with MoiréEar's capabilities.",
+      "keywords": [
+        "constrained",
+        "controlled setups",
+        "dedicated gratings",
+        "limited sample rates"
+      ],
+      "keep": true
+    }
+  ],
+  "finding_diagnostics": [
+    {
+      "finding_index": 0,
+      "citation_text_preview": "Recent work, such as MoiréVib and MoiréPose [30, 31], has showcased the power of moiré amplification for motion sensing.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "grouped_citation",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "grouped_citation_saved_for_review",
+      "generated_strong_evidence": true,
+      "reasoning": "Cited as a representative example of moiré amplification for motion sensing. Grouped with [30], so attribution uncertainty.",
+      "promotion_decision": "saved_review_needed",
+      "evidence_strength_if_saved": "moderate",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 1,
+      "citation_text_preview": "The spatial frequency of the resulting moiré pattern is given by f_m = |f1 - f2| [1, 30, 31].",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Directly cites MoiréVib for the core formula governing moiré pattern spatial frequency, which is foundational to the theoretical model.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 2,
+      "citation_text_preview": "Formally, gratings 1 and 2 have nearly identical spatial frequencies, denoted as f1 and f2, respectively. The spatial frequency of the resulting moiré pattern is given by f_m = |f1 - f2|[1, 30, 31].",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Citing MoiréVib alongside other references for the fundamental moiré theory used to derive amplification.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 3,
+      "citation_text_preview": "The combined optical intensity at position p_m is modeled as the product of their individual intensities [1, 30, 31]: I(p_m,t) = I1(p_m,t) I2(p_m).",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "MoiréVib is cited as support for the multiplicative intensity model in the general moiré pattern derivation.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 4,
+      "citation_text_preview": "Its components along the X- and Y-axes can be represented as a spatial frequency vector f1 [1, 30, 31]: f1 = [f_x1, f_y1]^T = f1 [|cos θ1|, |sin θ1|]^T.",
+      "evidence_type": "theoretical_foundation",
+      "stance": "positive",
+      "mention_type": "method_use",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Cites MoiréVib for the spatial frequency vector formulation, essential for modeling arbitrary orientations.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 5,
+      "citation_text_preview": "prior work has proposed using two cameras to increase the frame rate from 30∼60 fps up to around 300 fps [31].",
+      "evidence_type": "baseline_or_benchmark",
+      "stance": "neutral",
+      "mention_type": "comparison",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Mentions MoiréVib's dual-camera approach as a baseline that achieves only 300 fps, highlighting its insufficiency for audio. Sets up the challenge that MoiréEar addresses.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 6,
+      "citation_text_preview": "Prior work has relied on analyzing video frames [30–32, 45]; however, such methods are limited by low sample rates, which are insufficient for reconstructing audio signals at kilohertz frequencies.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "MoiréVib is grouped with other prior works as relying on video frames; used as background to motivate the photodiode approach.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "weak",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 7,
+      "citation_text_preview": "For a typical camera, the measurement frame rate is limited to tens of frames per second [27, 31].",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Cites MoiréVib as an example of camera-based moiré sensing with limited frame rate, reinforcing the limitation.",
+      "promotion_decision": "saved_representative_review",
+      "evidence_strength_if_saved": "weak",
+      "needs_human_review": true
+    },
+    {
+      "finding_index": 8,
+      "citation_text_preview": "More recently, Ning et al. [31] presented MoiréVib, enabling high-accuracy vibration sensing in dynamic environments.",
+      "evidence_type": "representative_work",
+      "stance": "neutral",
+      "mention_type": "related_work",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": true,
+      "citation_text_in_target_context": false,
+      "filter_reason": "low_strength",
+      "generated_strong_evidence": false,
+      "reasoning": "Described as a representative recent work in moiré-based sensing. Stance is neutral as it's a factual description.",
+      "promotion_decision": "filtered",
+      "evidence_strength_if_saved": null,
+      "needs_human_review": false
+    },
+    {
+      "finding_index": 9,
+      "citation_text_preview": "Although these works highlight the strong potential of moiré-based sensing, their performance remains constrained by controlled setups, dedicated gratings, and limited sample rates. Consequently, existing moiré-based sensing approaches are ...",
+      "evidence_type": "limitation_or_negative",
+      "stance": "negative",
+      "mention_type": "comparison",
+      "target_reference_marker": "[31]",
+      "citation_text_contains_target_marker": false,
+      "citation_text_in_target_context": false,
+      "filter_reason": "saved",
+      "generated_strong_evidence": true,
+      "reasoning": "Points out limitations of prior moiré-based sensing, including MoiréVib (via grouped reference), contrasting with MoiréEar's capabilities.",
+      "promotion_decision": "saved",
+      "evidence_strength_if_saved": "strong",
+      "needs_human_review": false
+    }
+  ]
+}
