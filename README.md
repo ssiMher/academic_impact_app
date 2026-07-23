@@ -1,0 +1,72 @@
+# Academic Impact App
+
+Academic Impact App 是一个面向学术影响力分析的新 Web 系统。项目目标不是简单复刻引用数量统计工具，而是帮助用户发现、整理和复核高质量第三方引用评价，并为后续报告导出提供可追溯证据。
+
+旧项目 [ssiMher/academic_impact_web](https://github.com/ssiMher/academic_impact_web) 仅作为参考实现和业务背景来源。新仓库不复制旧项目源码、目录结构、脚本或数据文件。
+
+## 当前状态
+
+本仓库处于 Phase 0：最小可运行 FastAPI + Jinja2 项目骨架。
+
+已包含：
+
+- `GET /` 首页
+- `GET /health` 健康检查，返回 `{"status": "ok"}`
+- 基础 settings 配置
+- 基础日志配置
+- pytest 验收测试
+
+尚未包含：
+
+- 业务功能
+- 数据库连接
+- 外部 API 调用
+- 旧项目源码
+
+## 本地运行
+
+建议使用虚拟环境安装依赖：
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+uvicorn app.main:app --reload
+```
+
+运行测试：
+
+```bash
+python3 -m pytest -s
+```
+
+如果你的环境中 `pytest` 版本较新，也可以直接运行：
+
+```bash
+pytest
+```
+
+## 文档入口
+
+- [产品需求](docs/product_requirements.md)
+- [架构设计](docs/architecture.md)
+- [API 和 Web 路由](docs/api.md)
+- [需求追踪矩阵](docs/requirements_traceability.md)
+- [开发约定](docs/development/conventions.md)
+- [功能开发流程](docs/development/feature_workflow.md)
+- [开发路线图](docs/tasks/roadmap.md)
+
+## 核心方向
+
+- 发现高质量第三方引用评价，而不只是统计引用数。
+- 定位原文证据，并保留上下文。
+- 对关键词和命中片段进行高亮。
+- 使用模板化分类描述引用类型和评价倾向。
+- 支持人工复核闭环，让自动分析结果可修正、可审计、可导出。
+
+## 暂不主攻
+
+- 完整复刻 Google Scholar 引用数。
+- 完全解决作者重名问题。
+- 一次性全量分析数千篇论文。
+# academic_impact_app
