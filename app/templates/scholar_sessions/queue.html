@@ -35,23 +35,22 @@
   <p class="flow-hint">已扩展引用 → 深度分析队列 → PDF 已就绪 → 全文分析 → 强证据 → 复核 / 导出</p>
 
   {% if analyze_task %}
-    <section class="task-notice" aria-label="analyze task status">
-      {% if analyze_task_created %}
-        <p class="notice">analyze_scholar_queue 任务已创建。</p>
-      {% endif %}
-      <p>任务 #{{ analyze_task.id }} analyze_scholar_queue - {{ analyze_task.status }}</p>
-      <p class="sr-only">Task #{{ analyze_task.id }} analyze_scholar_queue - {{ analyze_task.status }}</p>
-      <p>进度：{{ analyze_task.progress_current }}/{{ analyze_task.progress_total }}</p>
-      {{ status_badge(analyze_task.status) }}
-      {% if analyze_task.stage_message %}<p class="task-message">{{ analyze_task.stage_message }}</p>{% endif %}
-      {% if analyze_task.status in ["pending", "running"] %}
-        <p>任务正在等待或执行中。如状态长时间停留在 pending，请运行 worker：<code>python3 scripts/run_worker.py</code></p>
-      {% elif analyze_task.status == "succeeded" %}
-        <p>分析完成，<a href="/scholar-sessions/{{ session_id }}/evidence">查看强证据</a>。</p>
-      {% elif analyze_task.status == "failed" %}
-        <p class="status-warning">分析失败：{{ analyze_task.error_message or "No error message recorded." }}</p>
-      {% endif %}
-    </section>
+    {% set task = analyze_task %}
+    {% set task_title = "全文分析任务" %}
+    {% set task_created = analyze_task_created %}
+    {% set task_created_message = "analyze_scholar_queue 任务已创建。" %}
+    {% set task_disable_target = "#analyze-selected-button" %}
+    {% set task_error_prefix = "分析失败：" %}
+    {% set task_pending_help = "任务正在等待或执行中。如状态长时间停留在 pending，请运行 worker：python3 scripts/run_worker.py" %}
+    {% set task_success_href = "/scholar-sessions/" ~ session_id ~ "/evidence" %}
+    {% set task_success_message = "分析完成，" %}
+    {% set task_success_label = "查看强证据" %}
+    {% set task_summary_labels = [
+      ("analyzed_count", "分析成功"),
+      ("skipped", "已跳过"),
+      ("failed_item_count", "失败")
+    ] %}
+    {% include "components/task_progress.html" %}
   {% endif %}
 
   {% if discover_task %}
@@ -148,7 +147,14 @@
       <p class="notice">fulltext_anchor_direct 会先定位目标论文在 References 中的引用编号，并优先分析正文中该编号附近的上下文，再结合全文兜底。适合发现公式建模、理论基础、方法采用等隐性引用证据。</p>
       <p class="notice">fulltext_template_direct 会把引用论文全文、目标论文信息和当前启用模板直接交给大模型，输出面向报告的证据判断。</p>
       <p class="sr-only">fulltext_anchor_direct will prioritize body contexts around the target reference marker and then use the full text as fallback.</p>
-      <button type="submit" {% if not selected_ready_item_ids %}disabled{% endif %}>分析已选择且 PDF 就绪的条目</button>
+      {% set analyze_task_active = analyze_task and analyze_task.status in ["pending", "running"] %}
+      <button
+        id="analyze-selected-button"
+        type="submit"
+        {% if not selected_ready_item_ids or analyze_task_active %}disabled{% endif %}
+      >
+        {% if analyze_task_active %}全文分析正在进行{% else %}分析已选择且 PDF 就绪的条目{% endif %}
+      </button>
       <span class="sr-only">Analyze selected ready items</span>
       {% if not selected_ready_item_ids %}
         <p class="status-warning">请先上传或匹配 PDF，并选择 ready item。</p>

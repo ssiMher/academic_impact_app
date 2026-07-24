@@ -972,7 +972,9 @@ def test_queue_page_contains_running_pdf_task_progress_and_disables_button(
         response = client.get(f"/scholar-sessions/{session_id}/queue")
 
         assert response.status_code == 200
-        assert 'id="pdf-task-progress"' in response.text
+        assert 'class="task-notice task-progress js-task-progress"' in response.text
+        assert 'data-task-type="discover_pdfs_for_queue"' in response.text
+        assert 'data-task-role="progress"' in response.text
         assert 'data-active="true"' in response.text
         assert (
             f'data-status-url="/scholar-sessions/{session_id}/tasks/{task.id}/status"'

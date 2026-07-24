@@ -1308,6 +1308,98 @@ def test_succeeded_analyze_task_links_to_evidence(client, db_session_factory, tm
     assert f'href="/scholar-sessions/{session_id}/evidence"' in page.text
 
 
+def test_queue_page_renders_analyze_task_with_generic_task_poller(
+    client,
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, *_ = seed_scholar_edges(db)
+        make_queue_service(db, tmp_path).build_queue(session_id)
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="analyze_scholar_queue",
+            status="running",
+            stage="analyzing_fulltext",
+            stage_message="正在分析 2/9：Realtime Paper",
+            progress_current=1,
+            progress_total=9,
+        )
+        db.add(task)
+        db.commit()
+        task_id = task.id
+
+    page = client.get(f"/scholar-sessions/{session_id}/queue")
+
+    assert page.status_code == 200
+    assert 'class="task-notice task-progress js-task-progress"' in page.text
+    assert 'data-task-type="analyze_scholar_queue"' in page.text
+    assert (
+        f'data-status-url="/scholar-sessions/{session_id}/tasks/{task_id}/status"'
+        in page.text
+    )
+    assert 'data-task-role="progress"' in page.text
+    assert "正在分析 2/9：Realtime Paper" in page.text
+    assert "全文分析正在进行" in page.text
+
+
+def test_task_poller_supports_pdf_and_analysis_tasks():
+    script = Path("app/static/js/app.js").read_text(encoding="utf-8")
+
+    assert 'querySelectorAll(".js-task-progress")' in script
+    assert "initializeTaskProgressPolling" in script
+    assert "initializePdfDownloadTaskPolling" not in script
+    assert "task-terminal-refreshed:${taskType}:${taskId}" in script
+
+
+def test_analyze_task_status_endpoint_returns_live_progress(
+    client,
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, *_ = seed_scholar_edges(db)
+        make_queue_service(db, tmp_path).build_queue(session_id)
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="analyze_scholar_queue",
+            status="running",
+            stage="analyzing_fulltext",
+            stage_message="正在分析 3/5：Current Analysis Paper",
+            progress_current=2,
+            progress_total=5,
+            payload_json=json.dumps(
+                {
+                    "progress_summary": {
+                        "analyzed_count": 2,
+                        "failed_item_count": 0,
+                        "skipped": 0,
+                    }
+                }
+            ),
+        )
+        db.add(task)
+        db.commit()
+        task_id = task.id
+
+    response = client.get(
+        f"/scholar-sessions/{session_id}/tasks/{task_id}/status"
+    )
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    payload = response.json()
+    assert payload["task_type"] == "analyze_scholar_queue"
+    assert payload["progress_current"] == 2
+    assert payload["progress_total"] == 5
+    assert payload["progress_percent"] == 40.0
+    assert payload["stage_message"] == "正在分析 3/5：Current Analysis Paper"
+    assert payload["progress_summary"]["analyzed_count"] == 2
+    assert payload["is_terminal"] is False
+
+
 def test_build_scholar_queue_task(db_session_factory, tmp_path):
     with Session(db_session_factory.kw["bind"]) as db:
         session_id, *_ = seed_scholar_edges(db)

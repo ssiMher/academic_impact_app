@@ -16,24 +16,68 @@ def handle_analyze_scholar_queue(db: Session, task: AnalysisTask) -> None:
     service = ScholarFulltextService(db)
     analysis_scope = _analysis_scope_from_task(task)
     queue_item_ids = _queue_item_ids_from_task(task)
-    task.stage = "analyzing_scholar_queue"
-    task.stage_message = f"Analyzing selected scholar queue items. analysis_scope={analysis_scope}"
-    db.flush()
+    task_id = task.id
+    progress_summary = {
+        "analyzed_count": 0,
+        "failed_item_count": 0,
+        "skipped": 0,
+    }
+
+    def update_progress(current, total, item, result_status):
+        current_task = db.get(AnalysisTask, task_id)
+        current_task.progress_current = current
+        current_task.progress_total = total
+        title = (
+            (item.citing_paper_title or f"Queue item {item.id}")[:120]
+            if item is not None
+            else ""
+        )
+        if result_status == "preparing":
+            current_task.stage = "preparing_fulltext_analysis"
+            current_task.stage_message = f"准备分析 {total} 篇论文"
+        elif result_status == "started":
+            current_task.stage = "analyzing_fulltext"
+            current_task.stage_message = f"正在分析 {current + 1}/{total}：{title}"
+        else:
+            current_task.stage = "analyzing_fulltext"
+            current_task.stage_message = (
+                f"已分析 {current}/{total}：{title}；状态={result_status}"
+            )
+            if result_status == "succeeded":
+                progress_summary["analyzed_count"] += 1
+            elif result_status.startswith("skipped") or result_status in {
+                "invalid_pdf_binding",
+                "pdf_extract_not_ready",
+            }:
+                progress_summary["skipped"] += 1
+            else:
+                progress_summary["failed_item_count"] += 1
+        payload = _payload_from_task(current_task)
+        payload["progress_summary"] = dict(progress_summary)
+        current_task.payload_json = json.dumps(payload, ensure_ascii=False)
+        db.commit()
 
     summary = service.analyze_queue_items(
         session_id=task.session_id,
         queue_item_ids=queue_item_ids,
         analysis_scope=analysis_scope,
         task_id=task.id,
+        progress_callback=update_progress,
     )
+    task = db.get(AnalysisTask, task_id)
     task.progress_total = int(summary["total"])
-    task.progress_current = int(summary["succeeded"]) + int(summary["skipped"]) + int(summary["failed"])
+    task.progress_current = task.progress_total
+    payload = _payload_from_task(task)
+    payload["progress_summary"] = dict(progress_summary)
+    payload["result_summary"] = summary
+    task.payload_json = json.dumps(payload, ensure_ascii=False)
     summary_message = _format_summary(summary)
     if (
         int(summary["ready_items"]) > 0
         and int(summary["analyzed_count"]) == 0
         and int(summary["failed_item_count"]) > 0
     ):
+        db.commit()
         raise ValueError(summary_message)
     if summary["warnings"]:
         task.stage_message = "Scholar queue analysis completed with warnings. " + summary_message
@@ -56,6 +100,10 @@ def _format_summary(summary) -> str:
         f"analysis_scope={summary.get('analysis_scope')}",
         f"fulltext_chars={summary.get('fulltext_chars')}",
         f"llm_findings_count={summary.get('llm_findings_count')}",
+        f"parsed_evidence_count={summary.get('parsed_evidence_count')}",
+        f"include_evidence_count={summary.get('include_evidence_count')}",
+        f"review_evidence_count={summary.get('review_evidence_count')}",
+        f"exclude_evidence_count={summary.get('exclude_evidence_count')}",
     ]
     warnings = summary.get("warnings") or []
     if warnings:

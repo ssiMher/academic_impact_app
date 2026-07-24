@@ -32,6 +32,8 @@ CLAIM_PRIORITY = {
     "custom_template_evidence": 55,
     "method_use": 50,
     "capability_recognition": 40,
+    "method_summary": 35,
+    "capability_summary": 35,
     "limitation_feedback": 30,
     "ordinary_reference": 20,
     "false_positive": 0,
@@ -144,9 +146,10 @@ def _normalize_evidence(
         cited_paper_title=cited_paper_title,
         cited_paper_doi=cited_paper_doi,
     )
-    quote_markers = _extract_reference_markers(quote)
-    quote_has_target_marker = (
-        citation_text_has_target_anchor(quote, target_marker) if target_marker else False
+    target_scope = _target_marker_scope(quote, context, target_marker)
+    quote_markers = _extract_reference_markers(target_scope)
+    quote_has_target_marker = bool(
+        target_marker and citation_text_has_target_anchor(target_scope, target_marker)
     )
     quote_has_other_marker = bool(
         target_marker and quote_markers and any(marker != target_marker for marker in quote_markers)
@@ -154,6 +157,13 @@ def _normalize_evidence(
     grouped_citation = quote_has_target_marker and quote_has_other_marker
     title_alias_in_quote = _contains_title_alias(quote, cited_paper_title)
     limitation_reason = _limitation_downgrade_reason(f"{combined}\n{reason_text}")
+    body_author = _body_author_for_marker(target_scope, target_marker)
+    reference_author = _reference_first_author(evidence_reference_entry_raw)
+    attribution_conflict = bool(
+        body_author
+        and reference_author
+        and _normalize_author_name(body_author) != _normalize_author_name(reference_author)
+    )
 
     reasons: List[str] = []
     reference_match_status = "unresolved"
@@ -179,6 +189,11 @@ def _normalize_evidence(
     if inferred_claim_type != claim_type:
         claim_type = inferred_claim_type
         item["claim_type"] = inferred_claim_type
+    if claim_type == "ordinary_reference":
+        summary_claim_type = _infer_summary_claim_type(target_scope)
+        if summary_claim_type:
+            claim_type = summary_claim_type
+            item["claim_type"] = summary_claim_type
     title_or_reference_only = _is_title_only_or_reference_only(quote, combined)
 
     if target_marker and evidence_marker and evidence_marker != target_marker and not quote_has_target_marker:
@@ -229,6 +244,11 @@ def _normalize_evidence(
             item["confidence"] = _lower_confidence(item.get("confidence"))
             reasons.append("ordinary_reference_not_include")
 
+    if attribution_conflict and item.get("recommendation") != "exclude":
+        item["recommendation"] = "review"
+        item["confidence"] = _lower_confidence(item.get("confidence"))
+        reasons.append("reference_attribution_conflict")
+
     if item.get("recommendation") == "include" and item.get("claim_type") not in INCLUDE_CLAIM_TYPES:
         item["recommendation"] = "review"
         item["confidence"] = _lower_confidence(item.get("confidence"))
@@ -243,8 +263,16 @@ def _normalize_evidence(
     item["citation_text_contains_target_marker"] = quote_has_target_marker
     item["citation_text_contains_other_marker"] = quote_has_other_marker
     item["target_reference_entry_matches_target"] = entry_matches_target
+    item["reference_attribution_conflict"] = attribution_conflict
+    item["reference_attribution_body_author"] = body_author
+    item["reference_attribution_entry_author"] = reference_author
+    item["reference_attribution_reason"] = (
+        "body_author_reference_author_mismatch" if attribution_conflict else ""
+    )
     if grouped_citation:
         item["grouped_citation"] = True
+    else:
+        item["grouped_citation"] = False
     if reasons:
         item["postprocess_reason"] = "; ".join(reasons)
         _append_reason(item, reasons[-1])
@@ -457,6 +485,7 @@ def _append_reason(item: Dict[str, Any], reason: str) -> None:
         "capability_recognition_missing_concrete_terms": "正文证据缺少明确能力确认表述。",
         "limitation_language_not_include": "原文或评价理由包含局限性/实用性不足表述，不能作为推荐纳入的正向强证据。",
         "generic_rfid_eavesdropping_not_include": "正文只是 RFID/eavesdropping 普通描述，缺少亚毫米、穿墙、扬声器振动或具体方法/性能佐证。",
+        "reference_attribution_conflict": "正文引用处的作者归因与该编号参考文献的首位作者不一致，需要人工核对。",
     }.get(reason, reason)
     existing = str(item.get("why_this_judgment_zh") or "").strip()
     if reason_zh and reason_zh not in existing:
@@ -515,6 +544,90 @@ def _extract_reference_markers(text: str) -> set[str]:
             elif token.isdigit():
                 markers.add(token)
     return markers
+
+
+def _target_marker_scope(quote: str, context: str, target_marker: str) -> str:
+    """Return only the sentence or clause that contains the target marker."""
+    if not target_marker:
+        return quote
+    for text in (quote, context):
+        for sentence in _split_sentences(text):
+            if citation_text_has_target_anchor(sentence, target_marker):
+                return sentence.strip()
+    return quote
+
+
+def _split_sentences(text: str) -> List[str]:
+    if not text:
+        return []
+    return [
+        part
+        for part in re.split(r"(?<=[.!?。！？])\s+|[\r\n]+", text)
+        if part and part.strip()
+    ]
+
+
+def _body_author_for_marker(text: str, target_marker: str) -> str:
+    if not text or not target_marker:
+        return ""
+    marker_pattern = re.escape(f"[{target_marker}]")
+    matches = list(
+        re.finditer(
+            rf"\b([A-Z][A-Za-z'’-]+)(?:\s+et\s+al\.?)?\s*{marker_pattern}",
+            text,
+        )
+    )
+    if not matches:
+        return ""
+    candidate = matches[-1].group(1)
+    if candidate.isupper() or candidate.lower() in {
+        "figure",
+        "method",
+        "paper",
+        "reference",
+        "section",
+        "system",
+        "table",
+        "work",
+    }:
+        return ""
+    return candidate
+
+
+def _reference_first_author(reference_entry: str) -> str:
+    if not reference_entry:
+        return ""
+    text = re.sub(r"^\s*\[\d+\]\s*", "", reference_entry).strip()
+    prefix = re.split(r",|\bet\s+al\.?", text, maxsplit=1, flags=re.I)[0]
+    tokens = re.findall(r"\b(?:[A-Z]\.|[A-Z][A-Za-z'’-]+)\b", prefix)
+    names = [token.rstrip(".") for token in tokens if len(token.rstrip(".")) > 1]
+    return names[-1] if names else ""
+
+
+def _normalize_author_name(value: str) -> str:
+    return re.sub(r"[^a-z]", "", value.casefold())
+
+
+def _infer_summary_claim_type(target_scope: str) -> str:
+    """Give substantive target-specific summaries a reviewable semantic label."""
+    normalized = _normalize(target_scope)
+    if len(_meaningful_tokens(normalized)) < 5:
+        return ""
+    if re.search(
+        r"\b(achieve[sd]?|demonstrate[sd]?|enable[sd]?|detect\w*|measure[sd]?|"
+        r"capture[sd]?|recogniz\w*|support[sd]?)\b",
+        normalized,
+        flags=re.I,
+    ):
+        return "capability_summary"
+    if re.search(
+        r"\b(propose[sd]?|introduce[sd]?|present[sd]?|develop\w*|use[sd]?|using|"
+        r"employ\w*|leverag\w*|extend\w*|implement\w*|based\s+on)\b",
+        normalized,
+        flags=re.I,
+    ):
+        return "method_summary"
+    return ""
 
 
 def _clean_marker(marker: str) -> str:

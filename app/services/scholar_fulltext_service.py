@@ -5,7 +5,7 @@ import re
 import unicodedata
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
+from typing import Callable, Dict, Iterable, List, Optional
 
 from fastapi import Depends
 from pydantic import ValidationError
@@ -76,6 +76,12 @@ class ScholarFulltextService:
         queue_item_ids: Optional[List[int]],
         analysis_scope: str,
         task_id: Optional[int] = None,
+        progress_callback: Optional[
+            Callable[
+                [int, int, Optional[DeepAnalysisQueueItem], str],
+                None,
+            ]
+        ] = None,
     ) -> Dict[str, object]:
         analysis_scope = self._normalize_analysis_scope(analysis_scope)
         all_session_items = self._list_target_items(session_id, None)
@@ -104,13 +110,28 @@ class ScholarFulltextService:
             "analysis_scope": analysis_scope,
             "fulltext_chars": 0,
             "llm_findings_count": 0,
+            "parsed_evidence_count": 0,
+            "include_evidence_count": 0,
+            "review_evidence_count": 0,
+            "exclude_evidence_count": 0,
             "warnings": [],
         }
-        for item in items:
+        if progress_callback is not None:
+            progress_callback(0, len(items), None, "preparing")
+        for index, item in enumerate(items, start=1):
+            if progress_callback is not None:
+                progress_callback(index - 1, len(items), item, "started")
             if item.queue_status != "selected":
                 summary["skipped"] += 1
                 summary["skipped_not_selected_count"] += 1
                 summary["warnings"].append(f"queue_item:{item.id}:not_selected")
+                if progress_callback is not None:
+                    progress_callback(
+                        index,
+                        len(items),
+                        item,
+                        "skipped_not_selected",
+                    )
                 continue
             blocking_reason = self._pdf_blocking_reason(item)
             if blocking_reason == "unsupported_pdf_status":
@@ -119,20 +140,36 @@ class ScholarFulltextService:
                 summary["warnings"].append(
                     f"queue_item:{item.id}:unsupported_pdf_status:{item.pdf_readiness_status}"
                 )
+                if progress_callback is not None:
+                    progress_callback(
+                        index,
+                        len(items),
+                        item,
+                        "skipped_need_pdf",
+                    )
                 continue
             if blocking_reason in {"invalid_pdf_binding", "pdf_extract_not_ready"}:
                 summary["skipped"] += 1
                 summary["skipped_need_pdf_count"] += 1
                 summary["warnings"].append(f"queue_item:{item.id}:{blocking_reason}")
+                if progress_callback is not None:
+                    progress_callback(index, len(items), item, blocking_reason)
                 continue
             if blocking_reason == "missing_extracted_text":
                 summary["failed"] += 1
                 summary["failed_item_count"] += 1
                 summary["warnings"].append(f"queue_item:{item.id}:missing_extracted_text")
+                if progress_callback is not None:
+                    progress_callback(
+                        index,
+                        len(items),
+                        item,
+                        "missing_extracted_text",
+                    )
                 continue
 
             try:
-                self.analyze_single_queue_item(
+                analysis_result = self.analyze_single_queue_item(
                     queue_item_id=item.id,
                     analysis_scope=analysis_scope,
                     task_id=task_id,
@@ -142,17 +179,30 @@ class ScholarFulltextService:
                 summary["failed"] += 1
                 summary["failed_item_count"] += 1
                 summary["warnings"].append(f"queue_item:{item.id}:{exc}")
+                if progress_callback is not None:
+                    progress_callback(index, len(items), item, "failed")
             else:
                 summary["succeeded"] += 1
                 summary["analyzed_count"] += 1
+                if analysis_scope == "fulltext_template_direct":
+                    direct_counts = self._direct_evidence_counts(
+                        self._load_json(analysis_result.parsed_result_json)
+                    )
+                    for key, value in direct_counts.items():
+                        summary[key] = int(summary.get(key) or 0) + value
+                    summary["llm_findings_count"] = summary["parsed_evidence_count"]
+                if progress_callback is not None:
+                    progress_callback(index, len(items), item, "succeeded")
 
         summary["fulltext_result_count"] = self._count_fulltext_results(session_id)
-        summary["strong_evidence_count"] = self._count_strong_evidence(session_id)
+        if analysis_scope != "fulltext_template_direct":
+            summary["strong_evidence_count"] = self._count_strong_evidence(session_id)
         diagnostics = self.list_analysis_diagnostics(session_id)
         if diagnostics:
             latest = diagnostics[0]
             summary["fulltext_chars"] = latest.get("fulltext_chars") or 0
-            summary["llm_findings_count"] = latest.get("llm_findings_count") or 0
+            if analysis_scope != "fulltext_template_direct":
+                summary["llm_findings_count"] = latest.get("llm_findings_count") or 0
         return summary
 
     def analyze_single_queue_item(
@@ -803,6 +853,11 @@ class ScholarFulltextService:
             active_templates=active_templates,
         )
         evidences = result_payload.get("evidences", [])
+        evidence_counts = self._direct_evidence_counts(result_payload)
+        result_payload.setdefault("diagnostics", {}).update(evidence_counts)
+        result_payload["diagnostics"]["llm_findings_count"] = evidence_counts[
+            "parsed_evidence_count"
+        ]
         raw_response_text = self._provider_raw_response(provider, parsed_result)
         candidate_payload = {
             "mode": "fulltext_template_direct",
@@ -825,9 +880,11 @@ class ScholarFulltextService:
                 reference_anchor.reference_entry_text if reference_anchor else result_payload.get("target_reference_entry", "")
             ),
             "template_direct_evidence_count": len(evidences),
-            "include_count": sum(1 for evidence in evidences if evidence.get("recommendation") == "include"),
-            "review_count": sum(1 for evidence in evidences if evidence.get("recommendation") == "review"),
-            "exclude_count": sum(1 for evidence in evidences if evidence.get("recommendation") == "exclude"),
+            "llm_findings_count": evidence_counts["parsed_evidence_count"],
+            **evidence_counts,
+            "include_count": evidence_counts["include_evidence_count"],
+            "review_count": evidence_counts["review_evidence_count"],
+            "exclude_count": evidence_counts["exclude_evidence_count"],
             "template_satisfied_count": sum(
                 1 for evidence in evidences if evidence.get("template_satisfied") is True
             ),
@@ -1537,9 +1594,17 @@ class ScholarFulltextService:
         for result in self.db.scalars(statement):
             candidate_payload = self._load_json(result.candidate_spans_json)
             parsed_payload = self._load_json(result.parsed_result_json)
-            llm_findings_count = self._diagnostic_count(parsed_payload, candidate_payload, "llm_findings_count")
+            direct_counts = self._direct_evidence_counts(parsed_payload)
+            is_template_direct = result.analysis_scope == "fulltext_template_direct"
+            llm_findings_count = (
+                direct_counts["parsed_evidence_count"]
+                if is_template_direct
+                else self._diagnostic_count(parsed_payload, candidate_payload, "llm_findings_count")
+            )
             generated_count = self._diagnostic_count(parsed_payload, candidate_payload, "generated_strong_evidence_count")
-            if generated_count == 0:
+            if is_template_direct:
+                generated_count = direct_counts["strong_evidence_count"]
+            elif generated_count == 0:
                 generated_count = self.db.query(StrongEvidence).filter_by(
                     fulltext_result_id=result.id
                 ).count()
@@ -1558,6 +1623,7 @@ class ScholarFulltextService:
                         else None
                     ),
                     "llm_findings_count": llm_findings_count,
+                    **direct_counts,
                     "generated_strong_evidence_count": generated_count,
                     "filtered_findings_count": filtered_count,
                     "filter_reason_distribution": self._diagnostic_value(
@@ -1596,9 +1662,17 @@ class ScholarFulltextService:
                     "template_failure_reason_distribution": self._diagnostic_value(candidate_payload, "template_failure_reason_distribution", {}),
                     "prompt_template_snapshot_json": self._diagnostic_value(candidate_payload, "prompt_template_snapshot_json", ""),
                     "is_fulltext_direct_empty": (
-                        result.analysis_scope in {"fulltext_direct", "fulltext_anchor_direct"}
+                        result.analysis_scope in {
+                            "fulltext_direct",
+                            "fulltext_anchor_direct",
+                            "fulltext_template_direct",
+                        }
                         and isinstance(parsed_payload, dict)
-                        and len(parsed_payload.get("findings", [])) == 0
+                        and (
+                            direct_counts["parsed_evidence_count"] == 0
+                            if is_template_direct
+                            else len(parsed_payload.get("findings", [])) == 0
+                        )
                     ),
                     "raw_output_preview": self._redact_sensitive(
                         parsed_payload.get("raw_output_preview", "")
@@ -1636,6 +1710,7 @@ class ScholarFulltextService:
                 or parsed_payload.get("evidences")
                 or []
             ) if isinstance(parsed_payload, dict) else []
+            direct_counts = self._direct_evidence_counts(parsed_payload)
             generated_count = self._diagnostic_count(parsed_payload, candidate_payload, "generated_strong_evidence_count")
             if generated_count == 0:
                 generated_count = self.db.query(StrongEvidence).filter_by(
@@ -1658,6 +1733,7 @@ class ScholarFulltextService:
                     "status": result.status,
                     "error_message": result.error_message,
                     "llm_findings_count": len(findings),
+                    **direct_counts,
                     "candidate_spans_count": self._candidate_spans_count(candidate_payload),
                     "parsed_findings_preview": self._preview_findings(findings),
                     "generated_strong_evidence_count": generated_count,
@@ -2192,6 +2268,40 @@ class ScholarFulltextService:
         if value is None and isinstance(parsed_payload, dict):
             value = parsed_payload.get("diagnostics", {}).get(key)
         return int(value or 0)
+
+    def _direct_evidence_counts(self, parsed_payload) -> Dict[str, int]:
+        evidences = (
+            parsed_payload.get("evidences", [])
+            if isinstance(parsed_payload, dict)
+            else []
+        )
+        if not isinstance(evidences, list):
+            evidences = []
+        include_count = sum(
+            1
+            for evidence in evidences
+            if isinstance(evidence, dict)
+            and evidence.get("recommendation") == "include"
+        )
+        return {
+            "parsed_evidence_count": len(
+                [evidence for evidence in evidences if isinstance(evidence, dict)]
+            ),
+            "include_evidence_count": include_count,
+            "review_evidence_count": sum(
+                1
+                for evidence in evidences
+                if isinstance(evidence, dict)
+                and evidence.get("recommendation") == "review"
+            ),
+            "exclude_evidence_count": sum(
+                1
+                for evidence in evidences
+                if isinstance(evidence, dict)
+                and evidence.get("recommendation") == "exclude"
+            ),
+            "strong_evidence_count": include_count,
+        }
 
     def _diagnostic_value(self, candidate_payload, key: str, default=None):
         if isinstance(candidate_payload, dict):

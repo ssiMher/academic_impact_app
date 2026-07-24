@@ -98,11 +98,18 @@
       {% elif analysis_diagnostics and analysis_diagnostics[0].schema_error %}
         <p>LLM 输出格式不符合 schema，请查看 raw response 和 schema error。</p>
         <p class="sr-only">The LLM returned output that did not match the expected schema.</p>
-      {% elif analysis_diagnostics and analysis_diagnostics[0].llm_findings_count > 0 and analysis_diagnostics[0].generated_strong_evidence_count == 0 %}
+      {% elif analysis_diagnostics and analysis_diagnostics[0].analysis_scope == "fulltext_template_direct" and analysis_diagnostics[0].parsed_evidence_count > 0 and analysis_diagnostics[0].strong_evidence_count == 0 %}
+        <p>发现 {{ analysis_diagnostics[0].parsed_evidence_count }} 条正文证据，但没有证据满足强证据纳入条件。</p>
+        <p class="sr-only">The LLM found possible citation-related findings, but none passed the strong evidence filters. Check filter reasons below.</p>
+      {% elif analysis_diagnostics and analysis_diagnostics[0].analysis_scope != "fulltext_template_direct" and analysis_diagnostics[0].llm_findings_count > 0 and analysis_diagnostics[0].generated_strong_evidence_count == 0 %}
         <p>LLM 找到了可能相关的引用发现，但没有任何一条通过强证据过滤。请查看下方过滤原因。</p>
         <p class="sr-only">The LLM found possible citation-related findings, but none passed the strong evidence filters. Check filter reasons below.</p>
-      {% elif analysis_diagnostics and analysis_diagnostics[0].llm_findings_count == 0 %}
-        <p>全文已分析，但模型没有发现可保存的正文强证据。</p>
+      {% elif analysis_diagnostics and analysis_diagnostics[0].parsed_evidence_count == 0 and analysis_diagnostics[0].llm_findings_count == 0 %}
+        {% if analysis_diagnostics[0].analysis_scope == "fulltext_template_direct" %}
+          <p>全文已分析，但模型没有发现正文证据。</p>
+        {% else %}
+          <p>全文已分析，但模型没有发现可保存的正文强证据。</p>
+        {% endif %}
         <p class="sr-only">The full text was analyzed, but no strong evidence was found.</p>
       {% endif %}
       <a class="button button-primary" href="/scholar-sessions/{{ session_id }}/queue">返回队列</a>

@@ -362,7 +362,7 @@ def _resolve_analyze_task(
             and task.session_id == session_id
             and task.task_type == "analyze_scholar_queue"
         ):
-            return task
+            return _hydrate_task_summaries(task)
 
     recent_tasks = task_service.get_recent_for_session(
         session_kind=SCHOLAR_ANALYSIS_SESSION_KIND,
@@ -376,7 +376,8 @@ def _resolve_analyze_task(
         (task for task in analyze_tasks if task.status in {"pending", "running"}),
         None,
     )
-    return active_task or (analyze_tasks[0] if analyze_tasks else None)
+    task = active_task or (analyze_tasks[0] if analyze_tasks else None)
+    return _hydrate_task_summaries(task)
 
 
 def _resolve_pdf_download_task(
@@ -414,20 +415,23 @@ def _resolve_pdf_download_task(
             (value for value in tasks if value.status in {"pending", "running"}),
             tasks[0] if tasks else None,
         )
-    if task is not None:
-        payload = _task_payload(task)
-        task.result_summary = (
-            payload.get("result_summary")
-            if isinstance(payload, dict)
-            and isinstance(payload.get("result_summary"), dict)
-            else None
-        )
-        task.progress_summary = (
-            payload.get("progress_summary")
-            if isinstance(payload, dict)
-            and isinstance(payload.get("progress_summary"), dict)
-            else None
-        )
+    return _hydrate_task_summaries(task)
+
+
+def _hydrate_task_summaries(task):
+    if task is None:
+        return None
+    payload = _task_payload(task)
+    task.result_summary = (
+        payload.get("result_summary")
+        if isinstance(payload.get("result_summary"), dict)
+        else None
+    )
+    task.progress_summary = (
+        payload.get("progress_summary")
+        if isinstance(payload.get("progress_summary"), dict)
+        else None
+    )
     return task
 
 

@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Academic Impact App{% endblock %}</title>
-    <link rel="stylesheet" href="/static/css/app.css">
+    {% set static_asset_version = "20260723-task-progress-v2" %}
+    <link rel="stylesheet" href="/static/css/app.css?v={{ static_asset_version }}">
     {% block head %}{% endblock %}
   </head>
   <body>
@@ -14,6 +15,6 @@
         {% block content %}{% endblock %}
       </main>
     </div>
-    <script src="/static/js/app.js" defer></script>
+    <script src="/static/js/app.js?v={{ static_asset_version }}" defer></script>
   </body>
 </html>

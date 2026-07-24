@@ -32,6 +32,7 @@ from app.services.scholar_fulltext_service import ScholarFulltextService
 from app.schemas.provider import ProviderErrorCode
 from app.tasks.runner import TaskRunner
 from app.tasks.task_manager import TaskManager
+from app.tasks.handlers.analyze_scholar_queue import handle_analyze_scholar_queue
 from app.schemas.llm import CitationAnalysisResponse, TemplateDirectAnalysisResult
 from app.services.highlight_card_service import HighlightCardService
 from app.services.template_service import TemplateService
@@ -2687,6 +2688,71 @@ def test_analyze_scholar_queue_task_handles_partial_failures(db_session_factory,
     assert db.query(StrongEvidence).count() == 1
 
 
+def test_analyze_task_updates_progress_per_item_and_finishes_at_100_percent(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            title="Realtime Analysis Paper",
+        )
+        task = AnalysisTask(
+            session_kind="scholar_analysis",
+            session_id=session_id,
+            task_type="analyze_scholar_queue",
+            payload_json=json.dumps(
+                {
+                    "analysis_scope": "candidate_spans",
+                    "queue_item_ids": [item_id],
+                }
+            ),
+            status="running",
+        )
+        db.add(task)
+        db.commit()
+
+        commits = []
+        original_commit = db.commit
+
+        def tracking_commit():
+            commits.append(
+                (
+                    task.progress_current,
+                    task.progress_total,
+                    task.stage,
+                    task.stage_message,
+                )
+            )
+            original_commit()
+
+        monkeypatch.setattr(db, "commit", tracking_commit)
+
+        handle_analyze_scholar_queue(db, task)
+
+        assert any(
+            current == 0
+            and total == 1
+            and stage == "preparing_fulltext_analysis"
+            and message == "准备分析 1 篇论文"
+            for current, total, stage, message in commits
+        )
+        assert any(
+            current == 0
+            and stage == "analyzing_fulltext"
+            and "正在分析 1/1：Realtime Analysis Paper" in (message or "")
+            for current, _total, stage, message in commits
+        )
+        assert any(
+            current == 1
+            and "已分析 1/1：Realtime Analysis Paper" in (message or "")
+            for current, _total, _stage, message in commits
+        )
+        assert task.progress_current == task.progress_total == 1
+
+
 def test_analyze_queue_processes_selected_reused_pdf_item(db_session_factory, tmp_path):
     with Session(db_session_factory.kw["bind"]) as db:
         session_id, item_id = seed_queue_item(db, tmp_path)
@@ -3362,6 +3428,183 @@ def test_fulltext_template_direct_outputs_reference_entry(db_session_factory, tm
     assert payload["target_reference_entry"] == "[23] Target Paper. doi:10.1145/target"
     assert payload["evidences"][0]["reference_entry"] == "[23] Target Paper. doi:10.1145/target"
     assert diagnostics["template_direct_evidence_count"] == 1
+
+
+def test_template_direct_counts_parsed_evidences_instead_of_legacy_findings(
+    client,
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] Target Paper.",
+            "paper_level_summary_zh": "发现正文引用，但不满足纳入条件。",
+            "evidences": [
+                {
+                    "recommendation": "exclude",
+                    "claim_type": "ordinary_reference",
+                    "evidence_quote": "Target Paper is listed as prior work [23].",
+                    "evidence_context": "The related-work section lists Target Paper as prior work [23].",
+                    "reference_entry": "[23] Target Paper.",
+                    "why_this_judgment_zh": "这是普通相关工作。",
+                    "copy_ready_zh": "不建议作为强证据纳入。",
+                    "confidence": "medium",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                "Target Paper is listed as prior work [23].\n\n"
+                "References\n[23] Target Paper."
+            ),
+        )
+        summary = ScholarFulltextService(db).analyze_queue_items(
+            session_id=session_id,
+            queue_item_ids=[item_id],
+            analysis_scope="fulltext_template_direct",
+        )
+        result = db.query(FulltextAnalysisResult).one()
+        stored_diagnostics = json.loads(result.candidate_spans_json)
+        diagnostics = ScholarFulltextService(db).list_analysis_diagnostics(
+            session_id
+        )[0]
+
+    assert summary["llm_findings_count"] == 1
+    assert summary["parsed_evidence_count"] == 1
+    assert summary["include_evidence_count"] == 0
+    assert summary["review_evidence_count"] == 0
+    assert summary["exclude_evidence_count"] == 1
+    assert summary["strong_evidence_count"] == 0
+    assert stored_diagnostics["llm_findings_count"] == 1
+    assert diagnostics["parsed_evidence_count"] == 1
+    assert diagnostics["exclude_evidence_count"] == 1
+
+    page = client.get(f"/scholar-sessions/{session_id}/evidence?mode=debug")
+    assert page.status_code == 200
+    assert "发现 1 条正文证据，但没有证据满足强证据纳入条件。" in page.text
+    assert "模型没有发现正文证据" not in page.text
+
+
+def test_grouped_citation_only_checks_target_marker_sentence(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[14]",
+            "target_reference_entry": "[14] C. Wang et al., Target Paper.",
+            "paper_level_summary_zh": "目标引用位于独立句子。",
+            "evidences": [
+                {
+                    "recommendation": "review",
+                    "claim_type": "ordinary_reference",
+                    "evidence_quote": (
+                        "An earlier system used another method [13]. "
+                        "The target work introduced a concrete mechanism [14]."
+                    ),
+                    "evidence_context": (
+                        "An earlier system used another method [13]. "
+                        "The target work introduced a concrete mechanism [14]."
+                    ),
+                    "reference_entry": "[14] C. Wang et al., Target Paper.",
+                    "why_this_judgment_zh": "第二句单独描述目标方法。",
+                    "copy_ready_zh": "该论文概括了目标工作的方法机制。",
+                    "confidence": "medium",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        _session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                "An earlier system used another method [13]. "
+                "The target work introduced a concrete mechanism [14].\n\n"
+                "References\n[13] Other Paper.\n"
+                "[14] C. Wang et al., Target Paper."
+            ),
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+
+    assert evidence["grouped_citation"] is False
+    assert evidence["citation_text_contains_other_marker"] is False
+    assert evidence["claim_type"] == "method_summary"
+
+
+def test_reference_author_attribution_conflict_downgrades_to_review(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[14]",
+            "target_reference_entry": "[14] C. Wang et al., Target Paper.",
+            "paper_level_summary_zh": "正文作者和参考文献作者冲突。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "method_use",
+                    "evidence_quote": "Haibing Wu [14] proposed a concrete sensing method.",
+                    "evidence_context": "Haibing Wu [14] proposed a concrete sensing method used by this system.",
+                    "reference_entry": "[14] C. Wang et al., Target Paper.",
+                    "why_this_judgment_zh": "正文描述了具体方法。",
+                    "copy_ready_zh": "引用论文使用了目标方法。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        _session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                "Haibing Wu [14] proposed a concrete sensing method.\n\n"
+                "References\n[14] C. Wang et al., Target Paper."
+            ),
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+
+    assert evidence["reference_match_status"] == "matched"
+    assert evidence["reference_attribution_conflict"] is True
+    assert evidence["reference_attribution_body_author"] == "Wu"
+    assert evidence["reference_attribution_entry_author"] == "Wang"
+    assert evidence["reference_attribution_reason"] == "body_author_reference_author_mismatch"
+    assert evidence["recommendation"] == "review"
+    assert evidence["confidence"] != "high"
+    assert "reference_attribution_conflict" in evidence["postprocess_reason"]
 
 
 def test_report_contains_evidence_quote_and_reference_entry(db_session_factory, tmp_path, monkeypatch):

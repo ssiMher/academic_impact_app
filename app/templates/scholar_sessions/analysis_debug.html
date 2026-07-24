@@ -43,6 +43,11 @@
           <div><dt>LLM Provider</dt><dd>{{ row.llm_provider or "n/a" }}</dd></div>
           <div><dt>LLM Model</dt><dd>{{ row.llm_model or "n/a" }}</dd></div>
           <div><dt>LLM findings 数</dt><dd>{{ row.llm_findings_count }}</dd></div>
+          <div><dt>parsed evidence 数</dt><dd>{{ row.parsed_evidence_count }}</dd></div>
+          <div><dt>include evidence 数</dt><dd>{{ row.include_evidence_count }}</dd></div>
+          <div><dt>review evidence 数</dt><dd>{{ row.review_evidence_count }}</dd></div>
+          <div><dt>exclude evidence 数</dt><dd>{{ row.exclude_evidence_count }}</dd></div>
+          <div><dt>strong evidence 数</dt><dd>{{ row.strong_evidence_count }}</dd></div>
           <div><dt>候选段数</dt><dd>{{ row.candidate_spans_count }}</dd></div>
           <div><dt>目标引用编号</dt><dd>{{ row.target_reference_marker or "n/a" }}</dd></div>
           <div><dt>目标编号上下文数</dt><dd>{{ row.target_reference_context_count }}</dd></div>

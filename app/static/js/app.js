@@ -15,27 +15,26 @@ document.addEventListener("click", (event) => {
   if (panel) panel.toggleAttribute("hidden");
 });
 
-function initializePdfDownloadTaskPolling() {
-  const panel = document.querySelector("#pdf-download-task-panel");
+function initializeTaskProgressPolling(panel) {
   if (!(panel instanceof HTMLElement) || panel.dataset.active !== "true") return;
-
   const statusUrl = panel.dataset.statusUrl;
   const taskId = panel.dataset.taskId;
+  const taskType = panel.dataset.taskType || "task";
   if (!statusUrl || !taskId) return;
 
   let timerId = null;
   let stopped = false;
   let consecutiveErrors = 0;
-  const terminalReloadKey = `pdf-task-terminal-refreshed:${taskId}`;
+  const terminalReloadKey = `task-terminal-refreshed:${taskType}:${taskId}`;
 
-  const statusBadge = document.querySelector("#pdf-task-status-badge");
-  const progress = document.querySelector("#pdf-task-progress");
-  const progressText = document.querySelector("#pdf-task-progress-text");
-  const progressPercent = document.querySelector("#pdf-task-progress-percent");
-  const message = document.querySelector("#pdf-task-message");
-  const stage = document.querySelector("#pdf-task-stage");
-  const error = document.querySelector("#pdf-task-error");
-  const batchButton = document.querySelector("#pdf-batch-download-button");
+  const statusBadge = panel.querySelector('[data-task-role="status-badge"]');
+  const progress = panel.querySelector('[data-task-role="progress"]');
+  const progressText = panel.querySelector('[data-task-role="progress-text"]');
+  const progressPercent = panel.querySelector('[data-task-role="progress-percent"]');
+  const message = panel.querySelector('[data-task-role="message"]');
+  const stage = panel.querySelector('[data-task-role="stage"]');
+  const error = panel.querySelector('[data-task-role="error"]');
+  const disableTarget = panel.dataset.disableTarget;
 
   const badgeClass = (status) => {
     if (status === "succeeded") return "badge badge-success";
@@ -45,16 +44,24 @@ function initializePdfDownloadTaskPolling() {
 
   const renderSummary = (summary) => {
     if (!summary) return;
-    document.querySelectorAll("[data-pdf-summary-key]").forEach((node) => {
-      const key = node.getAttribute("data-pdf-summary-key");
-      if (key && Object.hasOwn(summary, key)) node.textContent = String(summary[key]);
+    panel.querySelectorAll("[data-task-summary-key]").forEach((node) => {
+      const key = node.getAttribute("data-task-summary-key");
+      if (
+        key
+        && Object.prototype.hasOwnProperty.call(summary, key)
+      ) {
+        node.textContent = String(summary[key]);
+      }
     });
   };
 
   const updatePanel = (task) => {
     panel.dataset.taskStatus = task.status;
     if (statusBadge) {
-      statusBadge.innerHTML = `<span class="${badgeClass(task.status)}">${task.status}</span>`;
+      const badge = document.createElement("span");
+      badge.className = badgeClass(task.status);
+      badge.textContent = task.status;
+      statusBadge.replaceChildren(badge);
     }
     if (progress instanceof HTMLProgressElement) {
       progress.value = task.progress_current || 0;
@@ -81,11 +88,15 @@ function initializePdfDownloadTaskPolling() {
       error.hidden = !task.error_message;
     }
     renderSummary(task.result_summary || task.progress_summary);
-    if (batchButton instanceof HTMLButtonElement) {
-      batchButton.disabled = !task.is_terminal;
-      batchButton.textContent = task.is_terminal
-        ? "自动查找 / 下载所有 PDF"
-        : "批量下载正在进行";
+    if (disableTarget) {
+      document.querySelectorAll(disableTarget).forEach((control) => {
+        if (
+          control instanceof HTMLButtonElement
+          || control instanceof HTMLInputElement
+        ) {
+          control.disabled = !task.is_terminal;
+        }
+      });
     }
   };
 
@@ -130,4 +141,6 @@ function initializePdfDownloadTaskPolling() {
   pollTask();
 }
 
-initializePdfDownloadTaskPolling();
+document
+  .querySelectorAll(".js-task-progress")
+  .forEach(initializeTaskProgressPolling);

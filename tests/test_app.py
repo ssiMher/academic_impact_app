@@ -34,7 +34,16 @@ def test_base_template_loads_app_css():
     response = homepage(request)
     body = response.body.decode("utf-8")
 
-    assert 'href="/static/css/app.css"' in body
+    assert 'href="/static/css/app.css?v=' in body
+
+
+def test_static_assets_have_cache_busting_version():
+    source = (Path.cwd() / "app" / "templates" / "base.html").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'href="/static/css/app.css?v={{ static_asset_version }}"' in source
+    assert 'src="/static/js/app.js?v={{ static_asset_version }}"' in source
 
 
 def test_all_user_templates_extend_base_or_include_app_css():

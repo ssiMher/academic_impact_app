@@ -29,6 +29,11 @@
             <div><dt>Prompt 字符数</dt><dd>{{ diagnostic.prompt_chars or "n/a" }}</dd></div>
             <div><dt>状态</dt><dd>{{ diagnostic.status }}</dd></div>
             <div><dt>LLM 发现数量</dt><dd>{{ diagnostic.llm_findings_count }}</dd></div>
+            <div><dt>解析正文证据</dt><dd>{{ diagnostic.parsed_evidence_count }}</dd></div>
+            <div><dt>推荐纳入</dt><dd>{{ diagnostic.include_evidence_count }}</dd></div>
+            <div><dt>候选复核</dt><dd>{{ diagnostic.review_evidence_count }}</dd></div>
+            <div><dt>排除证据</dt><dd>{{ diagnostic.exclude_evidence_count }}</dd></div>
+            <div><dt>强证据</dt><dd>{{ diagnostic.strong_evidence_count }}</dd></div>
             <div><dt>生成强证据数量</dt><dd>{{ diagnostic.generated_strong_evidence_count }}</dd></div>
             <div><dt>被过滤发现数量</dt><dd>{{ diagnostic.filtered_findings_count }}</dd></div>
             <div><dt>过滤原因分布</dt><dd>{{ diagnostic.filter_reason_distribution }}</dd></div>
@@ -63,9 +68,11 @@
               {% endfor %}
             </details>
           {% endif %}
-          {% if diagnostic.llm_findings_count > 0 and diagnostic.generated_strong_evidence_count == 0 %}
-            <p class="notice notice-warning">LLM 找到了可能相关的引用发现，但没有任何一条通过强证据过滤。请查看过滤原因。</p>
+          {% if diagnostic.analysis_scope == "fulltext_template_direct" and diagnostic.parsed_evidence_count > 0 and diagnostic.strong_evidence_count == 0 %}
+            <p class="notice notice-warning">发现 {{ diagnostic.parsed_evidence_count }} 条正文证据，但没有证据满足强证据纳入条件。</p>
             <p class="sr-only">The LLM found possible citation-related findings, but none passed the strong evidence filters. Check filter reasons below.</p>
+          {% elif diagnostic.analysis_scope != "fulltext_template_direct" and diagnostic.llm_findings_count > 0 and diagnostic.generated_strong_evidence_count == 0 %}
+            <p class="notice notice-warning">LLM 找到了可能相关的引用发现，但没有任何一条通过强证据过滤。请查看过滤原因。</p>
           {% elif diagnostic.is_fulltext_direct_empty %}
             <p class="notice">全文已分析，但没有发现强证据。</p>
             <p class="sr-only">The full text was analyzed, but no strong evidence was found.</p>
