@@ -94,6 +94,10 @@ def _format_summary(summary) -> str:
         f"skipped_need_pdf_count={summary['skipped_need_pdf_count']}",
         f"skipped_not_selected_count={summary['skipped_not_selected_count']}",
         f"analyzed_count={summary['analyzed_count']}",
+        f"current_run_result_count={summary.get('current_run_result_count')}",
+        f"current_run_succeeded_count={summary.get('current_run_succeeded_count')}",
+        f"current_run_failed_count={summary.get('current_run_failed_count')}",
+        f"session_fulltext_result_count={summary.get('session_fulltext_result_count')}",
         f"fulltext_result_count={summary['fulltext_result_count']}",
         f"strong_evidence_count={summary['strong_evidence_count']}",
         f"failed_item_count={summary['failed_item_count']}",
@@ -104,6 +108,8 @@ def _format_summary(summary) -> str:
         f"include_evidence_count={summary.get('include_evidence_count')}",
         f"review_evidence_count={summary.get('review_evidence_count')}",
         f"exclude_evidence_count={summary.get('exclude_evidence_count')}",
+        f"filtered_findings_count={summary.get('filtered_findings_count')}",
+        f"filter_reason_distribution={summary.get('filter_reason_distribution')}",
     ]
     warnings = summary.get("warnings") or []
     if warnings:

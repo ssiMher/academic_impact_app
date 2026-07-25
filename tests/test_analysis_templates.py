@@ -1197,3 +1197,215 @@ def test_template_filter_view_and_report_include_template_reason(client, db_sess
     assert "尚未运行 fulltext_template_direct 分析" in report.text
     assert "模板命中原因" not in report.text
     assert "template_failure_reason" not in report.text
+
+
+def _enable_builtin_for_test(db, session_id, template_type):
+    service = TemplateService(db)
+    builtin = next(
+        template
+        for template in service.list_builtin_templates()
+        if template.template_type == template_type
+    )
+    return service.enable_template(session_id=session_id, template_id=builtin.id)
+
+
+def _evaluate_active_templates(
+    db,
+    *,
+    session_id,
+    claim_type,
+    quote,
+    context=None,
+    marker="[23]",
+    target_title="Target Paper",
+    reference_match_status="matched",
+):
+    return TemplateService(db).evaluate_finding_templates(
+        session_id=session_id,
+        finding_payload={
+            "claim_type": claim_type,
+            "reference_match_status": reference_match_status,
+        },
+        citation_text=quote,
+        evidence_context=context or quote,
+        target_reference_marker=marker,
+        cited_paper_title=target_title,
+    )
+
+
+def test_first_seminal_template_contract_positive_and_scope_negative(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        enabled = _enable_builtin_for_test(
+            db, session_id, "first_or_seminal_claim"
+        )
+        positive = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="first_or_seminal_claim",
+            quote=(
+                "Target Paper [23] was the first work to recover speech by "
+                "sensing speaker vibrations."
+            ),
+        )
+        negative = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="first_or_seminal_claim",
+            quote=(
+                "The first approach [17] used radar, while Target Paper [23] "
+                "used another sensing method."
+            ),
+        )
+
+    assert positive["matched_template_ids"] == [enabled.id]
+    assert positive["template_satisfied"] is True
+    assert negative["matched_template_ids"] == []
+    assert negative["template_satisfied"] is False
+    assert "grouped citation" in negative["template_failure_reason"]
+
+
+def test_detailed_comparison_requires_substantive_context(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        enabled = _enable_builtin_for_test(db, session_id, "detailed_comparison")
+        positive = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="detailed_comparison",
+            quote="We compare our method with Target Paper [23] in Table 2.",
+            context=(
+                "We compare our method with Target Paper [23] in Table 2. "
+                "Target Paper reaches 82% accuracy with 40 ms latency, whereas "
+                "our method reaches 86% accuracy with 31 ms latency. The "
+                "experiment uses the same dataset and reports the error metric."
+            ),
+        )
+        passing_mention = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="detailed_comparison",
+            quote="Our method is compared with previous work [23].",
+        )
+
+    assert positive["matched_template_ids"] == [enabled.id]
+    assert passing_mention["matched_template_ids"] == []
+    assert "too brief" in passing_mention["template_failure_reason"]
+
+
+def test_baseline_template_requires_experimental_use(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        enabled = _enable_builtin_for_test(
+            db, session_id, "baseline_or_benchmark"
+        )
+        positive = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="baseline_or_benchmark",
+            quote="We reproduce Target Paper [23] as a baseline in Table 3.",
+            context=(
+                "We reproduce Target Paper [23] as a baseline in Table 3. "
+                "The experiment compares accuracy and error on the same dataset."
+            ),
+        )
+        ordinary = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="baseline_or_benchmark",
+            quote="Related work lists Target Paper [23] as a baseline approach.",
+        )
+
+    assert positive["matched_template_ids"] == [enabled.id]
+    assert ordinary["matched_template_ids"] == []
+    assert "experimental" in ordinary["template_failure_reason"]
+
+
+def test_positive_evaluation_requires_explicit_targeted_praise(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        enabled = _enable_builtin_for_test(db, session_id, "positive_evaluation")
+        positive = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="capability_recognition",
+            quote=(
+                "Target Paper [23] provides an effective and robust solution "
+                "with significantly higher accuracy."
+            ),
+        )
+        grouped = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="positive_evaluation",
+            quote="Prior systems [22], [23] provide effective solutions.",
+        )
+        limitation = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="capability_recognition",
+            quote=(
+                "Target Paper [23] is less practical and has limited accuracy."
+            ),
+        )
+
+    assert positive["matched_template_ids"] == [enabled.id]
+    assert grouped["matched_template_ids"] == []
+    assert "grouped citation" in grouped["template_failure_reason"]
+    assert limitation["matched_template_ids"] == []
+    assert "limitation feedback" in limitation["template_failure_reason"]
+
+
+def test_multiple_active_templates_can_match_one_evidence(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        first = _enable_builtin_for_test(
+            db, session_id, "first_or_seminal_claim"
+        )
+        positive = _enable_builtin_for_test(
+            db, session_id, "positive_evaluation"
+        )
+        result = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="positive_evaluation",
+            quote=(
+                "Target Paper [23] was the first work and provides an effective, "
+                "robust solution with high accuracy."
+            ),
+        )
+
+    assert result["template_satisfied"] is True
+    assert set(result["matched_template_ids"]) == {first.id, positive.id}
+
+
+def test_active_template_snapshot_exposes_effective_contract(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path)
+        enabled = _enable_builtin_for_test(db, session_id, "positive_evaluation")
+        enabled.scoring_rules_json = json.dumps({"template_bonus": 12})
+        db.commit()
+        snapshot = TemplateService(db).active_template_snapshots(session_id)
+
+    assert snapshot[0]["allowed_evidence_types"]
+    assert "positive_evaluation" in snapshot[0]["allowed_evidence_types"]
+    assert snapshot[0]["require_target_marker"] is True
+    assert snapshot[0]["allow_grouped_citation"] is False

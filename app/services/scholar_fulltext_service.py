@@ -30,7 +30,10 @@ from app.analysis.prompt_builder import (
     build_fulltext_direct_repair_prompt,
     build_fulltext_template_direct_prompt,
 )
-from app.analysis.template_direct_postprocess import postprocess_template_direct_payload
+from app.analysis.template_direct_postprocess import (
+    direct_evidence_failure_reason_codes,
+    postprocess_template_direct_payload,
+)
 from app.analysis.target_anchor_validation import validate_citation_target_anchor
 from app.analysis.llm_parser import parse_llm_json_payload
 from app.core.config import PROJECT_ROOT, settings
@@ -84,6 +87,7 @@ class ScholarFulltextService:
         ] = None,
     ) -> Dict[str, object]:
         analysis_scope = self._normalize_analysis_scope(analysis_scope)
+        initial_result_count = self._count_fulltext_results(session_id)
         all_session_items = self._list_target_items(session_id, None)
         items = self._list_target_items(session_id, queue_item_ids)
         summary: Dict[str, object] = {
@@ -106,7 +110,13 @@ class ScholarFulltextService:
             "skipped_not_selected_count": 0,
             "failed_item_count": 0,
             "fulltext_result_count": 0,
+            "current_run_result_count": 0,
+            "current_run_succeeded_count": 0,
+            "current_run_failed_count": 0,
+            "session_fulltext_result_count": initial_result_count,
             "strong_evidence_count": 0,
+            "filtered_findings_count": 0,
+            "filter_reason_distribution": {},
             "analysis_scope": analysis_scope,
             "fulltext_chars": 0,
             "llm_findings_count": 0,
@@ -191,10 +201,33 @@ class ScholarFulltextService:
                     for key, value in direct_counts.items():
                         summary[key] = int(summary.get(key) or 0) + value
                     summary["llm_findings_count"] = summary["parsed_evidence_count"]
+                    parsed_payload = self._load_json(
+                        analysis_result.parsed_result_json
+                    )
+                    run_evidences = parsed_payload.get("evidences", [])
+                    summary["filtered_findings_count"] += sum(
+                        1
+                        for evidence in run_evidences
+                        if isinstance(evidence, dict)
+                        and evidence.get("recommendation") != "include"
+                    )
+                    self._merge_reason_counts(
+                        summary["filter_reason_distribution"],
+                        self._direct_filter_reason_distribution(run_evidences),
+                    )
                 if progress_callback is not None:
                     progress_callback(index, len(items), item, "succeeded")
 
-        summary["fulltext_result_count"] = self._count_fulltext_results(session_id)
+        final_result_count = self._count_fulltext_results(session_id)
+        summary["current_run_result_count"] = max(
+            0,
+            final_result_count - initial_result_count,
+        )
+        summary["current_run_succeeded_count"] = int(summary["succeeded"])
+        summary["current_run_failed_count"] = int(summary["failed"])
+        summary["session_fulltext_result_count"] = final_result_count
+        # Kept for compatibility; its semantics are now explicitly run-scoped.
+        summary["fulltext_result_count"] = summary["current_run_result_count"]
         if analysis_scope != "fulltext_template_direct":
             summary["strong_evidence_count"] = self._count_strong_evidence(session_id)
         diagnostics = self.list_analysis_diagnostics(session_id)
@@ -854,10 +887,25 @@ class ScholarFulltextService:
         )
         evidences = result_payload.get("evidences", [])
         evidence_counts = self._direct_evidence_counts(result_payload)
+        filter_reason_distribution = self._direct_filter_reason_distribution(
+            evidences
+        )
+        filtered_findings_count = sum(
+            1
+            for evidence in evidences
+            if isinstance(evidence, dict)
+            and evidence.get("recommendation") != "include"
+        )
         result_payload.setdefault("diagnostics", {}).update(evidence_counts)
         result_payload["diagnostics"]["llm_findings_count"] = evidence_counts[
             "parsed_evidence_count"
         ]
+        result_payload["diagnostics"].update(
+            {
+                "filtered_findings_count": filtered_findings_count,
+                "filter_reason_distribution": filter_reason_distribution,
+            }
+        )
         raw_response_text = self._provider_raw_response(provider, parsed_result)
         candidate_payload = {
             "mode": "fulltext_template_direct",
@@ -879,12 +927,23 @@ class ScholarFulltextService:
             "target_reference_entry": (
                 reference_anchor.reference_entry_text if reference_anchor else result_payload.get("target_reference_entry", "")
             ),
+            "reference_anchor_source": (
+                "deterministic_resolver" if reference_anchor else "llm_unresolved_fallback"
+            ),
+            "reference_anchor_match_method": (
+                reference_anchor.match_method if reference_anchor else ""
+            ),
+            "reference_anchor_match_score": (
+                reference_anchor.match_score if reference_anchor else 0.0
+            ),
             "template_direct_evidence_count": len(evidences),
             "llm_findings_count": evidence_counts["parsed_evidence_count"],
             **evidence_counts,
             "include_count": evidence_counts["include_evidence_count"],
             "review_count": evidence_counts["review_evidence_count"],
             "exclude_count": evidence_counts["exclude_evidence_count"],
+            "filtered_findings_count": filtered_findings_count,
+            "filter_reason_distribution": filter_reason_distribution,
             "template_satisfied_count": sum(
                 1 for evidence in evidences if evidence.get("template_satisfied") is True
             ),
@@ -939,6 +998,33 @@ class ScholarFulltextService:
                 counts[part] = counts.get(part, 0) + 1
         return counts
 
+    def _direct_filter_reason_distribution(
+        self,
+        evidences: Iterable[dict],
+    ) -> Dict[str, int]:
+        counts: Dict[str, int] = {}
+        for evidence in evidences or []:
+            if not isinstance(evidence, dict):
+                continue
+            if str(evidence.get("recommendation") or "") == "include":
+                continue
+            reason_codes = evidence.get("failure_reason_codes", []) or (
+                direct_evidence_failure_reason_codes(evidence)
+            )
+            for code in reason_codes:
+                normalized = str(code or "").strip()
+                if normalized:
+                    counts[normalized] = counts.get(normalized, 0) + 1
+        return counts
+
+    def _merge_reason_counts(
+        self,
+        target: Dict[str, int],
+        source: Dict[str, int],
+    ) -> None:
+        for reason, count in source.items():
+            target[reason] = int(target.get(reason) or 0) + int(count or 0)
+
     def _apply_active_templates_to_direct_payload(
         self,
         *,
@@ -969,6 +1055,11 @@ class ScholarFulltextService:
                 {
                     "matched_template_ids": template_result.get("matched_template_ids", []),
                     "matched_template_names": template_result.get("matched_template_names", []),
+                    "matched_template_types": [
+                        str(evaluation.get("template_type") or "")
+                        for evaluation in template_result.get("template_evaluations", [])
+                        if evaluation.get("template_satisfied")
+                    ],
                     "template_match_reason": template_result.get("template_match_reason", ""),
                     "template_satisfied": bool(template_result.get("template_satisfied", False)),
                     "template_failure_reason": template_result.get("template_failure_reason", ""),
@@ -999,9 +1090,60 @@ class ScholarFulltextService:
                 updated["claim_type"] = "custom_template_evidence"
             elif updated["template_satisfied"] and updated.get("reference_match_status") != "matched":
                 updated["recommendation"] = "review"
+            matched_builtin_types = {
+                template.template_type
+                for template in matched_templates
+                if template.template_type
+                in {
+                    "first_or_pioneering_claim",
+                    "first_or_seminal_claim",
+                    "detailed_comparison",
+                    "baseline_or_benchmark",
+                    "positive_evaluation",
+                }
+            }
+            canonical_claim_type = self._canonical_direct_template_claim_type(
+                matched_builtin_types
+            )
+            if (
+                canonical_claim_type
+                and updated.get("recommendation") != "exclude"
+                and updated.get("reference_match_status") == "matched"
+                and not updated.get("grouped_citation")
+                and not updated.get("reference_attribution_conflict")
+            ):
+                updated["claim_type"] = canonical_claim_type
+                updated["recommendation"] = "include"
+            if (
+                updated.get("recommendation") == "include"
+                and active_templates
+                and not matched_templates
+            ):
+                updated["recommendation"] = "review"
+            updated["final_recommendation"] = str(
+                updated.get("recommendation") or "review"
+            )
+            updated["failure_reason_codes"] = (
+                direct_evidence_failure_reason_codes(updated)
+            )
             normalized_evidences.append(updated)
         normalized["evidences"] = normalized_evidences
         return normalized
+
+    def _canonical_direct_template_claim_type(
+        self,
+        template_types: set,
+    ) -> str:
+        priorities = (
+            ("first_or_seminal_claim", {"first_or_pioneering_claim", "first_or_seminal_claim"}),
+            ("detailed_comparison", {"detailed_comparison"}),
+            ("baseline_or_benchmark", {"baseline_or_benchmark"}),
+            ("positive_evaluation", {"positive_evaluation"}),
+        )
+        for claim_type, matching_types in priorities:
+            if template_types & matching_types:
+                return claim_type
+        return ""
 
     def _build_template_direct_compact_text(
         self,
@@ -1611,6 +1753,22 @@ class ScholarFulltextService:
             filtered_count = self._diagnostic_count(parsed_payload, candidate_payload, "filtered_findings_count")
             if filtered_count == 0:
                 filtered_count = max(0, llm_findings_count - generated_count)
+            filter_reason_distribution = self._diagnostic_value(
+                candidate_payload,
+                "filter_reason_distribution",
+                {},
+            )
+            if is_template_direct:
+                direct_evidences = parsed_payload.get("evidences", [])
+                filtered_count = sum(
+                    1
+                    for evidence in direct_evidences
+                    if isinstance(evidence, dict)
+                    and evidence.get("recommendation") != "include"
+                )
+                filter_reason_distribution = (
+                    self._direct_filter_reason_distribution(direct_evidences)
+                )
             diagnostics.append(
                 {
                     "id": result.id,
@@ -1626,11 +1784,7 @@ class ScholarFulltextService:
                     **direct_counts,
                     "generated_strong_evidence_count": generated_count,
                     "filtered_findings_count": filtered_count,
-                    "filter_reason_distribution": self._diagnostic_value(
-                        candidate_payload,
-                        "filter_reason_distribution",
-                        {},
-                    ),
+                    "filter_reason_distribution": filter_reason_distribution,
                     "finding_diagnostics": self._diagnostic_value(
                         candidate_payload,
                         "finding_diagnostics",
@@ -1719,6 +1873,22 @@ class ScholarFulltextService:
             filtered_count = self._diagnostic_count(parsed_payload, candidate_payload, "filtered_findings_count")
             if filtered_count == 0:
                 filtered_count = max(0, len(findings) - generated_count)
+            filter_reason_distribution = self._diagnostic_value(
+                candidate_payload,
+                "filter_reason_distribution",
+                {},
+            )
+            if result.analysis_scope == "fulltext_template_direct":
+                direct_evidences = parsed_payload.get("evidences", [])
+                filtered_count = sum(
+                    1
+                    for evidence in direct_evidences
+                    if isinstance(evidence, dict)
+                    and evidence.get("recommendation") != "include"
+                )
+                filter_reason_distribution = (
+                    self._direct_filter_reason_distribution(direct_evidences)
+                )
             rows.append(
                 {
                     "id": result.id,
@@ -1738,7 +1908,7 @@ class ScholarFulltextService:
                     "parsed_findings_preview": self._preview_findings(findings),
                     "generated_strong_evidence_count": generated_count,
                     "filtered_findings_count": filtered_count,
-                    "filter_reason_distribution": self._diagnostic_value(candidate_payload, "filter_reason_distribution", {}),
+                    "filter_reason_distribution": filter_reason_distribution,
                     "finding_diagnostics": self._diagnostic_value(candidate_payload, "finding_diagnostics", []),
                     "raw_output_preview": self._redact_sensitive(
                         parsed_payload.get("raw_output_preview", "")

@@ -66,7 +66,16 @@ BUILTIN_TEMPLATES = [
         "keywords": ["first", "seminal", "pioneering", "首次", "开创"],
         "patterns": ["first work", "seminal work"],
         "prompt": "Prioritize claims that the target paper is first, seminal, or pioneering.",
-        "rules": {"template_bonus": 20},
+        "rules": {
+            "template_bonus": 20,
+            "allowed_evidence_types": ["first_or_seminal_claim"],
+            "strict_rules": [
+                "requires explicit first/pioneering expression in body text",
+                "expression must modify the target paper anchor",
+            ],
+            "require_target_marker": True,
+            "allow_grouped_citation": False,
+        },
     },
     {
         "name": "detailed_comparison",
@@ -77,7 +86,19 @@ BUILTIN_TEMPLATES = [
         "keywords": ["compare", "compared with", "comparison", "对比", "比较"],
         "patterns": ["compared with"],
         "prompt": "Prioritize detailed comparison evidence, not passing mentions.",
-        "rules": {"template_bonus": 20},
+        "rules": {
+            "template_bonus": 20,
+            "allowed_evidence_types": [
+                "detailed_comparison",
+                "performance_comparison",
+            ],
+            "strict_rules": [
+                "requires substantive multi-sentence or metric-backed comparison",
+                "passing compared-with mention is insufficient",
+            ],
+            "require_target_marker": True,
+            "allow_grouped_citation": False,
+        },
     },
     {
         "name": "baseline_or_benchmark",
@@ -88,7 +109,19 @@ BUILTIN_TEMPLATES = [
         "keywords": ["baseline", "benchmark", "基线", "评测"],
         "patterns": ["benchmark baseline"],
         "prompt": "Prioritize evidence where the target paper is used as a baseline or benchmark.",
-        "rules": {"template_bonus": 20},
+        "rules": {
+            "template_bonus": 20,
+            "allowed_evidence_types": [
+                "baseline_or_benchmark",
+                "performance_comparison",
+            ],
+            "strict_rules": [
+                "requires explicit experimental use as baseline or benchmark",
+                "ordinary related work is insufficient",
+            ],
+            "require_target_marker": True,
+            "allow_grouped_citation": False,
+        },
     },
     {
         "name": "theoretical_foundation",
@@ -165,7 +198,24 @@ BUILTIN_TEMPLATES = [
         "keywords": ["positive", "improves", "strong", "正向", "评价"],
         "patterns": ["positive evaluation"],
         "prompt": "Prioritize positive evaluation evidence grounded in citation_text.",
-        "rules": {"template_bonus": 12},
+        "rules": {
+            "template_bonus": 12,
+            "allowed_evidence_types": [
+                "positive_evaluation",
+                "capability_recognition",
+                "capability_summary",
+                "method_summary",
+                "rfid_loudspeaker_vibration",
+                "through_wall_eavesdropping",
+            ],
+            "strict_rules": [
+                "requires explicit positive evaluation of the target paper",
+                "capability description alone is insufficient",
+                "limitation feedback and ordinary related work are excluded",
+            ],
+            "require_target_marker": True,
+            "allow_grouped_citation": False,
+        },
     },
     {
         "name": "limitation_or_negative",

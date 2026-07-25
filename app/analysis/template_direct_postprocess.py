@@ -15,6 +15,10 @@ from app.analysis.citation_anchor import citation_text_has_target_anchor
 
 
 INCLUDE_CLAIM_TYPES = {
+    "first_or_seminal_claim",
+    "detailed_comparison",
+    "baseline_or_benchmark",
+    "positive_evaluation",
     "submm_precision_claim",
     "capability_recognition",
     "through_wall_eavesdropping",
@@ -25,6 +29,10 @@ INCLUDE_CLAIM_TYPES = {
 }
 
 CLAIM_PRIORITY = {
+    "first_or_seminal_claim": 100,
+    "detailed_comparison": 85,
+    "baseline_or_benchmark": 75,
+    "positive_evaluation": 65,
     "submm_precision_claim": 90,
     "through_wall_eavesdropping": 80,
     "rfid_loudspeaker_vibration": 70,
@@ -125,6 +133,7 @@ def _normalize_evidence(
     combined = f"{quote}\n{context}"
     claim_type = str(item.get("claim_type") or "ordinary_reference")
     recommendation = str(item.get("recommendation") or "review")
+    item.setdefault("original_recommendation", recommendation)
     reason_text = (
         str(item.get("why_this_judgment_zh") or "")
         + "\n"
@@ -254,6 +263,7 @@ def _normalize_evidence(
         item["confidence"] = _lower_confidence(item.get("confidence"))
         reasons.append("include_claim_type_not_strong")
 
+    item["final_recommendation"] = str(item.get("recommendation") or "review")
     item["target_reference_marker"] = target_marker_text
     item["evidence_reference_marker"] = f"[{evidence_marker}]" if evidence_marker else target_marker_text
     item["evidence_reference_entry_raw"] = evidence_reference_entry_raw
@@ -276,6 +286,7 @@ def _normalize_evidence(
     if reasons:
         item["postprocess_reason"] = "; ".join(reasons)
         _append_reason(item, reasons[-1])
+    item["failure_reason_codes"] = direct_evidence_failure_reason_codes(item)
     return item
 
 
@@ -326,6 +337,26 @@ def _include_downgrade_reason(
         return "method_use_missing_concrete_terms"
     if claim_type == "capability_recognition" and not _has_capability_terms(text):
         return "capability_recognition_missing_concrete_terms"
+    if claim_type == "first_or_seminal_claim" and not _has_targeted_first_claim(
+        quote,
+        target_marker_present=has_target_marker,
+    ):
+        return "first_claim_scope_not_targeted"
+    if claim_type == "detailed_comparison" and not _has_detailed_comparison_support(
+        quote,
+        combined,
+    ):
+        return "detailed_comparison_insufficient_detail"
+    if claim_type == "baseline_or_benchmark" and not _has_baseline_support(
+        quote,
+        combined,
+    ):
+        return "baseline_or_benchmark_not_experimental"
+    if claim_type == "positive_evaluation" and not _has_explicit_positive_support(
+        quote,
+        combined,
+    ):
+        return "positive_evaluation_not_explicit"
     if claim_type in {"capability_recognition", "method_use"} and not (
         _has_submm_term(quote_text)
         or _has_through_wall_term(text)
@@ -486,10 +517,68 @@ def _append_reason(item: Dict[str, Any], reason: str) -> None:
         "limitation_language_not_include": "原文或评价理由包含局限性/实用性不足表述，不能作为推荐纳入的正向强证据。",
         "generic_rfid_eavesdropping_not_include": "正文只是 RFID/eavesdropping 普通描述，缺少亚毫米、穿墙、扬声器振动或具体方法/性能佐证。",
         "reference_attribution_conflict": "正文引用处的作者归因与该编号参考文献的首位作者不一致，需要人工核对。",
+        "first_claim_scope_not_targeted": "首次/开创性表达没有明确修饰目标论文。",
+        "detailed_comparison_insufficient_detail": "对比表述过短或缺少具体方法、指标或实验细节。",
+        "baseline_or_benchmark_not_experimental": "未明确将目标论文作为实验 baseline/benchmark 使用。",
+        "positive_evaluation_not_explicit": "正文没有对目标论文给出明确正向评价。",
     }.get(reason, reason)
     existing = str(item.get("why_this_judgment_zh") or "").strip()
     if reason_zh and reason_zh not in existing:
         item["why_this_judgment_zh"] = (existing + " " + reason_zh).strip()
+
+
+def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
+    """Map free-text diagnostics to stable run/report reason codes."""
+    codes: List[str] = []
+    text = " ".join(
+        [
+            str(evidence.get("postprocess_reason") or ""),
+            str(evidence.get("template_failure_reason") or ""),
+            " ".join(
+                str(item.get("template_failure_reason") or "")
+                for item in evidence.get("template_evaluations", []) or []
+                if isinstance(item, dict)
+            ),
+        ]
+    ).casefold()
+
+    def add(code: str) -> None:
+        if code not in codes:
+            codes.append(code)
+
+    if evidence.get("reference_match_status") == "mismatch" or "reference mismatch" in text:
+        add("reference_mismatch")
+    if (
+        not evidence.get("citation_text_contains_target_marker", False)
+        or "does not anchor to target paper" in text
+        or "target_anchor_missing" in text
+    ):
+        add("target_marker_missing")
+    if "grouped citation" in text or evidence.get("grouped_citation"):
+        add("grouped_citation_not_allowed")
+    if "evidence type" in text and "not allowed" in text:
+        add("evidence_type_not_allowed")
+    if "no explicit first/pioneering" in text:
+        add("no_first_or_pioneering_expression")
+    if "no required evidence pattern" in text:
+        add("template_required_pattern_missing")
+    if "ordinary_reference" == evidence.get("claim_type") or "ordinary reference" in text:
+        add("ordinary_reference")
+    if evidence.get("claim_type") == "limitation_feedback" or "limitation feedback" in text:
+        add("limitation_feedback_not_positive")
+    if "title-only" in text or "reference-only" in text or "reference_only" in text:
+        add("reference_only")
+    if evidence.get("original_recommendation") == "exclude":
+        add("llm_recommended_exclude")
+    if (
+        evidence.get("template_satisfied") is False
+        and evidence.get("template_evaluations")
+        and not codes
+    ):
+        add("template_goal_not_satisfied")
+    if evidence.get("final_recommendation") in {"review", "exclude"} and not codes:
+        add("template_goal_not_satisfied")
+    return codes
 
 
 def _reference_entry_matches_target(
@@ -694,6 +783,65 @@ def _has_capability_terms(text: str) -> bool:
             r"\b(achieve[sd]?|demonstrate[sd]?|enable[sd]?|recogniz\w*|capabilit\w*|support[sd]?|measure[sd]?|detect\w*|captur\w*)\b",
             text,
             flags=re.I,
+        )
+    )
+
+
+def _has_targeted_first_claim(text: str, *, target_marker_present: bool) -> bool:
+    if not target_marker_present:
+        return False
+    return bool(
+        re.search(
+            r"\b(the\s+first|first[- ]of[- ]its[- ]kind|for\s+the\s+first\s+time|"
+            r"pioneering|seminal|earliest)\b|首次|开创性|率先|最早",
+            text or "",
+            re.I,
+        )
+    )
+
+
+def _has_detailed_comparison_support(quote: str, combined: str) -> bool:
+    has_comparison = bool(
+        re.search(r"\b(compar\w*|versus|vs\.?|relative\s+to)\b", combined, re.I)
+    )
+    has_detail = bool(
+        re.search(
+            r"\b(table|experiment\w*|performance|accuracy|error|latency|throughput|"
+            r"metric|result\w*|outperform\w*|higher|lower|faster|slower|whereas|however)\b|%",
+            combined,
+            re.I,
+        )
+    )
+    sentence_count = len(
+        [part for part in re.split(r"(?<=[.!?])\s+|[\r\n]+", combined) if part.strip()]
+    )
+    return has_comparison and has_detail and (
+        sentence_count >= 2 or len(combined) >= max(220, len(quote) + 80)
+    )
+
+
+def _has_baseline_support(quote: str, combined: str) -> bool:
+    return bool(re.search(r"\b(baseline|benchmark)\b", quote, re.I)) and bool(
+        re.search(
+            r"\b(table|experiment\w*|evaluat\w*|compar\w*|reproduc\w*|implement\w*|"
+            r"performance|accuracy|error|metric|result\w*)\b",
+            combined,
+            re.I,
+        )
+    )
+
+
+def _has_explicit_positive_support(quote: str, combined: str) -> bool:
+    if _limitation_downgrade_reason(combined):
+        return False
+    return bool(
+        re.search(
+            r"\b(effective|accurate|robust|valuable|significant|important|promising|"
+            r"novel|strong|superior|outperform\w*|improv\w*|high[- ]precision|"
+            r"high[- ]accuracy|state[- ]of[- ]the[- ]art)\b|"
+            r"(有效|准确|鲁棒|重要|显著|优越|领先|高精度|有价值)",
+            quote or "",
+            re.I,
         )
     )
 

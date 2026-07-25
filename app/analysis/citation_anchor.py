@@ -57,6 +57,11 @@ def normalize_text(value: str) -> str:
         .decode("ascii")
     )
     ascii_text = ascii_text.replace("-\n", "").replace("\n", " ")
+    ascii_text = re.sub(
+        r"(?<![A-Za-z])(?:[A-Za-z][ \t]+){2,}[A-Za-z](?![A-Za-z])",
+        lambda match: re.sub(r"[ \t]+", "", match.group(0)),
+        ascii_text,
+    )
     return " ".join(re.sub(r"[^a-zA-Z0-9]+", " ", ascii_text.lower()).split())
 
 
@@ -100,6 +105,8 @@ def find_target_reference_anchor(
     best_score = 0.0
     for marker, entry_text, start, end in entries:
         normalized_entry = normalize_text(entry_text)
+        compact_entry = normalized_entry.replace(" ", "")
+        compact_title = normalized_title.replace(" ", "")
         score = 0.0
         method = ""
         if normalized_doi and normalized_doi in normalized_entry:
@@ -107,6 +114,9 @@ def find_target_reference_anchor(
             method = "doi_exact"
         elif normalized_title and normalized_title in normalized_entry:
             score = 0.98
+            method = "title_exact"
+        elif len(compact_title) >= 8 and compact_title in compact_entry:
+            score = 0.96
             method = "title_exact"
         else:
             title_overlap = _token_overlap(normalized_entry, normalized_title)
@@ -247,17 +257,27 @@ def extract_alias_contexts(
 
 
 def _references_section_start(fulltext: str) -> Optional[int]:
-    match = re.search(r"(?im)^\s*(references|bibliography)\s*$", fulltext or "")
+    match = re.search(
+        r"(?im)^[ \t]*(?:references|bibliography|"
+        r"r[ \t]*e[ \t]*f[ \t]*e[ \t]*r[ \t]*e[ \t]*n[ \t]*c[ \t]*e[ \t]*s)"
+        r"[ \t]*$",
+        fulltext or "",
+    )
     return match.start() if match else None
 
 
 def _extract_reference_entries(references_text: str, offset: int):
-    matches = list(re.finditer(r"(?m)^\s*\[(\d+)\]\s*", references_text))
+    matches = list(
+        re.finditer(
+            r"(?m)(?:^|\f)[ \t]*\[[ \t]*(\d(?:[ \t]*\d)*)[ \t]*\][ \t]*",
+            references_text,
+        )
+    )
     entries = []
     for index, match in enumerate(matches):
         start = match.start()
         end = matches[index + 1].start() if index + 1 < len(matches) else len(references_text)
-        marker = match.group(1)
+        marker = re.sub(r"\s+", "", match.group(1))
         entry_text = references_text[start:end]
         entries.append((marker, entry_text, offset + start, offset + end))
     return entries

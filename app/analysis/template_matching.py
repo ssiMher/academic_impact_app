@@ -7,6 +7,72 @@ from typing import Iterable, List, Optional, Tuple
 from app.models import AnalysisTemplate
 
 
+TEMPLATE_CONTRACTS = {
+    "first_or_pioneering_claim": {
+        "allowed_evidence_types": [
+            "first_or_pioneering_claim",
+            "first_or_seminal_claim",
+        ],
+        "strict_rules": [
+            "requires an explicit first, pioneering, earliest, or seminal expression in body text",
+            "the expression must modify the target paper anchor",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
+    "first_or_seminal_claim": {
+        "allowed_evidence_types": ["first_or_seminal_claim"],
+        "strict_rules": [
+            "requires an explicit first, pioneering, earliest, or seminal expression in body text",
+            "the expression must modify the target paper anchor",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
+    "detailed_comparison": {
+        "allowed_evidence_types": [
+            "detailed_comparison",
+            "performance_comparison",
+        ],
+        "strict_rules": [
+            "requires a substantive multi-sentence or metric-backed comparison",
+            "a passing compared-with phrase is insufficient",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
+    "baseline_or_benchmark": {
+        "allowed_evidence_types": [
+            "baseline_or_benchmark",
+            "performance_comparison",
+        ],
+        "strict_rules": [
+            "requires explicit use as a baseline or benchmark",
+            "requires experimental, table, reproduction, or performance-comparison context",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
+    "positive_evaluation": {
+        "allowed_evidence_types": [
+            "positive_evaluation",
+            "capability_recognition",
+            "capability_summary",
+            "method_summary",
+            "rfid_loudspeaker_vibration",
+            "through_wall_eavesdropping",
+        ],
+        "strict_rules": [
+            "requires explicit positive evaluation of the target paper's capability, contribution, effect, or value",
+            "a capability description alone is insufficient without evaluative language",
+            "limitation feedback and ordinary related work are not positive evaluation",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
+}
+
+
 def load_json_list(value: str) -> List[str]:
     if not value:
         return []
@@ -71,6 +137,7 @@ def match_template_terms(template: AnalysisTemplate, text: str) -> Tuple[List[st
 def template_snapshot(template: AnalysisTemplate) -> dict:
     """Return a prompt/report safe template snapshot."""
     rules = _load_json_object(template.scoring_rules_json)
+    contract = TEMPLATE_CONTRACTS.get(template.template_type, {})
     return {
         "template_id": template.id,
         "name": template.name,
@@ -81,12 +148,25 @@ def template_snapshot(template: AnalysisTemplate) -> dict:
         "negative_keywords": load_json_list(template.negative_keywords_json),
         "required_patterns": load_json_list(template.required_evidence_patterns_json),
         "allowed_evidence_types": rules.get("allowed_evidence_types")
+        or contract.get("allowed_evidence_types")
         or load_json_list(template.target_aspects_json),
-        "strict_rules": rules.get("strict_rules") or [],
+        "strict_rules": rules.get("strict_rules")
+        or contract.get("strict_rules")
+        or [],
         "min_citation_text_chars": int(rules.get("min_citation_chars", 0) or 0),
         "min_citation_text_words": int(rules.get("min_citation_words", 0) or 0),
-        "require_target_marker": bool(rules.get("require_target_marker", False)),
-        "allow_grouped_citation": bool(rules.get("allow_grouped_citation", False)),
+        "require_target_marker": bool(
+            rules.get(
+                "require_target_marker",
+                contract.get("require_target_marker", False),
+            )
+        ),
+        "allow_grouped_citation": bool(
+            rules.get(
+                "allow_grouped_citation",
+                contract.get("allow_grouped_citation", False),
+            )
+        ),
         "auto_include": bool(rules.get("auto_include_in_report", False)),
         "instruction_text": template.prompt_fragment or "",
         "scoring_rules": rules,
@@ -171,11 +251,43 @@ def _evaluate_single_template(
     target_reference_marker: str,
     cited_paper_title: str,
 ) -> dict:
-    if template.template_type in {"first_or_seminal_claim", "first_or_pioneering_claim"}:
+    is_template_direct_finding = bool(finding_payload.get("claim_type"))
+    if template.template_type in {
+        "first_or_seminal_claim",
+        "first_or_pioneering_claim",
+    }:
         return _evaluate_first_pioneering_template(
             template,
+            finding_payload=finding_payload,
             citation_text=citation_text,
             combined_text=combined_text,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
+    if is_template_direct_finding and template.template_type == "detailed_comparison":
+        return _evaluate_detailed_comparison_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
+            evidence_context=evidence_context,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
+    if is_template_direct_finding and template.template_type == "baseline_or_benchmark":
+        return _evaluate_baseline_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
+            evidence_context=evidence_context,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
+    if is_template_direct_finding and template.template_type == "positive_evaluation":
+        return _evaluate_positive_evaluation_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
+            evidence_context=evidence_context,
             target_reference_marker=target_reference_marker,
             cited_paper_title=cited_paper_title,
         )
@@ -200,7 +312,7 @@ def _evaluate_configured_template(
     target_reference_marker: str,
     cited_paper_title: str,
 ) -> dict:
-    rules = _load_json_object(template.scoring_rules_json)
+    rules = _effective_rules(template)
     user_defined = (
         rules.get("template_origin") == "user_defined"
         or template.name.startswith("custom_")
@@ -315,12 +427,20 @@ def _evaluate_configured_template(
 def _evaluate_first_pioneering_template(
     template: AnalysisTemplate,
     *,
+    finding_payload: dict,
     citation_text: str,
     combined_text: str,
     target_reference_marker: str,
     cited_paper_title: str,
 ) -> dict:
     body = citation_text or ""
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=body,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
     matched = _matched_terms(
         _normalize(body),
         [
@@ -343,8 +463,10 @@ def _evaluate_first_pioneering_template(
         target_reference_marker=target_reference_marker,
         cited_paper_title=cited_paper_title,
     )
-    satisfied = bool(matched) and scope_ok
-    if not matched:
+    satisfied = not guard_failure and bool(matched) and scope_ok
+    if guard_failure:
+        failure = guard_failure
+    elif not matched:
         failure = "no explicit first/pioneering expression in body text"
     elif not scope_ok:
         failure = scope_reason
@@ -363,6 +485,241 @@ def _evaluate_first_pioneering_template(
         "template_failure_reason": failure,
         "matched_terms": matched,
         "match_score": 30.0 if satisfied else 0.0,
+    }
+
+
+def _evaluate_detailed_comparison_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    evidence_context: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=citation_text,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
+    text = f"{citation_text} {evidence_context}"
+    has_comparison = bool(re.search(r"\b(compar\w*|versus|vs\.?|relative\s+to)\b", text, re.I))
+    has_detail = bool(
+        re.search(
+            r"\b(table|experiment\w*|performance|accuracy|error|latency|throughput|"
+            r"metric|result\w*|outperform\w*|higher|lower|faster|slower|whereas|however)\b|%",
+            text,
+            re.I,
+        )
+    )
+    sentence_count = len(
+        [part for part in re.split(r"(?<=[.!?])\s+|[\r\n]+", text) if part.strip()]
+    )
+    claim_type = str(finding_payload.get("claim_type") or "")
+    type_ok = claim_type in {"detailed_comparison", "performance_comparison"}
+    satisfied = (
+        not guard_failure
+        and type_ok
+        and has_comparison
+        and has_detail
+        and (sentence_count >= 2 or len(evidence_context or "") >= 220)
+    )
+    if guard_failure:
+        failure = guard_failure
+    elif not type_ok:
+        failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
+    elif not has_comparison:
+        failure = "no explicit comparison expression in body text"
+    elif not has_detail or (sentence_count < 2 and len(evidence_context or "") < 220):
+        failure = "comparison is too brief or lacks concrete method/performance detail"
+    else:
+        failure = ""
+    return _template_evaluation(
+        template,
+        satisfied=satisfied,
+        reason="target-anchored substantive comparison with concrete details",
+        failure=failure,
+        matched_terms=["comparison", "concrete comparison detail"] if satisfied else [],
+    )
+
+
+def _evaluate_baseline_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    evidence_context: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=citation_text,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
+    text = f"{citation_text} {evidence_context}"
+    has_baseline = bool(re.search(r"\b(baseline|benchmark)\b", text, re.I))
+    has_evaluation = bool(
+        re.search(
+            r"\b(table|experiment\w*|evaluat\w*|compar\w*|reproduc\w*|implement\w*|"
+            r"performance|accuracy|error|metric|result\w*)\b",
+            text,
+            re.I,
+        )
+    )
+    claim_type = str(finding_payload.get("claim_type") or "")
+    type_ok = claim_type in {"baseline_or_benchmark", "performance_comparison"}
+    satisfied = not guard_failure and type_ok and has_baseline and has_evaluation
+    if guard_failure:
+        failure = guard_failure
+    elif not type_ok:
+        failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
+    elif not has_baseline:
+        failure = "target paper is not explicitly used as a baseline or benchmark"
+    elif not has_evaluation:
+        failure = "baseline mention lacks experimental or performance-comparison context"
+    else:
+        failure = ""
+    return _template_evaluation(
+        template,
+        satisfied=satisfied,
+        reason="target paper is explicitly used as an evaluated baseline or benchmark",
+        failure=failure,
+        matched_terms=["baseline or benchmark", "evaluation context"] if satisfied else [],
+    )
+
+
+def _evaluate_positive_evaluation_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    evidence_context: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=citation_text,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
+    text = f"{citation_text} {evidence_context}"
+    claim_type = str(finding_payload.get("claim_type") or "")
+    allowed_types = set(
+        TEMPLATE_CONTRACTS["positive_evaluation"]["allowed_evidence_types"]
+    )
+    has_positive_language = bool(
+        re.search(
+            r"\b(effective|accurate|robust|valuable|significant|important|promising|"
+            r"novel|strong|superior|outperform\w*|improv\w*|high[- ]precision|"
+            r"high[- ]accuracy|state[- ]of[- ]the[- ]art)\b|"
+            r"(有效|准确|鲁棒|重要|显著|优越|领先|高精度|有价值)",
+            text,
+            re.I,
+        )
+    )
+    has_limitation = bool(
+        re.search(
+            r"\b(limitation|limited|less practical|impractical|drawback|weakness|"
+            r"insufficient|not practical|requires pre-installing)\b|"
+            r"(局限|不足|受限|不实用)",
+            text,
+            re.I,
+        )
+    )
+    type_ok = claim_type in allowed_types
+    satisfied = (
+        not guard_failure
+        and type_ok
+        and has_positive_language
+        and not has_limitation
+    )
+    if guard_failure:
+        failure = guard_failure
+    elif not type_ok:
+        failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
+    elif has_limitation:
+        failure = "limitation feedback cannot satisfy positive evaluation"
+    elif not has_positive_language:
+        failure = "no explicit positive evaluation of capability, contribution, effect, or value"
+    else:
+        failure = ""
+    return _template_evaluation(
+        template,
+        satisfied=satisfied,
+        reason="explicit target-anchored positive evaluation in body text",
+        failure=failure,
+        matched_terms=["explicit positive evaluation"] if satisfied else [],
+    )
+
+
+def _effective_rules(template: AnalysisTemplate) -> dict:
+    rules = _load_json_object(template.scoring_rules_json)
+    contract = TEMPLATE_CONTRACTS.get(template.template_type, {})
+    effective = dict(contract)
+    effective.update(rules)
+    if (
+        not effective.get("allowed_evidence_types")
+        and effective.get("template_origin") != "user_defined"
+    ):
+        effective["allowed_evidence_types"] = load_json_list(
+            template.target_aspects_json
+        )
+    return effective
+
+
+def _strict_template_guard(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> str:
+    rules = _effective_rules(template)
+    if not citation_text.strip():
+        return "no citation_text body evidence"
+    if str(finding_payload.get("reference_match_status") or "") == "mismatch":
+        return "reference mismatch"
+    if _looks_like_title_or_reference_only(citation_text, cited_paper_title):
+        return "title-only or reference-only evidence does not satisfy the template"
+    if bool(rules.get("require_target_marker", False)) and not _has_target_anchor(
+        citation_text,
+        target_reference_marker,
+        cited_paper_title,
+    ):
+        return "citation_text does not anchor to target paper"
+    if _is_grouped_citation(citation_text, target_reference_marker) and not bool(
+        rules.get("allow_grouped_citation", False)
+    ):
+        return "grouped citation is not allowed by this template"
+    return ""
+
+
+def _template_evaluation(
+    template: AnalysisTemplate,
+    *,
+    satisfied: bool,
+    reason: str,
+    failure: str,
+    matched_terms: List[str],
+) -> dict:
+    return {
+        "template_id": template.id,
+        "template_name": template.description or template.name,
+        "template_type": template.template_type,
+        "template_satisfied": satisfied,
+        "template_match_reason": reason if satisfied else "",
+        "template_failure_reason": failure,
+        "matched_terms": matched_terms,
+        "match_score": 30.0 if satisfied else 0.0,
+        "auto_include_in_report": False,
     }
 
 

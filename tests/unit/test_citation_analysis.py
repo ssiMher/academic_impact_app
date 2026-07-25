@@ -236,6 +236,42 @@ def test_reference_anchor_handles_moire_variants():
     assert anchor.reference_marker_text == "[15]"
 
 
+def test_reference_anchor_handles_spaced_heading_marker_and_title():
+    text = (
+        "Body text cites the target [23].\n\n"
+        "R E F E R E N C E S\n"
+        "[ 2 3 ] A. Author, T a r g e t P a p e r: A Precise Method.\n"
+    )
+
+    anchor = find_target_reference_anchor(
+        text,
+        "Target Paper: A Precise Method",
+    )
+
+    assert anchor is not None
+    assert anchor.reference_marker == "23"
+    assert "[ 2 3 ]" in anchor.reference_entry_text
+
+
+def test_reference_anchor_prefers_exact_doi_with_spaced_marker():
+    text = (
+        "Body text cites the target [41].\n\n"
+        "References\n"
+        "[ 4 1 ] A. Author, A line-wrapped title,\n"
+        "continued on the next line. doi:10.1145/1234.5678\n"
+    )
+
+    anchor = find_target_reference_anchor(
+        text,
+        "A Different Display Title",
+        cited_doi="10.1145/1234.5678",
+    )
+
+    assert anchor is not None
+    assert anchor.reference_marker == "41"
+    assert anchor.match_method == "doi_exact"
+
+
 def test_citation_text_has_exact_marker():
     assert citation_text_has_target_anchor("The method in [15] is effective.", "15") is True
 

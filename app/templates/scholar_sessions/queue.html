@@ -46,9 +46,15 @@
     {% set task_success_message = "分析完成，" %}
     {% set task_success_label = "查看强证据" %}
     {% set task_summary_labels = [
+      ("current_run_result_count", "本次结果"),
       ("analyzed_count", "分析成功"),
-      ("skipped", "已跳过"),
-      ("failed_item_count", "失败")
+      ("failed_item_count", "本次失败"),
+      ("parsed_evidence_count", "解析证据"),
+      ("include_evidence_count", "推荐纳入"),
+      ("review_evidence_count", "候选复核"),
+      ("exclude_evidence_count", "排除"),
+      ("strong_evidence_count", "强证据"),
+      ("filtered_findings_count", "过滤证据")
     ] %}
     {% include "components/task_progress.html" %}
   {% endif %}

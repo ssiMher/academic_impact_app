@@ -47,17 +47,21 @@ class TemplateDirectEvidence(BaseModel):
     recommendation: Literal["include", "review", "exclude"]
     claim_type: Literal[
         "submm_precision_claim",
-    "capability_recognition",
-    "through_wall_eavesdropping",
-    "rfid_loudspeaker_vibration",
+        "capability_recognition",
+        "through_wall_eavesdropping",
+        "rfid_loudspeaker_vibration",
         "method_use",
         "performance_comparison",
         "custom_template_evidence",
         "method_summary",
         "capability_summary",
+        "first_or_seminal_claim",
+        "detailed_comparison",
+        "baseline_or_benchmark",
+        "positive_evaluation",
         "limitation_feedback",
-    "ordinary_reference",
-    "false_positive",
+        "ordinary_reference",
+        "false_positive",
     ]
     evidence_quote: str
     evidence_context: str = ""

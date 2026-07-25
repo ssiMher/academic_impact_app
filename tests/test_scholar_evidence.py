@@ -4802,3 +4802,255 @@ def test_template_direct_failure_records_error_message(db_session_factory, tmp_p
     assert result.status == "failed"
     assert result.error_message
     assert parsed["error"] == "provider_schema_error"
+
+
+def _enable_direct_builtin(db, session_id, template_type):
+    service = TemplateService(db)
+    builtin = next(
+        template
+        for template in service.list_builtin_templates()
+        if template.template_type == template_type
+    )
+    return service.enable_template(session_id=session_id, template_id=builtin.id)
+
+
+def test_template_direct_canonical_claim_and_matched_template_are_persisted(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Target Paper [23] was the first work to recover speech by sensing "
+        "speaker vibrations."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "发现明确首次评价。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "first_or_seminal_claim",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "正文明确将 first 作用于目标论文。",
+                    "copy_ready_zh": "后续论文明确称目标论文为首次工作。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=quote + "\n\nReferences\n[23] A. Author. Target Paper.",
+        )
+        enabled = _enable_direct_builtin(
+            db, session_id, "first_or_seminal_claim"
+        )
+        enabled_id = enabled.id
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+
+    assert evidence["claim_type"] == "first_or_seminal_claim"
+    assert evidence["recommendation"] == "include"
+    assert evidence["matched_template_ids"] == [enabled_id]
+    assert evidence["matched_template_types"] == ["first_or_seminal_claim"]
+    assert evidence["template_satisfied"] is True
+
+
+def test_template_direct_preserves_distinct_evidence_locations_and_multiple_templates(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    first_quote = "Target Paper [23] was the first work to solve this task."
+    positive_quote = (
+        "Target Paper [23] provides an effective and robust solution with "
+        "significantly higher accuracy."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "发现两个不同引用语境。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "first_or_seminal_claim",
+                    "evidence_quote": first_quote,
+                    "evidence_context": first_quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "首次评价。",
+                    "copy_ready_zh": "首次评价证据。",
+                    "confidence": "high",
+                },
+                {
+                    "recommendation": "include",
+                    "claim_type": "positive_evaluation",
+                    "evidence_quote": positive_quote,
+                    "evidence_context": positive_quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "明确正向评价。",
+                    "copy_ready_zh": "正向评价证据。",
+                    "confidence": "high",
+                },
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                first_quote
+                + "\n\n"
+                + positive_quote
+                + "\n\nReferences\n[23] A. Author. Target Paper."
+            ),
+        )
+        first = _enable_direct_builtin(
+            db, session_id, "first_or_seminal_claim"
+        )
+        positive = _enable_direct_builtin(
+            db, session_id, "positive_evaluation"
+        )
+        first_id = first.id
+        positive_id = positive.id
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidences = json.loads(result.parsed_result_json)["evidences"]
+
+    assert len(evidences) == 2
+    assert evidences[0]["matched_template_ids"] == [first_id]
+    assert evidences[1]["matched_template_ids"] == [positive_id]
+    assert {item["claim_type"] for item in evidences} == {
+        "first_or_seminal_claim",
+        "positive_evaluation",
+    }
+
+
+def test_template_direct_filter_reasons_are_structured_and_aggregated(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = "Target Paper is listed among related work [22], [23]."
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "仅发现成组普通引用。",
+            "evidences": [
+                {
+                    "recommendation": "exclude",
+                    "claim_type": "ordinary_reference",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "普通 related-work 成组引用。",
+                    "copy_ready_zh": "不建议纳入。",
+                    "confidence": "low",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=quote + "\n\nReferences\n[22] Other Paper.\n[23] A. Author. Target Paper.",
+        )
+        _enable_direct_builtin(db, session_id, "positive_evaluation")
+        summary = ScholarFulltextService(db).analyze_queue_items(
+            session_id=session_id,
+            queue_item_ids=[item_id],
+            analysis_scope="fulltext_template_direct",
+        )
+        result = db.query(FulltextAnalysisResult).order_by(
+            FulltextAnalysisResult.id.desc()
+        ).first()
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        diagnostics = json.loads(result.candidate_spans_json)
+        debug_row = ScholarFulltextService(db).list_analysis_debug_rows(
+            session_id
+        )[0]
+
+    assert evidence["original_recommendation"] == "exclude"
+    assert evidence["final_recommendation"] == "exclude"
+    assert evidence["matched_template_ids"] == []
+    assert "ordinary_reference" in evidence["failure_reason_codes"]
+    assert "grouped_citation_not_allowed" in evidence["failure_reason_codes"]
+    assert summary["filtered_findings_count"] == 1
+    assert summary["filter_reason_distribution"]["ordinary_reference"] == 1
+    assert diagnostics["filter_reason_distribution"]["grouped_citation_not_allowed"] == 1
+    assert debug_row["filter_reason_distribution"]["ordinary_reference"] == 1
+
+
+def test_template_direct_summary_counts_only_current_run_results(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    provider = CapturingTemplateDirectProvider(template_direct_payload())
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                "Target Paper is discussed as a capability source [23].\n\n"
+                "References\n[23] Target Paper. doi:10.1145/target"
+            ),
+        )
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        db.add(
+            FulltextAnalysisResult(
+                scholar_session_id=session_id,
+                queue_item_id=item_id,
+                citation_edge_id=item.citation_edge_id,
+                analysis_scope="fulltext_anchor_direct",
+                status="succeeded",
+                parsed_result_json=json.dumps({"findings": []}),
+                candidate_spans_json=json.dumps({}),
+            )
+        )
+        db.commit()
+        summary = ScholarFulltextService(db).analyze_queue_items(
+            session_id=session_id,
+            queue_item_ids=[item_id],
+            analysis_scope="fulltext_template_direct",
+        )
+
+    assert summary["current_run_result_count"] == 1
+    assert summary["current_run_succeeded_count"] == 1
+    assert summary["current_run_failed_count"] == 0
+    assert summary["session_fulltext_result_count"] == 2
+    assert summary["fulltext_result_count"] == 1
