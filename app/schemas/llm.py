@@ -75,6 +75,14 @@ class TemplateDirectEvidence(BaseModel):
     template_failure_reason: Optional[str] = None
     mention_type: str = ""
     stance: str = ""
+    surrounding_context: str = ""
+    citation_markers: List[str] = Field(default_factory=list)
+    claimed_target_marker: str = ""
+    attribution_scope: str = ""
+    grouped_or_single: str = ""
+    semantic_relation: str = ""
+    model_confidence: Optional[float] = None
+    candidate_reason: str = ""
 
 
 class TemplateDirectAnalysisResult(BaseModel):

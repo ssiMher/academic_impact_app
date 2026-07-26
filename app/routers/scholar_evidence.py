@@ -69,6 +69,7 @@ def scholar_evidence_page(
         None,
     )
     pdf_summary = service.queue_pdf_summary(session_id)
+    direct_candidate_layers = service.latest_direct_candidate_layers(session_id)
     return templates.TemplateResponse(
         request,
         "scholar_sessions/evidence.html",
@@ -82,6 +83,7 @@ def scholar_evidence_page(
             "analysis_diagnostics": analysis_diagnostics,
             "latest_successful_analysis": latest_successful_analysis,
             "pdf_summary": pdf_summary,
+            "direct_candidate_layers": direct_candidate_layers,
         },
     )
 

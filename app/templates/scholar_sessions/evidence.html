@@ -137,4 +137,48 @@
       <a class="button button-secondary" href="/scholar-sessions/{{ session_id }}/evidence?view={{ view }}&mode=debug">展开调试信息</a>
     {% endif %}
   {% endif %}
+
+  {% if direct_candidate_layers.result_id %}
+    <section class="card direct-candidate-layers">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">本次全文候选漏斗</div>
+          <h2>候选证据层</h2>
+          <p>StrongEvidence 标准未放宽。候选层说明正文事实为何尚未成为强证据。</p>
+        </div>
+        <span class="badge">Result {{ direct_candidate_layers.result_id }}</span>
+      </div>
+      <div class="stat-grid">
+        {{ stat_card("强证据", direct_candidate_layers.counts.strong) }}
+        {{ stat_card("候选复核", direct_candidate_layers.counts.review) }}
+        {{ stat_card("排除", direct_candidate_layers.counts.excluded) }}
+      </div>
+      {% if direct_candidate_layers.review %}
+        <h3>候选复核</h3>
+        {% for candidate in direct_candidate_layers.review %}
+          <article class="formal-evidence-card">
+            <p><strong>{{ candidate.claim_type }}</strong> · {{ candidate.reference_marker or "引用编号未解析" }}</p>
+            <blockquote>{{ candidate.evidence_quote }}</blockquote>
+            <p><strong>未成为强证据的原因：</strong>{{ candidate.missing_dimension }}</p>
+            {% if candidate.template_failure_reason %}
+              <p class="muted">{{ candidate.template_failure_reason }}</p>
+            {% endif %}
+            <p class="muted">结构化原因：{{ candidate.filter_reason_codes|join(", ") }}</p>
+          </article>
+        {% endfor %}
+      {% endif %}
+      {% if direct_candidate_layers.excluded %}
+        <details>
+          <summary>查看排除候选（{{ direct_candidate_layers.counts.excluded }}）</summary>
+          {% for candidate in direct_candidate_layers.excluded[:20] %}
+            <article class="formal-evidence-card">
+              <p><strong>{{ candidate.claim_type }}</strong> · {{ candidate.reference_marker or "引用编号未解析" }}</p>
+              <blockquote>{{ candidate.evidence_quote }}</blockquote>
+              <p><strong>排除原因：</strong>{{ candidate.missing_dimension or candidate.filter_reason_codes|join(", ") }}</p>
+            </article>
+          {% endfor %}
+        </details>
+      {% endif %}
+    </section>
+  {% endif %}
 {% endblock %}

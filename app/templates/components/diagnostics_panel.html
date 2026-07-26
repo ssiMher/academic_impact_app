@@ -30,6 +30,11 @@
             <div><dt>状态</dt><dd>{{ diagnostic.status }}</dd></div>
             <div><dt>LLM 发现数量</dt><dd>{{ diagnostic.llm_findings_count }}</dd></div>
             <div><dt>解析正文证据</dt><dd>{{ diagnostic.parsed_evidence_count }}</dd></div>
+            <div><dt>抽取候选</dt><dd>{{ diagnostic.extracted_candidate_count }}</dd></div>
+            <div><dt>引用已对齐候选</dt><dd>{{ diagnostic.aligned_candidate_count }}</dd></div>
+            <div><dt>引用未解析候选</dt><dd>{{ diagnostic.unresolved_candidate_count }}</dd></div>
+            <div><dt>模板可评估候选</dt><dd>{{ diagnostic.template_eligible_candidate_count }}</dd></div>
+            <div><dt>模板已命中候选</dt><dd>{{ diagnostic.template_matched_candidate_count }}</dd></div>
             <div><dt>推荐纳入</dt><dd>{{ diagnostic.include_evidence_count }}</dd></div>
             <div><dt>候选复核</dt><dd>{{ diagnostic.review_evidence_count }}</dd></div>
             <div><dt>排除证据</dt><dd>{{ diagnostic.exclude_evidence_count }}</dd></div>

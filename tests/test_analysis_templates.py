@@ -6,7 +6,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.analysis.prompt_builder import build_citation_analysis_prompt
+from app.analysis.prompt_builder import (
+    build_citation_analysis_prompt,
+    build_fulltext_template_direct_prompt,
+)
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
@@ -1372,6 +1375,72 @@ def test_positive_evaluation_requires_explicit_targeted_praise(
     assert "grouped citation" in grouped["template_failure_reason"]
     assert limitation["matched_template_ids"] == []
     assert "limitation feedback" in limitation["template_failure_reason"]
+
+
+def test_method_or_capability_summary_template_requires_target_specific_body_claim(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        template = TemplateService(db).create_custom_template(
+            session_id=session_id,
+            template_name="方法或能力概述",
+            natural_language_goal="识别正文对目标论文方法、机制或能力的具体概述。",
+            template_type="method_or_capability_summary",
+            require_target_marker=True,
+            allow_grouped_citation=False,
+        )
+        positive = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="capability_summary",
+            quote=(
+                "Wang et al. [26] proposed a moving label detection mechanism "
+                "that uses collision signals to improve time efficiency."
+            ),
+            marker="[26]",
+            target_title="Target Paper",
+        )
+        grouped = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="capability_summary",
+            quote=(
+                "Prior systems [25], [26] proposed several sensing mechanisms."
+            ),
+            marker="[26]",
+            target_title="Target Paper",
+        )
+        reference_only = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="capability_summary",
+            quote="References [26] Wang et al. Target Paper. Journal, 2021.",
+            marker="[26]",
+            target_title="Target Paper",
+        )
+
+    assert positive["matched_template_ids"] == [template.id]
+    assert grouped["matched_template_ids"] == []
+    assert "grouped citation" in grouped["template_failure_reason"]
+    assert reference_only["matched_template_ids"] == []
+    assert "reference-only" in reference_only["template_failure_reason"]
+
+
+def test_fulltext_template_direct_prompt_requests_high_recall_candidates():
+    prompt = build_fulltext_template_direct_prompt(
+        citing_paper_title="Citing Paper",
+        cited_paper_title="Target Paper",
+        full_text="Body text.",
+        template_prompt_fragments=[],
+    )
+
+    assert "Return every potentially target-related body-text candidate" in prompt
+    assert "The recommendation is provisional" in prompt
+    assert '"candidate_reason"' in prompt
+    assert '"citation_markers"' in prompt
+    assert "Do not omit a candidate merely because it does not satisfy an active template" in prompt
 
 
 def test_positive_evaluation_accepts_safe_named_method_anchor_inheritance(

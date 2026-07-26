@@ -133,6 +133,14 @@ class ScholarFulltextService:
             "include_evidence_count": 0,
             "review_evidence_count": 0,
             "exclude_evidence_count": 0,
+            "extracted_candidate_count": 0,
+            "aligned_candidate_count": 0,
+            "unresolved_candidate_count": 0,
+            "template_eligible_candidate_count": 0,
+            "template_matched_candidate_count": 0,
+            "final_include_count": 0,
+            "final_review_count": 0,
+            "final_exclude_count": 0,
             "warnings": [],
         }
         if progress_callback is not None:
@@ -325,6 +333,7 @@ class ScholarFulltextService:
                         extract_target_reference_contexts(
                             extracted_text,
                             reference_anchor.reference_marker,
+                            max_contexts=50,
                         )
                         if reference_anchor
                         else []
@@ -406,6 +415,9 @@ class ScholarFulltextService:
                     reference_entries_by_marker=reference_entries_by_marker(extracted_text),
                     compact_fallback=compact_fallback,
                     original_fulltext_chars=original_fulltext_chars,
+                    target_reference_context_count=len(
+                        target_reference_contexts
+                    ),
                     task_id=task_id,
                 )
         else:
@@ -861,6 +873,7 @@ class ScholarFulltextService:
         reference_entries_by_marker: Dict[str, str],
         compact_fallback: bool,
         original_fulltext_chars: int,
+        target_reference_context_count: int,
         task_id: Optional[int],
     ) -> FulltextAnalysisResult:
         try:
@@ -962,6 +975,7 @@ class ScholarFulltextService:
                 reference_anchor.match_score if reference_anchor else 0.0
             ),
             "template_direct_evidence_count": len(evidences),
+            "target_reference_context_count": target_reference_context_count,
             "llm_findings_count": evidence_counts["parsed_evidence_count"],
             **evidence_counts,
             "include_count": evidence_counts["include_evidence_count"],
@@ -1063,7 +1077,34 @@ class ScholarFulltextService:
         active_templates: List,
     ) -> dict:
         if not active_templates:
-            return payload
+            normalized = dict(payload)
+            normalized["evidences"] = [
+                {
+                    **evidence,
+                    "matched_template_ids": [],
+                    "matched_template_names": [],
+                    "matched_template_types": [],
+                    "template_satisfied": False,
+                    "template_match_reason": "",
+                    "template_failure_reason": "no active template covers this candidate",
+                    "template_evaluations": [],
+                    "final_recommendation": str(
+                        evidence.get("recommendation") or "review"
+                    ),
+                    "final_claim_type": str(
+                        evidence.get("claim_type") or "ordinary_reference"
+                    ),
+                    "filter_reason_codes": direct_evidence_failure_reason_codes(
+                        evidence
+                    ),
+                    "failure_reason_codes": direct_evidence_failure_reason_codes(
+                        evidence
+                    ),
+                }
+                for evidence in payload.get("evidences", []) or []
+                if isinstance(evidence, dict)
+            ]
+            return normalized
         template_service = TemplateService(self.db)
         target_marker = str(payload.get("target_reference_marker") or "")
         normalized = dict(payload)
@@ -1130,6 +1171,7 @@ class ScholarFulltextService:
                     "detailed_comparison",
                     "baseline_or_benchmark",
                     "positive_evaluation",
+                    "method_or_capability_summary",
                 }
             }
             canonical_claim_type = self._canonical_direct_template_claim_type(
@@ -1172,6 +1214,7 @@ class ScholarFulltextService:
             ("detailed_comparison", {"detailed_comparison"}),
             ("baseline_or_benchmark", {"baseline_or_benchmark"}),
             ("positive_evaluation", {"positive_evaluation"}),
+            ("custom_template_evidence", {"method_or_capability_summary"}),
         )
         for claim_type, matching_types in priorities:
             if template_types & matching_types:
@@ -1193,7 +1236,9 @@ class ScholarFulltextService:
             for index, context in enumerate(target_reference_contexts, start=1):
                 heading = getattr(context, "section_heading", "") or ""
                 text = getattr(context, "context_text", "") or ""
-                context_lines.append(f"[Context {index}] {heading}\n{text}")
+                context_lines.append(
+                    f"[Context {index}] {heading}\n{text[:1800]}"
+                )
             sections.append(("TARGET_REFERENCE_CONTEXTS", "\n\n".join(context_lines)))
         if reference_anchor is not None:
             sections.append(
@@ -1758,6 +1803,102 @@ class ScholarFulltextService:
             filters=filters,
             pagination=pagination,
         )
+
+    def latest_direct_candidate_layers(
+        self,
+        session_id: int,
+    ) -> Dict[str, object]:
+        result = self.db.scalar(
+            select(FulltextAnalysisResult)
+            .where(
+                FulltextAnalysisResult.scholar_session_id == session_id,
+                FulltextAnalysisResult.analysis_scope
+                == "fulltext_template_direct",
+                FulltextAnalysisResult.status == "succeeded",
+            )
+            .order_by(
+                FulltextAnalysisResult.created_at.desc(),
+                FulltextAnalysisResult.id.desc(),
+            )
+            .limit(1)
+        )
+        layers: Dict[str, object] = {
+            "result_id": None,
+            "strong": [],
+            "review": [],
+            "excluded": [],
+            "counts": {
+                "strong": 0,
+                "review": 0,
+                "excluded": 0,
+            },
+        }
+        if result is None:
+            return layers
+        payload = self._load_json(result.parsed_result_json)
+        rows = [
+            self._direct_candidate_view_row(evidence)
+            for evidence in payload.get("evidences", []) or []
+            if isinstance(evidence, dict)
+        ]
+        for row in rows:
+            recommendation = str(row["recommendation"])
+            key = (
+                "strong"
+                if recommendation == "include"
+                else "review"
+                if recommendation == "review"
+                else "excluded"
+            )
+            layers[key].append(row)
+        layers["result_id"] = result.id
+        layers["counts"] = {
+            key: len(layers[key])
+            for key in ("strong", "review", "excluded")
+        }
+        return layers
+
+    def _direct_candidate_view_row(self, evidence: dict) -> Dict[str, object]:
+        reason_codes = direct_evidence_failure_reason_codes(evidence)
+        alignment = self._direct_reference_status(evidence)
+        if alignment != "matched":
+            missing_dimension = "引用对齐未完成"
+        elif evidence.get("grouped_citation"):
+            missing_dimension = "成组引用无法单独归因"
+        elif not evidence.get("matched_template_ids"):
+            missing_dimension = "当前启用模板未覆盖或未满足"
+        elif evidence.get("template_satisfied") is not True:
+            missing_dimension = "模板严格条件未满足"
+        else:
+            missing_dimension = ""
+        return {
+            "recommendation": self._final_direct_recommendation(evidence),
+            "claim_type": str(
+                evidence.get("final_claim_type")
+                or evidence.get("claim_type")
+                or "ordinary_reference"
+            ),
+            "evidence_quote": str(evidence.get("evidence_quote") or ""),
+            "evidence_context": str(
+                evidence.get("evidence_context")
+                or evidence.get("surrounding_context")
+                or ""
+            ),
+            "reference_marker": str(
+                evidence.get("evidence_reference_marker")
+                or evidence.get("target_reference_marker")
+                or ""
+            ),
+            "reference_alignment_status": alignment or "unresolved",
+            "matched_template_names": list(
+                evidence.get("matched_template_names") or []
+            ),
+            "template_failure_reason": str(
+                evidence.get("template_failure_reason") or ""
+            ),
+            "filter_reason_codes": reason_codes,
+            "missing_dimension": missing_dimension,
+        }
 
     def list_analysis_diagnostics(self, session_id: int) -> List[Dict[str, object]]:
         statement = (
@@ -2486,31 +2627,92 @@ class ScholarFulltextService:
         )
         if not isinstance(evidences, list):
             evidences = []
+        valid_evidences = [
+            evidence for evidence in evidences if isinstance(evidence, dict)
+        ]
         include_count = sum(
             1
-            for evidence in evidences
-            if isinstance(evidence, dict)
-            and evidence.get("recommendation") == "include"
+            for evidence in valid_evidences
+            if self._final_direct_recommendation(evidence) == "include"
+        )
+        aligned_count = sum(
+            1
+            for evidence in valid_evidences
+            if self._direct_reference_status(evidence) == "matched"
+        )
+        unresolved_count = sum(
+            1
+            for evidence in valid_evidences
+            if self._direct_reference_status(evidence) in {"", "unresolved", "unknown"}
+        )
+        eligible_count = sum(
+            1 for evidence in valid_evidences if self._is_template_eligible_candidate(evidence)
+        )
+        matched_count = sum(
+            1
+            for evidence in valid_evidences
+            if evidence.get("template_satisfied") is True
+            and bool(evidence.get("matched_template_ids"))
+        )
+        review_count = sum(
+            1
+            for evidence in valid_evidences
+            if self._final_direct_recommendation(evidence) == "review"
+        )
+        exclude_count = sum(
+            1
+            for evidence in valid_evidences
+            if self._final_direct_recommendation(evidence) == "exclude"
         )
         return {
-            "parsed_evidence_count": len(
-                [evidence for evidence in evidences if isinstance(evidence, dict)]
-            ),
+            "parsed_evidence_count": len(valid_evidences),
             "include_evidence_count": include_count,
-            "review_evidence_count": sum(
-                1
-                for evidence in evidences
-                if isinstance(evidence, dict)
-                and evidence.get("recommendation") == "review"
-            ),
-            "exclude_evidence_count": sum(
-                1
-                for evidence in evidences
-                if isinstance(evidence, dict)
-                and evidence.get("recommendation") == "exclude"
-            ),
+            "review_evidence_count": review_count,
+            "exclude_evidence_count": exclude_count,
             "generated_strong_evidence_count": include_count,
+            "extracted_candidate_count": len(valid_evidences),
+            "aligned_candidate_count": aligned_count,
+            "unresolved_candidate_count": unresolved_count,
+            "template_eligible_candidate_count": eligible_count,
+            "template_matched_candidate_count": matched_count,
+            "final_include_count": include_count,
+            "final_review_count": review_count,
+            "final_exclude_count": exclude_count,
         }
+
+    def _final_direct_recommendation(self, evidence: dict) -> str:
+        return str(
+            evidence.get("final_recommendation")
+            or evidence.get("recommendation")
+            or ""
+        )
+
+    def _direct_reference_status(self, evidence: dict) -> str:
+        return str(
+            evidence.get("reference_alignment_status")
+            or evidence.get("reference_match_status")
+            or ""
+        ).lower()
+
+    def _is_template_eligible_candidate(self, evidence: dict) -> bool:
+        if self._direct_reference_status(evidence) != "matched":
+            return False
+        if evidence.get("grouped_citation"):
+            return False
+        if evidence.get("reference_attribution_conflict"):
+            return False
+        if str(evidence.get("target_anchor_status") or "") == "missing":
+            return False
+        reason_codes = set(direct_evidence_failure_reason_codes(evidence))
+        return not bool(
+            reason_codes
+            & {
+                "reference_mismatch",
+                "target_marker_missing",
+                "grouped_citation_not_allowed",
+                "reference_only",
+            }
+        )
 
     def _direct_persistence_counts(
         self,

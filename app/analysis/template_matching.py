@@ -70,6 +70,20 @@ TEMPLATE_CONTRACTS = {
         "require_target_marker": True,
         "allow_grouped_citation": False,
     },
+    "method_or_capability_summary": {
+        "allowed_evidence_types": [
+            "method_summary",
+            "capability_summary",
+            "method_use",
+            "capability_recognition",
+        ],
+        "strict_rules": [
+            "requires a concrete body-text description of the target paper's method, mechanism, capability, or contribution",
+            "plain listing, reference-only evidence, and unattributable grouped citation do not satisfy the template",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
 }
 
 
@@ -291,6 +305,18 @@ def _evaluate_single_template(
             target_reference_marker=target_reference_marker,
             cited_paper_title=cited_paper_title,
         )
+    if (
+        is_template_direct_finding
+        and template.template_type == "method_or_capability_summary"
+    ):
+        return _evaluate_method_or_capability_summary_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
+            evidence_context=evidence_context,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
     return _evaluate_configured_template(
         template,
         finding_payload,
@@ -299,6 +325,70 @@ def _evaluate_single_template(
         combined_text=combined_text,
         target_reference_marker=target_reference_marker,
         cited_paper_title=cited_paper_title,
+    )
+
+
+def _evaluate_method_or_capability_summary_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    evidence_context: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=citation_text,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
+    if guard_failure:
+        return _template_evaluation(
+            template,
+            satisfied=False,
+            reason="",
+            failure=guard_failure,
+            matched_terms=[],
+        )
+    claim_type = str(finding_payload.get("claim_type") or "")
+    allowed_types = set(
+        _effective_rules(template).get("allowed_evidence_types") or []
+    )
+    if claim_type not in allowed_types:
+        return _template_evaluation(
+            template,
+            satisfied=False,
+            reason="",
+            failure=f"evidence type {claim_type} is not allowed by the template",
+            matched_terms=[],
+        )
+    combined = f"{citation_text} {evidence_context}".strip()
+    if _is_weak_related_work(finding_payload, citation_text) and not _has_substantive_action(
+        combined
+    ):
+        return _template_evaluation(
+            template,
+            satisfied=False,
+            reason="",
+            failure="plain related work without a substantive target-specific claim",
+            matched_terms=[],
+        )
+    if not _has_method_or_capability_statement(combined):
+        return _template_evaluation(
+            template,
+            satisfied=False,
+            reason="",
+            failure="no concrete method, mechanism, capability, or contribution statement",
+            matched_terms=[],
+        )
+    return _template_evaluation(
+        template,
+        satisfied=True,
+        reason="target-anchored body text concretely describes the paper's method, mechanism, or capability",
+        failure="",
+        matched_terms=[claim_type],
     )
 
 
@@ -664,6 +754,14 @@ def _effective_rules(template: AnalysisTemplate) -> dict:
     contract = TEMPLATE_CONTRACTS.get(template.template_type, {})
     effective = dict(contract)
     effective.update(rules)
+    if not effective.get("allowed_evidence_types") and contract.get(
+        "allowed_evidence_types"
+    ):
+        effective["allowed_evidence_types"] = list(
+            contract["allowed_evidence_types"]
+        )
+    if not effective.get("strict_rules") and contract.get("strict_rules"):
+        effective["strict_rules"] = list(contract["strict_rules"])
     if (
         not effective.get("allowed_evidence_types")
         and effective.get("template_origin") != "user_defined"
@@ -845,6 +943,26 @@ def _has_substantive_action(citation_text: str) -> bool:
             r"\b(achiev\w*|demonstrat\w*|detect\w*|measur\w*|captur\w*|enable\w*|use[sd]?|using|adopt\w*|extend\w*|compar\w*|outperform\w*|improv\w*|reconstruct\w*)\b",
             citation_text or "",
             flags=re.I,
+        )
+    )
+
+
+def _has_method_or_capability_statement(text: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(propos\w*|present\w*|introduc\w*|develop\w*|design\w*|"
+            r"utiliz\w*|use[sd]?|using|achiev\w*|enable\w*|detect\w*|"
+            r"measur\w*|implement\w*|extend\w*|improv\w*|captur\w*|"
+            r"reconstruct\w*)\b",
+            text or "",
+            flags=re.I,
+        )
+        or bool(
+            re.search(
+                r"(提出|介绍|设计|实现|采用|使用|扩展|改进|检测|测量|捕获|重建)"
+                r".{0,40}(方法|机制|系统|能力|贡献|模型)",
+                text or "",
+            )
         )
     )
 

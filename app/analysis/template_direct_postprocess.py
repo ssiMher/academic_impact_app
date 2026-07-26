@@ -327,6 +327,24 @@ def _normalize_evidence(
         item["confidence"] = _lower_confidence(item.get("confidence"))
         reasons.append("reference_attribution_conflict")
 
+    if (
+        original_recommendation == "exclude"
+        and item.get("recommendation") == "exclude"
+        and item.get("claim_type") in {"method_summary", "capability_summary"}
+        and reference_match_status == "matched"
+        and has_effective_target_anchor
+        and not grouped_citation
+        and not title_or_reference_only
+        and not attribution_conflict
+        and not limitation_reason
+    ):
+        # The model recommendation is provisional in template-direct mode.
+        # Preserve a safely aligned factual summary for deterministic template
+        # evaluation instead of discarding it before active templates run.
+        item["recommendation"] = "review"
+        item["confidence"] = _lower_confidence(item.get("confidence"))
+        reasons.append("candidate_requires_matching_template")
+
     if item.get("recommendation") == "include" and item.get("claim_type") not in INCLUDE_CLAIM_TYPES:
         item["recommendation"] = "review"
         item["confidence"] = _lower_confidence(item.get("confidence"))
@@ -735,6 +753,8 @@ def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
         add("grouped_citation_not_allowed")
     if "evidence type" in text and "not allowed" in text:
         add("evidence_type_not_allowed")
+    if "candidate_requires_matching_template" in text:
+        add("candidate_requires_matching_template")
     if "no explicit first/pioneering" in text:
         add("no_first_or_pioneering_expression")
     if "no required evidence pattern" in text:

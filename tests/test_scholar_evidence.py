@@ -28,6 +28,7 @@ from app.providers.errors import ProviderException
 from app.repositories.scholar_queue_repo import ScholarQueueRepository
 from app.repositories.task_repo import TaskRepository
 from app.analysis.prompt_builder import build_fulltext_direct_prompt
+from app.schemas.llm import TemplateDirectEvidence
 from app.analysis.template_direct_postprocess import (
     postprocess_template_direct_payload,
 )
@@ -5610,6 +5611,271 @@ def test_template_direct_preserves_distinct_evidence_locations_and_multiple_temp
         "first_or_seminal_claim",
         "positive_evaluation",
     }
+
+
+def test_template_direct_candidate_schema_preserves_high_recall_fact_fields():
+    evidence = TemplateDirectEvidence.model_validate(
+        {
+            "recommendation": "exclude",
+            "claim_type": "capability_summary",
+            "evidence_quote": "Wang et al. [26] proposed a detection mechanism.",
+            "evidence_context": "The related paragraph provides more detail.",
+            "why_this_judgment_zh": "正文概述目标方法。",
+            "copy_ready_zh": "候选证据，需确定性校验。",
+            "confidence": "medium",
+            "surrounding_context": "Full surrounding paragraph.",
+            "citation_markers": ["[26]"],
+            "claimed_target_marker": "[26]",
+            "attribution_scope": "single_target",
+            "grouped_or_single": "single",
+            "semantic_relation": "method_summary",
+            "model_confidence": 0.72,
+            "candidate_reason": "Describes the target method.",
+        }
+    )
+
+    payload = evidence.model_dump()
+    assert payload["citation_markers"] == ["[26]"]
+    assert payload["candidate_reason"] == "Describes the target method."
+    assert payload["model_confidence"] == 0.72
+
+
+def test_aligned_capability_summary_without_template_becomes_review_candidate(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Wang et al. [26] proposed a moving label detection mechanism that "
+        "uses collision signals to improve time efficiency."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[26]",
+            "target_reference_entry": "[26] G. Hopper. Target Paper.",
+            "paper_level_summary_zh": "发现方法能力概述。",
+            "evidences": [
+                {
+                    "recommendation": "exclude",
+                    "claim_type": "capability_summary",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[26] G. Hopper. Target Paper.",
+                    "why_this_judgment_zh": "正文具体概述目标方法。",
+                    "copy_ready_zh": "该条作为候选复核。",
+                    "confidence": "medium",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[26] G. Hopper. Target Paper.",
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        payload = json.loads(result.parsed_result_json)
+        evidence = payload["evidences"][0]
+        counts = ScholarFulltextService(db)._direct_evidence_counts(payload)
+
+    assert evidence["final_recommendation"] == "review"
+    assert evidence["template_satisfied"] is False
+    assert "candidate_requires_matching_template" in evidence["filter_reason_codes"]
+    assert counts["extracted_candidate_count"] == 1
+    assert counts["aligned_candidate_count"] == 1
+    assert counts["template_eligible_candidate_count"] == 1
+    assert counts["template_matched_candidate_count"] == 0
+    assert counts["final_review_count"] == 1
+
+
+def test_enabled_method_capability_template_can_promote_aligned_candidate(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Wang et al. [26] proposed a moving label detection mechanism that "
+        "uses collision signals to improve time efficiency."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[26]",
+            "target_reference_entry": "[26] G. Hopper. Target Paper.",
+            "paper_level_summary_zh": "发现方法能力概述。",
+            "evidences": [
+                {
+                    "recommendation": "exclude",
+                    "claim_type": "capability_summary",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[26] G. Hopper. Target Paper.",
+                    "why_this_judgment_zh": "正文具体概述目标方法。",
+                    "copy_ready_zh": "后续论文具体概述了目标论文提出的机制。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[26] G. Hopper. Target Paper.",
+        )
+        template = TemplateService(db).create_custom_template(
+            session_id=session_id,
+            template_name="方法或能力概述",
+            natural_language_goal="识别正文对目标论文方法、机制或能力的具体概述。",
+            template_type="method_or_capability_summary",
+            require_target_marker=True,
+            allow_grouped_citation=False,
+        )
+        template_id = template.id
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .all()
+        )
+
+    assert evidence["matched_template_ids"] == [template_id]
+    assert evidence["template_satisfied"] is True
+    assert evidence["final_recommendation"] == "include"
+    assert len(strong) == 1
+
+
+def test_method_capability_template_does_not_promote_grouped_candidate(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = "Prior systems [25], [26] proposed several sensing mechanisms."
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[26]",
+            "target_reference_entry": "[26] G. Hopper. Target Paper.",
+            "paper_level_summary_zh": "成组引用。",
+            "evidences": [
+                {
+                    "recommendation": "exclude",
+                    "claim_type": "capability_summary",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[26] G. Hopper. Target Paper.",
+                    "why_this_judgment_zh": "无法单独归因。",
+                    "copy_ready_zh": "不纳入。",
+                    "confidence": "low",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                f"{quote}\n\nReferences\n"
+                "[25] A. Author. Other Work.\n"
+                "[26] G. Hopper. Target Paper."
+            ),
+        )
+        TemplateService(db).create_custom_template(
+            session_id=session_id,
+            template_name="方法或能力概述",
+            natural_language_goal="识别目标论文的方法或能力概述。",
+            template_type="method_or_capability_summary",
+            require_target_marker=True,
+            allow_grouped_citation=False,
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+
+    assert evidence["final_recommendation"] != "include"
+    assert evidence["template_satisfied"] is False
+    assert strong_count == 0
+
+
+def test_evidence_page_shows_review_candidate_layer_and_missing_dimension(
+    client,
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Wang et al. [26] proposed a moving label detection mechanism that "
+        "uses collision signals."
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[26]",
+                "target_reference_entry": "[26] G. Hopper. Target Paper.",
+                "paper_level_summary_zh": "方法概述候选。",
+                "evidences": [
+                    {
+                        "recommendation": "exclude",
+                        "claim_type": "capability_summary",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": "[26] G. Hopper. Target Paper.",
+                        "why_this_judgment_zh": "正文具体概述目标方法。",
+                        "copy_ready_zh": "候选复核。",
+                        "confidence": "medium",
+                    }
+                ],
+            }
+        ),
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[26] G. Hopper. Target Paper.",
+        )
+        ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+
+    response = client.get(f"/scholar-sessions/{session_id}/evidence")
+
+    assert response.status_code == 200
+    assert "候选证据层" in response.text
+    assert "当前启用模板未覆盖或未满足" in response.text
+    assert quote in response.text
 
 
 def test_template_direct_filter_reasons_are_structured_and_aggregated(

@@ -334,6 +334,43 @@ def test_reference_anchor_prefers_exact_doi_with_spaced_marker():
     assert anchor.match_method == "doi_exact"
 
 
+def test_reference_anchor_resolves_target_at_marker_26():
+    text = (
+        "Wang et al. [26] proposed a moving label detection mechanism.\n\n"
+        "References\n"
+        "[25] A. Author. Other Work. 2020.\n"
+        "[26] G. Hopper. Target Paper: Moving Label Detection. 2021.\n"
+    )
+
+    anchor = find_target_reference_anchor(
+        text,
+        "Target Paper: Moving Label Detection",
+        cited_authors=["Grace Hopper"],
+    )
+
+    assert anchor is not None
+    assert anchor.reference_marker == "26"
+
+
+def test_reference_anchor_does_not_force_marker_26_for_other_paper():
+    text = (
+        "Other work [26] describes a different mechanism.\n"
+        "Target work [27] provides the intended method.\n\n"
+        "References\n"
+        "[26] A. Author. Unrelated Paper. 2020.\n"
+        "[27] G. Hopper. Target Paper: Moving Label Detection. 2021.\n"
+    )
+
+    anchor = find_target_reference_anchor(
+        text,
+        "Target Paper: Moving Label Detection",
+        cited_authors=["Grace Hopper"],
+    )
+
+    assert anchor is not None
+    assert anchor.reference_marker == "27"
+
+
 def test_citation_text_has_exact_marker():
     assert citation_text_has_target_anchor("The method in [15] is effective.", "15") is True
 
@@ -369,6 +406,23 @@ def test_extract_target_reference_context_grouped_marker():
 
     assert contexts
     assert contexts[0].context_type == "grouped_marker"
+
+
+def test_extract_target_reference_contexts_can_recall_more_than_ten_locations():
+    paragraphs = [
+        f"Section {index}\nTarget method [{26}] is discussed at location {index}."
+        for index in range(15)
+    ]
+    text = "\n\n".join(paragraphs) + "\n\nReferences\n[26] G. Hopper. Target Paper."
+
+    contexts = extract_target_reference_contexts(
+        text,
+        "26",
+        window_chars=45,
+        max_contexts=50,
+    )
+
+    assert len(contexts) == 15
 
 
 def test_extract_target_reference_context_range_marker():
