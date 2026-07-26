@@ -18,6 +18,7 @@ from app.models import (
     CitationEdge,
     DeepAnalysisQueueItem,
     FulltextAnalysisResult,
+    HighlightCard,
     PdfAsset,
     Publication,
     ScholarAnalysisSession,
@@ -38,6 +39,9 @@ from app.tasks.task_manager import TaskManager
 from app.tasks.handlers.analyze_scholar_queue import handle_analyze_scholar_queue
 from app.schemas.llm import CitationAnalysisResponse, TemplateDirectAnalysisResult
 from app.services.highlight_card_service import HighlightCardService
+from app.services.template_direct_persistence_service import (
+    TemplateDirectPersistenceService,
+)
 from app.services.template_service import TemplateService
 
 
@@ -5108,12 +5112,352 @@ def test_template_direct_canonical_claim_and_matched_template_are_persisted(
             analysis_scope="fulltext_template_direct",
         )
         evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        persisted = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .one()
+        )
+        card = (
+            db.query(HighlightCard)
+            .filter(HighlightCard.strong_evidence_id == persisted.id)
+            .one()
+        )
 
     assert evidence["claim_type"] == "first_or_seminal_claim"
     assert evidence["recommendation"] == "include"
     assert evidence["matched_template_ids"] == [enabled_id]
     assert evidence["matched_template_types"] == ["first_or_seminal_claim"]
     assert evidence["template_satisfied"] is True
+    assert persisted.queue_item_id == item_id
+    assert persisted.aspect == "first_or_seminal_claim"
+    assert json.loads(persisted.matched_template_ids_json) == [enabled_id]
+    assert card.card_type == "first_or_seminal_claim"
+    assert card.include_in_report is True
+
+
+def test_template_direct_persists_only_final_include_evidence_and_card(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    include_quote = (
+        "Target Paper [23] provides an effective and robust capability."
+    )
+    excluded_quote = "Another method [17] is used for an unrelated equation."
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "一条纳入，一条排除。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "positive_evaluation",
+                    "evidence_quote": include_quote,
+                    "evidence_context": include_quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "正文明确正向评价目标论文。",
+                    "copy_ready_zh": "后续论文明确认可目标论文的能力。",
+                    "confidence": "high",
+                },
+                {
+                    "recommendation": "exclude",
+                    "claim_type": "false_positive",
+                    "evidence_quote": excluded_quote,
+                    "evidence_context": excluded_quote,
+                    "reference_entry": "[17] B. Author. Other Paper.",
+                    "why_this_judgment_zh": "引用编号不属于目标论文。",
+                    "copy_ready_zh": "不纳入。",
+                    "confidence": "high",
+                },
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                f"{include_quote}\n{excluded_quote}\n\nReferences\n"
+                "[17] B. Author. Other Paper.\n"
+                "[23] A. Author. Target Paper."
+            ),
+        )
+        enabled = _enable_direct_builtin(db, session_id, "positive_evaluation")
+        enabled_id = enabled.id
+        summary = ScholarFulltextService(db).analyze_queue_items(
+            session_id=session_id,
+            queue_item_ids=[item_id],
+            analysis_scope="fulltext_template_direct",
+        )
+        result = (
+            db.query(FulltextAnalysisResult)
+            .filter(FulltextAnalysisResult.queue_item_id == item_id)
+            .order_by(FulltextAnalysisResult.id.desc())
+            .first()
+        )
+        persisted = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .all()
+        )
+        cards = (
+            db.query(HighlightCard)
+            .join(
+                StrongEvidence,
+                HighlightCard.strong_evidence_id == StrongEvidence.id,
+            )
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .all()
+        )
+
+    assert summary["generated_strong_evidence_count"] == 1
+    assert summary["persisted_strong_evidence_count"] == 1
+    assert summary["strong_evidence_count"] == 1
+    assert summary["generated_highlight_card_count"] == 1
+    assert summary["persisted_highlight_card_count"] == 1
+    assert len(persisted) == 1
+    assert persisted[0].citation_text == include_quote
+    assert json.loads(persisted[0].matched_template_ids_json) == [enabled_id]
+    assert len(cards) == 1
+
+
+def test_template_direct_persistence_failure_is_not_reported_as_success(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = "Target Paper [23] provides an effective capability."
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "发现正向证据。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "positive_evaluation",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "正文明确认可目标能力。",
+                    "copy_ready_zh": "后续论文明确认可目标能力。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    monkeypatch.setattr(
+        EvidenceService,
+        "upsert_scholar_evidence",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            RuntimeError("simulated insert failure")
+        ),
+    )
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
+        )
+        _enable_direct_builtin(db, session_id, "positive_evaluation")
+        summary = ScholarFulltextService(db).analyze_queue_items(
+            session_id=session_id,
+            queue_item_ids=[item_id],
+            analysis_scope="fulltext_template_direct",
+        )
+        persisted_count = db.query(StrongEvidence).count()
+
+    assert summary["generated_strong_evidence_count"] == 1
+    assert summary["persisted_strong_evidence_count"] == 0
+    assert summary["strong_evidence_count"] == 0
+    assert summary["strong_evidence_persistence_failed_count"] == 1
+    assert summary["warnings"]
+    assert persisted_count == 0
+
+
+def test_template_direct_card_failure_keeps_persisted_evidence(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = "Target Paper [23] provides an effective capability."
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "发现正向证据。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "positive_evaluation",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "正文明确认可目标能力。",
+                    "copy_ready_zh": "后续论文明确认可目标能力。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    monkeypatch.setattr(
+        HighlightCardService,
+        "generate_card_from_evidence",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            RuntimeError("simulated card failure")
+        ),
+    )
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
+        )
+        _enable_direct_builtin(db, session_id, "positive_evaluation")
+        summary = ScholarFulltextService(db).analyze_queue_items(
+            session_id=session_id,
+            queue_item_ids=[item_id],
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence_count = db.query(StrongEvidence).count()
+        card_count = db.query(HighlightCard).count()
+
+    assert summary["persisted_strong_evidence_count"] == 1
+    assert summary["persisted_highlight_card_count"] == 0
+    assert summary["highlight_card_persistence_failed_count"] == 1
+    assert summary["warnings"]
+    assert evidence_count == 1
+    assert card_count == 0
+
+
+def test_template_direct_regeneration_is_idempotent(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = "Target Paper [23] provides an effective capability."
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "发现正向证据。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "positive_evaluation",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "正文明确认可目标能力。",
+                    "copy_ready_zh": "后续论文明确认可目标能力。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
+        )
+        _enable_direct_builtin(db, session_id, "positive_evaluation")
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        service = TemplateDirectPersistenceService(db)
+        first = service.persist(result.id)
+        second = service.persist(result.id)
+        evidence_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+        card_count = (
+            db.query(HighlightCard)
+            .join(
+                StrongEvidence,
+                HighlightCard.strong_evidence_id == StrongEvidence.id,
+            )
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+
+    assert first["persisted_strong_evidence_count"] == 1
+    assert second["persisted_strong_evidence_count"] == 1
+    assert evidence_count == 1
+    assert card_count == 1
+
+
+def test_template_direct_regeneration_preview_does_not_write(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+        )
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        result = FulltextAnalysisResult(
+            scholar_session_id=session_id,
+            queue_item_id=item_id,
+            citation_edge_id=item.citation_edge_id,
+            analysis_scope="fulltext_template_direct",
+            status="succeeded",
+            parsed_result_json=json.dumps(
+                {
+                    "evidences": [
+                        {
+                            "final_recommendation": "include",
+                            "final_claim_type": "positive_evaluation",
+                            "evidence_quote": "Target Paper [23] is effective.",
+                            "reference_alignment_status": "matched",
+                            "matched_template_ids": [89],
+                            "template_satisfied": True,
+                        }
+                    ]
+                }
+            ),
+        )
+        db.add(result)
+        db.commit()
+
+        preview = TemplateDirectPersistenceService(db).preview(result.id)
+        evidence_count = db.query(StrongEvidence).count()
+        card_count = db.query(HighlightCard).count()
+
+    assert preview["applied"] is False
+    assert preview["generated_strong_evidence_count"] == 1
+    assert preview["candidate_evidences"][0]["matched_template_ids"] == [89]
+    assert evidence_count == 0
+    assert card_count == 0
 
 
 def test_result_844_like_evidence_matches_positive_template_and_is_strong(

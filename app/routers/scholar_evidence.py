@@ -60,6 +60,14 @@ def scholar_evidence_page(
     )
     summary = service.evidence_service.quality_summary(session_id)
     analysis_diagnostics = service.list_analysis_diagnostics(session_id)
+    latest_successful_analysis = next(
+        (
+            diagnostic
+            for diagnostic in analysis_diagnostics
+            if diagnostic.get("status") == "succeeded"
+        ),
+        None,
+    )
     pdf_summary = service.queue_pdf_summary(session_id)
     return templates.TemplateResponse(
         request,
@@ -72,6 +80,7 @@ def scholar_evidence_page(
             "formal_evidence_view": formal_evidence_view,
             "summary": summary,
             "analysis_diagnostics": analysis_diagnostics,
+            "latest_successful_analysis": latest_successful_analysis,
             "pdf_summary": pdf_summary,
         },
     )

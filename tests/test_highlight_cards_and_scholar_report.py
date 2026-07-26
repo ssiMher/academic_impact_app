@@ -555,6 +555,91 @@ def test_evidence_page_reuses_formal_report_view_model_or_partial():
     assert shared_partial in report_template
 
 
+def test_evidence_page_reports_include_evidence_persistence_gap(
+    client,
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_template_direct_result(
+            db,
+            tmp_path,
+            recommendation="include",
+        )
+
+    response = client.get(f"/scholar-sessions/{session_id}/evidence")
+
+    assert response.status_code == 200
+    assert "发现可纳入证据，但持久化未完成" in response.text
+    assert "暂无强证据" not in response.text
+
+
+def test_evidence_page_reports_card_generation_gap(
+    client,
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, evidence_id = seed_evidence(db, tmp_path)
+        evidence = db.get(StrongEvidence, evidence_id)
+        result = db.get(FulltextAnalysisResult, evidence.fulltext_result_id)
+        result.analysis_scope = "fulltext_template_direct"
+        result.parsed_result_json = json.dumps(
+            {
+                "evidences": [
+                    {
+                        "recommendation": "include",
+                        "claim_type": evidence.aspect,
+                    }
+                ]
+            }
+        )
+        result.candidate_spans_json = json.dumps(
+            {
+                "generated_strong_evidence_count": 1,
+                "persisted_strong_evidence_count": 1,
+                "persisted_highlight_card_count": 0,
+            }
+        )
+        db.commit()
+
+    response = client.get(f"/scholar-sessions/{session_id}/evidence")
+
+    assert response.status_code == 200
+    assert "强证据已保存，但部分亮点评价卡片生成异常" in response.text
+    assert "formal-evidence-card" in response.text
+
+
+def test_evidence_page_uses_latest_successful_result_for_persistence_status(
+    client,
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, result_id = seed_template_direct_result(
+            db,
+            tmp_path,
+            recommendation="include",
+        )
+        successful = db.get(FulltextAnalysisResult, result_id)
+        failed = FulltextAnalysisResult(
+            scholar_session_id=session_id,
+            queue_item_id=successful.queue_item_id,
+            citation_edge_id=successful.citation_edge_id,
+            analysis_scope="fulltext_template_direct",
+            status="failed",
+            error_message="later failed retry",
+            parsed_result_json="{}",
+        )
+        db.add(failed)
+        db.commit()
+
+    response = client.get(f"/scholar-sessions/{session_id}/evidence")
+
+    assert response.status_code == 200
+    assert "发现可纳入证据，但持久化未完成" in response.text
+
+
 def test_card_citation_text_must_anchor_to_target(db_session_factory, tmp_path):
     with Session(db_session_factory.kw["bind"]) as db:
         session_id, evidence_id = seed_evidence(

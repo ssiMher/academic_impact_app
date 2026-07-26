@@ -1,7 +1,7 @@
 """Lightweight SQLite schema upgrades for local development databases."""
 
 from contextlib import contextmanager
-from typing import Iterator, Mapping, Set, Union
+from typing import Iterator, List, Mapping, Optional, Set, Union
 
 from sqlalchemy import Connection, Engine, text
 
@@ -134,6 +134,13 @@ def upgrade_sqlite_schema(engine_or_connection: Union[Engine, Connection]) -> No
             return
         if _table_exists(connection, "fulltext_analysis_results"):
             _rebuild_fulltext_results_if_needed(connection)
+            # Older upgrades may already have rebuilt the parent while leaving
+            # child FKs pointed at the temporary legacy table.
+            _retarget_sqlite_foreign_keys(
+                connection,
+                from_table="fulltext_analysis_results__legacy_upgrade",
+                to_table="fulltext_analysis_results",
+            )
         for table_name, columns in SQLITE_COLUMN_UPGRADES.items():
             if not _table_exists(connection, table_name):
                 continue
@@ -184,6 +191,156 @@ def _column_info(connection: Connection, table_name: str) -> Mapping[str, Mappin
     return {str(row["name"]): dict(row) for row in rows}
 
 
+def _ordered_column_names(connection: Connection, table_name: str) -> List[str]:
+    rows = connection.execute(text(f"PRAGMA table_info({table_name})")).mappings()
+    return [str(row["name"]) for row in rows]
+
+
+def _quote_identifier(identifier: str) -> str:
+    return '"' + identifier.replace('"', '""') + '"'
+
+
+def _sqlite_master_sql(
+    connection: Connection,
+    *,
+    object_type: str,
+    object_name: str,
+) -> Optional[str]:
+    return connection.execute(
+        text(
+            """
+            SELECT sql
+            FROM sqlite_master
+            WHERE type = :object_type AND name = :object_name
+            """
+        ),
+        {"object_type": object_type, "object_name": object_name},
+    ).scalar_one_or_none()
+
+
+def _sqlite_index_sqls(connection: Connection, table_name: str) -> List[str]:
+    rows = connection.execute(
+        text(
+            """
+            SELECT sql
+            FROM sqlite_master
+            WHERE type = 'index'
+              AND tbl_name = :table_name
+              AND sql IS NOT NULL
+            ORDER BY name
+            """
+        ),
+        {"table_name": table_name},
+    ).scalars()
+    return [sql for sql in rows if sql]
+
+
+def _references_table(table_sql: str, referenced_table: str) -> bool:
+    return (
+        f'REFERENCES "{referenced_table}"' in table_sql
+        or f"REFERENCES {referenced_table}" in table_sql
+    )
+
+
+def _rewrite_referenced_table(
+    table_sql: str,
+    *,
+    from_table: str,
+    to_table: str,
+) -> str:
+    rewritten_sql = table_sql.replace(
+        f'REFERENCES "{from_table}"',
+        f'REFERENCES "{to_table}"',
+    )
+    return rewritten_sql.replace(
+        f"REFERENCES {from_table}",
+        f"REFERENCES {to_table}",
+    )
+
+
+def _retarget_sqlite_foreign_keys(
+    connection: Connection,
+    *,
+    from_table: str,
+    to_table: str,
+) -> None:
+    table_rows = list(
+        connection.execute(
+            text(
+                """
+                SELECT name, sql
+                FROM sqlite_master
+                WHERE type = 'table'
+                  AND name NOT LIKE 'sqlite_%'
+                  AND sql IS NOT NULL
+                ORDER BY name
+                """
+            )
+        ).mappings()
+    )
+
+    for row in table_rows:
+        table_name = str(row["name"])
+        table_sql = str(row["sql"])
+        if table_name in {from_table, to_table} or not _references_table(table_sql, from_table):
+            continue
+        _rebuild_sqlite_table_with_retargeted_foreign_key(
+            connection,
+            table_name=table_name,
+            table_sql=table_sql,
+            from_table=from_table,
+            to_table=to_table,
+        )
+
+
+def _rebuild_sqlite_table_with_retargeted_foreign_key(
+    connection: Connection,
+    *,
+    table_name: str,
+    table_sql: str,
+    from_table: str,
+    to_table: str,
+) -> None:
+    rebuilt_table_name = f"{table_name}__fk_rebuild"
+    rebuilt_table_sql = _rewrite_referenced_table(
+        table_sql,
+        from_table=from_table,
+        to_table=to_table,
+    )
+    index_sqls = _sqlite_index_sqls(connection, table_name)
+    column_names = _ordered_column_names(connection, table_name)
+    quoted_columns = ", ".join(_quote_identifier(column_name) for column_name in column_names)
+
+    legacy_alter_table = int(
+        connection.execute(text("PRAGMA legacy_alter_table")).scalar() or 0
+    )
+    connection.execute(text("PRAGMA legacy_alter_table = ON"))
+    try:
+        connection.execute(
+            text(f"DROP TABLE IF EXISTS {_quote_identifier(rebuilt_table_name)}")
+        )
+        connection.execute(
+            text(
+                f"ALTER TABLE {_quote_identifier(table_name)} "
+                f"RENAME TO {_quote_identifier(rebuilt_table_name)}"
+            )
+        )
+        connection.execute(text(rebuilt_table_sql))
+        connection.execute(
+            text(
+                f"INSERT INTO {_quote_identifier(table_name)} ({quoted_columns}) "
+                f"SELECT {quoted_columns} FROM {_quote_identifier(rebuilt_table_name)}"
+            )
+        )
+        connection.execute(text(f"DROP TABLE {_quote_identifier(rebuilt_table_name)}"))
+        for index_sql in index_sqls:
+            connection.execute(text(index_sql))
+    finally:
+        connection.execute(
+            text(f"PRAGMA legacy_alter_table = {legacy_alter_table}")
+        )
+
+
 def _rebuild_fulltext_results_if_needed(connection: Connection) -> None:
     columns = _column_info(connection, "fulltext_analysis_results")
     citing_paper = columns.get("citing_paper_id")
@@ -225,6 +382,11 @@ def _rebuild_fulltext_results_if_needed(connection: Connection) -> None:
                 f"({column_sql}) SELECT {column_sql} FROM {legacy_table}"
             )
         )
+    _retarget_sqlite_foreign_keys(
+        connection,
+        from_table=legacy_table,
+        to_table="fulltext_analysis_results",
+    )
     connection.execute(text(f"DROP TABLE {legacy_table}"))
 
 

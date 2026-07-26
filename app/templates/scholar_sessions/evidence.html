@@ -60,6 +60,17 @@
   {% endif %}
 
   {% if evidence_items %}
+    {% if latest_successful_analysis and latest_successful_analysis.analysis_scope == "fulltext_template_direct" %}
+      {% if latest_successful_analysis.include_evidence_count > latest_successful_analysis.persisted_strong_evidence_count %}
+        <section class="notice notice-warning">
+          发现可纳入证据，但持久化未完成。请查看任务警告或使用结果再生成工具。
+        </section>
+      {% elif latest_successful_analysis.persisted_strong_evidence_count > latest_successful_analysis.persisted_highlight_card_count %}
+        <section class="notice notice-warning">
+          强证据已保存，但部分亮点评价卡片生成异常；证据仍可在本页查看。
+        </section>
+      {% endif %}
+    {% endif %}
     {% if mode == "formal" %}
       {% for section in formal_evidence_view.sections %}
         <section class="formal-report-section evidence-formal-section">
@@ -84,7 +95,12 @@
     {% endif %}
   {% else %}
     <section class="empty-state">
-      <h2>暂无强证据。</h2>
+      {% if latest_successful_analysis and latest_successful_analysis.analysis_scope == "fulltext_template_direct" and latest_successful_analysis.include_evidence_count > 0 and latest_successful_analysis.persisted_strong_evidence_count == 0 %}
+        <h2>发现可纳入证据，但持久化未完成。</h2>
+        <p>分析结果包含 {{ latest_successful_analysis.include_evidence_count }} 条可纳入证据，但数据库中尚无对应 StrongEvidence。请查看任务警告或运行结果再生成工具。</p>
+      {% else %}
+        <h2>暂无强证据。</h2>
+      {% endif %}
       {% if pdf_summary.total_queue_items and pdf_summary.ready_count == 0 %}
         <p>没有引用论文 PDF 已就绪。请先上传引用论文 PDF。</p>
         <p class="sr-only">No citing paper PDF is ready. Please upload the citing paper PDF.</p>
@@ -98,8 +114,8 @@
       {% elif analysis_diagnostics and analysis_diagnostics[0].schema_error %}
         <p>LLM 输出格式不符合 schema，请查看 raw response 和 schema error。</p>
         <p class="sr-only">The LLM returned output that did not match the expected schema.</p>
-      {% elif analysis_diagnostics and analysis_diagnostics[0].analysis_scope == "fulltext_template_direct" and analysis_diagnostics[0].parsed_evidence_count > 0 and analysis_diagnostics[0].strong_evidence_count == 0 %}
-        <p>发现 {{ analysis_diagnostics[0].parsed_evidence_count }} 条正文证据，但没有证据满足强证据纳入条件。</p>
+      {% elif latest_successful_analysis and latest_successful_analysis.analysis_scope == "fulltext_template_direct" and latest_successful_analysis.parsed_evidence_count > 0 and latest_successful_analysis.include_evidence_count == 0 %}
+        <p>发现 {{ latest_successful_analysis.parsed_evidence_count }} 条正文证据，但没有证据满足强证据纳入条件。</p>
         <p class="sr-only">The LLM found possible citation-related findings, but none passed the strong evidence filters. Check filter reasons below.</p>
       {% elif analysis_diagnostics and analysis_diagnostics[0].analysis_scope != "fulltext_template_direct" and analysis_diagnostics[0].llm_findings_count > 0 and analysis_diagnostics[0].generated_strong_evidence_count == 0 %}
         <p>LLM 找到了可能相关的引用发现，但没有任何一条通过强证据过滤。请查看下方过滤原因。</p>

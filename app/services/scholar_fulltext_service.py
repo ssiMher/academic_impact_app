@@ -50,6 +50,9 @@ from app.repositories.task_repo import TaskRepository
 from app.schemas.llm import CitationAnalysisResponse, LlmCitationAnalysisRequest
 from app.services.evidence_service import EvidenceService
 from app.services.task_service import TaskService
+from app.services.template_direct_persistence_service import (
+    TemplateDirectPersistenceService,
+)
 from app.services.template_service import TemplateService
 from app.tasks.handlers.analyze_citation import MIN_STRONG_EVIDENCE_SCORE
 
@@ -115,6 +118,12 @@ class ScholarFulltextService:
             "current_run_failed_count": 0,
             "session_fulltext_result_count": initial_result_count,
             "strong_evidence_count": 0,
+            "generated_strong_evidence_count": 0,
+            "persisted_strong_evidence_count": 0,
+            "generated_highlight_card_count": 0,
+            "persisted_highlight_card_count": 0,
+            "strong_evidence_persistence_failed_count": 0,
+            "highlight_card_persistence_failed_count": 0,
             "filtered_findings_count": 0,
             "filter_reason_distribution": {},
             "analysis_scope": analysis_scope,
@@ -200,6 +209,19 @@ class ScholarFulltextService:
                     )
                     for key, value in direct_counts.items():
                         summary[key] = int(summary.get(key) or 0) + value
+                    persistence_counts = self._direct_persistence_counts(
+                        analysis_result
+                    )
+                    for key, value in persistence_counts.items():
+                        summary[key] = int(summary.get(key) or 0) + int(value)
+                    candidate_payload = self._load_json(
+                        analysis_result.candidate_spans_json
+                    )
+                    summary["warnings"].extend(
+                        str(warning)
+                        for warning in candidate_payload.get("warnings", [])
+                        if warning
+                    )
                     summary["llm_findings_count"] = summary["parsed_evidence_count"]
                     parsed_payload = self._load_json(
                         analysis_result.parsed_result_json
@@ -989,6 +1011,8 @@ class ScholarFulltextService:
         )
         self.db.commit()
         self.db.refresh(fulltext_result)
+        TemplateDirectPersistenceService(self.db).persist(fulltext_result.id)
+        self.db.refresh(fulltext_result)
         return fulltext_result
 
     def _direct_template_failure_distribution(self, evidences: List[dict]) -> Dict[str, int]:
@@ -1754,11 +1778,12 @@ class ScholarFulltextService:
             )
             generated_count = self._diagnostic_count(parsed_payload, candidate_payload, "generated_strong_evidence_count")
             if is_template_direct:
-                generated_count = direct_counts["strong_evidence_count"]
+                generated_count = direct_counts["generated_strong_evidence_count"]
             elif generated_count == 0:
                 generated_count = self.db.query(StrongEvidence).filter_by(
                     fulltext_result_id=result.id
                 ).count()
+            persistence_counts = self._direct_persistence_counts(result)
             filtered_count = self._diagnostic_count(parsed_payload, candidate_payload, "filtered_findings_count")
             if filtered_count == 0:
                 filtered_count = max(0, llm_findings_count - generated_count)
@@ -1792,6 +1817,7 @@ class ScholarFulltextService:
                     "llm_findings_count": llm_findings_count,
                     **direct_counts,
                     "generated_strong_evidence_count": generated_count,
+                    **persistence_counts,
                     "filtered_findings_count": filtered_count,
                     "filter_reason_distribution": filter_reason_distribution,
                     "finding_diagnostics": self._diagnostic_value(
@@ -1875,10 +1901,13 @@ class ScholarFulltextService:
             ) if isinstance(parsed_payload, dict) else []
             direct_counts = self._direct_evidence_counts(parsed_payload)
             generated_count = self._diagnostic_count(parsed_payload, candidate_payload, "generated_strong_evidence_count")
-            if generated_count == 0:
+            if result.analysis_scope == "fulltext_template_direct":
+                generated_count = direct_counts["generated_strong_evidence_count"]
+            elif generated_count == 0:
                 generated_count = self.db.query(StrongEvidence).filter_by(
                     fulltext_result_id=result.id
                 ).count()
+            persistence_counts = self._direct_persistence_counts(result)
             filtered_count = self._diagnostic_count(parsed_payload, candidate_payload, "filtered_findings_count")
             if filtered_count == 0:
                 filtered_count = max(0, len(findings) - generated_count)
@@ -1916,6 +1945,7 @@ class ScholarFulltextService:
                     "candidate_spans_count": self._candidate_spans_count(candidate_payload),
                     "parsed_findings_preview": self._preview_findings(findings),
                     "generated_strong_evidence_count": generated_count,
+                    **persistence_counts,
                     "filtered_findings_count": filtered_count,
                     "filter_reason_distribution": filter_reason_distribution,
                     "finding_diagnostics": self._diagnostic_value(candidate_payload, "finding_diagnostics", []),
@@ -2479,7 +2509,46 @@ class ScholarFulltextService:
                 if isinstance(evidence, dict)
                 and evidence.get("recommendation") == "exclude"
             ),
-            "strong_evidence_count": include_count,
+            "generated_strong_evidence_count": include_count,
+        }
+
+    def _direct_persistence_counts(
+        self,
+        result: FulltextAnalysisResult,
+    ) -> Dict[str, int]:
+        candidate_payload = self._load_json(result.candidate_spans_json)
+        persisted_evidence_count = (
+            self.db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+        from app.models import HighlightCard
+
+        persisted_card_count = (
+            self.db.query(HighlightCard)
+            .join(
+                StrongEvidence,
+                HighlightCard.strong_evidence_id == StrongEvidence.id,
+            )
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+        return {
+            "strong_evidence_count": persisted_evidence_count,
+            "persisted_strong_evidence_count": persisted_evidence_count,
+            "generated_highlight_card_count": int(
+                candidate_payload.get("generated_highlight_card_count")
+                or persisted_evidence_count
+            ),
+            "persisted_highlight_card_count": persisted_card_count,
+            "strong_evidence_persistence_failed_count": int(
+                candidate_payload.get("strong_evidence_persistence_failed_count")
+                or 0
+            ),
+            "highlight_card_persistence_failed_count": int(
+                candidate_payload.get("highlight_card_persistence_failed_count")
+                or 0
+            ),
         }
 
     def _diagnostic_value(self, candidate_payload, key: str, default=None):

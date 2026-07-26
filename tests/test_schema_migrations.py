@@ -36,6 +36,30 @@ def _column_info(engine, table_name):
         }
 
 
+def _foreign_key_rows(engine, table_name):
+    with engine.connect() as connection:
+        return [
+            dict(row)
+            for row in connection.execute(
+                text(f"PRAGMA foreign_key_list({table_name})")
+            ).mappings()
+        ]
+
+
+def _sqlite_master_sql(engine, object_type, object_name):
+    with engine.connect() as connection:
+        return connection.execute(
+            text(
+                """
+                SELECT sql
+                FROM sqlite_master
+                WHERE type = :object_type AND name = :object_name
+                """
+            ),
+            {"object_type": object_type, "object_name": object_name},
+        ).scalar_one_or_none()
+
+
 def _create_old_fulltext_results_table(engine):
     with engine.begin() as connection:
         connection.execute(
@@ -437,6 +461,181 @@ def test_upgrade_is_idempotent():
     second_columns = _column_names(engine, "strong_evidences")
 
     assert second_columns == first_columns
+
+
+def test_upgrade_retargets_strong_evidence_foreign_key_after_fulltext_rebuild():
+    engine = _sqlite_engine()
+    import app.models  # noqa: F401
+
+    Base.metadata.create_all(bind=engine)
+
+    with engine.begin() as connection:
+        connection.execute(
+            text(
+                """
+                CREATE INDEX ix_strong_evidences_review_status
+                ON strong_evidences(review_status)
+                """
+            )
+        )
+
+    _replace_fulltext_results_with_old_schema(engine)
+
+    with engine.begin() as connection:
+        connection.execute(
+            text(
+                """
+                INSERT INTO fulltext_analysis_results (
+                    id,
+                    citing_paper_id,
+                    analysis_scope,
+                    status,
+                    parsed_result_json
+                )
+                VALUES (
+                    1,
+                    123,
+                    'citation_context',
+                    'succeeded',
+                    '{"findings":[]}'
+                )
+                """
+            )
+        )
+        connection.execute(
+            text(
+                """
+                INSERT INTO strong_evidences (
+                    id,
+                    fulltext_result_id,
+                    is_self_citation,
+                    review_status,
+                    created_at,
+                    updated_at
+                )
+                VALUES (
+                    7,
+                    1,
+                    0,
+                    'approved',
+                    '2026-07-26 00:00:00',
+                    '2026-07-26 00:00:00'
+                )
+                """
+            )
+        )
+
+    upgrade_sqlite_schema(engine)
+
+    foreign_keys = _foreign_key_rows(engine, "strong_evidences")
+    fulltext_foreign_keys = [
+        row for row in foreign_keys if row["from"] == "fulltext_result_id"
+    ]
+    assert fulltext_foreign_keys == [
+        {
+            "id": fulltext_foreign_keys[0]["id"],
+            "seq": fulltext_foreign_keys[0]["seq"],
+            "table": "fulltext_analysis_results",
+            "from": "fulltext_result_id",
+            "to": "id",
+            "on_update": "NO ACTION",
+            "on_delete": "NO ACTION",
+            "match": "NONE",
+        }
+    ]
+    assert {
+        row["table"]
+        for row in foreign_keys
+        if row["from"] in {"scholar_session_id", "queue_item_id", "citation_edge_id"}
+    } == {
+        "scholar_analysis_sessions",
+        "deep_analysis_queue_items",
+        "citation_edges",
+    }
+
+    with engine.connect() as connection:
+        foreign_key_check = connection.execute(
+            text("PRAGMA foreign_key_check")
+        ).fetchall()
+        row = connection.execute(
+            text(
+                """
+                SELECT id, fulltext_result_id, review_status, created_at, updated_at
+                FROM strong_evidences
+                WHERE id = 7
+                """
+            )
+        ).mappings().one()
+
+    assert foreign_key_check == []
+    assert row["id"] == 7
+    assert row["fulltext_result_id"] == 1
+    assert row["review_status"] == "approved"
+    assert str(row["created_at"]) == "2026-07-26 00:00:00"
+    assert str(row["updated_at"]) == "2026-07-26 00:00:00"
+
+    index_sql = _sqlite_master_sql(engine, "index", "ix_strong_evidences_review_status")
+    assert index_sql is not None
+    assert "ON strong_evidences(review_status)" in index_sql
+
+    strong_evidence_sql = _sqlite_master_sql(engine, "table", "strong_evidences")
+    assert strong_evidence_sql is not None
+    assert "fulltext_analysis_results__legacy_upgrade" not in strong_evidence_sql
+
+    with engine.connect() as connection:
+        legacy_targets = connection.execute(
+            text(
+                """
+                SELECT name
+                FROM sqlite_master
+                WHERE sql LIKE '%fulltext_analysis_results__legacy_upgrade%'
+                """
+            )
+        ).fetchall()
+
+    assert legacy_targets == []
+
+
+def test_upgrade_repairs_already_migrated_legacy_fk_and_preserves_card_fk():
+    engine = _sqlite_engine()
+    import app.models  # noqa: F401
+
+    Base.metadata.create_all(bind=engine)
+    with engine.begin() as connection:
+        connection.execute(text("PRAGMA foreign_keys = OFF"))
+        connection.execute(text("PRAGMA legacy_alter_table = ON"))
+        strong_sql = _sqlite_master_sql(
+            engine,
+            "table",
+            "strong_evidences",
+        ).replace(
+            "REFERENCES fulltext_analysis_results",
+            "REFERENCES fulltext_analysis_results__legacy_upgrade",
+        )
+        connection.execute(text("ALTER TABLE strong_evidences RENAME TO strong_evidences_old"))
+        connection.execute(text(strong_sql))
+        columns = ", ".join(_column_info(engine, "strong_evidences_old"))
+        connection.execute(
+            text(
+                f"INSERT INTO strong_evidences ({columns}) "
+                f"SELECT {columns} FROM strong_evidences_old"
+            )
+        )
+        connection.execute(text("DROP TABLE strong_evidences_old"))
+        connection.execute(text("PRAGMA legacy_alter_table = OFF"))
+
+    upgrade_sqlite_schema(engine)
+
+    strong_fks = _foreign_key_rows(engine, "strong_evidences")
+    card_fks = _foreign_key_rows(engine, "highlight_cards")
+    assert next(
+        row for row in strong_fks if row["from"] == "fulltext_result_id"
+    )["table"] == "fulltext_analysis_results"
+    assert next(
+        row for row in card_fks if row["from"] == "strong_evidence_id"
+    )["table"] == "strong_evidences"
+    with engine.connect() as connection:
+        assert connection.execute(text("PRAGMA foreign_key_check")).fetchall() == []
 
 
 def test_existing_fulltext_data_preserved_after_upgrade():
