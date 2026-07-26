@@ -1219,12 +1219,14 @@ def _evaluate_active_templates(
     marker="[23]",
     target_title="Target Paper",
     reference_match_status="matched",
+    target_anchor_inherited=False,
 ):
     return TemplateService(db).evaluate_finding_templates(
         session_id=session_id,
         finding_payload={
             "claim_type": claim_type,
             "reference_match_status": reference_match_status,
+            "target_anchor_inherited": target_anchor_inherited,
         },
         citation_text=quote,
         evidence_context=context or quote,
@@ -1242,6 +1244,7 @@ def test_first_seminal_template_contract_positive_and_scope_negative(
         enabled = _enable_builtin_for_test(
             db, session_id, "first_or_seminal_claim"
         )
+        enabled_id = enabled.id
         positive = _evaluate_active_templates(
             db,
             session_id=session_id,
@@ -1261,7 +1264,7 @@ def test_first_seminal_template_contract_positive_and_scope_negative(
             ),
         )
 
-    assert positive["matched_template_ids"] == [enabled.id]
+    assert positive["matched_template_ids"] == [enabled_id]
     assert positive["template_satisfied"] is True
     assert negative["matched_template_ids"] == []
     assert negative["template_satisfied"] is False
@@ -1275,6 +1278,7 @@ def test_detailed_comparison_requires_substantive_context(
     with Session(db_session_factory.kw["bind"]) as db:
         session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
         enabled = _enable_builtin_for_test(db, session_id, "detailed_comparison")
+        enabled_id = enabled.id
         positive = _evaluate_active_templates(
             db,
             session_id=session_id,
@@ -1294,7 +1298,7 @@ def test_detailed_comparison_requires_substantive_context(
             quote="Our method is compared with previous work [23].",
         )
 
-    assert positive["matched_template_ids"] == [enabled.id]
+    assert positive["matched_template_ids"] == [enabled_id]
     assert passing_mention["matched_template_ids"] == []
     assert "too brief" in passing_mention["template_failure_reason"]
 
@@ -1308,6 +1312,7 @@ def test_baseline_template_requires_experimental_use(
         enabled = _enable_builtin_for_test(
             db, session_id, "baseline_or_benchmark"
         )
+        enabled_id = enabled.id
         positive = _evaluate_active_templates(
             db,
             session_id=session_id,
@@ -1325,7 +1330,7 @@ def test_baseline_template_requires_experimental_use(
             quote="Related work lists Target Paper [23] as a baseline approach.",
         )
 
-    assert positive["matched_template_ids"] == [enabled.id]
+    assert positive["matched_template_ids"] == [enabled_id]
     assert ordinary["matched_template_ids"] == []
     assert "experimental" in ordinary["template_failure_reason"]
 
@@ -1337,6 +1342,7 @@ def test_positive_evaluation_requires_explicit_targeted_praise(
     with Session(db_session_factory.kw["bind"]) as db:
         session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
         enabled = _enable_builtin_for_test(db, session_id, "positive_evaluation")
+        enabled_id = enabled.id
         positive = _evaluate_active_templates(
             db,
             session_id=session_id,
@@ -1361,11 +1367,39 @@ def test_positive_evaluation_requires_explicit_targeted_praise(
             ),
         )
 
-    assert positive["matched_template_ids"] == [enabled.id]
+    assert positive["matched_template_ids"] == [enabled_id]
     assert grouped["matched_template_ids"] == []
     assert "grouped citation" in grouped["template_failure_reason"]
     assert limitation["matched_template_ids"] == []
     assert "limitation feedback" in limitation["template_failure_reason"]
+
+
+def test_positive_evaluation_accepts_safe_named_method_anchor_inheritance(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, _ = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        enabled = _enable_builtin_for_test(db, session_id, "positive_evaluation")
+        enabled_id = enabled.id
+        result = _evaluate_active_templates(
+            db,
+            session_id=session_id,
+            claim_type="capability_recognition",
+            quote=(
+                "Tag-Bug effectively captures loudspeaker vibrations for "
+                "through-the-wall eavesdropping."
+            ),
+            context=(
+                "Target Paper [23] introduces a method called Tag-Bug. "
+                "Tag-Bug effectively captures loudspeaker vibrations for "
+                "through-the-wall eavesdropping."
+            ),
+            target_anchor_inherited=True,
+        )
+
+    assert result["matched_template_ids"] == [enabled_id]
+    assert result["template_satisfied"] is True
 
 
 def test_multiple_active_templates_can_match_one_evidence(

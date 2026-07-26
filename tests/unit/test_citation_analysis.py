@@ -13,6 +13,8 @@ from app.analysis.citation_anchor import (
     extract_alias_contexts,
     extract_target_reference_contexts,
     find_target_reference_anchor,
+    match_bibliographic_identity,
+    normalize_bibliographic_identity,
 )
 from app.analysis.evidence_highlighting import build_highlight_keywords
 from app.analysis.evidence_scoring import score_finding
@@ -33,6 +35,66 @@ from app.tasks.runner import TaskRunner
 from app.tasks.task_manager import TaskManager
 from app.repositories.task_repo import TaskRepository
 from app.services.task_service import TaskService
+
+
+def test_bibliographic_identity_ignores_reference_marker_and_spacing():
+    target = (
+        "[57] Chuyu Wang, Lei Xie, Yanling Bu, Kai Zhang, Sanglu Lu. "
+        "Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing "
+        "Sub-mm Level Vibration. 2022."
+    )
+    evidence_entry = (
+        "Chuyu Wang, Lei Xie, Yanling Bu, Kai Zhang, Sanglu Lu, "
+        "Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing "
+        "Sub-mm Level Vibration, 2022."
+    )
+
+    result = match_bibliographic_identity(
+        evidence_entry,
+        target_title=(
+            "Thru-the-wall Eavesdropping on Loudspeakers via RFID by "
+            "Capturing Sub-mm Level Vibration"
+        ),
+        target_reference_entry=target,
+        target_authors=["Chuyu Wang", "Lei Xie"],
+        target_year=2022,
+    )
+
+    assert normalize_bibliographic_identity(target).startswith("chuyu wang")
+    assert result.status == "matched"
+    assert result.method == "normalized_title_match"
+
+
+def test_bibliographic_identity_tolerates_pdf_glued_title_and_authors():
+    glued_entry = (
+        "[57] Chuyu Wang, Lei Xie, Yanling Bu,KaiZhang,SangluLu,"
+        "Thru-the-walleavesdroppingonloudspeakers "
+        "viaRFIDbycapturingsub-mmlevelvibration, 2022."
+    )
+
+    result = match_bibliographic_identity(
+        glued_entry,
+        target_title=(
+            "Thru-the-wall Eavesdropping on Loudspeakers via RFID by "
+            "Capturing Sub-mm Level Vibration"
+        ),
+        target_authors=["Chuyu Wang", "Lei Xie"],
+        target_year=2022,
+    )
+
+    assert result.status == "matched"
+    assert result.method == "normalized_title_match"
+
+
+def test_bibliographic_identity_prefers_exact_doi():
+    result = match_bibliographic_identity(
+        "[57] badly extracted title. doi:10.1145/3494975",
+        target_title="A title damaged by PDF extraction",
+        target_doi="https://doi.org/10.1145/3494975",
+    )
+
+    assert result.status == "matched"
+    assert result.method == "exact_doi_match"
 
 
 def test_candidate_span定位_around_target_anchor():

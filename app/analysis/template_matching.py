@@ -616,7 +616,7 @@ def _evaluate_positive_evaluation_template(
     )
     has_positive_language = bool(
         re.search(
-            r"\b(effective|accurate|robust|valuable|significant|important|promising|"
+            r"\b(effective\w*|demonstrat\w*|accurate|robust|valuable|significant|important|promising|"
             r"novel|strong|superior|outperform\w*|improv\w*|high[- ]precision|"
             r"high[- ]accuracy|state[- ]of[- ]the[- ]art)\b|"
             r"(有效|准确|鲁棒|重要|显著|优越|领先|高精度|有价值)",
@@ -689,10 +689,18 @@ def _strict_template_guard(
         return "reference mismatch"
     if _looks_like_title_or_reference_only(citation_text, cited_paper_title):
         return "title-only or reference-only evidence does not satisfy the template"
-    if bool(rules.get("require_target_marker", False)) and not _has_target_anchor(
+    has_direct_anchor = _has_target_anchor(
         citation_text,
         target_reference_marker,
         cited_paper_title,
+    )
+    has_safe_inherited_anchor = bool(
+        finding_payload.get("target_anchor_inherited", False)
+    )
+    if (
+        bool(rules.get("require_target_marker", False))
+        and not has_direct_anchor
+        and not has_safe_inherited_anchor
     ):
         return "citation_text does not anchor to target paper"
     if _is_grouped_citation(citation_text, target_reference_marker) and not bool(

@@ -11,7 +11,10 @@ import re
 import unicodedata
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from app.analysis.citation_anchor import citation_text_has_target_anchor
+from app.analysis.citation_anchor import (
+    citation_text_has_target_anchor,
+    match_bibliographic_identity,
+)
 
 
 INCLUDE_CLAIM_TYPES = {
@@ -57,6 +60,9 @@ def postprocess_template_direct_payload(
     target_reference_marker: str = "",
     target_reference_entry: str = "",
     reference_entries_by_marker: Optional[Dict[str, str]] = None,
+    cited_paper_authors: Optional[List[str]] = None,
+    cited_paper_year: Optional[int] = None,
+    target_reference_resolved: bool = False,
 ) -> Dict[str, Any]:
     """Return a normalized template-direct payload suitable for reporting."""
     normalized = dict(payload or {})
@@ -81,6 +87,9 @@ def postprocess_template_direct_payload(
         target_reference_marker=marker_text,
         target_reference_entry=reference_entry,
         reference_entries_by_marker=reference_entries_by_marker,
+        cited_paper_authors=cited_paper_authors,
+        cited_paper_year=cited_paper_year,
+        target_reference_resolved=target_reference_resolved,
     )
     return normalized
 
@@ -94,6 +103,9 @@ def normalize_direct_evidences_for_report(
     target_reference_marker: str = "",
     target_reference_entry: str = "",
     reference_entries_by_marker: Optional[Dict[str, str]] = None,
+    cited_paper_authors: Optional[List[str]] = None,
+    cited_paper_year: Optional[int] = None,
+    target_reference_resolved: bool = False,
 ) -> List[Dict[str, Any]]:
     """Normalize direct evidences before persistence or report export."""
     marker = _clean_marker(target_reference_marker)
@@ -107,6 +119,9 @@ def normalize_direct_evidences_for_report(
             target_marker_text=marker_text,
             target_reference_entry=target_reference_entry,
             reference_entries_by_marker=reference_entries_by_marker or {},
+            cited_paper_authors=cited_paper_authors or [],
+            cited_paper_year=cited_paper_year,
+            target_reference_resolved=target_reference_resolved,
         )
         for evidence in evidences
         if isinstance(evidence, dict)
@@ -126,14 +141,41 @@ def _normalize_evidence(
     target_marker_text: str,
     target_reference_entry: str,
     reference_entries_by_marker: Dict[str, str],
+    cited_paper_authors: List[str],
+    cited_paper_year: Optional[int],
+    target_reference_resolved: bool,
 ) -> Dict[str, Any]:
     item = dict(evidence)
+    original_claim_type = str(
+        item.get("original_claim_type")
+        or item.get("claim_type")
+        or "ordinary_reference"
+    )
+    original_recommendation = str(
+        item.get("original_recommendation")
+        or item.get("recommendation")
+        or "review"
+    )
+    for generated_key in (
+        "filter_reason",
+        "postprocess_reason",
+        "filter_reason_codes",
+        "failure_reason_codes",
+        "template_failure_reason_codes",
+        "reference_alignment_reason_code",
+        "reference_alignment_method",
+        "reference_alignment_score",
+    ):
+        item.pop(generated_key, None)
+    item["claim_type"] = original_claim_type
+    item["recommendation"] = original_recommendation
     quote = str(item.get("evidence_quote") or "")
     context = str(item.get("evidence_context") or "")
     combined = f"{quote}\n{context}"
-    claim_type = str(item.get("claim_type") or "ordinary_reference")
-    recommendation = str(item.get("recommendation") or "review")
-    item.setdefault("original_recommendation", recommendation)
+    claim_type = original_claim_type
+    recommendation = original_recommendation
+    item["original_recommendation"] = original_recommendation
+    item["original_claim_type"] = original_claim_type
     reason_text = (
         str(item.get("why_this_judgment_zh") or "")
         + "\n"
@@ -145,25 +187,52 @@ def _normalize_evidence(
         context,
         target_marker=target_marker,
     )
+    resolved_marker_entry = reference_entries_by_marker.get(evidence_marker, "")
     evidence_reference_entry_raw = (
-        reference_entries_by_marker.get(evidence_marker)
+        resolved_marker_entry
         or str(item.get("evidence_reference_entry_raw") or "")
+        or str(item.get("reference_entry") or "")
     ).strip()
-    entry_for_matching = evidence_reference_entry_raw or target_reference_entry
-    entry_matches_target = _reference_entry_matches_target(
-        entry_for_matching,
-        cited_paper_title=cited_paper_title,
-        cited_paper_doi=cited_paper_doi,
+    deterministic_entry = resolved_marker_entry or (
+        target_reference_entry
+        if target_reference_resolved and evidence_marker == target_marker
+        else ""
     )
-    target_scope = _target_marker_scope(quote, context, target_marker)
-    quote_markers = _extract_reference_markers(target_scope)
+    entry_for_matching = deterministic_entry or evidence_reference_entry_raw
+    quote_markers = _extract_reference_markers(quote)
+    context_markers = _extract_reference_markers(context)
     quote_has_target_marker = bool(
-        target_marker and citation_text_has_target_anchor(target_scope, target_marker)
+        target_marker and citation_text_has_target_anchor(quote, target_marker)
     )
+    inherited_anchor, inheritance_reason = _safe_context_anchor_inheritance(
+        quote,
+        context,
+        target_marker,
+    )
+    has_effective_target_anchor = quote_has_target_marker or inherited_anchor
+    identity_match = match_bibliographic_identity(
+        entry_for_matching,
+        target_title=cited_paper_title,
+        target_doi=cited_paper_doi,
+        target_reference_entry=target_reference_entry,
+        target_authors=cited_paper_authors,
+        target_year=cited_paper_year,
+        resolver_marker_matched=bool(
+            target_reference_resolved
+            and target_marker
+            and evidence_marker == target_marker
+            and has_effective_target_anchor
+            and resolved_marker_entry
+        ),
+    )
+    entry_matches_target = identity_match.status == "matched"
+    target_scope = _target_marker_scope(quote, context, target_marker)
+    target_scope_markers = _extract_reference_markers(target_scope)
     quote_has_other_marker = bool(
-        target_marker and quote_markers and any(marker != target_marker for marker in quote_markers)
+        quote_has_target_marker
+        and any(marker != target_marker for marker in target_scope_markers)
     )
-    grouped_citation = quote_has_target_marker and quote_has_other_marker
+    grouped_citation = quote_has_other_marker
     title_alias_in_quote = _contains_title_alias(quote, cited_paper_title)
     limitation_reason = _limitation_downgrade_reason(f"{combined}\n{reason_text}")
     body_author = _body_author_for_marker(target_scope, target_marker)
@@ -177,20 +246,20 @@ def _normalize_evidence(
     reasons: List[str] = []
     reference_match_status = "unresolved"
     reference_match_reason = "reference_entry_unresolved"
-    if evidence_reference_entry_raw:
+    if deterministic_entry:
         if entry_matches_target:
             reference_match_status = "matched"
-            reference_match_reason = "reference_entry_matches_target"
+            reference_match_reason = identity_match.reason_code
         else:
             reference_match_status = "mismatch"
-            reference_match_reason = "reference_entry_target_mismatch"
+            reference_match_reason = identity_match.reason_code
 
     inferred_claim_type = _infer_stronger_claim_type(
         claim_type=claim_type,
         quote=quote,
         combined=combined,
         reason_text=reason_text,
-        has_target_marker=quote_has_target_marker,
+        has_target_marker=has_effective_target_anchor,
         reference_match_status=reference_match_status,
         grouped_citation=grouped_citation,
         limitation_reason=limitation_reason,
@@ -209,15 +278,15 @@ def _normalize_evidence(
         item = _exclude(item, reason="cited_other_reference_marker")
         reference_match_status = "mismatch"
         reference_match_reason = "evidence_marker_not_target_marker"
-    elif evidence_reference_entry_raw and not entry_matches_target:
+    elif deterministic_entry and not entry_matches_target:
         item = _exclude(item, reason="reference_entry_target_mismatch")
-    elif not evidence_reference_entry_raw and target_marker and recommendation == "include":
+    elif not deterministic_entry and target_marker and recommendation == "include":
         item["recommendation"] = "review"
         item["confidence"] = _lower_confidence(item.get("confidence"))
         reasons.append("reference_entry_unresolved")
     elif target_marker and quote_markers and not quote_has_target_marker:
         item = _exclude(item, reason="cited_other_reference_marker")
-    elif target_marker and not quote_has_target_marker and not title_alias_in_quote:
+    elif target_marker and not has_effective_target_anchor and not title_alias_in_quote:
         item = _exclude(item, reason="target_anchor_missing")
     elif _looks_like_reference_entry(quote):
         item = _exclude(item, reason="reference_only")
@@ -232,7 +301,7 @@ def _normalize_evidence(
                     claim_type=claim_type,
                     quote=quote,
                     combined=combined,
-                    has_target_marker=quote_has_target_marker,
+                    has_target_marker=has_effective_target_anchor,
                     grouped_citation=grouped_citation,
                     title_alias_in_quote=title_alias_in_quote,
                     reference_match_status=reference_match_status,
@@ -264,13 +333,30 @@ def _normalize_evidence(
         reasons.append("include_claim_type_not_strong")
 
     item["final_recommendation"] = str(item.get("recommendation") or "review")
+    item["final_claim_type"] = str(item.get("claim_type") or claim_type)
     item["target_reference_marker"] = target_marker_text
+    item["resolved_target_marker"] = target_marker_text
     item["evidence_reference_marker"] = f"[{evidence_marker}]" if evidence_marker else target_marker_text
     item["evidence_reference_entry_raw"] = evidence_reference_entry_raw
     item["reference_match_status"] = reference_match_status
     item["reference_match_reason"] = reference_match_reason
+    item["reference_alignment_status"] = reference_match_status
+    item["reference_alignment_reason_code"] = reference_match_reason
+    item["reference_alignment_method"] = identity_match.method
+    item["reference_alignment_score"] = identity_match.score
     item["normalized_target_reference"] = target_reference_entry
     item["citation_text_contains_target_marker"] = quote_has_target_marker
+    item["target_anchor_inherited"] = inherited_anchor
+    item["target_anchor_inheritance_reason"] = inheritance_reason
+    item["target_anchor_status"] = (
+        "direct_marker"
+        if quote_has_target_marker
+        else "inherited_named_method"
+        if inherited_anchor
+        else "missing"
+    )
+    item["quote_marker_list"] = _sorted_markers(quote_markers)
+    item["context_marker_list"] = _sorted_markers(context_markers)
     item["citation_text_contains_other_marker"] = quote_has_other_marker
     item["target_reference_entry_matches_target"] = entry_matches_target
     item["reference_attribution_conflict"] = attribution_conflict
@@ -286,7 +372,9 @@ def _normalize_evidence(
     if reasons:
         item["postprocess_reason"] = "; ".join(reasons)
         _append_reason(item, reasons[-1])
-    item["failure_reason_codes"] = direct_evidence_failure_reason_codes(item)
+    reason_codes = direct_evidence_failure_reason_codes(item)
+    item["filter_reason_codes"] = reason_codes
+    item["failure_reason_codes"] = reason_codes
     return item
 
 
@@ -475,6 +563,67 @@ def _lowest_marker(markers: Iterable[str]) -> str:
     return str(min(values)) if values else ""
 
 
+def _sorted_markers(markers: Iterable[str]) -> List[str]:
+    return sorted(
+        {str(marker) for marker in markers if str(marker).isdigit()},
+        key=int,
+    )
+
+
+def _safe_context_anchor_inheritance(
+    quote: str,
+    context: str,
+    target_marker: str,
+) -> Tuple[bool, str]:
+    """Allow a named method to inherit a same-paragraph target marker."""
+    if not quote.strip() or not context.strip() or not target_marker:
+        return False, ""
+    if citation_text_has_target_anchor(quote, target_marker):
+        return False, ""
+    if _extract_reference_markers(quote):
+        return False, "quote_contains_other_reference_marker"
+
+    quote_start = context.find(quote)
+    if quote_start < 0:
+        return False, "quote_not_located_in_context"
+    prefix = context[:quote_start]
+    marker_matches = list(
+        re.finditer(
+            rf"\[\s*{re.escape(target_marker)}\s*\]",
+            prefix,
+        )
+    )
+    if not marker_matches:
+        return False, "target_marker_not_before_quote"
+
+    marker_start = marker_matches[-1].start()
+    inheritance_scope = context[marker_start:quote_start]
+    if re.search(r"\n\s*\n", inheritance_scope):
+        return False, "target_marker_in_different_paragraph"
+    scope_markers = _extract_reference_markers(inheritance_scope)
+    if any(marker != target_marker for marker in scope_markers):
+        return False, "other_reference_marker_between_anchor_and_quote"
+
+    method_names = _introduced_method_names(inheritance_scope)
+    normalized_quote = _normalize(quote)
+    for method_name in method_names:
+        if _normalize(method_name) in normalized_quote:
+            return True, f"same_paragraph_named_method:{method_name}"
+    return False, "no_unique_named_method_link"
+
+
+def _introduced_method_names(text: str) -> List[str]:
+    names: List[str] = []
+    patterns = (
+        r"\b(?:called|named)\s+([A-Z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+)\b",
+        r"\b([A-Z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+)\s+"
+        r"(?:is|was)\s+(?:proposed|introduced|developed|presented)\b",
+    )
+    for pattern in patterns:
+        names.extend(re.findall(pattern, text or ""))
+    return list(dict.fromkeys(names))
+
+
 def _evidence_rank(evidence: Dict[str, Any]) -> Tuple[int, int]:
     recommendation_rank = {"include": 3, "review": 2, "exclude": 1}.get(
         str(evidence.get("recommendation") or ""), 0
@@ -530,6 +679,15 @@ def _append_reason(item: Dict[str, Any], reason: str) -> None:
 def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
     """Map free-text diagnostics to stable run/report reason codes."""
     codes: List[str] = []
+    for key in (
+        "filter_reason_codes",
+        "failure_reason_codes",
+        "template_failure_reason_codes",
+    ):
+        for value in evidence.get(key, []) or []:
+            normalized = str(value or "").strip()
+            if normalized and normalized not in codes:
+                codes.append(normalized)
     text = " ".join(
         [
             str(evidence.get("postprocess_reason") or ""),
@@ -546,15 +704,34 @@ def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
         if code not in codes:
             codes.append(code)
 
-    if evidence.get("reference_match_status") == "mismatch" or "reference mismatch" in text:
-        add("reference_mismatch")
+    reference_status = str(evidence.get("reference_match_status") or "")
     if (
-        not evidence.get("citation_text_contains_target_marker", False)
-        or "does not anchor to target paper" in text
-        or "target_anchor_missing" in text
+        reference_status == "mismatch"
+        or (
+            not reference_status
+            and "reference mismatch" in text
+        )
+    ):
+        add("reference_mismatch")
+    has_anchor_diagnostics = (
+        "citation_text_contains_target_marker" in evidence
+        or "target_anchor_inherited" in evidence
+    )
+    if (
+        has_anchor_diagnostics
+        and not evidence.get("citation_text_contains_target_marker", False)
+        and not evidence.get("target_anchor_inherited", False)
+    ) or (
+        not has_anchor_diagnostics
+        and (
+            "does not anchor to target paper" in text
+            or "target_anchor_missing" in text
+        )
     ):
         add("target_marker_missing")
-    if "grouped citation" in text or evidence.get("grouped_citation"):
+    if evidence.get("grouped_citation") or (
+        "grouped_citation" not in evidence and "grouped citation" in text
+    ):
         add("grouped_citation_not_allowed")
     if "evidence type" in text and "not allowed" in text:
         add("evidence_type_not_allowed")
@@ -562,9 +739,13 @@ def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
         add("no_first_or_pioneering_expression")
     if "no required evidence pattern" in text:
         add("template_required_pattern_missing")
-    if "ordinary_reference" == evidence.get("claim_type") or "ordinary reference" in text:
+    final_claim_type = (
+        evidence.get("final_claim_type")
+        or evidence.get("claim_type")
+    )
+    if "ordinary_reference" == final_claim_type or "ordinary reference" in text:
         add("ordinary_reference")
-    if evidence.get("claim_type") == "limitation_feedback" or "limitation feedback" in text:
+    if final_claim_type == "limitation_feedback" or "limitation feedback" in text:
         add("limitation_feedback_not_positive")
     if "title-only" in text or "reference-only" in text or "reference_only" in text:
         add("reference_only")
@@ -579,29 +760,6 @@ def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
     if evidence.get("final_recommendation") in {"review", "exclude"} and not codes:
         add("template_goal_not_satisfied")
     return codes
-
-
-def _reference_entry_matches_target(
-    reference_entry: str,
-    *,
-    cited_paper_title: str,
-    cited_paper_doi: Optional[str],
-) -> bool:
-    entry = _normalize(reference_entry)
-    if not entry:
-        return False
-    doi = _normalize_doi(cited_paper_doi)
-    if doi and doi in _normalize_doi(reference_entry):
-        return True
-    title = _normalize(cited_paper_title)
-    if title and title in entry:
-        return True
-    title_tokens = _meaningful_tokens(title)
-    entry_tokens = set(_meaningful_tokens(entry))
-    if len(title_tokens) < 3:
-        return bool(title_tokens and set(title_tokens).issubset(entry_tokens))
-    overlap = len(set(title_tokens) & entry_tokens) / max(1, len(set(title_tokens)))
-    return overlap >= 0.65
 
 
 def _contains_title_alias(text: str, cited_paper_title: str) -> bool:
@@ -836,7 +994,7 @@ def _has_explicit_positive_support(quote: str, combined: str) -> bool:
         return False
     return bool(
         re.search(
-            r"\b(effective|accurate|robust|valuable|significant|important|promising|"
+            r"\b(effective\w*|demonstrat\w*|accurate|robust|valuable|significant|important|promising|"
             r"novel|strong|superior|outperform\w*|improv\w*|high[- ]precision|"
             r"high[- ]accuracy|state[- ]of[- ]the[- ]art)\b|"
             r"(有效|准确|鲁棒|重要|显著|优越|领先|高精度|有价值)",
@@ -997,12 +1155,6 @@ def _join_reason(existing: Any, reason: str) -> str:
 
 def _normalize_quote(text: str) -> str:
     return re.sub(r"\s+", " ", _normalize(text)).strip()
-
-
-def _normalize_doi(text: Optional[str]) -> str:
-    value = str(text or "").strip().lower()
-    match = re.search(r"10\.\d{4,9}/[-._;()/:a-z0-9]+", value)
-    return match.group(0).rstrip(".,;") if match else value
 
 
 def _meaningful_tokens(text: str) -> List[str]:

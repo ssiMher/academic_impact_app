@@ -879,6 +879,9 @@ class ScholarFulltextService:
                 else result_payload.get("target_reference_entry", "")
             ),
             reference_entries_by_marker=reference_entries_by_marker,
+            cited_paper_authors=self._load_authors(cited_publication),
+            cited_paper_year=cited_publication.year if cited_publication else None,
+            target_reference_resolved=reference_anchor is not None,
         )
         result_payload = self._apply_active_templates_to_direct_payload(
             item=item,
@@ -1008,8 +1011,11 @@ class ScholarFulltextService:
                 continue
             if str(evidence.get("recommendation") or "") == "include":
                 continue
-            reason_codes = evidence.get("failure_reason_codes", []) or (
-                direct_evidence_failure_reason_codes(evidence)
+            reason_codes = (
+                evidence.get("filter_reason_codes", [])
+                or evidence.get("failure_reason_codes", [])
+                or evidence.get("template_failure_reason_codes", [])
+                or direct_evidence_failure_reason_codes(evidence)
             )
             for code in reason_codes:
                 normalized = str(code or "").strip()
@@ -1123,9 +1129,12 @@ class ScholarFulltextService:
             updated["final_recommendation"] = str(
                 updated.get("recommendation") or "review"
             )
-            updated["failure_reason_codes"] = (
-                direct_evidence_failure_reason_codes(updated)
+            updated["final_claim_type"] = str(
+                updated.get("claim_type") or "ordinary_reference"
             )
+            reason_codes = direct_evidence_failure_reason_codes(updated)
+            updated["filter_reason_codes"] = reason_codes
+            updated["failure_reason_codes"] = reason_codes
             normalized_evidences.append(updated)
         normalized["evidences"] = normalized_evidences
         return normalized

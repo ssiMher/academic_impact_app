@@ -27,6 +27,9 @@ from app.providers.errors import ProviderException
 from app.repositories.scholar_queue_repo import ScholarQueueRepository
 from app.repositories.task_repo import TaskRepository
 from app.analysis.prompt_builder import build_fulltext_direct_prompt
+from app.analysis.template_direct_postprocess import (
+    postprocess_template_direct_payload,
+)
 from app.services.evidence_service import EvidenceService
 from app.services.scholar_fulltext_service import ScholarFulltextService
 from app.schemas.provider import ProviderErrorCode
@@ -134,6 +137,249 @@ def template_direct_payload(
             }
         ],
     }
+
+
+def test_result_844_resolved_marker_survives_glued_reference_formatting():
+    target_title = (
+        "Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing "
+        "Sub-mm Level Vibration"
+    )
+    target_entry = (
+        "[57] Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying Chen, "
+        "Yanling Bu,KaiZhang,SangluLu,Thru-the-walleavesdroppingonloudspeakers "
+        "viaRFIDbycapturingsub-mmlevelvibration, 2022."
+    )
+    quote = (
+        "[57] demonstrates the possibility of using low-cost and easily "
+        "overlooked RFID tags to effectively perform through-the-wall "
+        "eavesdropping. A battery-free method called Tag-Bug is proposed."
+    )
+    payload = postprocess_template_direct_payload(
+        {
+            "target_reference_marker": "[57]",
+            "target_reference_entry": target_entry,
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "capability_recognition",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": (
+                        "Chuyu Wang, Lei Xie, Yuancan Lin, Wei Wang, Yingying "
+                        "Chen, Yanling Bu, Kai Zhang, Sanglu Lu, Thru-the-wall "
+                        "Eavesdropping on Loudspeakers via RFID by Capturing "
+                        "Sub-mm Level Vibration, 2022."
+                    ),
+                    "why_this_judgment_zh": "正文明确展示目标论文的能力。",
+                    "copy_ready_zh": "后续论文明确肯定该方法的穿墙窃听能力。",
+                    "confidence": "high",
+                }
+            ],
+        },
+        citing_paper_title="A Survey",
+        cited_paper_title=target_title,
+        target_reference_marker="[57]",
+        target_reference_entry=target_entry,
+        reference_entries_by_marker={"57": target_entry},
+        target_reference_resolved=True,
+    )
+    evidence = payload["evidences"][0]
+
+    assert evidence["reference_match_status"] == "matched"
+    assert evidence["reference_alignment_method"] in {
+        "normalized_title_match",
+        "marker_resolver_match",
+    }
+    assert evidence["recommendation"] == "include"
+    assert evidence["claim_type"] != "false_positive"
+    assert evidence["original_claim_type"] == "capability_recognition"
+    assert evidence["final_claim_type"] != "false_positive"
+
+
+def _postprocess_anchor_case(
+    *,
+    quote,
+    context=None,
+    claim_type="through_wall_eavesdropping",
+    recommendation="include",
+    target_marker="[57]",
+    reference_entries=None,
+):
+    target_title = (
+        "Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing "
+        "Sub-mm Level Vibration"
+    )
+    target_entry = (
+        "[57] C. Wang, L. Xie, Y. Lin, W. Wang, Y. Chen, Y. Bu, K. Zhang, "
+        "S. Lu. Thru-the-wall Eavesdropping on Loudspeakers via RFID by "
+        "Capturing Sub-mm Level Vibration. 2022."
+    )
+    return postprocess_template_direct_payload(
+        {
+            "target_reference_marker": target_marker,
+            "target_reference_entry": target_entry,
+            "evidences": [
+                {
+                    "recommendation": recommendation,
+                    "claim_type": claim_type,
+                    "evidence_quote": quote,
+                    "evidence_context": context if context is not None else quote,
+                    "reference_entry": target_entry,
+                    "why_this_judgment_zh": "正文描述目标方法的具体能力。",
+                    "copy_ready_zh": "后续工作明确描述了目标方法的能力。",
+                    "confidence": "high",
+                }
+            ],
+        },
+        citing_paper_title="A Survey",
+        cited_paper_title=target_title,
+        target_reference_marker=target_marker,
+        target_reference_entry=target_entry,
+        reference_entries_by_marker=reference_entries or {"57": target_entry},
+        cited_paper_authors=["Chuyu Wang", "Lei Xie"],
+        cited_paper_year=2022,
+        target_reference_resolved=True,
+    )["evidences"][0]
+
+
+def test_same_paragraph_unique_method_name_inherits_target_anchor():
+    anchor = (
+        "[57] demonstrates an effective through-the-wall eavesdropping "
+        "capability. A battery-free method called Tag-Bug is proposed."
+    )
+    quote = "Tag-Bug captures loudspeaker vibrations through a nearby RFID tag."
+    evidence = _postprocess_anchor_case(
+        quote=quote,
+        context=f"{anchor} {quote}",
+        claim_type="rfid_loudspeaker_vibration",
+    )
+
+    assert evidence["target_anchor_inherited"] is True
+    assert evidence["target_anchor_status"] == "inherited_named_method"
+    assert evidence["reference_match_status"] == "matched"
+    assert evidence["recommendation"] == "include"
+
+
+def test_cross_paragraph_method_name_does_not_inherit_target_anchor():
+    anchor = "[57] introduces a battery-free method called Tag-Bug."
+    quote = "Tag-Bug captures loudspeaker vibrations through a nearby RFID tag."
+    evidence = _postprocess_anchor_case(
+        quote=quote,
+        context=f"{anchor}\n\n{quote}",
+        claim_type="rfid_loudspeaker_vibration",
+    )
+
+    assert evidence["target_anchor_inherited"] is False
+    assert evidence["recommendation"] == "exclude"
+    assert "target_anchor_missing" in evidence["postprocess_reason"]
+
+
+def test_other_marker_between_anchor_and_method_blocks_inheritance():
+    anchor = "[57] introduces a battery-free method called Tag-Bug."
+    quote = "Tag-Bug captures loudspeaker vibrations through a nearby RFID tag."
+    evidence = _postprocess_anchor_case(
+        quote=quote,
+        context=f"{anchor} Another system [23] uses radar. {quote}",
+        claim_type="rfid_loudspeaker_vibration",
+        reference_entries={
+            "23": "[23] A. Other. A radar system.",
+            "57": (
+                "[57] C. Wang et al. Thru-the-wall Eavesdropping on "
+                "Loudspeakers via RFID by Capturing Sub-mm Level Vibration."
+            ),
+        },
+    )
+
+    assert evidence["target_anchor_inherited"] is False
+    assert evidence["recommendation"] == "exclude"
+
+
+def test_quote_with_other_marker_remains_false_positive():
+    evidence = _postprocess_anchor_case(
+        quote="Based on the Schrödinger equation [23], the system is modeled.",
+        claim_type="method_use",
+        reference_entries={
+            "23": "[23] E. Schrödinger. An equation for wave mechanics.",
+            "57": (
+                "[57] C. Wang et al. Thru-the-wall Eavesdropping on "
+                "Loudspeakers via RFID by Capturing Sub-mm Level Vibration."
+            ),
+        },
+    )
+
+    assert evidence["reference_match_status"] == "mismatch"
+    assert evidence["recommendation"] == "exclude"
+    assert evidence["claim_type"] == "false_positive"
+    assert "reference_mismatch" in evidence["filter_reason_codes"]
+
+
+def test_grouped_target_marker_keeps_strict_review_rule():
+    evidence = _postprocess_anchor_case(
+        quote=(
+            "Prior systems [56], [57] demonstrate effective acoustic sensing."
+        ),
+        claim_type="positive_evaluation",
+        reference_entries={
+            "56": "[56] A. Other. Another system.",
+            "57": (
+                "[57] C. Wang et al. Thru-the-wall Eavesdropping on "
+                "Loudspeakers via RFID by Capturing Sub-mm Level Vibration."
+            ),
+        },
+    )
+
+    assert evidence["grouped_citation"] is True
+    assert evidence["recommendation"] == "review"
+    assert "grouped_citation_requires_review" in evidence["postprocess_reason"]
+
+
+def test_reprocessing_stale_mismatch_restores_original_claim_and_canonical_reasons():
+    stale = _postprocess_anchor_case(
+        quote="[57] demonstrates an effective through-the-wall capability.",
+        claim_type="capability_recognition",
+    )
+    stale.update(
+        {
+            "claim_type": "false_positive",
+            "recommendation": "exclude",
+            "reference_match_status": "mismatch",
+            "filter_reason_codes": ["reference_mismatch"],
+            "failure_reason_codes": ["reference_mismatch"],
+            "postprocess_reason": "reference_entry_target_mismatch",
+            "template_failure_reason": "正向评价: reference mismatch",
+        }
+    )
+    refreshed = _postprocess_anchor_case(
+        quote=stale["evidence_quote"],
+        claim_type=stale["claim_type"],
+        recommendation=stale["recommendation"],
+    )
+    # Simulate a persisted result carrying the original/final split.
+    refreshed_payload = postprocess_template_direct_payload(
+        {
+            "target_reference_marker": "[57]",
+            "target_reference_entry": stale["normalized_target_reference"],
+            "evidences": [stale],
+        },
+        citing_paper_title="A Survey",
+        cited_paper_title=(
+            "Thru-the-wall Eavesdropping on Loudspeakers via RFID by "
+            "Capturing Sub-mm Level Vibration"
+        ),
+        target_reference_marker="[57]",
+        target_reference_entry=stale["normalized_target_reference"],
+        reference_entries_by_marker={
+            "57": stale["evidence_reference_entry_raw"]
+        },
+        target_reference_resolved=True,
+    )["evidences"][0]
+
+    assert refreshed["reference_match_status"] == "matched"
+    assert refreshed_payload["original_claim_type"] == "capability_recognition"
+    assert refreshed_payload["final_claim_type"] != "false_positive"
+    assert refreshed_payload["original_recommendation"] == "include"
+    assert refreshed_payload["final_recommendation"] == "include"
+    assert "reference_mismatch" not in refreshed_payload["filter_reason_codes"]
 
 
 def load_golden_case(case_name: str):
@@ -4870,6 +5116,80 @@ def test_template_direct_canonical_claim_and_matched_template_are_persisted(
     assert evidence["template_satisfied"] is True
 
 
+def test_result_844_like_evidence_matches_positive_template_and_is_strong(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    target_title = (
+        "Thru-the-wall Eavesdropping on Loudspeakers via RFID by Capturing "
+        "Sub-mm Level Vibration"
+    )
+    quote = (
+        "[57] demonstrates the possibility of using low-cost and easily "
+        "overlooked RFID tags to effectively perform through-the-wall "
+        "eavesdropping. A battery-free method called Tag-Bug is proposed."
+    )
+    reference_entry = (
+        "[57] C. Wang et al. Thru-the-wall Eavesdropping on Loudspeakers via "
+        "RFID by Capturing Sub-mm Level Vibration. 2022."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[57]",
+            "target_reference_entry": reference_entry,
+            "paper_level_summary_zh": "发现明确的正向能力评价。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "through_wall_eavesdropping",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": reference_entry,
+                    "why_this_judgment_zh": "demonstrates 和 effectively 明确认可能力。",
+                    "copy_ready_zh": "后续研究明确肯定目标方法的穿墙能力。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title=target_title,
+            text=f"{quote}\n\nReferences\n{reference_entry}",
+        )
+        enabled = _enable_direct_builtin(
+            db,
+            session_id,
+            "positive_evaluation",
+        )
+        enabled_id = enabled.id
+        summary = ScholarFulltextService(db).analyze_queue_items(
+            session_id=session_id,
+            queue_item_ids=[item_id],
+            analysis_scope="fulltext_template_direct",
+        )
+        result = (
+            db.query(FulltextAnalysisResult)
+            .filter(FulltextAnalysisResult.queue_item_id == item_id)
+            .order_by(FulltextAnalysisResult.id.desc())
+            .first()
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+
+    assert evidence["matched_template_ids"] == [enabled_id]
+    assert evidence["template_satisfied"] is True
+    assert evidence["claim_type"] == "positive_evaluation"
+    assert evidence["recommendation"] == "include"
+    assert summary["strong_evidence_count"] == 1
+
+
 def test_template_direct_preserves_distinct_evidence_locations_and_multiple_templates(
     db_session_factory,
     tmp_path,
@@ -5001,7 +5321,10 @@ def test_template_direct_filter_reasons_are_structured_and_aggregated(
 
     assert evidence["original_recommendation"] == "exclude"
     assert evidence["final_recommendation"] == "exclude"
+    assert evidence["original_claim_type"] == "ordinary_reference"
+    assert evidence["final_claim_type"] == "ordinary_reference"
     assert evidence["matched_template_ids"] == []
+    assert evidence["filter_reason_codes"] == evidence["failure_reason_codes"]
     assert "ordinary_reference" in evidence["failure_reason_codes"]
     assert "grouped_citation_not_allowed" in evidence["failure_reason_codes"]
     assert summary["filtered_findings_count"] == 1

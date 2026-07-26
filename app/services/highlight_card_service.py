@@ -1026,14 +1026,23 @@ class HighlightCardService:
         if item is None:
             return payload
         cited_publication = self.db.get(Publication, item.cited_publication_id) if getattr(item, "cited_publication_id", None) else None
+        candidate_payload = self._load_json(result.candidate_spans_json)
         return postprocess_template_direct_payload(
             payload,
             citing_paper_title=item.citing_paper_title or "",
             cited_paper_title=item.cited_paper_title or "",
             cited_paper_doi=getattr(cited_publication, "doi", None),
-            target_reference_marker=payload.get("target_reference_marker") or self._load_json(result.candidate_spans_json).get("target_reference_marker", ""),
-            target_reference_entry=payload.get("target_reference_entry") or self._load_json(result.candidate_spans_json).get("target_reference_entry", ""),
+            target_reference_marker=payload.get("target_reference_marker") or candidate_payload.get("target_reference_marker", ""),
+            target_reference_entry=payload.get("target_reference_entry") or candidate_payload.get("target_reference_entry", ""),
             reference_entries_by_marker=self._reference_entries_for_item(item),
+            cited_paper_authors=self._load_json_list(
+                getattr(cited_publication, "authors_json", None)
+            ),
+            cited_paper_year=getattr(cited_publication, "year", None),
+            target_reference_resolved=(
+                candidate_payload.get("reference_anchor_source")
+                == "deterministic_resolver"
+            ),
         )
 
     def _reference_entries_for_item(self, item) -> dict:

@@ -3,6 +3,7 @@
 import re
 import unicodedata
 from dataclasses import dataclass
+from difflib import SequenceMatcher
 from typing import Dict, List, Optional
 
 
@@ -35,6 +36,14 @@ class TargetReferenceContext:
     contains_formula: bool
 
 
+@dataclass(frozen=True)
+class BibliographicIdentityMatch:
+    status: str
+    method: str
+    score: float
+    reason_code: str
+
+
 def reference_entries_by_marker(fulltext: str) -> Dict[str, str]:
     """Return raw References entries keyed by numeric citation marker."""
     references_start = _references_section_start(fulltext)
@@ -48,6 +57,109 @@ def reference_entries_by_marker(fulltext: str) -> Dict[str, str]:
             references_start,
         )
     }
+
+
+def normalize_bibliographic_identity(value: str) -> str:
+    """Normalize a reference entry without relying on PDF whitespace quality."""
+    text = unicodedata.normalize("NFKC", value or "")
+    text = text.replace("\u00ad", "").replace("–", "-").replace("—", "-")
+    text = re.sub(r"^\s*(?:\[\s*\d+\s*\]|\d+\s*\.)\s*", "", text)
+    text = re.sub(r"(?<=\w)-\s*\n\s*(?=\w)", "", text)
+    text = text.replace("\r", " ").replace("\n", " ")
+    text = re.sub(
+        r"(?<![A-Za-z])(?:[A-Za-z][ \t]+){2,}[A-Za-z](?![A-Za-z])",
+        lambda match: re.sub(r"[ \t]+", "", match.group(0)),
+        text,
+    )
+    text = (
+        unicodedata.normalize("NFKD", text)
+        .encode("ascii", "ignore")
+        .decode("ascii")
+        .casefold()
+    )
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", text).split())
+
+
+def match_bibliographic_identity(
+    reference_entry: str,
+    *,
+    target_title: str,
+    target_doi: Optional[str] = None,
+    target_reference_entry: str = "",
+    target_authors: Optional[List[str]] = None,
+    target_year: Optional[int] = None,
+    resolver_marker_matched: bool = False,
+) -> BibliographicIdentityMatch:
+    """Compare a raw References entry with the resolved target publication."""
+    entry = normalize_bibliographic_identity(reference_entry)
+    if not entry:
+        return BibliographicIdentityMatch(
+            "unresolved", "", 0.0, "reference_entry_unresolved"
+        )
+
+    target_entry = normalize_bibliographic_identity(target_reference_entry)
+    title = normalize_bibliographic_identity(target_title)
+    entry_compact = entry.replace(" ", "")
+    target_entry_compact = target_entry.replace(" ", "")
+    title_compact = title.replace(" ", "")
+
+    expected_doi = _normalized_doi(target_doi) or _extract_doi(
+        target_reference_entry
+    )
+    entry_doi = _extract_doi(reference_entry)
+    if expected_doi and entry_doi and expected_doi == entry_doi:
+        return BibliographicIdentityMatch(
+            "matched", "exact_doi_match", 1.0, "exact_doi_match"
+        )
+
+    if len(title_compact) >= 8 and title_compact in entry_compact:
+        return BibliographicIdentityMatch(
+            "matched", "normalized_title_match", 0.98, "normalized_title_match"
+        )
+
+    title_tokens = set(_identity_tokens(title))
+    entry_tokens = set(_identity_tokens(entry))
+    title_overlap = (
+        len(title_tokens & entry_tokens) / len(title_tokens)
+        if title_tokens
+        else 0.0
+    )
+    author_match = _identity_author_match(entry, target_authors or [])
+    year_match = bool(target_year and str(target_year) in entry_tokens)
+    if title_overlap >= 0.65 and (author_match or year_match):
+        return BibliographicIdentityMatch(
+            "matched",
+            "title_author_year_match",
+            round(0.75 + min(title_overlap, 0.2), 4),
+            "title_author_year_match",
+        )
+
+    entry_similarity = (
+        SequenceMatcher(None, entry_compact, target_entry_compact).ratio()
+        if target_entry_compact
+        else 0.0
+    )
+    if resolver_marker_matched:
+        if target_entry_compact and entry_similarity < 0.35:
+            return BibliographicIdentityMatch(
+                "mismatch",
+                "marker_resolver_match",
+                round(entry_similarity, 4),
+                "reference_marker_mapping_conflict",
+            )
+        return BibliographicIdentityMatch(
+            "matched",
+            "marker_resolver_match",
+            max(0.9, round(entry_similarity, 4)),
+            "marker_resolver_match",
+        )
+
+    return BibliographicIdentityMatch(
+        "mismatch",
+        "mismatch",
+        round(max(title_overlap, entry_similarity), 4),
+        "reference_entry_target_mismatch",
+    )
 
 
 def normalize_text(value: str) -> str:
@@ -296,6 +408,41 @@ def _author_overlap(entry_text: str, author_terms: List[str]) -> int:
         return 0
     entry_terms = set(entry_text.split())
     return sum(1 for author in author_terms if author and author in entry_terms)
+
+
+def _normalized_doi(value: Optional[str]) -> str:
+    normalized = str(value or "").strip().casefold()
+    if normalized.startswith("https://doi.org/"):
+        normalized = normalized[len("https://doi.org/") :]
+    return normalized.rstrip(".,;)")
+
+
+def _extract_doi(value: str) -> str:
+    match = re.search(r"\b10\.\d{4,9}/[^\s<>\"]+", value or "", flags=re.I)
+    return _normalized_doi(match.group(0)) if match else ""
+
+
+def _identity_tokens(value: str) -> List[str]:
+    ignored = {"a", "an", "and", "by", "in", "of", "on", "the", "to", "via"}
+    return [
+        token
+        for token in (value or "").split()
+        if len(token) >= 2 and token not in ignored
+    ]
+
+
+def _identity_author_match(entry: str, target_authors: List[str]) -> bool:
+    entry_compact = entry.replace(" ", "")
+    entry_tokens = set(entry.split())
+    for author in target_authors:
+        normalized = normalize_bibliographic_identity(author)
+        if not normalized:
+            continue
+        compact = normalized.replace(" ", "")
+        surname = normalized.split()[-1]
+        if compact in entry_compact or surname in entry_tokens:
+            return True
+    return False
 
 
 def _window_bounds(text_length: int, start: int, end: int, window_chars: int):
