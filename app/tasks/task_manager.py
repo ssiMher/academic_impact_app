@@ -17,6 +17,9 @@ from app.tasks.handlers.expand_and_build_scholar_queue import (
 from app.tasks.handlers.expand_scholar_citations import handle_expand_scholar_citations
 from app.tasks.handlers.match_session_pdfs import handle_match_session_pdfs
 from app.tasks.handlers.rebuild_pdf_index import handle_rebuild_pdf_index
+from app.tasks.handlers.rejudge_template_direct_evidences import (
+    handle_rejudge_template_direct_evidences,
+)
 from app.tasks.handlers.scan_pdf_inbox import handle_scan_pdf_inbox
 
 
@@ -34,6 +37,9 @@ class TaskManager:
             "match_session_pdfs": handle_match_session_pdfs,
             "build_scholar_queue": handle_build_scholar_queue,
             "analyze_scholar_queue": handle_analyze_scholar_queue,
+            "rejudge_template_direct_evidences": (
+                handle_rejudge_template_direct_evidences
+            ),
             "discover_pdfs_for_queue": handle_discover_pdfs_for_queue,
             "download_open_access_pdfs": handle_discover_pdfs_for_queue,
             "download_ieee_pdf": handle_download_ieee_pdf,

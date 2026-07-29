@@ -676,16 +676,67 @@ class HighlightCardService:
             exclude_count,
         )
         submm_items = [row for row in include_items if row[3].get("claim_type") == "submm_precision_claim"]
-        capability_items = [row for row in include_items if row not in submm_items]
+        evaluative_relations = {
+            "explicit_positive_evaluation",
+            "first_or_seminal_claim",
+            "baseline_or_benchmark",
+            "theoretical_foundation",
+        }
+        evaluative_items = [
+            row
+            for row in include_items
+            if row not in submm_items
+            and row[3].get("template_relation") in evaluative_relations
+        ]
+        verified_summary_items = [
+            row
+            for row in include_items
+            if row not in submm_items
+            and row not in evaluative_items
+            and row[3].get("template_relation")
+            == "detailed_method_summary"
+        ]
+        capability_items = [
+            row
+            for row in include_items
+            if row not in submm_items
+            and row not in evaluative_items
+            and row not in verified_summary_items
+        ]
         sections = [
             {"title": "推荐纳入", "items": [], "empty": not include_items},
             {
+                "title": "评价性强证据",
+                "items": self._template_direct_item_models(
+                    evaluative_items,
+                    start_index=1,
+                ),
+            },
+            {
                 "title": "直接亚毫米级佐证",
-                "items": self._template_direct_item_models(submm_items, start_index=1),
+                "items": self._template_direct_item_models(
+                    submm_items,
+                    start_index=len(evaluative_items) + 1,
+                ),
+            },
+            {
+                "title": "已核验方法或能力概述",
+                "items": self._template_direct_item_models(
+                    verified_summary_items,
+                    start_index=len(evaluative_items) + len(submm_items) + 1,
+                ),
             },
             {
                 "title": "能力认可佐证",
-                "items": self._template_direct_item_models(capability_items, start_index=len(submm_items) + 1),
+                "items": self._template_direct_item_models(
+                    capability_items,
+                    start_index=(
+                        len(evaluative_items)
+                        + len(submm_items)
+                        + len(verified_summary_items)
+                        + 1
+                    ),
+                ),
             },
             {
                 "title": "直接亚毫米级佐证候选：需人工核对引用编号",

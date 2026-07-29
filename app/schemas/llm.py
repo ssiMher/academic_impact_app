@@ -85,6 +85,23 @@ class TemplateDirectEvidence(BaseModel):
     semantic_relation: str = ""
     model_confidence: Optional[float] = None
     candidate_reason: str = ""
+    grounding_status: Literal[
+        "verified",
+        "unresolved",
+        "mismatch",
+        "attribution_conflict",
+    ] = "unresolved"
+    evidence_strength: Literal["strong", "medium", "weak"] = "weak"
+    template_relation: Literal[
+        "explicit_positive_evaluation",
+        "detailed_method_summary",
+        "capability_recognition",
+        "first_or_seminal_claim",
+        "baseline_or_benchmark",
+        "theoretical_foundation",
+        "limitation_feedback",
+        "unmatched",
+    ] = "unmatched"
 
 
 class TemplateDirectAnalysisResult(BaseModel):
@@ -92,6 +109,29 @@ class TemplateDirectAnalysisResult(BaseModel):
     target_reference_entry: str = ""
     paper_level_summary_zh: str = ""
     evidences: List[TemplateDirectEvidence] = Field(default_factory=list)
+
+
+class TemplateAdjudication(BaseModel):
+    template_id: int
+    satisfied: bool
+    confidence: Literal["high", "medium", "low"]
+    reason: str
+
+
+class TemplateEvidenceAdjudicationResult(BaseModel):
+    template_relation: Literal[
+        "explicit_positive_evaluation",
+        "detailed_method_summary",
+        "capability_recognition",
+        "first_or_seminal_claim",
+        "baseline_or_benchmark",
+        "theoretical_foundation",
+        "limitation_feedback",
+        "unmatched",
+    ]
+    adjudications: List[TemplateAdjudication] = Field(default_factory=list)
+    why_this_judgment_zh: str = ""
+    copy_ready_zh: str = ""
 
 
 class LlmCitationAnalysisRequest(BaseModel):

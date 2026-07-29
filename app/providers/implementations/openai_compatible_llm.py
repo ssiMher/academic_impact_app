@@ -11,6 +11,7 @@ from typing import Any, Dict, Optional
 from app.analysis.llm_parser import (
     LlmParseError,
     parse_llm_response_with_diagnostics,
+    parse_template_adjudication_response_with_diagnostics,
     parse_template_direct_response_with_diagnostics,
 )
 from app.providers.base import LlmProvider
@@ -32,6 +33,7 @@ class ProviderRequestLog:
 
 class OpenAICompatibleLlmProvider(LlmProvider):
     provider_name = "openai_compatible"
+    supports_template_adjudication = True
 
     def __init__(
         self,
@@ -130,7 +132,9 @@ class OpenAICompatibleLlmProvider(LlmProvider):
         content = self._extract_message_content(response_payload)
         self.last_raw_response_text = content
         try:
-            if request.analysis_scope == "fulltext_template_direct":
+            if request.analysis_scope == "template_direct_adjudication":
+                parsed = parse_template_adjudication_response_with_diagnostics(content)
+            elif request.analysis_scope == "fulltext_template_direct":
                 parsed = parse_template_direct_response_with_diagnostics(content)
             else:
                 parsed = parse_llm_response_with_diagnostics(content)

@@ -155,6 +155,8 @@
       </div>
       <div class="stat-grid">
         {{ stat_card("强证据", direct_candidate_layers.counts.strong) }}
+        {{ stat_card("已核验证据", direct_candidate_layers.verified_count) }}
+        {{ stat_card("已核验方法/能力概述", direct_candidate_layers.verified_substantive_count) }}
         {{ stat_card("正向强证据", direct_candidate_layers.strong_stance_counts.positive or 0) }}
         {{ stat_card("中性强证据", direct_candidate_layers.strong_stance_counts.neutral or 0) }}
         {{ stat_card("负面强证据", direct_candidate_layers.strong_stance_counts.negative or 0) }}

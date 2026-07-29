@@ -16,6 +16,7 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 from app.models import (
+    AnalysisTask,
     AnalysisTemplate,
     CitationEdge,
     DeepAnalysisQueueItem,
@@ -687,6 +688,24 @@ def test_template_management_routes_enable_disable_and_create_custom(client, db_
 
     assert any(template.template_type == "first_or_seminal_claim" for template in active)
     assert all(template.template_type != "positive_evaluation" for template in active)
+
+
+def test_rejudge_direct_route_enqueues_without_rerunning_fulltext(
+    client,
+    db_session_factory,
+):
+    response = client.post(
+        "/scholar-sessions/9/templates/rejudge-direct",
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 303
+    with Session(db_session_factory.kw["bind"]) as db:
+        task = db.query(AnalysisTask).one()
+        payload = json.loads(task.payload_json)
+    assert task.task_type == "rejudge_template_direct_evidences"
+    assert payload["rejudge_version"] == "template_adjudication.v1"
+    assert "analyze_task_id=" in response.headers["location"]
 
 
 def test_active_templates_included_in_fulltext_prompt(db_session_factory, tmp_path, monkeypatch):

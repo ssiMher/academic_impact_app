@@ -472,7 +472,11 @@ def _resolve_analyze_task(
             task is not None
             and task.session_kind == SCHOLAR_ANALYSIS_SESSION_KIND
             and task.session_id == session_id
-            and task.task_type == "analyze_scholar_queue"
+            and task.task_type
+            in {
+                "analyze_scholar_queue",
+                "rejudge_template_direct_evidences",
+            }
         ):
             return _hydrate_task_summaries(task)
 
@@ -482,7 +486,13 @@ def _resolve_analyze_task(
         limit=10,
     )
     analyze_tasks = [
-        task for task in recent_tasks if task.task_type == "analyze_scholar_queue"
+        task
+        for task in recent_tasks
+        if task.task_type
+        in {
+            "analyze_scholar_queue",
+            "rejudge_template_direct_evidences",
+        }
     ]
     active_task = next(
         (

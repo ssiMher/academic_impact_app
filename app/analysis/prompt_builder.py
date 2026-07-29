@@ -216,9 +216,11 @@ def build_fulltext_template_direct_prompt(
         "When a deterministic target marker and entry are supplied below, treat them as authoritative. Do not replace them with a different citation marker selected by the model.\n"
         "Find all body-text locations that cite TARGET_REFERENCE_MARKER.\n"
         "Return every potentially target-related body-text candidate, including method or capability summaries, adoption, comparison, limitation, grouped citation, and ordinary related-work mentions.\n"
-        "Do not omit a candidate merely because it does not satisfy an active template. The application performs deterministic reference validation, but your semantic decision determines whether the validated body evidence satisfies each active template.\n"
-        "Describe the factual semantic relation first. Use exclude for an obviously irrelevant candidate, but still return its quote and candidate diagnostics when it cites the resolved target marker.\n"
-        "Evaluate every active template primarily from its natural-language goal and the full citation semantics. Configured keywords, patterns, suggested evidence types, and advisory notes are hints, not mandatory gates.\n"
+        "Do not omit a candidate merely because it does not satisfy an active template. This first stage extracts evidence and describes the factual semantic relation; deterministic reference validation runs in code, and a separate short model call adjudicates templates for each evidence item.\n"
+        "Use recommendation as a provisional candidate disposition only. Return substantive target-anchored method, capability, comparison, theoretical, evaluative, limitation, and ordinary-reference candidates even when the provisional disposition is review or exclude.\n"
+        "Do not make final template decisions in this stage. Set matched_template_ids to [], template_satisfied to null, and leave template_match_reason empty. ACTIVE_EVIDENCE_TEMPLATES are supplied only to improve candidate recall for the user's questions.\n"
+        "In the separate adjudication stage, your semantic decision determines whether each verified evidence item satisfies positive, neutral, and negative/limitation templates.\n"
+        "Do not require literal template keywords during extraction; configured terms are hints, not mandatory gates. Do not reject a template solely because its literal keyword is absent; the second stage evaluates semantic equivalence.\n"
         "Do not attribute any template concept to the cited paper unless the body evidence clearly anchors that concept to TARGET_REFERENCE_MARKER, the cited paper title, or the cited paper method name.\n"
         "Strong reference alignment rules:\n"
         "- Every evidence_quote must be a body-text quote, not a References entry.\n"
@@ -231,15 +233,12 @@ def build_fulltext_template_direct_prompt(
         "If evidence is ordinary related work, classify it as ordinary_reference and set recommendation=\"review\" or \"exclude\", never \"include\".\n"
         "For grouped citations, judge semantic attribution from the sentence or clause: include only when the claim clearly applies to the target paper; use review when attribution is uncertain. Do not reject solely because other citation markers are present.\n"
         "Table-only listings, title-only matches, reference-only entries, and ordinary related-work lists must not be recommendation=\"include\" unless the body text describes the target paper substantively.\n"
-        "For each citation paragraph, decide directly whether its meaning satisfies each active template's natural-language description. Do not require literal template keywords when the paragraph is semantically equivalent.\n"
-        "Set matched_template_ids to every template that is actually satisfied. If at least one active template is clearly satisfied, the reference is aligned, and attribution is clear, use recommendation=\"include\". This applies equally to positive, neutral, and negative/limitation templates; recommendation means reportable evidence, not positive sentiment.\n"
-        "matched_template_ids must contain only fully satisfied templates, not possible candidates. When matched_template_ids is non-empty, set template_satisfied=true and recommendation=\"include\". For a possible but uncertain match, leave matched_template_ids empty, set template_satisfied=false, and use recommendation=\"review\" with template_failure_reason explaining the uncertainty.\n"
-        "Keep claim_type and stance consistent with the satisfied template. Use custom_template_evidence for a satisfied user-defined template when no more specific claim_type applies.\n"
-        "Use recommendation=\"review\" when a template may match but attribution or meaning is uncertain, and recommendation=\"exclude\" when no active template is satisfied or the evidence is invalid.\n"
+        "Keep claim_type, semantic_relation, and stance consistent with what the body text actually says, independently of template labels.\n"
+        "Use recommendation=\"review\" for a valid substantive candidate and recommendation=\"exclude\" only for an invalid or clearly irrelevant candidate. Do not use include in this extraction stage.\n"
         "For active template types, prefer these canonical claim_type values when semantically appropriate: first_or_seminal_claim, detailed_comparison, baseline_or_benchmark, theoretical_foundation, positive_evaluation.\n"
         "Do not reject a template solely because a configured keyword, regex-like pattern, or suggested claim type is absent. Decide whether the evidence meaning satisfies the user's template description and explain that decision.\n"
         "A target-anchored method, capability, model, or brief comparison description may be returned as a review candidate even when it is not strong enough for include.\n"
-        "If evidence strongly satisfies an active negative or limitation template, classify it as limitation_feedback, use negative stance, and recommendation=\"include\"; it will be routed to the limitation section rather than presented as a positive highlight.\n"
+        "Classify limitation evidence as limitation_feedback with negative or mixed stance, but leave its final template disposition to the second stage.\n"
         "Deduplicate only the same normalized quote at the same citation location. Preserve distinct body locations and distinct semantic relations, even when they discuss the same target paper.\n"
         "Do not output prose outside JSON. Template evaluation metadata belongs only in the JSON fields defined below. Do not output Markdown.\n"
         "The JSON must be report-ready and match this schema exactly:\n"
@@ -265,16 +264,16 @@ def build_fulltext_template_direct_prompt(
         "      \"why_this_judgment_zh\": \"evidence-specific Chinese reasoning: identify the concrete subject, action, capability/effect/limitation and the exact wording that supports the judgment; do not merely say it supports a label\",\n"
         "      \"copy_ready_zh\": \"the final evidence-specific Chinese evaluation shown in the report; describe what this citing paper actually says about the cited paper without repeating a generic template or overclaiming\",\n"
         "      \"confidence\": \"high | medium | low\",\n"
-        "      \"matched_template_ids\": [1],\n"
-        "      \"template_match_reason\": \"why the body evidence satisfies the configured template goal\",\n"
-        "      \"template_satisfied\": true,\n"
-        "      \"template_failure_reason\": \"why a relevant template was not satisfied, or empty\"\n"
+        "      \"matched_template_ids\": [],\n"
+        "      \"template_match_reason\": \"\",\n"
+        "      \"template_satisfied\": null,\n"
+        "      \"template_failure_reason\": \"\"\n"
         "    }\n"
         "  ]\n"
         "}\n"
         "\n"
         "Template evaluation rules:\n"
-        "- Apply each template's natural-language goal to the body quote and surrounding context, not to the References title alone.\n"
+        "- This stage does not adjudicate templates. Preserve the body quote and surrounding context needed by the second stage.\n"
         "- Write why_this_judgment_zh and copy_ready_zh from the concrete evidence semantics. Name the method, action, result, comparison, or limitation stated in the quote. Never use generic wording such as 'the text supports this evidence judgment' or simply restate the template label.\n"
         "- In copy_ready_zh, state the cited paper's concrete evidence-backed highlight: what method/theory/mechanism it introduced or used, what capability or result the citing text attributes to it, and why that matters in this citation context. Do not claim 'first', 'pioneering', superiority, or broad impact unless the citing body text explicitly supports that claim.\n"
         "- In why_this_judgment_zh, quote or name the decisive wording and explain the reasoning boundary. For a brief Related Work summary, describe the specific technical contribution recognized by the citing paper while explicitly avoiding unsupported praise.\n"
@@ -293,6 +292,51 @@ def build_fulltext_template_direct_prompt(
         f"{template_lines}\n"
         "FULL_EXTRACTED_TEXT:\n"
         f"{full_text}\n"
+    )
+
+
+def build_template_direct_adjudication_prompt(
+    *,
+    citing_paper_title: str,
+    cited_paper_title: str,
+    target_reference_marker: str,
+    target_reference_entry: str,
+    evidence: dict,
+    template_prompt_fragments: Optional[List[str]] = None,
+) -> str:
+    """Build the short, evidence-scoped second-stage template judgment."""
+    template_lines = _format_template_prompt(template_prompt_fragments)
+    return (
+        "You are the second-stage template adjudicator for one already extracted "
+        "citation evidence item. Do not search for new evidence and do not alter "
+        "the reference marker. Judge every active template independently from its "
+        "natural-language goal.\n"
+        "A detailed method summary describes concrete mechanisms, signals, features, "
+        "algorithms, or implementation steps and does not require praise. A capability "
+        "recognition states what the target work enables or is used for. Explicit "
+        "positive evaluation requires genuinely evaluative language about effectiveness, "
+        "importance, novelty, accuracy, superiority, or value. Do not relabel a factual "
+        "method summary as explicit positive evaluation merely to satisfy a template.\n"
+        "Grounding status is supplied by deterministic code. Never satisfy a template "
+        "for mismatch, attribution_conflict, title-only, or reference-only evidence. "
+        "Unresolved grounding may be a candidate but cannot be a final include.\n"
+        "Return only JSON matching this schema:\n"
+        "{\n"
+        '  "template_relation": "explicit_positive_evaluation | detailed_method_summary | capability_recognition | first_or_seminal_claim | baseline_or_benchmark | theoretical_foundation | limitation_feedback | unmatched",\n'
+        '  "adjudications": [{"template_id": 1, "satisfied": true, "confidence": "high | medium | low", "reason": "evidence-specific reason"}],\n'
+        '  "why_this_judgment_zh": "针对原文内容的中文判断理由",\n'
+        '  "copy_ready_zh": "基于原文、不过度解读的中文表述"\n'
+        "}\n"
+        f"CITING_PAPER_TITLE: {citing_paper_title}\n"
+        f"CITED_PAPER_TITLE: {cited_paper_title}\n"
+        f"TARGET_REFERENCE_MARKER: {target_reference_marker}\n"
+        f"TARGET_REFERENCE_ENTRY: {target_reference_entry}\n"
+        f"GROUNDING_STATUS: {evidence.get('grounding_status', 'unresolved')}\n"
+        f"SEMANTIC_TYPE: {evidence.get('claim_type', '')}\n"
+        f"EVIDENCE_QUOTE: {evidence.get('evidence_quote', '')}\n"
+        f"EVIDENCE_CONTEXT: {evidence.get('evidence_context') or evidence.get('surrounding_context') or ''}\n"
+        "ACTIVE_EVIDENCE_TEMPLATES:\n"
+        f"{template_lines}\n"
     )
 
 

@@ -7,7 +7,11 @@ from typing import Any, Dict, List
 from pydantic import ValidationError
 
 from app.legacy.adapters.llm_json_parser_adapter import extract_json_payload
-from app.schemas.llm import CitationAnalysisResult, TemplateDirectAnalysisResult
+from app.schemas.llm import (
+    CitationAnalysisResult,
+    TemplateDirectAnalysisResult,
+    TemplateEvidenceAdjudicationResult,
+)
 
 
 class LlmParseError(ValueError):
@@ -64,6 +68,26 @@ def parse_template_direct_response_with_diagnostics(raw_response: str) -> Templa
             "LLM output does not match TemplateDirectAnalysisResult schema.",
             raw_output_preview=_preview(raw_response),
             schema_error=str(exc),
+        ) from exc
+
+
+def parse_template_adjudication_response_with_diagnostics(
+    raw_response: str,
+) -> TemplateEvidenceAdjudicationResult:
+    try:
+        payload = parse_llm_json_payload(raw_response)
+        return TemplateEvidenceAdjudicationResult.model_validate(payload)
+    except ValidationError as exc:
+        raise LlmParseError(
+            "LLM output does not match TemplateEvidenceAdjudicationResult schema.",
+            raw_output_preview=_preview(raw_response),
+            schema_error=str(exc),
+        ) from exc
+    except Exception as exc:
+        raise LlmParseError(
+            "LLM output could not be parsed as template adjudication JSON.",
+            raw_output_preview=_preview(raw_response),
+            parse_error=str(exc),
         ) from exc
     except Exception as exc:
         raise LlmParseError(

@@ -30,12 +30,16 @@ from app.analysis.prompt_builder import (
     build_fulltext_direct_prompt,
     build_fulltext_direct_repair_prompt,
     build_fulltext_template_direct_prompt,
+    build_template_direct_adjudication_prompt,
 )
 from app.analysis.template_direct_postprocess import (
     direct_evidence_failure_reason_codes,
     postprocess_template_direct_payload,
 )
-from app.analysis.template_matching import template_stance_intent
+from app.analysis.template_matching import (
+    format_template_snapshots_for_prompt,
+    template_stance_intent,
+)
 from app.analysis.target_anchor_validation import validate_citation_target_anchor
 from app.analysis.llm_parser import parse_llm_json_payload
 from app.core.config import PROJECT_ROOT, settings
@@ -140,6 +144,10 @@ class ScholarFulltextService:
             "unresolved_candidate_count": 0,
             "template_eligible_candidate_count": 0,
             "template_matched_candidate_count": 0,
+            "verified_evidence_count": 0,
+            "verified_substantive_evidence_count": 0,
+            "ordinary_reference_false_positive_count": 0,
+            "reference_mismatch_false_positive_count": 0,
             "final_include_count": 0,
             "final_review_count": 0,
             "final_exclude_count": 0,
@@ -963,6 +971,12 @@ class ScholarFulltextService:
             cited_paper_year=cited_publication.year if cited_publication else None,
             target_reference_resolved=reference_anchor is not None,
         )
+        result_payload = self._adjudicate_direct_evidences(
+            item=item,
+            provider=provider,
+            payload=result_payload,
+            active_templates=active_templates,
+        )
         result_payload = self._apply_active_templates_to_direct_payload(
             item=item,
             payload=result_payload,
@@ -1074,6 +1088,136 @@ class ScholarFulltextService:
         self.db.refresh(fulltext_result)
         return fulltext_result
 
+    def _adjudicate_direct_evidences(
+        self,
+        *,
+        item: DeepAnalysisQueueItem,
+        provider,
+        payload: dict,
+        active_templates: List,
+    ) -> dict:
+        """Run evidence-scoped semantic template judgments when supported."""
+        normalized = dict(payload)
+        evidences = [
+            dict(evidence)
+            for evidence in payload.get("evidences", []) or []
+            if isinstance(evidence, dict)
+        ]
+        if not active_templates or not getattr(
+            provider,
+            "supports_template_adjudication",
+            False,
+        ):
+            normalized["evidences"] = evidences
+            return normalized
+
+        active_ids = {int(template.id) for template in active_templates}
+        template_fragment = format_template_snapshots_for_prompt(active_templates)
+        for evidence in evidences:
+            evidence["extraction_matched_template_ids"] = list(
+                evidence.get("matched_template_ids") or []
+            )
+            evidence["extraction_template_satisfied"] = evidence.get(
+                "template_satisfied"
+            )
+            if evidence.get("grounding_status") in {
+                "mismatch",
+                "attribution_conflict",
+            } or str(evidence.get("claim_type") or "") == "false_positive":
+                evidence["template_decision_source"] = (
+                    "deterministic_grounding_rejection"
+                )
+                evidence["matched_template_ids"] = []
+                evidence["template_satisfied"] = False
+                continue
+
+            request = LlmCitationAnalysisRequest(
+                target_title=item.cited_paper_title,
+                citing_paper_title=item.citing_paper_title,
+                cited_paper_title=item.cited_paper_title,
+                analysis_scope="template_direct_adjudication",
+                prompt_text=build_template_direct_adjudication_prompt(
+                    citing_paper_title=item.citing_paper_title,
+                    cited_paper_title=item.cited_paper_title,
+                    target_reference_marker=str(
+                        evidence.get("target_reference_marker")
+                        or normalized.get("target_reference_marker")
+                        or ""
+                    ),
+                    target_reference_entry=str(
+                        evidence.get("evidence_reference_entry_raw")
+                        or normalized.get("target_reference_entry")
+                        or ""
+                    ),
+                    evidence=evidence,
+                    template_prompt_fragments=[template_fragment],
+                ),
+            )
+            try:
+                decision = self._analyze_direct_with_transient_retries(
+                    provider,
+                    request,
+                ).model_dump()
+            except ProviderException as exc:
+                evidence["template_decision_source"] = (
+                    "template_adjudication_failed"
+                )
+                evidence["template_adjudication_error"] = exc.code.value
+                evidence["recommendation"] = "review"
+                evidence["final_recommendation"] = "review"
+                continue
+
+            adjudications = [
+                adjudication
+                for adjudication in decision.get("adjudications", [])
+                if isinstance(adjudication, dict)
+                and int(adjudication.get("template_id") or 0) in active_ids
+            ]
+            matched = [
+                int(adjudication["template_id"])
+                for adjudication in adjudications
+                if adjudication.get("satisfied") is True
+            ]
+            reasons = [
+                str(adjudication.get("reason") or "").strip()
+                for adjudication in adjudications
+                if adjudication.get("satisfied") is True
+                and str(adjudication.get("reason") or "").strip()
+            ]
+            failures = [
+                str(adjudication.get("reason") or "").strip()
+                for adjudication in adjudications
+                if adjudication.get("satisfied") is not True
+                and str(adjudication.get("reason") or "").strip()
+            ]
+            evidence.update(
+                {
+                    "matched_template_ids": matched,
+                    "template_satisfied": bool(matched),
+                    "template_match_reason": "; ".join(reasons),
+                    "template_failure_reason": "; ".join(failures),
+                    "template_relation": str(
+                        decision.get("template_relation")
+                        or evidence.get("template_relation")
+                        or "unmatched"
+                    ),
+                    "template_adjudications": adjudications,
+                    "template_decision_source": "evidence_scoped_llm",
+                    "rejudge_version": "template_adjudication.v1",
+                }
+            )
+            if str(decision.get("why_this_judgment_zh") or "").strip():
+                evidence["why_this_judgment_zh"] = decision[
+                    "why_this_judgment_zh"
+                ]
+            if str(decision.get("copy_ready_zh") or "").strip():
+                evidence["copy_ready_zh"] = decision["copy_ready_zh"]
+        normalized["evidences"] = evidences
+        normalized["template_adjudication_version"] = (
+            "template_adjudication.v1"
+        )
+        return normalized
+
     def _analyze_direct_with_transient_retries(self, provider, request):
         max_retries = max(0, int(settings.llm_transient_max_retries))
         backoff_seconds = max(
@@ -1179,7 +1323,12 @@ class ScholarFulltextService:
                 active_templates,
                 updated,
             )
-            template_decision_source = "llm"
+            template_decision_source = (
+                "evidence_scoped_llm"
+                if updated.get("template_decision_source")
+                == "evidence_scoped_llm"
+                else "llm"
+            )
             if template_result is None:
                 template_decision_source = "llm_missing_template_decision"
                 template_result = self._missing_direct_model_template_result(
@@ -1215,6 +1364,20 @@ class ScholarFulltextService:
                     "template_decision_source": template_decision_source,
                 }
             )
+            relation_claim_type = {
+                "explicit_positive_evaluation": "positive_evaluation",
+                "detailed_method_summary": "method_summary",
+                "capability_recognition": "capability_recognition",
+                "first_or_seminal_claim": "first_or_seminal_claim",
+                "baseline_or_benchmark": "baseline_or_benchmark",
+                "theoretical_foundation": "theoretical_foundation",
+                "limitation_feedback": "limitation_feedback",
+            }.get(str(updated.get("template_relation") or ""))
+            if (
+                relation_claim_type
+                and template_decision_source == "evidence_scoped_llm"
+            ):
+                updated["claim_type"] = relation_claim_type
             matched_templates = [
                 templates_by_id[template_id]
                 for template_id in updated["matched_template_ids"]
@@ -1234,7 +1397,10 @@ class ScholarFulltextService:
                 updated["template_display_label"] = " / ".join(
                     template.description or template.name for template in matched_templates
                 )
-            if template_decision_source == "llm":
+            if template_decision_source in {
+                "llm",
+                "evidence_scoped_llm",
+            }:
                 self._apply_direct_model_template_recommendation(
                     updated,
                     strong_matched_templates,
@@ -1441,8 +1607,14 @@ class ScholarFulltextService:
         evidence: dict,
         strong_matched_templates: List,
     ) -> None:
+        grounding_valid = (
+            str(evidence.get("grounding_status") or "") == "verified"
+            if "grounding_status" in evidence
+            else self._direct_reference_status(evidence) == "matched"
+        )
         hard_valid = (
-            self._direct_reference_status(evidence) == "matched"
+            grounding_valid
+            and self._direct_reference_status(evidence) == "matched"
             and not evidence.get("reference_attribution_conflict")
             and str(evidence.get("target_anchor_status") or "") != "missing"
             and str(evidence.get("claim_type") or "") != "false_positive"
@@ -2122,6 +2294,8 @@ class ScholarFulltextService:
                 "review": 0,
                 "excluded": 0,
             },
+            "verified_count": 0,
+            "verified_substantive_count": 0,
         }
         if not latest_results:
             return layers
@@ -2149,6 +2323,18 @@ class ScholarFulltextService:
             key: len(layers[key])
             for key in ("strong", "review", "excluded")
         }
+        all_rows = (
+            layers["strong"] + layers["review"] + layers["excluded"]
+        )
+        layers["verified_count"] = sum(
+            1 for row in all_rows if row.get("grounding_status") == "verified"
+        )
+        layers["verified_substantive_count"] = sum(
+            1
+            for row in all_rows
+            if row.get("grounding_status") == "verified"
+            and row.get("template_relation") != "unmatched"
+        )
         layers["strong_stance_counts"] = {
             stance: sum(
                 1
@@ -2190,6 +2376,15 @@ class ScholarFulltextService:
                 or ""
             ),
             "reference_alignment_status": alignment or "unresolved",
+            "grounding_status": str(
+                evidence.get("grounding_status") or "unresolved"
+            ),
+            "evidence_strength": str(
+                evidence.get("evidence_strength") or "weak"
+            ),
+            "template_relation": str(
+                evidence.get("template_relation") or "unmatched"
+            ),
             "matched_template_names": list(
                 evidence.get("matched_template_names") or []
             ),
@@ -2522,6 +2717,130 @@ class ScholarFulltextService:
         self.db.commit()
         self.db.refresh(task)
         return task
+
+    def enqueue_rejudge_template_direct_evidences(
+        self,
+        *,
+        session_id: int,
+        fulltext_result_ids: Optional[List[int]] = None,
+    ):
+        task = TaskService(TaskRepository(self.db)).enqueue(
+            session_kind=SCHOLAR_ANALYSIS_SESSION_KIND,
+            session_id=session_id,
+            task_type="rejudge_template_direct_evidences",
+            payload={
+                "fulltext_result_ids": fulltext_result_ids or None,
+                "rejudge_version": "template_adjudication.v1",
+            },
+        )
+        task.stage_message = "等待对已有 direct evidence 重新裁决"
+        self.db.commit()
+        self.db.refresh(task)
+        return task
+
+    def rejudge_template_direct_evidences(
+        self,
+        *,
+        session_id: int,
+        fulltext_result_ids: Optional[List[int]] = None,
+        task=None,
+    ) -> Dict[str, int]:
+        statement = (
+            select(FulltextAnalysisResult)
+            .where(
+                FulltextAnalysisResult.scholar_session_id == session_id,
+                FulltextAnalysisResult.analysis_scope
+                == "fulltext_template_direct",
+                FulltextAnalysisResult.status == "succeeded",
+            )
+            .order_by(
+                FulltextAnalysisResult.created_at.desc(),
+                FulltextAnalysisResult.id.desc(),
+            )
+        )
+        if fulltext_result_ids:
+            statement = statement.where(
+                FulltextAnalysisResult.id.in_(fulltext_result_ids)
+            )
+        results = list(self.db.scalars(statement))
+        if not fulltext_result_ids:
+            latest = []
+            seen_queue_items = set()
+            for result in results:
+                if result.queue_item_id in seen_queue_items:
+                    continue
+                seen_queue_items.add(result.queue_item_id)
+                latest.append(result)
+            results = latest
+
+        active_templates = TemplateService(self.db).get_active_templates(
+            session_id
+        )
+        provider = get_llm_provider()
+        if not getattr(provider, "supports_template_adjudication", False):
+            raise ValueError(
+                "Configured LLM provider does not support template adjudication"
+            )
+        counts = {
+            "result_count": len(results),
+            "evidence_count": 0,
+            "include_count": 0,
+            "review_count": 0,
+            "exclude_count": 0,
+        }
+        for index, result in enumerate(results, start=1):
+            item = self.db.get(DeepAnalysisQueueItem, result.queue_item_id)
+            if item is None:
+                continue
+            if task is not None:
+                current_task = self.db.get(type(task), task.id)
+                current_task.progress_total = len(results)
+                current_task.progress_current = index - 1
+                current_task.stage = "rejudging_template_evidences"
+                current_task.stage_message = (
+                    f"正在重新裁决 {index}/{len(results)}："
+                    f"{item.citing_paper_title[:120]}"
+                )
+                self.db.commit()
+            payload = self._load_json(result.parsed_result_json)
+            payload = self._adjudicate_direct_evidences(
+                item=item,
+                provider=provider,
+                payload=payload,
+                active_templates=active_templates,
+            )
+            payload = self._apply_active_templates_to_direct_payload(
+                item=item,
+                payload=payload,
+                active_templates=active_templates,
+            )
+            payload["rejudge_version"] = "template_adjudication.v1"
+            payload["rejudged_at"] = datetime.utcnow().isoformat()
+            evidence_counts = self._direct_evidence_counts(payload)
+            payload.setdefault("diagnostics", {}).update(evidence_counts)
+            result.parsed_result_json = json.dumps(payload, ensure_ascii=False)
+            self.db.commit()
+            TemplateDirectPersistenceService(self.db).persist(
+                result.id,
+                reconcile=True,
+            )
+            counts["evidence_count"] += evidence_counts[
+                "parsed_evidence_count"
+            ]
+            counts["include_count"] += evidence_counts[
+                "include_evidence_count"
+            ]
+            counts["review_count"] += evidence_counts[
+                "review_evidence_count"
+            ]
+            counts["exclude_count"] += evidence_counts[
+                "exclude_evidence_count"
+            ]
+            if task is not None:
+                current_task = self.db.get(type(task), task.id)
+                current_task.progress_current = index
+                self.db.commit()
+        return counts
 
     def _list_target_items(
         self,
@@ -2988,6 +3307,31 @@ class ScholarFulltextService:
             for evidence in valid_evidences
             if self._final_direct_recommendation(evidence) == "exclude"
         )
+        verified_count = sum(
+            1
+            for evidence in valid_evidences
+            if evidence.get("grounding_status") == "verified"
+        )
+        verified_substantive_count = sum(
+            1
+            for evidence in valid_evidences
+            if evidence.get("grounding_status") == "verified"
+            and evidence.get("evidence_strength") in {"strong", "medium"}
+            and evidence.get("template_relation") != "unmatched"
+        )
+        ordinary_false_positive_count = sum(
+            1
+            for evidence in valid_evidences
+            if str(evidence.get("claim_type") or "") == "ordinary_reference"
+            and self._final_direct_recommendation(evidence) == "include"
+        )
+        mismatch_false_positive_count = sum(
+            1
+            for evidence in valid_evidences
+            if evidence.get("grounding_status")
+            in {"mismatch", "attribution_conflict"}
+            and self._final_direct_recommendation(evidence) == "include"
+        )
         return {
             "parsed_evidence_count": len(valid_evidences),
             "include_evidence_count": include_count,
@@ -2999,6 +3343,14 @@ class ScholarFulltextService:
             "unresolved_candidate_count": unresolved_count,
             "template_eligible_candidate_count": eligible_count,
             "template_matched_candidate_count": matched_count,
+            "verified_evidence_count": verified_count,
+            "verified_substantive_evidence_count": verified_substantive_count,
+            "ordinary_reference_false_positive_count": (
+                ordinary_false_positive_count
+            ),
+            "reference_mismatch_false_positive_count": (
+                mismatch_false_positive_count
+            ),
             "final_include_count": include_count,
             "final_review_count": review_count,
             "final_exclude_count": exclude_count,

@@ -15,10 +15,14 @@
       <form action="/scholar-sessions/{{ session_id }}/templates/reapply" method="post">
         <button class="button button-primary" type="submit">重新应用模板</button>
       </form>
+      <form action="/scholar-sessions/{{ session_id }}/templates/rejudge-direct" method="post">
+        <button class="button button-secondary" type="submit">重新裁决已有全文证据</button>
+      </form>
     </div>
   </header>
   <section class="notice">
     模板创建或修改后，旧分析结果不会自动变化。请点击“重新应用模板”，让已分析 evidence/card 重新计算模板命中、未满足原因和报告展示。
+    “重新裁决已有全文证据”只发送已有证据句和上下文，不重新解析 PDF，也不重新发送整篇全文。
   </section>
   <section class="card">
     <h2>已启用模板</h2>

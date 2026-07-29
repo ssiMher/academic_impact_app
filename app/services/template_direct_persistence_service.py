@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 from sqlalchemy.orm import Session
 
@@ -55,9 +55,19 @@ class TemplateDirectPersistenceService:
             "applied": False,
         }
 
-    def persist(self, fulltext_result_id: int) -> Dict[str, Any]:
+    def persist(
+        self,
+        fulltext_result_id: int,
+        *,
+        reconcile: bool = False,
+    ) -> Dict[str, Any]:
         result, item, payload = self._load_result(fulltext_result_id)
         candidates = self._eligible_candidates(payload)
+        if reconcile:
+            self._reconcile_stale_generated_evidence(
+                result.id,
+                {evidence_index for evidence_index, _ in candidates},
+            )
         summary = self.preview(fulltext_result_id)
         summary["applied"] = True
         persisted_evidence_ids: List[int] = []
@@ -139,6 +149,40 @@ class TemplateDirectPersistenceService:
             )
         self._record_summary(result.id, summary)
         return summary
+
+    def _reconcile_stale_generated_evidence(
+        self,
+        fulltext_result_id: int,
+        eligible_indexes: Set[int],
+    ) -> None:
+        rows = (
+            self.db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == fulltext_result_id)
+            .all()
+        )
+        for evidence in rows:
+            if evidence.span_index in eligible_indexes:
+                continue
+            cards = (
+                self.db.query(HighlightCard)
+                .filter(HighlightCard.strong_evidence_id == evidence.id)
+                .all()
+            )
+            user_edited = bool(
+                evidence.user_note
+                or evidence.corrected_label
+                or evidence.review_status not in {"", "unreviewed", None}
+                or any(card.is_user_edited for card in cards)
+            )
+            if user_edited:
+                evidence.evidence_strength = "weak"
+                for card in cards:
+                    card.include_in_report = False
+                continue
+            for card in cards:
+                self.db.delete(card)
+            self.db.delete(evidence)
+        self.db.commit()
 
     def _apply_direct_report_text(
         self,

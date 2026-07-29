@@ -8,6 +8,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.services.template_service import TemplateService, get_template_service
+from app.services.scholar_fulltext_service import (
+    ScholarFulltextService,
+    get_scholar_fulltext_service,
+)
 
 
 router = APIRouter(prefix="/scholar-sessions", tags=["analysis-templates"])
@@ -113,6 +117,23 @@ def reapply_templates(
 ):
     service.reapply_templates_to_session(session_id)
     return RedirectResponse(url=f"/scholar-sessions/{session_id}/templates", status_code=303)
+
+
+@router.post("/{session_id}/templates/rejudge-direct")
+def rejudge_template_direct_evidences(
+    session_id: int,
+    service: ScholarFulltextService = Depends(get_scholar_fulltext_service),
+):
+    task = service.enqueue_rejudge_template_direct_evidences(
+        session_id=session_id
+    )
+    return RedirectResponse(
+        url=(
+            f"/scholar-sessions/{session_id}/queue"
+            f"?analyze_task_id={task.id}"
+        ),
+        status_code=303,
+    )
 
 
 @router.get("/{session_id}/templates/{template_id}", response_class=HTMLResponse)

@@ -1306,6 +1306,31 @@ def test_export_scholar_report_md(db_session_factory, tmp_path):
     assert "局限性反馈 / 不宜作为亮点" in report
 
 
+def test_direct_report_separates_evaluative_and_verified_method_summary(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, result_id = seed_template_direct_result(db, tmp_path)
+        result = db.get(FulltextAnalysisResult, result_id)
+        payload = json.loads(result.parsed_result_json)
+        evidence = payload["evidences"][0]
+        evidence.update(
+            {
+                "claim_type": "method_summary",
+                "template_relation": "detailed_method_summary",
+                "grounding_status": "verified",
+                "evidence_strength": "strong",
+            }
+        )
+        result.parsed_result_json = json.dumps(payload, ensure_ascii=False)
+        db.commit()
+        report = ScholarReportService(db).build_report_markdown(session_id)
+
+    assert "已核验方法或能力概述" in report
+    assert "显式正面评价" not in report
+
+
 def test_report_contains_evidence_quote(db_session_factory, tmp_path):
     quote = "Original evidence quote for the scholar report."
     with Session(db_session_factory.kw["bind"]) as db:

@@ -325,6 +325,21 @@ def _normalize_evidence(
     item["reference_attribution_reason"] = (
         "body_author_reference_author_mismatch" if attribution_conflict else ""
     )
+    grounding_status = _grounding_status(
+        reference_match_status=reference_match_status,
+        has_effective_target_anchor=has_effective_target_anchor,
+        title_or_reference_only=title_or_reference_only,
+        attribution_conflict=attribution_conflict,
+        final_claim_type=str(item.get("claim_type") or claim_type),
+    )
+    template_relation = _template_relation_for_evidence(item)
+    item["grounding_status"] = grounding_status
+    item["evidence_strength"] = _evidence_strength(
+        grounding_status=grounding_status,
+        template_relation=template_relation,
+        claim_type=str(item.get("claim_type") or claim_type),
+    )
+    item["template_relation"] = template_relation
     if grouped_citation:
         item["grouped_citation"] = True
     else:
@@ -336,6 +351,83 @@ def _normalize_evidence(
     item["filter_reason_codes"] = reason_codes
     item["failure_reason_codes"] = reason_codes
     return item
+
+
+def _grounding_status(
+    *,
+    reference_match_status: str,
+    has_effective_target_anchor: bool,
+    title_or_reference_only: bool,
+    attribution_conflict: bool,
+    final_claim_type: str,
+) -> str:
+    if attribution_conflict:
+        return "attribution_conflict"
+    if reference_match_status == "mismatch" or final_claim_type == "false_positive":
+        return "mismatch"
+    if (
+        reference_match_status == "matched"
+        and has_effective_target_anchor
+        and not title_or_reference_only
+    ):
+        return "verified"
+    return "unresolved"
+
+
+def _template_relation_for_evidence(evidence: Dict[str, Any]) -> str:
+    claim_type = str(
+        evidence.get("final_claim_type")
+        or evidence.get("claim_type")
+        or ""
+    )
+    semantic_relation = str(evidence.get("semantic_relation") or "").lower()
+    if claim_type == "positive_evaluation":
+        return "explicit_positive_evaluation"
+    if claim_type in {"method_summary", "method_use", "method_foundation"}:
+        return "detailed_method_summary"
+    if claim_type in {
+        "capability_summary",
+        "capability_recognition",
+        "through_wall_eavesdropping",
+        "rfid_loudspeaker_vibration",
+    }:
+        return "capability_recognition"
+    if claim_type == "first_or_seminal_claim":
+        return "first_or_seminal_claim"
+    if claim_type in {"baseline_or_benchmark", "performance_comparison"}:
+        return "baseline_or_benchmark"
+    if claim_type in {"theoretical_foundation", "detailed_comparison"}:
+        return (
+            "theoretical_foundation"
+            if claim_type == "theoretical_foundation"
+            else "detailed_method_summary"
+        )
+    if claim_type in {"limitation_feedback", "limitation_or_negative"}:
+        return "limitation_feedback"
+    if "method" in semantic_relation:
+        return "detailed_method_summary"
+    if "capability" in semantic_relation:
+        return "capability_recognition"
+    return "unmatched"
+
+
+def _evidence_strength(
+    *,
+    grounding_status: str,
+    template_relation: str,
+    claim_type: str,
+) -> str:
+    if grounding_status in {"mismatch", "attribution_conflict"}:
+        return "weak"
+    substantive = template_relation != "unmatched" and claim_type not in {
+        "ordinary_reference",
+        "false_positive",
+    }
+    if grounding_status == "verified" and substantive:
+        return "strong"
+    if grounding_status == "verified" or substantive:
+        return "medium"
+    return "weak"
 
 
 def _include_structural_downgrade_reason(
