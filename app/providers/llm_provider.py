@@ -23,6 +23,12 @@ def get_llm_provider() -> LlmProvider:
                     str(settings.llm_timeout_seconds),
                 )
             ),
+            max_output_tokens=int(
+                os.getenv(
+                    "ACADEMIC_IMPACT_LLM_MAX_OUTPUT_TOKENS",
+                    str(settings.llm_max_output_tokens),
+                )
+            ),
             disable_thinking=os.getenv(
                 "ACADEMIC_IMPACT_LLM_DISABLE_THINKING",
                 str(settings.llm_disable_thinking).lower(),

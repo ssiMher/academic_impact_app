@@ -2,6 +2,7 @@
 
 import json
 import re
+import time
 import unicodedata
 from datetime import datetime
 from pathlib import Path
@@ -34,6 +35,7 @@ from app.analysis.template_direct_postprocess import (
     direct_evidence_failure_reason_codes,
     postprocess_template_direct_payload,
 )
+from app.analysis.template_matching import template_stance_intent
 from app.analysis.target_anchor_validation import validate_citation_target_anchor
 from app.analysis.llm_parser import parse_llm_json_payload
 from app.core.config import PROJECT_ROOT, settings
@@ -43,7 +45,7 @@ from app.models.constants import (
     SCHOLAR_ANALYSIS_SESSION_KIND,
     is_pdf_ready_status,
 )
-from app.providers.errors import ProviderException
+from app.providers.errors import ProviderException, RETRYABLE_ERROR_CODES
 from app.providers.llm_provider import get_llm_provider
 from app.schemas.provider import ProviderErrorCode
 from app.repositories.task_repo import TaskRepository
@@ -326,18 +328,15 @@ class ScholarFulltextService:
                 cited_authors=cited_authors,
             )
             if analysis_scope == "fulltext_template_direct":
+                if reference_anchor is not None:
+                    target_reference_contexts = extract_target_reference_contexts(
+                        extracted_text,
+                        reference_anchor.reference_marker,
+                        max_contexts=50,
+                    )
                 prompt_full_text = extracted_text
                 if len(extracted_text) > settings.fulltext_direct_max_chars:
                     compact_fallback = True
-                    target_reference_contexts = (
-                        extract_target_reference_contexts(
-                            extracted_text,
-                            reference_anchor.reference_marker,
-                            max_contexts=50,
-                        )
-                        if reference_anchor
-                        else []
-                    )
                     prompt_full_text = self._build_template_direct_compact_text(
                         full_text=extracted_text,
                         reference_anchor=reference_anchor,
@@ -350,6 +349,17 @@ class ScholarFulltextService:
                     cited_paper_venue=cited_publication.venue if cited_publication else None,
                     cited_paper_doi=cited_publication.doi if cited_publication else None,
                     cited_paper_authors=cited_authors,
+                    target_reference_marker=(
+                        reference_anchor.reference_marker_text
+                        if reference_anchor
+                        else None
+                    ),
+                    target_reference_entry=(
+                        reference_anchor.reference_entry_text
+                        if reference_anchor
+                        else None
+                    ),
+                    target_reference_contexts=target_reference_contexts,
                     full_text=prompt_full_text,
                     template_prompt_fragments=template_fragments,
                 )
@@ -877,24 +887,59 @@ class ScholarFulltextService:
         task_id: Optional[int],
     ) -> FulltextAnalysisResult:
         try:
-            parsed_result = provider.analyze_citation(request)
-        except ProviderException as exc:
-            self._persist_failed_fulltext_result(
-                item=item,
-                provider=provider,
-                analysis_scope="fulltext_template_direct",
-                fulltext_chars=len(extracted_text),
-                error_message=str(exc),
-                diagnostic_payload={
-                    "error": "provider_schema_error",
-                    "raw_output_preview": exc.raw_output_preview,
-                    "parse_error": exc.parse_error,
-                    "schema_error": exc.schema_error,
-                },
-                prompt_text=request.prompt_text if request else "",
-                task_id=task_id,
+            parsed_result = self._analyze_direct_with_transient_retries(
+                provider,
+                request,
             )
-            raise
+        except ProviderException as exc:
+            final_error = exc
+            if exc.code == ProviderErrorCode.PROVIDER_SCHEMA_ERROR:
+                retry_request = request.model_copy(
+                    update={
+                        "prompt_text": (
+                            f"{request.prompt_text or ''}\n\n"
+                            "RETRY AFTER INVALID OR TRUNCATED JSON:\n"
+                            "Return the same analysis as one complete, compact JSON object. "
+                            "Keep every distinct evidence item, but keep evidence_quote to the "
+                            "exact sentence, evidence_context and surrounding_context to at most "
+                            "1200 characters each, and each explanation to at most 300 characters. "
+                            "Use only claim_type values listed in the schema. Do not output Markdown."
+                        )
+                    }
+                )
+                try:
+                    parsed_result = self._analyze_direct_with_transient_retries(
+                        provider,
+                        retry_request,
+                    )
+                except ProviderException as retry_exc:
+                    final_error = retry_exc
+                else:
+                    final_error = None
+            if final_error is not None:
+                self._persist_failed_fulltext_result(
+                    item=item,
+                    provider=provider,
+                    analysis_scope="fulltext_template_direct",
+                    fulltext_chars=len(extracted_text),
+                    error_message=str(final_error),
+                    diagnostic_payload={
+                        "error": final_error.code.value,
+                        "raw_output_preview": final_error.raw_output_preview,
+                        "parse_error": final_error.parse_error,
+                        "schema_error": final_error.schema_error,
+                        "retry_attempted": (
+                            exc.code == ProviderErrorCode.PROVIDER_SCHEMA_ERROR
+                            or exc.code in RETRYABLE_ERROR_CODES
+                        ),
+                        "transient_max_retries": int(
+                            settings.llm_transient_max_retries
+                        ),
+                    },
+                    prompt_text=request.prompt_text if request else "",
+                    task_id=task_id,
+                )
+                raise final_error
 
         result_payload = parsed_result.model_dump()
         cited_publication = self.db.get(Publication, item.cited_publication_id)
@@ -1029,6 +1074,21 @@ class ScholarFulltextService:
         self.db.refresh(fulltext_result)
         return fulltext_result
 
+    def _analyze_direct_with_transient_retries(self, provider, request):
+        max_retries = max(0, int(settings.llm_transient_max_retries))
+        backoff_seconds = max(
+            0.0,
+            float(settings.llm_retry_backoff_seconds),
+        )
+        for attempt in range(max_retries + 1):
+            try:
+                return provider.analyze_citation(request)
+            except ProviderException as exc:
+                if exc.code not in RETRYABLE_ERROR_CODES or attempt >= max_retries:
+                    raise
+                time.sleep(backoff_seconds * (2**attempt))
+        raise AssertionError("unreachable")
+
     def _direct_template_failure_distribution(self, evidences: List[dict]) -> Dict[str, int]:
         counts: Dict[str, int] = {}
         for evidence in evidences:
@@ -1084,7 +1144,10 @@ class ScholarFulltextService:
                     "matched_template_ids": [],
                     "matched_template_names": [],
                     "matched_template_types": [],
+                    "strong_matched_template_ids": [],
                     "template_satisfied": False,
+                    "template_strongly_satisfied": False,
+                    "template_match_level": "none",
                     "template_match_reason": "",
                     "template_failure_reason": "no active template covers this candidate",
                     "template_evaluations": [],
@@ -1105,8 +1168,6 @@ class ScholarFulltextService:
                 if isinstance(evidence, dict)
             ]
             return normalized
-        template_service = TemplateService(self.db)
-        target_marker = str(payload.get("target_reference_marker") or "")
         normalized = dict(payload)
         normalized_evidences = []
         templates_by_id = {template.id: template for template in active_templates}
@@ -1114,27 +1175,44 @@ class ScholarFulltextService:
             if not isinstance(evidence, dict):
                 continue
             updated = dict(evidence)
-            template_result = template_service.evaluate_finding_templates(
-                session_id=item.scholar_session_id,
-                finding_payload=updated,
-                citation_text=str(updated.get("evidence_quote") or ""),
-                evidence_context=str(updated.get("evidence_context") or ""),
-                target_reference_marker=target_marker,
-                cited_paper_title=item.cited_paper_title or "",
+            template_result = self._direct_model_template_result(
+                active_templates,
+                updated,
             )
+            template_decision_source = "llm"
+            if template_result is None:
+                template_decision_source = "llm_missing_template_decision"
+                template_result = self._missing_direct_model_template_result(
+                    active_templates
+                )
             updated.update(
                 {
                     "matched_template_ids": template_result.get("matched_template_ids", []),
                     "matched_template_names": template_result.get("matched_template_names", []),
+                    "strong_matched_template_ids": template_result.get(
+                        "strong_matched_template_ids", []
+                    ),
                     "matched_template_types": [
                         str(evaluation.get("template_type") or "")
                         for evaluation in template_result.get("template_evaluations", [])
                         if evaluation.get("template_satisfied")
                     ],
+                    "strong_matched_template_types": [
+                        str(evaluation.get("template_type") or "")
+                        for evaluation in template_result.get("template_evaluations", [])
+                        if evaluation.get("template_strongly_satisfied")
+                    ],
                     "template_match_reason": template_result.get("template_match_reason", ""),
                     "template_satisfied": bool(template_result.get("template_satisfied", False)),
+                    "template_strongly_satisfied": bool(
+                        template_result.get("template_strongly_satisfied", False)
+                    ),
+                    "template_match_level": str(
+                        template_result.get("template_match_level") or "none"
+                    ),
                     "template_failure_reason": template_result.get("template_failure_reason", ""),
                     "template_evaluations": template_result.get("template_evaluations", []),
+                    "template_decision_source": template_decision_source,
                 }
             )
             matched_templates = [
@@ -1142,54 +1220,33 @@ class ScholarFulltextService:
                 for template_id in updated["matched_template_ids"]
                 if template_id in templates_by_id
             ]
+            strong_matched_templates = [
+                templates_by_id[template_id]
+                for template_id in updated["strong_matched_template_ids"]
+                if template_id in templates_by_id
+            ]
             auto_include = any(
                 bool(self._load_json(template.scoring_rules_json).get("auto_include_in_report", False))
-                for template in matched_templates
+                for template in strong_matched_templates
             )
             updated["template_auto_include"] = auto_include
             if matched_templates:
                 updated["template_display_label"] = " / ".join(
                     template.description or template.name for template in matched_templates
                 )
-            if (
-                auto_include
-                and updated.get("reference_match_status") == "matched"
-                and updated.get("recommendation") != "exclude"
-                and updated.get("claim_type") not in {"limitation_feedback", "false_positive"}
-            ):
-                updated["recommendation"] = "include"
-                updated["claim_type"] = "custom_template_evidence"
-            elif updated["template_satisfied"] and updated.get("reference_match_status") != "matched":
-                updated["recommendation"] = "review"
-            matched_builtin_types = {
-                template.template_type
-                for template in matched_templates
-                if template.template_type
-                in {
-                    "first_or_pioneering_claim",
-                    "first_or_seminal_claim",
-                    "detailed_comparison",
-                    "baseline_or_benchmark",
-                    "positive_evaluation",
-                    "method_or_capability_summary",
-                }
-            }
-            canonical_claim_type = self._canonical_direct_template_claim_type(
-                matched_builtin_types
+            if template_decision_source == "llm":
+                self._apply_direct_model_template_recommendation(
+                    updated,
+                    strong_matched_templates,
+                )
+            updated["stance"] = self._direct_evidence_stance(
+                updated,
+                strong_matched_templates,
             )
-            if (
-                canonical_claim_type
-                and updated.get("recommendation") != "exclude"
-                and updated.get("reference_match_status") == "matched"
-                and not updated.get("grouped_citation")
-                and not updated.get("reference_attribution_conflict")
-            ):
-                updated["claim_type"] = canonical_claim_type
-                updated["recommendation"] = "include"
             if (
                 updated.get("recommendation") == "include"
                 and active_templates
-                and not matched_templates
+                and not strong_matched_templates
             ):
                 updated["recommendation"] = "review"
             updated["final_recommendation"] = str(
@@ -1202,24 +1259,247 @@ class ScholarFulltextService:
             updated["filter_reason_codes"] = reason_codes
             updated["failure_reason_codes"] = reason_codes
             normalized_evidences.append(updated)
-        normalized["evidences"] = normalized_evidences
+        normalized["evidences"] = self._deduplicate_direct_strong_clusters(
+            normalized_evidences
+        )
         return normalized
 
-    def _canonical_direct_template_claim_type(
+    def _missing_direct_model_template_result(
         self,
-        template_types: set,
-    ) -> str:
-        priorities = (
-            ("first_or_seminal_claim", {"first_or_pioneering_claim", "first_or_seminal_claim"}),
-            ("detailed_comparison", {"detailed_comparison"}),
-            ("baseline_or_benchmark", {"baseline_or_benchmark"}),
-            ("positive_evaluation", {"positive_evaluation"}),
-            ("custom_template_evidence", {"method_or_capability_summary"}),
+        active_templates: List,
+    ) -> dict:
+        reason = "model did not return a template decision"
+        return {
+            "matched_template_ids": [],
+            "matched_template_names": [],
+            "strong_matched_template_ids": [],
+            "template_match_reason": "",
+            "template_satisfied": False,
+            "template_strongly_satisfied": False,
+            "template_match_level": "none",
+            "template_failure_reason": reason,
+            "template_evaluations": [
+                {
+                    "template_id": template.id,
+                    "template_name": template.description or template.name,
+                    "template_type": template.template_type,
+                    "template_satisfied": False,
+                    "template_strongly_satisfied": False,
+                    "template_match_level": "none",
+                    "template_match_reason": "",
+                    "template_failure_reason": reason,
+                    "matched_terms": [],
+                    "match_score": 0.0,
+                }
+                for template in active_templates
+            ],
+        }
+
+    def _deduplicate_direct_strong_clusters(
+        self,
+        evidences: List[dict],
+    ) -> List[dict]:
+        """Keep one reportable evidence per marker/template/claim cluster."""
+        clustered: Dict[tuple, dict] = {}
+        cluster_indexes: Dict[tuple, int] = {}
+        output: List[dict] = []
+        for evidence in evidences:
+            strong_ids = tuple(
+                sorted(
+                    int(value)
+                    for value in evidence.get("strong_matched_template_ids", []) or []
+                    if str(value).isdigit()
+                )
+            )
+            if (
+                evidence.get("final_recommendation") != "include"
+                or not strong_ids
+            ):
+                output.append(evidence)
+                continue
+            marker = str(
+                evidence.get("evidence_reference_marker")
+                or evidence.get("target_reference_marker")
+                or ""
+            ).strip()
+            key = (
+                marker,
+                str(evidence.get("final_claim_type") or "").strip(),
+                strong_ids,
+            )
+            current = clustered.get(key)
+            if current is None:
+                kept = dict(evidence)
+                kept["deduplicated_cluster_size"] = 1
+                clustered[key] = kept
+                cluster_indexes[key] = len(output)
+                output.append(kept)
+                continue
+            current["deduplicated_cluster_size"] = (
+                int(current.get("deduplicated_cluster_size") or 1) + 1
+            )
+            if self._direct_cluster_evidence_rank(evidence) > (
+                self._direct_cluster_evidence_rank(current)
+            ):
+                replacement = dict(evidence)
+                replacement["deduplicated_cluster_size"] = current[
+                    "deduplicated_cluster_size"
+                ]
+                output[cluster_indexes[key]] = replacement
+                clustered[key] = replacement
+        return output
+
+    def _direct_cluster_evidence_rank(self, evidence: dict) -> tuple:
+        confidence_rank = {"high": 3, "medium": 2, "low": 1}
+        quote = str(evidence.get("evidence_quote") or "")
+        context = str(
+            evidence.get("evidence_context")
+            or evidence.get("surrounding_context")
+            or ""
         )
-        for claim_type, matching_types in priorities:
-            if template_types & matching_types:
-                return claim_type
-        return ""
+        return (
+            1 if not evidence.get("grouped_citation") else 0,
+            1
+            if str(evidence.get("attribution_scope") or "") == "single_target"
+            else 0,
+            confidence_rank.get(str(evidence.get("confidence") or "").lower(), 0),
+            len(context),
+            len(quote),
+        )
+
+    def _direct_model_template_result(
+        self,
+        active_templates: List,
+        evidence: dict,
+    ) -> Optional[dict]:
+        raw_ids = evidence.get("matched_template_ids")
+        raw_satisfied = evidence.get("template_satisfied")
+        has_model_decision = (
+            raw_satisfied is not None
+            or bool(raw_ids)
+            or bool(str(evidence.get("template_match_reason") or "").strip())
+            or bool(str(evidence.get("template_failure_reason") or "").strip())
+        )
+        if not has_model_decision:
+            return None
+
+        templates_by_id = {template.id: template for template in active_templates}
+        matched_ids = []
+        for value in raw_ids or []:
+            try:
+                template_id = int(value)
+            except (TypeError, ValueError):
+                continue
+            if template_id in templates_by_id and template_id not in matched_ids:
+                matched_ids.append(template_id)
+        if raw_satisfied is False:
+            matched_ids = []
+
+        strong_ids = list(matched_ids)
+        match_reason = str(evidence.get("template_match_reason") or "").strip()
+        failure_reason = str(evidence.get("template_failure_reason") or "").strip()
+        evaluations = []
+        for template in active_templates:
+            matched = template.id in matched_ids
+            strong = template.id in strong_ids
+            evaluations.append(
+                {
+                    "template_id": template.id,
+                    "template_name": template.description or template.name,
+                    "template_type": template.template_type,
+                    "template_satisfied": matched,
+                    "template_strongly_satisfied": strong,
+                    "template_match_level": (
+                        "strong" if strong else "candidate" if matched else "none"
+                    ),
+                    "template_match_reason": match_reason if matched else "",
+                    "template_failure_reason": "" if matched else failure_reason,
+                    "matched_terms": [],
+                    "match_score": 100.0 if strong else 50.0 if matched else 0.0,
+                }
+            )
+        return {
+            "matched_template_ids": matched_ids,
+            "matched_template_names": [
+                templates_by_id[template_id].description
+                or templates_by_id[template_id].name
+                for template_id in matched_ids
+            ],
+            "strong_matched_template_ids": strong_ids,
+            "template_match_reason": match_reason,
+            "template_satisfied": bool(matched_ids),
+            "template_strongly_satisfied": bool(strong_ids),
+            "template_match_level": (
+                "strong" if strong_ids else "candidate" if matched_ids else "none"
+            ),
+            "template_failure_reason": failure_reason,
+            "template_evaluations": evaluations,
+        }
+
+    def _apply_direct_model_template_recommendation(
+        self,
+        evidence: dict,
+        strong_matched_templates: List,
+    ) -> None:
+        hard_valid = (
+            self._direct_reference_status(evidence) == "matched"
+            and not evidence.get("reference_attribution_conflict")
+            and str(evidence.get("target_anchor_status") or "") != "missing"
+            and str(evidence.get("claim_type") or "") != "false_positive"
+            and not any(
+                reason in str(evidence.get("postprocess_reason") or "")
+                for reason in (
+                    "reference_only",
+                    "title_or_reference_only",
+                    "cited_other_reference_marker",
+                    "target_anchor_missing",
+                    "reference_entry_target_mismatch",
+                )
+            )
+        )
+        if not hard_valid:
+            evidence["recommendation"] = (
+                "review"
+                if self._direct_reference_status(evidence) == "unresolved"
+                else "exclude"
+            )
+            evidence["strong_matched_template_ids"] = []
+            evidence["template_strongly_satisfied"] = False
+            evidence["template_match_level"] = (
+                "candidate" if evidence.get("matched_template_ids") else "none"
+            )
+            return
+        if strong_matched_templates:
+            evidence["recommendation"] = "include"
+            return
+        if evidence.get("matched_template_ids"):
+            evidence["recommendation"] = "review"
+
+    def _direct_evidence_stance(self, evidence: dict, matched_templates: List) -> str:
+        claim_type = str(evidence.get("claim_type") or "")
+        if claim_type in {"limitation_feedback", "limitation_or_negative"}:
+            return "negative"
+        supplied = str(evidence.get("stance") or "").strip().lower()
+        if supplied in {"positive", "neutral", "negative", "mixed"}:
+            return supplied
+        intents = {
+            template_stance_intent(template)
+            for template in matched_templates
+        }
+        if "negative" in intents:
+            return "negative"
+        if "positive" in intents:
+            return "positive"
+        if "neutral" in intents:
+            return "neutral"
+        if claim_type in {
+            "positive_evaluation",
+            "first_or_seminal_claim",
+            "detailed_comparison",
+            "baseline_or_benchmark",
+        }:
+            return "positive"
+        return "neutral"
 
     def _build_template_direct_compact_text(
         self,
@@ -1808,22 +2088,32 @@ class ScholarFulltextService:
         self,
         session_id: int,
     ) -> Dict[str, object]:
-        result = self.db.scalar(
-            select(FulltextAnalysisResult)
-            .where(
-                FulltextAnalysisResult.scholar_session_id == session_id,
-                FulltextAnalysisResult.analysis_scope
-                == "fulltext_template_direct",
-                FulltextAnalysisResult.status == "succeeded",
+        results = list(
+            self.db.scalars(
+                select(FulltextAnalysisResult)
+                .where(
+                    FulltextAnalysisResult.scholar_session_id == session_id,
+                    FulltextAnalysisResult.analysis_scope
+                    == "fulltext_template_direct",
+                    FulltextAnalysisResult.status == "succeeded",
+                )
+                .order_by(
+                    FulltextAnalysisResult.created_at.desc(),
+                    FulltextAnalysisResult.id.desc(),
+                )
             )
-            .order_by(
-                FulltextAnalysisResult.created_at.desc(),
-                FulltextAnalysisResult.id.desc(),
-            )
-            .limit(1)
         )
+        latest_results = []
+        seen_queue_items = set()
+        for result in results:
+            if result.queue_item_id in seen_queue_items:
+                continue
+            seen_queue_items.add(result.queue_item_id)
+            latest_results.append(result)
         layers: Dict[str, object] = {
             "result_id": None,
+            "result_ids": [],
+            "result_count": 0,
             "strong": [],
             "review": [],
             "excluded": [],
@@ -1833,28 +2123,39 @@ class ScholarFulltextService:
                 "excluded": 0,
             },
         }
-        if result is None:
+        if not latest_results:
             return layers
-        payload = self._load_json(result.parsed_result_json)
-        rows = [
-            self._direct_candidate_view_row(evidence)
-            for evidence in payload.get("evidences", []) or []
-            if isinstance(evidence, dict)
-        ]
-        for row in rows:
-            recommendation = str(row["recommendation"])
-            key = (
-                "strong"
-                if recommendation == "include"
-                else "review"
-                if recommendation == "review"
-                else "excluded"
-            )
-            layers[key].append(row)
-        layers["result_id"] = result.id
+        for result in latest_results:
+            payload = self._load_json(result.parsed_result_json)
+            for evidence in payload.get("evidences", []) or []:
+                if not isinstance(evidence, dict):
+                    continue
+                row = self._direct_candidate_view_row(evidence)
+                row["result_id"] = result.id
+                row["queue_item_id"] = result.queue_item_id
+                recommendation = str(row["recommendation"])
+                key = (
+                    "strong"
+                    if recommendation == "include"
+                    else "review"
+                    if recommendation == "review"
+                    else "excluded"
+                )
+                layers[key].append(row)
+        layers["result_id"] = latest_results[0].id
+        layers["result_ids"] = [result.id for result in latest_results]
+        layers["result_count"] = len(latest_results)
         layers["counts"] = {
             key: len(layers[key])
             for key in ("strong", "review", "excluded")
+        }
+        layers["strong_stance_counts"] = {
+            stance: sum(
+                1
+                for evidence in layers["strong"]
+                if evidence.get("stance") == stance
+            )
+            for stance in ("positive", "neutral", "negative")
         }
         return layers
 
@@ -1863,10 +2164,8 @@ class ScholarFulltextService:
         alignment = self._direct_reference_status(evidence)
         if alignment != "matched":
             missing_dimension = "引用对齐未完成"
-        elif evidence.get("grouped_citation"):
-            missing_dimension = "成组引用无法单独归因"
         elif not evidence.get("matched_template_ids"):
-            missing_dimension = "当前启用模板未覆盖或未满足"
+            missing_dimension = self._direct_missing_template_dimension(evidence)
         elif evidence.get("template_satisfied") is not True:
             missing_dimension = "模板严格条件未满足"
         else:
@@ -1878,6 +2177,7 @@ class ScholarFulltextService:
                 or evidence.get("claim_type")
                 or "ordinary_reference"
             ),
+            "stance": self._direct_evidence_stance(evidence, []),
             "evidence_quote": str(evidence.get("evidence_quote") or ""),
             "evidence_context": str(
                 evidence.get("evidence_context")
@@ -1899,6 +2199,30 @@ class ScholarFulltextService:
             "filter_reason_codes": reason_codes,
             "missing_dimension": missing_dimension,
         }
+
+    def _direct_missing_template_dimension(self, evidence: dict) -> str:
+        claim_type = str(
+            evidence.get("final_claim_type")
+            or evidence.get("claim_type")
+            or ""
+        )
+        reason_codes = set(direct_evidence_failure_reason_codes(evidence))
+        if "target_marker_missing" in reason_codes:
+            return "正文目标引用锚点缺失"
+        if "reference_mismatch" in reason_codes:
+            return "正文引用与目标参考文献不一致"
+        if claim_type in {"ordinary_reference", "ordinary_citation"}:
+            return "正文仅为普通或中立引用，当前评价模板未覆盖"
+        if claim_type in {
+            "method_summary",
+            "capability_summary",
+            "method_use",
+            "capability_recognition",
+        }:
+            return "正文是方法或能力概述，但未满足当前评价模板的明确条件"
+        if claim_type in {"limitation_feedback", "limitation_or_negative"}:
+            return "正文含局限性描述，但未满足负面/局限评价模板的锚点或作用域条件"
+        return "当前启用模板未覆盖或未满足"
 
     def list_analysis_diagnostics(self, session_id: int) -> List[Dict[str, object]]:
         statement = (
@@ -2697,8 +3021,6 @@ class ScholarFulltextService:
     def _is_template_eligible_candidate(self, evidence: dict) -> bool:
         if self._direct_reference_status(evidence) != "matched":
             return False
-        if evidence.get("grouped_citation"):
-            return False
         if evidence.get("reference_attribution_conflict"):
             return False
         if str(evidence.get("target_anchor_status") or "") == "missing":
@@ -2709,7 +3031,6 @@ class ScholarFulltextService:
             & {
                 "reference_mismatch",
                 "target_marker_missing",
-                "grouped_citation_not_allowed",
                 "reference_only",
             }
         )

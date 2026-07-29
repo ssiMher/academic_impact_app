@@ -46,16 +46,9 @@ class BibliographicIdentityMatch:
 
 def reference_entries_by_marker(fulltext: str) -> Dict[str, str]:
     """Return raw References entries keyed by numeric citation marker."""
-    references_start = _references_section_start(fulltext)
-    if references_start is None:
-        return {}
-    references_text = fulltext[references_start:]
     return {
         marker: entry_text.strip()
-        for marker, entry_text, _start, _end in _extract_reference_entries(
-            references_text,
-            references_start,
-        )
+        for marker, entry_text, _start, _end in _reference_entries(fulltext)
     }
 
 
@@ -197,11 +190,7 @@ def find_target_reference_anchor(
     cited_doi: Optional[str] = None,
     cited_authors: Optional[List[str]] = None,
 ) -> Optional[ReferenceAnchor]:
-    references_start = _references_section_start(fulltext)
-    if references_start is None:
-        return None
-    references_text = fulltext[references_start:]
-    entries = _extract_reference_entries(references_text, references_start)
+    entries = _reference_entries(fulltext)
     if not entries:
         return None
 
@@ -289,7 +278,7 @@ def extract_target_reference_contexts(
 ) -> List[TargetReferenceContext]:
     if not fulltext or not reference_marker:
         return []
-    body_end = _references_section_start(fulltext)
+    body_end = _references_body_end(fulltext)
     body_text = fulltext[:body_end] if body_end is not None else fulltext
     contexts: List[TargetReferenceContext] = []
     seen = set()
@@ -334,7 +323,7 @@ def extract_alias_contexts(
     window_chars: int = 1000,
     max_contexts: int = 8,
 ) -> List[TargetReferenceContext]:
-    body_end = _references_section_start(fulltext)
+    body_end = _references_body_end(fulltext)
     body_text = fulltext[:body_end] if body_end is not None else fulltext
     contexts: List[TargetReferenceContext] = []
     seen = set()
@@ -393,6 +382,74 @@ def _extract_reference_entries(references_text: str, offset: int):
         entry_text = references_text[start:end]
         entries.append((marker, entry_text, offset + start, offset + end))
     return entries
+
+
+def _reference_entries(fulltext: str):
+    references_start = _references_section_start(fulltext)
+    if references_start is not None:
+        return _extract_reference_entries(
+            fulltext[references_start:],
+            references_start,
+        )
+
+    # Some PDF extractors omit or mangle the References heading. In that case,
+    # inspect only the document tail and require several bibliography-shaped
+    # numbered entries before accepting the inferred section.
+    text = fulltext or ""
+    candidates = _extract_reference_entries(text, 0)
+    plausible = [
+        entry
+        for entry in candidates
+        if _looks_like_bibliographic_entry(entry[1])
+    ]
+    if len(plausible) < 3:
+        return []
+
+    runs = []
+    current = []
+    previous_marker = None
+    for entry in plausible:
+        marker = int(entry[0])
+        if previous_marker is None or 0 < marker - previous_marker <= 3:
+            current.append(entry)
+        else:
+            if current:
+                runs.append(current)
+            current = [entry]
+        previous_marker = marker
+    if current:
+        runs.append(current)
+    eligible_runs = [run for run in runs if len(run) >= 3]
+    return eligible_runs[-1] if eligible_runs else []
+
+
+def _references_body_end(fulltext: str) -> Optional[int]:
+    references_start = _references_section_start(fulltext)
+    if references_start is not None:
+        return references_start
+    entries = _reference_entries(fulltext)
+    return min((entry[2] for entry in entries), default=None)
+
+
+def _looks_like_bibliographic_entry(entry_text: str) -> bool:
+    text = " ".join((entry_text or "")[:2500].split())
+    if not text or len(text) > 1800:
+        return False
+    cues = 0
+    if re.search(r"\b(?:19|20)\d{2}\b", text):
+        cues += 1
+    if re.search(
+        r"\b(?:doi|vol\.?|no\.?|pp?\.?|proc\.?|proceedings|journal|"
+        r"transactions?|conference|symposium|workshop|IEEE|ACM)\b",
+        text,
+        flags=re.I,
+    ):
+        cues += 1
+    if re.search(r"[“\"].{8,}[”\"]", text):
+        cues += 1
+    if re.search(r"^\s*\[\s*\d+\s*\]\s+[A-Z][.\w-]*(?:\s+[A-Z][.\w-]*)*,", text):
+        cues += 1
+    return cues >= 2
 
 
 def _token_overlap(entry_text: str, title_text: str) -> float:

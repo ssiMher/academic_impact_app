@@ -4,7 +4,7 @@ import json
 from typing import Dict, Iterable, List, Optional
 
 from fastapi import Depends
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.analysis.evidence_highlighting import build_highlighted_text_html
@@ -104,6 +104,26 @@ class EvidenceService:
         pagination: Optional[dict] = None,
     ) -> List[dict]:
         view = (filters or {}).get("view", "all")
+        latest_only = bool((filters or {}).get("latest_only", False))
+        latest_result_by_item = {}
+        if latest_only:
+            latest_result_by_item = {
+                int(queue_item_id): int(result_id)
+                for queue_item_id, result_id in self.db.execute(
+                    select(
+                        FulltextAnalysisResult.queue_item_id,
+                        func.max(FulltextAnalysisResult.id),
+                    )
+                    .where(
+                        FulltextAnalysisResult.scholar_session_id == session_id,
+                        FulltextAnalysisResult.analysis_scope
+                        == "fulltext_template_direct",
+                        FulltextAnalysisResult.status == "succeeded",
+                    )
+                    .group_by(FulltextAnalysisResult.queue_item_id)
+                ).all()
+                if queue_item_id is not None and result_id is not None
+            }
         statement = (
             select(StrongEvidence, DeepAnalysisQueueItem)
             .join(
@@ -115,6 +135,9 @@ class EvidenceService:
         rows = []
         changed = False
         for evidence, item in self.db.execute(statement).all():
+            latest_result_id = latest_result_by_item.get(item.id)
+            if latest_result_id is not None and evidence.fulltext_result_id != latest_result_id:
+                continue
             if not self._matches_view(evidence, item, view):
                 continue
             context_preview = self._context_preview(evidence)
@@ -138,6 +161,22 @@ class EvidenceService:
                 context_preview=context_preview,
                 notable_author=None,
             )
+            direct_evidence = self._template_direct_evidence(evidence)
+            if direct_evidence:
+                model_reason = str(
+                    direct_evidence.get("why_this_judgment_zh") or ""
+                ).strip()
+                model_evaluation = str(
+                    direct_evidence.get("copy_ready_zh") or ""
+                ).strip()
+                if model_reason:
+                    narrative["why_this_judgment"] = model_reason
+                    narrative["judgment_basis_zh"] = model_reason
+                if model_evaluation:
+                    narrative["narrative_zh"] = model_evaluation
+                    narrative["evidence_claim_zh"] = model_evaluation
+                    narrative["copy_ready_statement"] = model_evaluation
+                    narrative["copy_ready_statement_zh"] = model_evaluation
             narrative.update(
                 {
                     "matched_template_ids": self._load_json_list(evidence.matched_template_ids_json),
@@ -173,6 +212,20 @@ class EvidenceService:
             ),
             reverse=True,
         )
+
+    def _template_direct_evidence(self, evidence: StrongEvidence) -> dict:
+        result = self.db.get(FulltextAnalysisResult, evidence.fulltext_result_id)
+        if result is None or result.analysis_scope != "fulltext_template_direct":
+            return {}
+        payload = self._load_json(result.parsed_result_json)
+        evidences = payload.get("evidences")
+        if not isinstance(evidences, list):
+            return {}
+        index = evidence.span_index
+        if not isinstance(index, int) or not 0 <= index < len(evidences):
+            return {}
+        direct_evidence = evidences[index]
+        return direct_evidence if isinstance(direct_evidence, dict) else {}
 
     def update_evidence_review(
         self,

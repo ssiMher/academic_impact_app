@@ -25,7 +25,15 @@ def handle_download_ieee_pdf(db: Session, task: AnalysisTask) -> None:
     )
     task.progress_current = 1
     if result.status == "requires_login":
+        task.status = "waiting_for_login"
+        task.stage = "waiting_for_login"
+        task.progress_current = 0
         task.stage_message = "IEEE 下载助手需要重新完成机构登录"
+    elif result.status == "challenge_blocked":
+        task.status = "challenge_blocked"
+        task.stage = "challenge_blocked"
+        task.progress_current = 0
+        task.stage_message = "IEEE 页面受到挑战限制，已停止自动访问"
     elif result.status == "skipped_existing_pdf":
         task.stage_message = "IEEE PDF skipped: queue item already has a PDF"
     elif result.status == "downloaded":

@@ -1,7 +1,30 @@
-{% from "components/status_badge.html" import status_badge %}
-
-{% set task_active = task.status in ["pending", "running"] %}
+{% set task_poll_active_statuses = task_poll_active_statuses | default(["pending", "running"]) %}
+{% set task_terminal_reload = task_terminal_reload | default(true) %}
+{% set show_ieee_session_controls = show_ieee_session_controls | default(false) %}
+{% set allow_task_pause_resume = allow_task_pause_resume | default(false) %}
+{% set ieee_session = task.ieee_session_status if task.ieee_session_status is defined and task.ieee_session_status is mapping else {} %}
+{% set ieee_session_state = ieee_session.label or ieee_session.state or ieee_session.status or ieee_session.session_state or "not_checked" %}
+{% set ieee_session_message = ieee_session.message or ieee_session.hint or ieee_session.status_message or "主系统不会接收或保存 IEEE 凭据，只显示安全会话状态。" %}
+{% set ieee_session_updated_at = ieee_session.updated_at or ieee_session.checked_at or ieee_session.last_checked_at or ieee_session.last_updated_at or "未检查" %}
+{% set ieee_session_counters = ieee_session.result_counters if ieee_session.result_counters is defined and ieee_session.result_counters is mapping else (ieee_session.counters if ieee_session.counters is defined and ieee_session.counters is mapping else {}) %}
+{% set task_active = task.status in task_poll_active_statuses %}
 {% set live_summary = task.result_summary or task.progress_summary or {} %}
+{% set task_status_badge_class = "badge-muted" %}
+{% if task.status == "succeeded" %}
+  {% set task_status_badge_class = "badge-success" %}
+{% elif task.status in ["failed", "cancelled", "challenge_blocked"] %}
+  {% set task_status_badge_class = "badge-danger" %}
+{% elif task.status in ["pending", "running", "waiting_for_login", "paused"] %}
+  {% set task_status_badge_class = "badge-warning" %}
+{% endif %}
+{% set ieee_session_badge_class = "badge-muted" %}
+{% if ieee_session_state in ["ready", "authenticated", "active", "ok", "enabled"] %}
+  {% set ieee_session_badge_class = "badge-success" %}
+{% elif ieee_session_state in ["challenge_blocked", "failed", "closed", "disabled"] %}
+  {% set ieee_session_badge_class = "badge-danger" %}
+{% elif ieee_session_state in ["pending", "waiting_for_login", "session_expired", "unauthenticated", "paused", "not_checked"] %}
+  {% set ieee_session_badge_class = "badge-warning" %}
+{% endif %}
 <section
   class="task-notice task-progress js-task-progress"
   id="task-progress-{{ task.id }}"
@@ -11,7 +34,9 @@
   data-task-type="{{ task.task_type }}"
   data-task-status="{{ task.status }}"
   data-status-url="/scholar-sessions/{{ session_id }}/tasks/{{ task.id }}/status"
+  data-active-statuses="{{ task_poll_active_statuses | join(',') }}"
   data-active="{{ 'true' if task_active else 'false' }}"
+  data-terminal-reload="{{ 'true' if task_terminal_reload else 'false' }}"
   {% if task_disable_target %}data-disable-target="{{ task_disable_target }}"{% endif %}
 >
   {% if task_created and task_created_message %}
@@ -25,7 +50,7 @@
       <p class="sr-only">Task #{{ task.id }} {{ task.task_type }} - {{ task.status }}</p>
     </div>
     <span data-task-role="status-badge">
-      {{ status_badge(task.status) }}
+      <span class="badge {{ task_status_badge_class }}">{{ task.status }}</span>
     </span>
   </div>
 
@@ -77,9 +102,135 @@
     </div>
   {% endif %}
 
-  {% if task_active and task_pending_help %}
-    <p data-task-role="pending-help">{{ task_pending_help }}</p>
-  {% elif task.status == "succeeded" and task_success_href %}
+  {% if show_ieee_session_controls %}
+    <section class="ieee-session-panel" data-task-role="ieee-session-panel" aria-label="IEEE session workflow">
+      <div class="card-row card-row-between">
+        <div>
+          <h3>IEEE 会话协调</h3>
+          <p class="muted" data-task-role="ieee-session-summary">
+            {% if task.status == "waiting_for_login" %}
+              任务正在等待 IEEE 登录。请在专用浏览器中完成登录后检查或恢复任务。
+            {% elif task.status == "challenge_blocked" %}
+              任务被 IEEE 验证步骤阻塞。请先在专用浏览器中完成 challenge，再检查或恢复任务。
+            {% elif task.status == "paused" %}
+              任务已暂停。处理完 IEEE 会话后可继续恢复。
+            {% else %}
+              如遇 IEEE 登录或验证，可在这里打开、检查、重置或关闭专用会话。
+            {% endif %}
+          </p>
+        </div>
+        <span data-task-role="ieee-session-badge">
+          <span class="badge {{ ieee_session_badge_class }}">{{ ieee_session_state }}</span>
+        </span>
+      </div>
+      <p class="task-message ieee-session-message" data-task-role="ieee-session-message">
+        {{ ieee_session_message }}
+      </p>
+      <dl class="meta-grid ieee-session-meta">
+        <div>
+          <dt>任务状态</dt>
+          <dd data-task-role="ieee-task-status">{{ task.status }}</dd>
+        </div>
+        <div>
+          <dt>会话状态</dt>
+          <dd data-task-role="ieee-session-state">{{ ieee_session_state }}</dd>
+        </div>
+        <div>
+          <dt>最近检查</dt>
+          <dd data-task-role="ieee-session-updated">{{ ieee_session_updated_at }}</dd>
+        </div>
+        <div>
+          <dt>持久 Profile</dt>
+          <dd data-task-role="ieee-profile-exists">{{ "已存在" if ieee_session.profile_exists else "未检测到" }}</dd>
+        </div>
+        <div>
+          <dt>Profile 占用</dt>
+          <dd data-task-role="ieee-profile-locked">{{ "使用中" if ieee_session.profile_locked else "空闲" }}</dd>
+        </div>
+        <div>
+          <dt>登录窗口</dt>
+          <dd data-task-role="ieee-login-window">{{ "已打开" if ieee_session.login_window_open else "未打开" }}</dd>
+        </div>
+        <div>
+          <dt>个人账号</dt>
+          <dd data-task-role="ieee-personal-login">
+            {{ "已登录" if ieee_session.personal_login else "未确认" }}
+          </dd>
+        </div>
+        <div>
+          <dt>机构访问</dt>
+          <dd data-task-role="ieee-institution-access">
+            {% if ieee_session.institution_access %}
+              已生效{% if ieee_session.institution_name %} · {{ ieee_session.institution_name }}{% endif %}
+            {% else %}
+              未确认
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
+      <div
+        class="stat-grid ieee-session-counters"
+        data-task-role="ieee-session-counters"
+        {% if not ieee_session_counters %}hidden{% endif %}
+      >
+        {% for key, value in ieee_session_counters.items() %}
+          <article class="stat-card">
+            <div class="stat-value">{{ value }}</div>
+            <div class="stat-label">{{ key | replace("_", " ") }}</div>
+          </article>
+        {% endfor %}
+      </div>
+      <div class="action-row ieee-session-actions" data-task-role="ieee-session-actions">
+        <form action="/scholar-sessions/{{ session_id }}/ieee-session/open" method="post">
+          <input type="hidden" name="task_id" value="{{ task.id }}">
+          <button class="button button-secondary" type="submit">打开 IEEE 登录窗口</button>
+        </form>
+        <form action="/scholar-sessions/{{ session_id }}/ieee-session/check" method="post">
+          <input type="hidden" name="task_id" value="{{ task.id }}">
+          <button class="button button-secondary" type="submit">检测登录状态</button>
+        </form>
+        <form action="/scholar-sessions/{{ session_id }}/ieee-session/reset" method="post">
+          <input type="hidden" name="task_id" value="{{ task.id }}">
+          <button class="button button-danger" type="submit">重置 IEEE 会话</button>
+        </form>
+        <form action="/scholar-sessions/{{ session_id }}/ieee-session/close" method="post">
+          <input type="hidden" name="task_id" value="{{ task.id }}">
+          <button class="button button-secondary" type="submit">关闭登录窗口</button>
+        </form>
+        {% if allow_task_pause_resume %}
+          <form action="/scholar-sessions/{{ session_id }}/tasks/{{ task.id }}/pause" method="post">
+            <button
+              class="button button-secondary"
+              data-task-control="pause"
+              type="submit"
+              {% if task.status not in ["pending", "running", "waiting_for_login", "challenge_blocked"] %}disabled aria-disabled="true"{% endif %}
+            >
+              暂停任务
+            </button>
+          </form>
+          <form action="/scholar-sessions/{{ session_id }}/tasks/{{ task.id }}/resume" method="post">
+            <button
+              class="button button-primary"
+              data-task-control="resume"
+              type="submit"
+              {% if task.status not in ["waiting_for_login", "challenge_blocked", "paused"] %}disabled aria-disabled="true"{% endif %}
+            >
+              继续 IEEE 下载
+            </button>
+          </form>
+        {% endif %}
+      </div>
+      <p class="muted ieee-session-footnote">
+        这里只显示安全状态、计数与操作提示，不显示账号、Cookie 或浏览器内部数据。
+      </p>
+    </section>
+  {% endif %}
+
+  <p data-task-role="pending-help" {% if not (task_active and task_pending_help) %}hidden{% endif %}>
+    {{ task_pending_help or "" }}
+  </p>
+
+  {% if task.status == "succeeded" and task_success_href %}
     <p>
       {{ task_success_message }}
       <a href="{{ task_success_href }}">{{ task_success_label }}</a>。

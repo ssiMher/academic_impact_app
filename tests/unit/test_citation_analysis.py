@@ -18,7 +18,10 @@ from app.analysis.citation_anchor import (
 )
 from app.analysis.evidence_highlighting import build_highlight_keywords
 from app.analysis.evidence_scoring import score_finding
-from app.analysis.llm_parser import parse_llm_response
+from app.analysis.llm_parser import (
+    parse_llm_response,
+    parse_template_direct_response_with_diagnostics,
+)
 from app.db.base import Base
 from app.models import (
     AnalysisTask,
@@ -223,6 +226,60 @@ def test_llm_parser_normalizes_finding_field_aliases():
     assert finding.citation_text == "The target paper is a method foundation."
     assert finding.reasoning == "The quote names a concrete method dependency."
     assert finding.keywords == ["method foundation"]
+
+
+@pytest.mark.parametrize(
+    "claim_type",
+    ["theoretical_foundation", "method_foundation"],
+)
+def test_template_direct_parser_accepts_prompt_claim_types(claim_type):
+    raw = json.dumps(
+        {
+            "target_reference_marker": "[36]",
+            "target_reference_entry": "[36] A. Author. Target Paper.",
+            "paper_level_summary_zh": "发现正文证据。",
+            "evidences": [
+                {
+                    "recommendation": "review",
+                    "claim_type": claim_type,
+                    "evidence_quote": "The model follows Target Paper [36].",
+                    "evidence_context": "The model follows Target Paper [36].",
+                    "reference_entry": "[36] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "正文引用目标论文。",
+                    "copy_ready_zh": "后续工作引用了目标论文。",
+                    "confidence": "medium",
+                }
+            ],
+        }
+    )
+
+    result = parse_template_direct_response_with_diagnostics(raw)
+
+    assert result.evidences[0].claim_type == claim_type
+
+
+def test_template_direct_parser_repairs_invalid_apostrophe_escape():
+    raw = r'''
+    {
+      "target_reference_marker": "[60]",
+      "target_reference_entry": "[60] Target Paper",
+      "paper_level_summary_zh": "发现正文证据。",
+      "evidences": [{
+        "recommendation": "review",
+        "claim_type": "ordinary_reference",
+        "evidence_quote": "moir\'e patterns cite Target Paper [60]",
+        "evidence_context": "moir\'e patterns cite Target Paper [60]",
+        "reference_entry": "[60] Target Paper",
+        "why_this_judgment_zh": "正文引用目标论文。",
+        "copy_ready_zh": "后续论文提及目标论文。",
+        "confidence": "medium"
+      }]
+    }
+    '''
+
+    result = parse_template_direct_response_with_diagnostics(raw)
+
+    assert result.evidences[0].evidence_quote.startswith("moir'e")
 
 
 def test_llm_no_evidence_text_becomes_empty_findings():

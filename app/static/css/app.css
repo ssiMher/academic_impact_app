@@ -259,6 +259,10 @@ button:hover {
   background: var(--primary-strong);
 }
 
+.button-secondary:hover {
+  background: #eef4f8;
+}
+
 .button-secondary,
 .filter-buttons a,
 .quick-links a {
@@ -271,6 +275,10 @@ button:hover {
   background: #fff;
   border-color: #f2aaa5;
   color: var(--danger);
+}
+
+.button-danger:hover {
+  background: #fff1f0;
 }
 
 button:disabled,
@@ -472,11 +480,52 @@ mark.target-reference {
   accent-color: var(--danger);
 }
 
+.task-progress[data-task-status="waiting_for_login"] progress,
+.task-progress[data-task-status="paused"] progress {
+  accent-color: var(--warning);
+}
+
+.task-progress[data-task-status="challenge_blocked"] progress {
+  accent-color: var(--danger);
+}
+
 .task-error {
   background: #fee4e2;
   border-radius: 12px;
   color: var(--danger);
   padding: 10px;
+}
+
+.ieee-session-panel {
+  background: linear-gradient(180deg, #f7fbfd 0%, #fdfcf8 100%);
+  border: 1px solid #cfe0e4;
+  border-radius: 16px;
+  margin: 18px 0 0;
+  padding: 18px;
+}
+
+.ieee-session-panel h3 {
+  margin: 0 0 4px;
+}
+
+.ieee-session-message {
+  margin-top: 14px;
+}
+
+.ieee-session-meta {
+  margin: 16px 0;
+}
+
+.ieee-session-counters {
+  margin-top: 0;
+}
+
+.ieee-session-actions form {
+  margin: 0;
+}
+
+.ieee-session-footnote {
+  margin: 10px 0 0;
 }
 
 .compact-details {
@@ -522,5 +571,9 @@ mark.target-reference {
   .badge-stack {
     align-items: flex-start;
     margin-top: 10px;
+  }
+
+  .ieee-session-panel {
+    padding: 16px;
   }
 }

@@ -82,6 +82,7 @@ def test_openai_compatible_success_json(monkeypatch):
     assert captured["url"] == "https://llm.example.test/v1/chat/completions"
     assert captured["headers"]["Authorization"] == "Bearer test-key"
     assert captured["body"]["model"] == "fake-model"
+    assert captured["body"]["max_tokens"] == 8192
     assert captured["body"]["thinking"] == {"type": "disabled"}
 
 

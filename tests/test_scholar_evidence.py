@@ -28,6 +28,11 @@ from app.providers.errors import ProviderException
 from app.repositories.scholar_queue_repo import ScholarQueueRepository
 from app.repositories.task_repo import TaskRepository
 from app.analysis.prompt_builder import build_fulltext_direct_prompt
+from app.analysis.citation_anchor import (
+    extract_target_reference_contexts,
+    find_target_reference_anchor,
+    reference_entries_by_marker,
+)
 from app.schemas.llm import TemplateDirectEvidence
 from app.analysis.template_direct_postprocess import (
     postprocess_template_direct_payload,
@@ -83,6 +88,27 @@ class CapturingTemplateDirectProvider:
         return self.response
 
 
+def set_model_template_decision(
+    provider,
+    template_ids,
+    *,
+    evidence_indexes=None,
+    satisfied=True,
+    reason="The evidence satisfies the active template.",
+):
+    indexes = (
+        list(range(len(provider.response.evidences)))
+        if evidence_indexes is None
+        else evidence_indexes
+    )
+    for index in indexes:
+        evidence = provider.response.evidences[index]
+        evidence.matched_template_ids = list(template_ids) if satisfied else []
+        evidence.template_satisfied = satisfied
+        evidence.template_match_reason = reason if satisfied else ""
+        evidence.template_failure_reason = "" if satisfied else reason
+
+
 class RaisingSchemaErrorLlmProvider:
     provider_name = "schema-error-llm"
 
@@ -113,6 +139,44 @@ class RawSchemaErrorLlmProvider:
         )
 
 
+class RecoveringTemplateDirectProvider:
+    provider_name = "recovering-template-direct-llm"
+
+    def __init__(self, response):
+        self.response = TemplateDirectAnalysisResult.model_validate(response)
+        self.requests = []
+
+    def analyze_citation(self, request):
+        self.requests.append(request)
+        if len(self.requests) == 1:
+            raise ProviderException(
+                ProviderErrorCode.PROVIDER_SCHEMA_ERROR,
+                "truncated template-direct JSON",
+                self.provider_name,
+                raw_output_preview='{"evidences": [{"evidence_quote": "cut',
+                parse_error="Unterminated string",
+            )
+        return self.response
+
+
+class RecoveringTransientNetworkProvider:
+    provider_name = "recovering-network-llm"
+
+    def __init__(self, response):
+        self.response = TemplateDirectAnalysisResult.model_validate(response)
+        self.requests = []
+
+    def analyze_citation(self, request):
+        self.requests.append(request)
+        if len(self.requests) == 1:
+            raise ProviderException(
+                ProviderErrorCode.TRANSIENT_NETWORK_ERROR,
+                "temporary network failure",
+                self.provider_name,
+            )
+        return self.response
+
+
 class FailingIfCalledLlmProvider:
     provider_name = "should-not-be-called"
 
@@ -124,6 +188,8 @@ def template_direct_payload(
     *,
     marker: str = "[23]",
     quote: str = "Target Paper is discussed as a capability source [23].",
+    claim_type: str = "capability_recognition",
+    recommendation: str = "include",
 ):
     return {
         "target_reference_marker": marker,
@@ -131,8 +197,8 @@ def template_direct_payload(
         "paper_level_summary_zh": "引用论文已完成全文模板直读分析。",
         "evidences": [
             {
-                "recommendation": "include",
-                "claim_type": "capability_recognition",
+                "recommendation": recommendation,
+                "claim_type": claim_type,
                 "evidence_quote": quote,
                 "evidence_context": f"In the body, {quote} The surrounding context explains the claim.",
                 "reference_entry": f"{marker} Target Paper. doi:10.1145/target",
@@ -142,6 +208,46 @@ def template_direct_payload(
             }
         ],
     }
+
+
+def test_reference_anchor_falls_back_when_references_heading_is_missing():
+    fulltext = (
+        "Wang et al. [26] proposed a moving label detection mechanism that "
+        "improves detection efficiency.\n\n"
+        "[24] A. Other, “Earlier RFID sensing,” IEEE Trans. Mobile Comput., "
+        "vol. 18, no. 1, pp. 1-12, 2019.\n"
+        "[25] B. Other, “Collision decoding,” Proc. ACM MobiCom, pp. 20-31, 2020.\n"
+        "[26] C. Wang et al., “Probing into the physical layer: Moving tag "
+        "detection for large-scale RFID systems,” IEEE Trans. Mobile Comput., "
+        "vol. 19, no. 5, pp. 1200-1215, May 2020.\n"
+        "[27] D. Other, “Backscatter systems,” IEEE INFOCOM, pp. 40-50, 2021.\n"
+    )
+
+    anchor = find_target_reference_anchor(
+        fulltext,
+        "Probing into the Physical Layer: Moving Tag Detection for Large-Scale RFID Systems",
+        cited_authors=["Chuyu Wang"],
+    )
+    entries = reference_entries_by_marker(fulltext)
+    contexts = extract_target_reference_contexts(fulltext, "26")
+
+    assert anchor is not None
+    assert anchor.reference_marker == "26"
+    assert "Probing into the physical layer" in entries["26"]
+    assert len(contexts) == 1
+    assert "proposed a moving label detection mechanism" in contexts[0].context_text
+    assert "IEEE Trans. Mobile Comput." not in contexts[0].context_text
+
+
+def test_reference_fallback_does_not_treat_body_marker_as_bibliography():
+    fulltext = (
+        "[26] demonstrates an effective sensing method in the main body.\n"
+        "The following paragraph continues the scientific discussion without "
+        "a bibliography or publication metadata."
+    )
+
+    assert reference_entries_by_marker(fulltext) == {}
+    assert find_target_reference_anchor(fulltext, "Effective Sensing Method") is None
 
 
 def test_result_844_resolved_marker_survives_glued_reference_formatting():
@@ -318,7 +424,7 @@ def test_quote_with_other_marker_remains_false_positive():
     assert "reference_mismatch" in evidence["filter_reason_codes"]
 
 
-def test_grouped_target_marker_keeps_strict_review_rule():
+def test_grouped_target_marker_uses_model_recommendation():
     evidence = _postprocess_anchor_case(
         quote=(
             "Prior systems [56], [57] demonstrate effective acoustic sensing."
@@ -334,8 +440,26 @@ def test_grouped_target_marker_keeps_strict_review_rule():
     )
 
     assert evidence["grouped_citation"] is True
-    assert evidence["recommendation"] == "review"
-    assert "grouped_citation_requires_review" in evidence["postprocess_reason"]
+    assert evidence["recommendation"] == "include"
+    assert "grouped_citation_requires_review" not in evidence.get(
+        "postprocess_reason", ""
+    )
+
+
+def test_nearby_limitation_context_does_not_overwrite_capability_quote():
+    quote = "Jingyi et al. [57] measure 6-DoF position with moire patterns."
+    context = (
+        "Earlier approaches have limited measurable degrees of freedom. "
+        f"{quote}"
+    )
+    evidence = _postprocess_anchor_case(
+        quote=quote,
+        context=context,
+        claim_type="capability_recognition",
+        recommendation="review",
+    )
+
+    assert evidence["final_claim_type"] == "capability_recognition"
 
 
 def test_reprocessing_stale_mismatch_restores_original_claim_and_canonical_reasons():
@@ -717,6 +841,150 @@ def test_prompt_includes_target_reference_contexts_before_fulltext(
     assert "TARGET_REFERENCE_CONTEXTS:" in prompt
     assert "TARGET_REFERENCE_MARKER: [36]" in prompt
     assert prompt.index("TARGET_REFERENCE_CONTEXTS:") < prompt.index("FULL_EXTRACTED_TEXT:")
+
+
+def test_template_direct_prompt_uses_resolved_marker_without_references_heading(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[26]",
+            "target_reference_entry": (
+                "[26] C. Wang et al., Probing into the physical layer: Moving "
+                "tag detection for large-scale RFID systems, 2020."
+            ),
+            "paper_level_summary_zh": "未发现满足模板的强证据。",
+            "evidences": [],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    target_title = (
+        "Probing into the Physical Layer: Moving Tag Detection for Large-Scale "
+        "RFID Systems"
+    )
+    full_text = (
+        "Wang et al. [26] proposed a moving label detection mechanism that "
+        "improves detection efficiency.\n\n"
+        "[24] A. Other, “Earlier RFID sensing,” IEEE Trans. Mobile Comput., "
+        "vol. 18, pp. 1-12, 2019.\n"
+        "[25] B. Other, “Collision decoding,” Proc. ACM MobiCom, pp. 20-31, 2020.\n"
+        "[26] C. Wang et al., “Probing into the physical layer: Moving tag "
+        "detection for large-scale RFID systems,” IEEE Trans. Mobile Comput., "
+        "vol. 19, no. 5, pp. 1200-1215, May 2020.\n"
+        "[27] D. Other, “Backscatter systems,” IEEE INFOCOM, pp. 40-50, 2021.\n"
+    )
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        _session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title=target_title,
+            cited_authors=["Chuyu Wang"],
+            text=full_text,
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        diagnostics = json.loads(result.candidate_spans_json)
+
+    prompt = provider.requests[0].prompt_text
+    assert "DETERMINISTIC_TARGET_REFERENCE_MARKER: [26]" in prompt
+    assert "DETERMINISTIC_TARGET_REFERENCE_ENTRY:" in prompt
+    assert "DETERMINISTIC_TARGET_REFERENCE_CONTEXTS:" in prompt
+    assert "proposed a moving label detection mechanism" in prompt
+    assert diagnostics["reference_anchor_source"] == "deterministic_resolver"
+    assert diagnostics["target_reference_context_count"] == 1
+
+
+def test_resolved_capability_summary_can_become_positive_strong_evidence(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    target_title = (
+        "Probing into the Physical Layer: Moving Tag Detection for Large-Scale "
+        "RFID Systems"
+    )
+    quote = (
+        "Wang et al. [26] proposed a moving label detection mechanism, and this "
+        "mechanism utilizes the useless collision signal in the RFID system to "
+        "achieve time efficiency."
+    )
+    raw_entry = (
+        "[26] C. Wang et al., “Probing into the physical layer: Moving tag "
+        "detection for large-scale RFID systems,” IEEE Trans. Mobile Comput., "
+        "vol. 19, no. 5, pp. 1200-1215, May 2020."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[26]",
+            "target_reference_entry": raw_entry,
+            "paper_level_summary_zh": "正文概述目标论文的方法及效率收益。",
+            "evidences": [
+                {
+                    "recommendation": "exclude",
+                    "claim_type": "capability_summary",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": raw_entry,
+                    "why_this_judgment_zh": "正文说明目标机制实现了时间效率提升。",
+                    "copy_ready_zh": "后续论文概述了目标方法及其效率价值。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    full_text = (
+        f"{quote}\n\n"
+        "[24] A. Other, “Earlier RFID sensing,” IEEE Trans. Mobile Comput., "
+        "vol. 18, pp. 1-12, 2019.\n"
+        "[25] B. Other, “Collision decoding,” Proc. ACM MobiCom, pp. 20-31, 2020.\n"
+        f"{raw_entry}\n"
+        "[27] D. Other, “Backscatter systems,” IEEE INFOCOM, pp. 40-50, 2021.\n"
+    )
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title=target_title,
+            cited_authors=["Chuyu Wang"],
+            text=full_text,
+        )
+        builtin = next(
+            template
+            for template in TemplateService(db).list_builtin_templates()
+            if template.template_type == "positive_evaluation"
+        )
+        enabled = TemplateService(db).enable_template(
+            session_id=session_id,
+            template_id=builtin.id,
+        )
+        enabled_id = enabled.id
+        set_model_template_decision(provider, [enabled_id])
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        result_id = result.id
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong = db.query(StrongEvidence).one()
+
+    assert evidence["reference_alignment_status"] == "matched"
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["template_match_level"] == "strong"
+    assert evidence["matched_template_ids"] == [enabled_id]
+    assert strong.fulltext_result_id == result_id
 
 
 def test_prompt_rule_theoretical_formula_context_with_marker(
@@ -3572,6 +3840,143 @@ def test_evidence_quality_summary_counts_review_and_strength(db_session_factory,
     assert summary["high_strength_count"] == 1
 
 
+def test_formal_evidence_list_uses_latest_result_per_queue_item(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(db, tmp_path)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        older = FulltextAnalysisResult(
+            scholar_session_id=session_id,
+            queue_item_id=item_id,
+            citation_edge_id=item.citation_edge_id,
+            analysis_scope="fulltext_template_direct",
+            status="succeeded",
+            parsed_result_json='{"evidences":[]}',
+        )
+        newer = FulltextAnalysisResult(
+            scholar_session_id=session_id,
+            queue_item_id=item_id,
+            citation_edge_id=item.citation_edge_id,
+            analysis_scope="fulltext_template_direct",
+            status="succeeded",
+            parsed_result_json='{"evidences":[]}',
+        )
+        db.add_all([older, newer])
+        db.flush()
+        evidence_service = EvidenceService(db)
+        evidence_service.upsert_scholar_evidence(
+            fulltext_result_id=older.id,
+            scholar_session_id=session_id,
+            queue_item_id=item_id,
+            citation_edge_id=item.citation_edge_id,
+            aspect="positive_evaluation",
+            stance="positive",
+            mention_type="template_direct",
+            citation_text="Older duplicate quote [23].",
+            highlight_keywords=[],
+            evidence_reason="older",
+            evidence_strength="strong",
+            score=0.9,
+            span_index=0,
+            is_self_citation=False,
+            third_party_status="third_party",
+        )
+        evidence_service.upsert_scholar_evidence(
+            fulltext_result_id=newer.id,
+            scholar_session_id=session_id,
+            queue_item_id=item_id,
+            citation_edge_id=item.citation_edge_id,
+            aspect="positive_evaluation",
+            stance="positive",
+            mention_type="template_direct",
+            citation_text="Latest canonical quote [23].",
+            highlight_keywords=[],
+            evidence_reason="latest",
+            evidence_strength="strong",
+            score=0.9,
+            span_index=0,
+            is_self_citation=False,
+            third_party_status="third_party",
+        )
+        db.commit()
+
+        rows = evidence_service.list_scholar_evidence(
+            session_id,
+            filters={"view": "all", "latest_only": True},
+        )
+
+    assert [row["evidence"].citation_text for row in rows] == [
+        "Latest canonical quote [23]."
+    ]
+
+
+def test_candidate_layers_aggregate_latest_result_for_each_queue_item(
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, first_item_id = seed_queue_item(db, tmp_path)
+        _, second_item_id = seed_queue_item(db, tmp_path, title="Second citing paper")
+        second_item = db.get(DeepAnalysisQueueItem, second_item_id)
+        second_item.scholar_session_id = session_id
+        payloads = [
+            (
+                first_item_id,
+                {
+                    "evidences": [
+                        {
+                            "final_recommendation": "include",
+                            "final_claim_type": "positive_evaluation",
+                            "stance": "positive",
+                            "evidence_quote": "First evidence [23].",
+                            "reference_alignment_status": "matched",
+                            "matched_template_ids": [1],
+                            "template_satisfied": True,
+                        }
+                    ]
+                },
+            ),
+            (
+                second_item_id,
+                {
+                    "evidences": [
+                        {
+                            "final_recommendation": "review",
+                            "final_claim_type": "method_summary",
+                            "evidence_quote": "Second evidence [23].",
+                            "reference_alignment_status": "matched",
+                            "matched_template_ids": [2],
+                            "template_satisfied": True,
+                        }
+                    ]
+                },
+            ),
+        ]
+        for item_id, payload in payloads:
+            db.add(
+                FulltextAnalysisResult(
+                    scholar_session_id=session_id,
+                    queue_item_id=item_id,
+                    analysis_scope="fulltext_template_direct",
+                    status="succeeded",
+                    parsed_result_json=json.dumps(payload),
+                )
+            )
+        db.commit()
+
+        layers = ScholarFulltextService(db).latest_direct_candidate_layers(session_id)
+
+    assert layers["result_count"] == 2
+    assert layers["counts"] == {"strong": 1, "review": 1, "excluded": 0}
+    assert layers["strong_stance_counts"] == {
+        "positive": 1,
+        "neutral": 0,
+        "negative": 0,
+    }
+
+
 def test_scholar_evidence_page_filters_false_positive_and_high_strength(
     client,
     db_session_factory,
@@ -3760,7 +4165,7 @@ def test_grouped_citation_only_checks_target_marker_sentence(
             "evidences": [
                 {
                     "recommendation": "review",
-                    "claim_type": "ordinary_reference",
+                    "claim_type": "method_summary",
                     "evidence_quote": (
                         "An earlier system used another method [13]. "
                         "The target work introduced a concrete mechanism [14]."
@@ -3924,7 +4329,15 @@ def test_report_contains_why_this_judgment(db_session_factory, tmp_path, monkeyp
     )
     monkeypatch.setattr("app.services.scholar_fulltext_service.get_llm_provider", lambda: provider)
     with Session(db_session_factory.kw["bind"]) as db:
-        session_id, item_id = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                "Target Paper appears in related work [23].\n\n"
+                "References\n[23] Target Paper."
+            ),
+        )
         ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
             analysis_scope="fulltext_template_direct",
@@ -4012,7 +4425,7 @@ def test_submm_claim_requires_targeted_submm_evidence(db_session_factory, tmp_pa
             "evidences": [
                 {
                     "recommendation": "review",
-                    "claim_type": "ordinary_reference",
+                    "claim_type": "submm_precision_claim",
                     "evidence_quote": "Another system has sub-mm accuracy, while Target Paper is cited as related work [23].",
                     "evidence_context": "Another system has sub-mm accuracy, while Target Paper is cited as related work [23].",
                     "reference_entry": "[23] Target Paper.",
@@ -4025,7 +4438,15 @@ def test_submm_claim_requires_targeted_submm_evidence(db_session_factory, tmp_pa
     )
     monkeypatch.setattr("app.services.scholar_fulltext_service.get_llm_provider", lambda: provider)
     with Session(db_session_factory.kw["bind"]) as db:
-        session_id, item_id = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                "Target Paper appears in related work [23].\n\n"
+                "References\n[23] Target Paper."
+            ),
+        )
         ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
             analysis_scope="fulltext_template_direct",
@@ -4047,7 +4468,7 @@ def test_unresolved_submm_body_claim_goes_to_direct_submm_candidate(db_session_f
             "evidences": [
                 {
                     "recommendation": "include",
-                    "claim_type": "ordinary_reference",
+                    "claim_type": "submm_precision_claim",
                     "evidence_quote": quote,
                     "evidence_context": quote,
                     "reference_entry": "[23] Target Paper.",
@@ -4081,6 +4502,7 @@ def test_unresolved_submm_body_claim_goes_to_direct_submm_candidate(db_session_f
 
 
 def test_review_items_go_to_appendix_not_main_report(db_session_factory, tmp_path, monkeypatch):
+    quote = "Target Paper is discussed among prior sensing systems [23]."
     provider = CapturingTemplateDirectProvider(
         {
             "target_reference_marker": "[23]",
@@ -4090,8 +4512,8 @@ def test_review_items_go_to_appendix_not_main_report(db_session_factory, tmp_pat
                 {
                     "recommendation": "review",
                     "claim_type": "ordinary_reference",
-                    "evidence_quote": "Target Paper appears in related work [23].",
-                    "evidence_context": "Target Paper appears in related work [23].",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
                     "reference_entry": "[23] Target Paper.",
                     "why_this_judgment_zh": "普通相关工作。",
                     "copy_ready_zh": "候选复核表述。",
@@ -4102,7 +4524,15 @@ def test_review_items_go_to_appendix_not_main_report(db_session_factory, tmp_pat
     )
     monkeypatch.setattr("app.services.scholar_fulltext_service.get_llm_provider", lambda: provider)
     with Session(db_session_factory.kw["bind"]) as db:
-        session_id, item_id = seed_queue_item(db, tmp_path, target_title="Target Paper")
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                f"{quote}\n\n"
+                "References\n[23] Target Paper."
+            ),
+        )
         ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
             analysis_scope="fulltext_template_direct",
@@ -4110,8 +4540,8 @@ def test_review_items_go_to_appendix_not_main_report(db_session_factory, tmp_pat
         markdown = HighlightCardService(db).export_cards_markdown(session_id)
 
     main_section = markdown.split("候选复核附录", 1)[0]
-    assert "**Target Paper** appears in related work" not in main_section
-    assert "**Target Paper** appears in related work" in markdown
+    assert "**Target Paper** is discussed among prior sensing systems" not in main_section
+    assert "**Target Paper** is discussed among prior sensing systems" in markdown
 
 
 def test_direct_report_ordinary_reference_not_include(db_session_factory, tmp_path, monkeypatch):
@@ -4266,7 +4696,7 @@ def test_title_only_submm_not_include(db_session_factory, tmp_path, monkeypatch)
         evidence = json.loads(result.parsed_result_json)["evidences"][0]
 
     assert evidence["recommendation"] == "review"
-    assert evidence["claim_type"] == "ordinary_reference"
+    assert evidence["claim_type"] == "submm_precision_claim"
     assert "title_or_reference_only_not_include" in evidence["postprocess_reason"]
 
 
@@ -4346,7 +4776,7 @@ def test_through_wall_body_claim_can_include(db_session_factory, tmp_path, monke
     assert evidence["claim_type"] == "through_wall_eavesdropping"
 
 
-def test_through_wall_ordinary_reference_is_calibrated_to_include(db_session_factory, tmp_path, monkeypatch):
+def test_model_through_wall_claim_is_preserved(db_session_factory, tmp_path, monkeypatch):
     quote = "Wang et al. [23] extended RFID sensing to enable through-wall eavesdropping."
     provider = CapturingTemplateDirectProvider(
         {
@@ -4356,7 +4786,7 @@ def test_through_wall_ordinary_reference_is_calibrated_to_include(db_session_fac
             "evidences": [
                 {
                     "recommendation": "include",
-                    "claim_type": "ordinary_reference",
+                    "claim_type": "through_wall_eavesdropping",
                     "evidence_quote": quote,
                     "evidence_context": quote,
                     "reference_entry": "[23] Target Paper.",
@@ -4397,7 +4827,7 @@ def test_plain_eavesdropping_without_through_wall_not_include(db_session_factory
             "paper_level_summary_zh": "普通 eavesdropping。",
             "evidences": [
                 {
-                    "recommendation": "include",
+                    "recommendation": "review",
                     "claim_type": "capability_recognition",
                     "evidence_quote": quote,
                     "evidence_context": quote,
@@ -4425,7 +4855,7 @@ def test_plain_eavesdropping_without_through_wall_not_include(db_session_factory
 
     assert evidence["recommendation"] == "review"
     assert evidence["claim_type"] != "through_wall_eavesdropping"
-    assert "reason_text_indicates_weak_evidence" in evidence["postprocess_reason"]
+    assert evidence["recommendation"] == "review"
 
 
 def test_limitation_language_downgrades_through_wall_include(db_session_factory, tmp_path, monkeypatch):
@@ -4440,8 +4870,8 @@ def test_limitation_language_downgrades_through_wall_include(db_session_factory,
             "paper_level_summary_zh": "局限性反馈。",
             "evidences": [
                 {
-                    "recommendation": "include",
-                    "claim_type": "through_wall_eavesdropping",
+                    "recommendation": "review",
+                    "claim_type": "limitation_feedback",
                     "evidence_quote": quote,
                     "evidence_context": quote,
                     "reference_entry": "[23] Target Paper.",
@@ -4468,7 +4898,7 @@ def test_limitation_language_downgrades_through_wall_include(db_session_factory,
 
     assert evidence["recommendation"] == "review"
     assert evidence["claim_type"] == "limitation_feedback"
-    assert "limitation_language_not_include" in evidence["postprocess_reason"]
+    assert evidence["recommendation"] == "review"
 
 
 def test_duplicate_evidence_keeps_strongest_claim_type(db_session_factory, tmp_path, monkeypatch):
@@ -4619,7 +5049,7 @@ def test_duplicate_template_direct_results_are_deduped_in_report(db_session_fact
     assert "### 2. 穿墙窃听能力佐证" not in markdown
 
 
-def test_include_claim_type_must_be_strong(db_session_factory, tmp_path, monkeypatch):
+def test_model_limitation_claim_is_not_retyped_by_backend(db_session_factory, tmp_path, monkeypatch):
     provider = CapturingTemplateDirectProvider(
         {
             "target_reference_marker": "[23]",
@@ -4653,8 +5083,8 @@ def test_include_claim_type_must_be_strong(db_session_factory, tmp_path, monkeyp
         )
         evidence = json.loads(result.parsed_result_json)["evidences"][0]
 
-    assert evidence["recommendation"] == "review"
-    assert "include_claim_type_not_strong" in evidence["postprocess_reason"]
+    assert evidence["recommendation"] == "include"
+    assert evidence["claim_type"] == "limitation_feedback"
 
 
 def test_grouped_citation_without_target_specific_description_not_include(db_session_factory, tmp_path, monkeypatch):
@@ -4665,7 +5095,7 @@ def test_grouped_citation_without_target_specific_description_not_include(db_ses
             "paper_level_summary_zh": "成组引用。",
             "evidences": [
                 {
-                    "recommendation": "include",
+                    "recommendation": "review",
                     "claim_type": "capability_recognition",
                     "evidence_quote": "Prior systems [22], [23], [24] explored RFID sensing.",
                     "evidence_context": "Prior systems [22], [23], [24] explored RFID sensing.",
@@ -4693,7 +5123,69 @@ def test_grouped_citation_without_target_specific_description_not_include(db_ses
 
     assert evidence["recommendation"] == "review"
     assert evidence["grouped_citation"] is True
-    assert "grouped_citation_requires_review" in evidence["postprocess_reason"]
+    assert "grouped_citation_requires_review" not in evidence.get(
+        "postprocess_reason",
+        "",
+    )
+
+
+def test_grouped_citation_model_attribution_can_generate_strong_evidence(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Target Paper [23], together with Other System [22], provides an "
+        "effective and robust solution that significantly improves accuracy."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[23]",
+            "target_reference_entry": "[23] A. Author. Target Paper.",
+            "paper_level_summary_zh": "模型判断评价明确作用到目标论文。",
+            "evidences": [
+                {
+                    "recommendation": "include",
+                    "claim_type": "positive_evaluation",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": "[23] A. Author. Target Paper.",
+                    "why_this_judgment_zh": "句子明确将正向能力评价作用到目标论文。",
+                    "copy_ready_zh": "后续论文明确肯定目标论文的能力和效果。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                f"{quote}\n\nReferences\n"
+                "[22] B. Author. Other System.\n"
+                "[23] A. Author. Target Paper."
+            ),
+        )
+        enabled = _enable_direct_builtin(db, session_id, "positive_evaluation")
+        set_model_template_decision(provider, [enabled.id])
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong_count = db.query(StrongEvidence).count()
+
+    assert evidence["grouped_citation"] is True
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["template_match_level"] == "strong"
+    assert strong_count == 1
 
 
 def test_evidence_reference_entry_uses_citing_paper_raw_reference(db_session_factory, tmp_path, monkeypatch):
@@ -5055,6 +5547,311 @@ def test_template_direct_failure_records_error_message(db_session_factory, tmp_p
     assert parsed["error"] == "provider_schema_error"
 
 
+def test_template_direct_retries_once_after_truncated_schema_output(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    provider = RecoveringTemplateDirectProvider(template_direct_payload())
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        _session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+
+    assert result.status == "succeeded"
+    assert len(provider.requests) == 2
+    assert "RETRY AFTER INVALID OR TRUNCATED JSON" in provider.requests[1].prompt_text
+
+
+def test_template_direct_retries_transient_network_failure(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    provider = RecoveringTransientNetworkProvider(template_direct_payload())
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.time.sleep",
+        lambda _seconds: None,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        _session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+
+    assert result.status == "succeeded"
+    assert len(provider.requests) == 2
+
+
+def test_template_direct_negative_template_persists_strong_negative_evidence(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Target Paper [23] is less practical because it requires "
+        "pre-installed tags."
+    )
+    provider = CapturingTemplateDirectProvider(
+        template_direct_payload(
+            claim_type="limitation_feedback",
+            recommendation="exclude",
+            quote=quote,
+        )
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
+        )
+        enabled = _enable_direct_builtin(
+            db,
+            session_id,
+            "limitation_or_negative",
+        )
+        enabled_id = enabled.id
+        set_model_template_decision(provider, [enabled_id])
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong = db.query(StrongEvidence).one()
+
+    assert evidence["matched_template_ids"] == [enabled_id]
+    assert evidence["final_claim_type"] == "limitation_feedback"
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["stance"] == "negative"
+    assert strong.aspect == "limitation_feedback"
+    assert strong.stance == "negative"
+    assert "limitation_feedback_not_positive" not in evidence[
+        "filter_reason_codes"
+    ]
+
+
+def test_template_direct_custom_neutral_evidence_persists_neutral_stance(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = "Target Paper [23] estimates 6-DoF pose from moire patterns."
+    provider = CapturingTemplateDirectProvider(
+        template_direct_payload(
+            claim_type="custom_template_evidence",
+            recommendation="review",
+            quote=quote,
+        )
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
+        )
+        template = TemplateService(db).create_custom_template(
+            session_id=session_id,
+            template_name="中性评价",
+            natural_language_goal="判断引用是否既不属于正向评价也不属于负面评价",
+            auto_include_in_report=True,
+        )
+        template_id = template.id
+        set_model_template_decision(provider, [template_id])
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong = db.query(StrongEvidence).one()
+        card = db.query(HighlightCard).one()
+
+    assert evidence["matched_template_ids"] == [template_id]
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["stance"] == "neutral"
+    assert strong.stance == "neutral"
+    assert json.loads(strong.matched_template_ids_json) == [template_id]
+    assert card.stance == "neutral"
+    assert card.card_type == "neutral_evaluation"
+    assert card.title.startswith("中性评价：")
+
+
+def test_direct_model_attitude_decision_is_not_overridden_by_keywords(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Target Paper [23] has showcased the power of the proposed mechanism "
+        "for accurate motion sensing."
+    )
+    reference_entry = "[23] A. Author. Target Paper. 2022."
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n{reference_entry}",
+        )
+        positive = _enable_direct_builtin(
+            db,
+            session_id,
+            "positive_evaluation",
+        )
+        neutral = TemplateService(db).create_custom_template(
+            session_id=session_id,
+            template_name="中性评价",
+            natural_language_goal="判断引用是否既不属于正向评价也不属于负面评价",
+            auto_include_in_report=True,
+        )
+        positive_id = positive.id
+        neutral_id = neutral.id
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": reference_entry,
+                "paper_level_summary_zh": "模型错误地把显式正向评价标为中性。",
+                "evidences": [
+                    {
+                        "recommendation": "include",
+                        "claim_type": "capability_summary",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": reference_entry,
+                        "why_this_judgment_zh": "正文概述目标能力。",
+                        "copy_ready_zh": "目标论文能力得到后续工作认可。",
+                        "confidence": "high",
+                        "matched_template_ids": [neutral.id],
+                        "template_match_reason": "模型误判为中性能力总结。",
+                        "template_satisfied": True,
+                        "template_failure_reason": "",
+                    }
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong = db.query(StrongEvidence).one()
+
+    assert evidence["matched_template_ids"] == [neutral_id]
+    assert evidence["strong_matched_template_ids"] == [neutral_id]
+    assert positive_id not in evidence["matched_template_ids"]
+    assert evidence["final_claim_type"] == "capability_summary"
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["stance"] == "neutral"
+    assert json.loads(strong.matched_template_ids_json) == [neutral_id]
+
+
+def test_direct_final_dedup_keeps_one_strong_evidence_per_template_claim_cluster(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    reference_entry = "[23] A. Author. Target Paper. 2022."
+    quotes = [
+        "The spatial frequency is modeled as f = |f1-f2| [23].",
+        "The combined optical intensity is the product of two signals [23].",
+        "The frequency vector is decomposed along the X and Y axes [23].",
+    ]
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text="\n".join(quotes) + f"\n\nReferences\n{reference_entry}",
+        )
+        theoretical = _enable_direct_builtin(
+            db,
+            session_id,
+            "theoretical_foundation",
+        )
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": reference_entry,
+                "paper_level_summary_zh": "同一理论推导被拆成三个相邻证据句。",
+                "evidences": [
+                    {
+                        "recommendation": "include",
+                        "claim_type": "theoretical_foundation",
+                        "evidence_quote": quote,
+                        "evidence_context": " ".join(quotes),
+                        "reference_entry": reference_entry,
+                        "why_this_judgment_zh": "目标论文被用于同一段理论推导。",
+                        "copy_ready_zh": "后续论文引用目标论文展开理论推导。",
+                        "confidence": "high",
+                        "matched_template_ids": [theoretical.id],
+                        "template_match_reason": "同一段落中的理论建模证据。",
+                        "template_satisfied": True,
+                        "template_failure_reason": "",
+                    }
+                    for quote in quotes
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidences = json.loads(result.parsed_result_json)["evidences"]
+        strong_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+        card_count = db.query(HighlightCard).count()
+
+    assert len(evidences) == 1
+    assert evidences[0]["final_claim_type"] == "theoretical_foundation"
+    assert evidences[0]["final_recommendation"] == "include"
+    assert evidences[0]["deduplicated_cluster_size"] == 3
+    assert strong_count == 1
+    assert card_count == 1
+
+
 def _enable_direct_builtin(db, session_id, template_type):
     service = TemplateService(db)
     builtin = next(
@@ -5108,6 +5905,7 @@ def test_template_direct_canonical_claim_and_matched_template_are_persisted(
             db, session_id, "first_or_seminal_claim"
         )
         enabled_id = enabled.id
+        set_model_template_decision(provider, [enabled_id])
         result = ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
             analysis_scope="fulltext_template_direct",
@@ -5191,6 +5989,7 @@ def test_template_direct_persists_only_final_include_evidence_and_card(
         )
         enabled = _enable_direct_builtin(db, session_id, "positive_evaluation")
         enabled_id = enabled.id
+        set_model_template_decision(provider, [enabled_id], evidence_indexes=[0])
         summary = ScholarFulltextService(db).analyze_queue_items(
             session_id=session_id,
             queue_item_ids=[item_id],
@@ -5216,6 +6015,10 @@ def test_template_direct_persists_only_final_include_evidence_and_card(
             .filter(StrongEvidence.fulltext_result_id == result.id)
             .all()
         )
+        formal_rows = EvidenceService(db).list_scholar_evidence(
+            session_id,
+            filters={"latest_only": True},
+        )
 
     assert summary["generated_strong_evidence_count"] == 1
     assert summary["persisted_strong_evidence_count"] == 1
@@ -5226,6 +6029,17 @@ def test_template_direct_persists_only_final_include_evidence_and_card(
     assert persisted[0].citation_text == include_quote
     assert json.loads(persisted[0].matched_template_ids_json) == [enabled_id]
     assert len(cards) == 1
+    assert cards[0].narrative_zh == "后续论文明确认可目标论文的能力。"
+    assert cards[0].body_markdown == "后续论文明确认可目标论文的能力。"
+    assert len(formal_rows) == 1
+    assert (
+        formal_rows[0]["judgment_basis"]["narrative_zh"]
+        == "后续论文明确认可目标论文的能力。"
+    )
+    assert (
+        formal_rows[0]["judgment_basis"]["judgment_basis_zh"]
+        == "正文明确正向评价目标论文。"
+    )
 
 
 def test_template_direct_persistence_failure_is_not_reported_as_success(
@@ -5272,7 +6086,8 @@ def test_template_direct_persistence_failure_is_not_reported_as_success(
             target_title="Target Paper",
             text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
         )
-        _enable_direct_builtin(db, session_id, "positive_evaluation")
+        enabled = _enable_direct_builtin(db, session_id, "positive_evaluation")
+        set_model_template_decision(provider, [enabled.id])
         summary = ScholarFulltextService(db).analyze_queue_items(
             session_id=session_id,
             queue_item_ids=[item_id],
@@ -5332,7 +6147,8 @@ def test_template_direct_card_failure_keeps_persisted_evidence(
             target_title="Target Paper",
             text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
         )
-        _enable_direct_builtin(db, session_id, "positive_evaluation")
+        enabled = _enable_direct_builtin(db, session_id, "positive_evaluation")
+        set_model_template_decision(provider, [enabled.id])
         summary = ScholarFulltextService(db).analyze_queue_items(
             session_id=session_id,
             queue_item_ids=[item_id],
@@ -5386,7 +6202,8 @@ def test_template_direct_regeneration_is_idempotent(
             target_title="Target Paper",
             text=f"{quote}\n\nReferences\n[23] A. Author. Target Paper.",
         )
-        _enable_direct_builtin(db, session_id, "positive_evaluation")
+        enabled = _enable_direct_builtin(db, session_id, "positive_evaluation")
+        set_model_template_decision(provider, [enabled.id])
         result = ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
             analysis_scope="fulltext_template_direct",
@@ -5413,6 +6230,86 @@ def test_template_direct_regeneration_is_idempotent(
     assert second["persisted_strong_evidence_count"] == 1
     assert evidence_count == 1
     assert card_count == 1
+
+
+def test_equivalent_reanalysis_quote_updates_card_to_latest_evidence(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    short_quote = (
+        "Target Paper [23] extracts phase profiles to improve detection efficiency."
+    )
+    expanded_quote = (
+        "In mobile tag detection, Target Paper [23] extracts phase profiles "
+        "to improve detection efficiency."
+    )
+
+    def provider_for(quote, confidence, template_id):
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": "[23] A. Author. Target Paper.",
+                "paper_level_summary_zh": "发现正向证据。",
+                "evidences": [
+                    {
+                        "recommendation": "include",
+                        "claim_type": "positive_evaluation",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": "[23] A. Author. Target Paper.",
+                        "why_this_judgment_zh": "正文明确说明效率提升。",
+                        "copy_ready_zh": "后续论文明确肯定目标方法的效率价值。",
+                        "confidence": confidence,
+                    }
+                ],
+            }
+        )
+        set_model_template_decision(provider, [template_id])
+        return provider
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=(
+                f"{expanded_quote}\n\n"
+                "References\n[23] A. Author. Target Paper."
+            ),
+        )
+        enabled = _enable_direct_builtin(db, session_id, "positive_evaluation")
+
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider_for(short_quote, "medium", enabled.id),
+        )
+        ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        item.queue_status = "selected"
+        db.commit()
+
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider_for(expanded_quote, "high", enabled.id),
+        )
+        latest_result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        latest_evidence = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == latest_result.id)
+            .one()
+        )
+        cards = db.query(HighlightCard).all()
+
+    assert len(cards) == 1
+    assert cards[0].strong_evidence_id == latest_evidence.id
+    assert cards[0].evidence_quote == expanded_quote
 
 
 def test_template_direct_regeneration_preview_does_not_write(
@@ -5515,6 +6412,7 @@ def test_result_844_like_evidence_matches_positive_template_and_is_strong(
             "positive_evaluation",
         )
         enabled_id = enabled.id
+        set_model_template_decision(provider, [enabled_id])
         summary = ScholarFulltextService(db).analyze_queue_items(
             session_id=session_id,
             queue_item_ids=[item_id],
@@ -5530,9 +6428,494 @@ def test_result_844_like_evidence_matches_positive_template_and_is_strong(
 
     assert evidence["matched_template_ids"] == [enabled_id]
     assert evidence["template_satisfied"] is True
-    assert evidence["claim_type"] == "positive_evaluation"
+    assert evidence["claim_type"] == "through_wall_eavesdropping"
     assert evidence["recommendation"] == "include"
     assert summary["strong_evidence_count"] == 1
+
+
+def test_direct_model_template_include_is_not_downgraded_by_legacy_type_rules(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    target_title = (
+        "MoiréPose: Ultra High Precision Camera-to-Screen Pose Estimation "
+        "Based on Moiré Pattern"
+    )
+    quote = (
+        "The second type of MSPs is generated due to the frequency difference "
+        "between the displaying and imaging devices in the recapturing process [36]."
+    )
+    context = (
+        f"{quote} According to Eq. (3), the spectral model shows a convolution "
+        "operation between two Dirac comb functions."
+    )
+    reference_entry = (
+        "[36] J. Ning et al. MoiréPose: Ultra High Precision Camera-to-Screen "
+        "Pose Estimation Based on Moiré Pattern. 2022."
+    )
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title=target_title,
+            text=f"{context}\n\nReferences\n{reference_entry}",
+        )
+        template = _enable_direct_builtin(
+            db,
+            session_id,
+            "theoretical_foundation",
+        )
+        template_id = template.id
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[36]",
+                "target_reference_entry": reference_entry,
+                "paper_level_summary_zh": "目标论文被用于后续理论建模。",
+                "evidences": [
+                    {
+                        "recommendation": "include",
+                        "claim_type": "theoretical_foundation",
+                        "evidence_quote": quote,
+                        "evidence_context": context,
+                        "reference_entry": reference_entry,
+                        "why_this_judgment_zh": "正文明确将目标论文用于频域模型推导。",
+                        "copy_ready_zh": "后续论文将目标论文作为理论建模依据。",
+                        "confidence": "high",
+                        "matched_template_ids": [template_id],
+                        "template_match_reason": "正文符合理论基础模板的自然语言目标。",
+                        "template_satisfied": True,
+                        "template_failure_reason": "",
+                    }
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+
+    assert evidence["original_recommendation"] == "include"
+    assert evidence["matched_template_ids"] == [template_id]
+    assert evidence["strong_matched_template_ids"] == [template_id]
+    assert evidence["template_match_level"] == "strong"
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["final_claim_type"] == "theoretical_foundation"
+    assert strong_count == 1
+
+
+def test_direct_model_unsatisfied_template_stays_review(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Target Paper [23] may improve sensing accuracy, although the "
+        "attribution remains unclear."
+    )
+    reference_entry = "[23] A. Author. Target Paper. 2022."
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n{reference_entry}",
+        )
+        template = _enable_direct_builtin(
+            db,
+            session_id,
+            "positive_evaluation",
+        )
+        template_id = template.id
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": reference_entry,
+                "paper_level_summary_zh": "发现需复核的正向评价候选。",
+                "evidences": [
+                    {
+                        "recommendation": "review",
+                        "claim_type": "positive_evaluation",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": reference_entry,
+                        "why_this_judgment_zh": "表述可能为正向，但作用域仍需复核。",
+                        "copy_ready_zh": "该候选需完成人工核对后再纳入。",
+                        "confidence": "medium",
+                        "matched_template_ids": [],
+                        "template_match_reason": "",
+                        "template_satisfied": False,
+                        "template_failure_reason": "语义相关但归因仍不确定。",
+                    }
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+
+    assert evidence["matched_template_ids"] == []
+    assert evidence["strong_matched_template_ids"] == []
+    assert evidence["template_match_level"] == "none"
+    assert evidence["final_recommendation"] == "review"
+    assert strong_count == 0
+
+
+def test_direct_model_satisfied_positive_template_is_included(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Target Paper [23] has showcased the power of the proposed mechanism "
+        "and provides an effective solution."
+    )
+    reference_entry = "[23] A. Author. Target Paper. 2022."
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n{reference_entry}",
+        )
+        positive = _enable_direct_builtin(
+            db,
+            session_id,
+            "positive_evaluation",
+        )
+        positive_id = positive.id
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": reference_entry,
+                "paper_level_summary_zh": "正文包含明确正向评价。",
+                "evidences": [
+                    {
+                        "recommendation": "review",
+                        "claim_type": "positive_evaluation",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": reference_entry,
+                        "why_this_judgment_zh": "原文明确肯定目标方法的能力。",
+                        "copy_ready_zh": "后续工作明确认可了目标方法的能力。",
+                        "confidence": "high",
+                        "matched_template_ids": [positive_id],
+                        "template_match_reason": "明确满足正向评价模板。",
+                        "template_satisfied": True,
+                        "template_failure_reason": "",
+                    }
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+
+    assert evidence["original_recommendation"] == "review"
+    assert evidence["strong_matched_template_ids"] == [positive_id]
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["final_claim_type"] == "positive_evaluation"
+    assert strong_count == 1
+
+
+def test_direct_model_satisfied_theory_template_is_included(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Following Target Paper [23], the spatial frequency is modeled as "
+        "f = |f1-f2|."
+    )
+    reference_entry = "[23] A. Author. Target Paper. 2022."
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n{reference_entry}",
+        )
+        theoretical = _enable_direct_builtin(
+            db,
+            session_id,
+            "theoretical_foundation",
+        )
+        theoretical_id = theoretical.id
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": reference_entry,
+                "paper_level_summary_zh": "目标论文被用于理论公式。",
+                "evidences": [
+                    {
+                        "recommendation": "review",
+                        "claim_type": "theoretical_foundation",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": reference_entry,
+                        "why_this_judgment_zh": "正文基于目标论文给出公式。",
+                        "copy_ready_zh": "后续工作将目标论文用于模型推导。",
+                        "confidence": "high",
+                        "matched_template_ids": [theoretical_id],
+                        "template_match_reason": "满足理论基础模板。",
+                        "template_satisfied": True,
+                        "template_failure_reason": "",
+                    }
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+
+    assert evidence["strong_matched_template_ids"] == [theoretical_id]
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["final_claim_type"] == "theoretical_foundation"
+
+
+def test_direct_model_satisfied_negative_template_is_included(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    quote = (
+        "Target Paper [23] is limited by low sample rates, which are "
+        "insufficient for reconstructing high-frequency signals."
+    )
+    reference_entry = "[23] A. Author. Target Paper. 2022."
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n{reference_entry}",
+        )
+        negative = _enable_direct_builtin(
+            db,
+            session_id,
+            "limitation_or_negative",
+        )
+        negative_id = negative.id
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": reference_entry,
+                "paper_level_summary_zh": "正文明确描述目标方法的局限。",
+                "evidences": [
+                    {
+                        "recommendation": "review",
+                        "claim_type": "limitation_feedback",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": reference_entry,
+                        "why_this_judgment_zh": "低采样率构成明确局限。",
+                        "copy_ready_zh": "后续工作指出了目标方法的采样率限制。",
+                        "confidence": "high",
+                        "matched_template_ids": [negative_id],
+                        "template_match_reason": "满足负面/局限评价模板。",
+                        "template_satisfied": True,
+                        "template_failure_reason": "",
+                    }
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+
+    assert evidence["strong_matched_template_ids"] == [negative_id]
+    assert evidence["final_recommendation"] == "include"
+    assert evidence["final_claim_type"] == "limitation_feedback"
+    assert evidence["stance"] == "negative"
+
+
+def test_direct_model_template_include_cannot_bypass_reference_alignment(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    target_entry = "[23] A. Author. Target Paper. 2022."
+    other_entry = "[24] B. Author. Other Paper. 2023."
+    quote = "Other Paper [24] provides an effective and accurate method."
+
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title="Target Paper",
+            text=f"{quote}\n\nReferences\n{target_entry}\n{other_entry}",
+        )
+        template = _enable_direct_builtin(
+            db,
+            session_id,
+            "positive_evaluation",
+        )
+        provider = CapturingTemplateDirectProvider(
+            {
+                "target_reference_marker": "[23]",
+                "target_reference_entry": target_entry,
+                "paper_level_summary_zh": "模型错误地选择了其他论文。",
+                "evidences": [
+                    {
+                        "recommendation": "include",
+                        "claim_type": "positive_evaluation",
+                        "evidence_quote": quote,
+                        "evidence_context": quote,
+                        "reference_entry": other_entry,
+                        "why_this_judgment_zh": "该句实际描述其他论文。",
+                        "copy_ready_zh": "不应纳入。",
+                        "confidence": "high",
+                        "matched_template_ids": [template.id],
+                        "template_match_reason": "模型声称满足正向评价。",
+                        "template_satisfied": True,
+                        "template_failure_reason": "",
+                    }
+                ],
+            }
+        )
+        monkeypatch.setattr(
+            "app.services.scholar_fulltext_service.get_llm_provider",
+            lambda: provider,
+        )
+
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+
+    assert evidence["reference_alignment_status"] == "mismatch"
+    assert evidence["final_recommendation"] == "exclude"
+    assert evidence["final_claim_type"] == "false_positive"
+    assert strong_count == 0
+
+
+def test_missing_model_template_decision_stays_review_without_backend_inference(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    target_title = "Probing into the Physical Layer: Moving Tag Detection"
+    quote = (
+        "Wang et al. [16] extract the phase profile and backscatter link "
+        "frequency to distinguish moving tags by location."
+    )
+    reference_entry = (
+        "[16] C. Wang et al. Probing into the Physical Layer: "
+        "Moving Tag Detection. 2020."
+    )
+    provider = CapturingTemplateDirectProvider(
+        {
+            "target_reference_marker": "[16]",
+            "target_reference_entry": reference_entry,
+            "paper_level_summary_zh": "正文概述目标论文的方法。",
+            "evidences": [
+                {
+                    "recommendation": "review",
+                    "claim_type": "ordinary_reference",
+                    "evidence_quote": quote,
+                    "evidence_context": quote,
+                    "reference_entry": reference_entry,
+                    "why_this_judgment_zh": "属于目标方法的具体概述。",
+                    "copy_ready_zh": "后续论文概述了目标论文的移动标签检测方法。",
+                    "confidence": "high",
+                }
+            ],
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.scholar_fulltext_service.get_llm_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, item_id = seed_queue_item(
+            db,
+            tmp_path,
+            target_title=target_title,
+            text=f"{quote}\n\nReferences\n{reference_entry}",
+        )
+        _enable_direct_builtin(
+            db,
+            session_id,
+            "positive_evaluation",
+        )
+        result = ScholarFulltextService(db).analyze_single_queue_item(
+            queue_item_id=item_id,
+            analysis_scope="fulltext_template_direct",
+        )
+        evidence = json.loads(result.parsed_result_json)["evidences"][0]
+        strong_count = (
+            db.query(StrongEvidence)
+            .filter(StrongEvidence.fulltext_result_id == result.id)
+            .count()
+        )
+
+    assert evidence["matched_template_ids"] == []
+    assert evidence["template_satisfied"] is False
+    assert evidence["template_match_level"] == "none"
+    assert evidence["template_decision_source"] == "llm_missing_template_decision"
+    assert "model did not return" in evidence["template_failure_reason"]
+    assert evidence["final_recommendation"] == "review"
+    assert strong_count == 0
 
 
 def test_template_direct_preserves_distinct_evidence_locations_and_multiple_templates(
@@ -5598,6 +6981,18 @@ def test_template_direct_preserves_distinct_evidence_locations_and_multiple_temp
         )
         first_id = first.id
         positive_id = positive.id
+        set_model_template_decision(
+            provider,
+            [first_id],
+            evidence_indexes=[0],
+            reason="The first-work statement directly targets the cited paper.",
+        )
+        set_model_template_decision(
+            provider,
+            [positive_id],
+            evidence_indexes=[1],
+            reason="The positive assessment directly targets the cited paper.",
+        )
         result = ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
             analysis_scope="fulltext_template_direct",
@@ -5745,6 +7140,7 @@ def test_enabled_method_capability_template_can_promote_aligned_candidate(
             allow_grouped_citation=False,
         )
         template_id = template.id
+        set_model_template_decision(provider, [template_id])
         result = ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
             analysis_scope="fulltext_template_direct",
@@ -5762,7 +7158,7 @@ def test_enabled_method_capability_template_can_promote_aligned_candidate(
     assert len(strong) == 1
 
 
-def test_method_capability_template_does_not_promote_grouped_candidate(
+def test_model_can_reject_ambiguous_grouped_method_candidate(
     db_session_factory,
     tmp_path,
     monkeypatch,
@@ -5802,13 +7198,19 @@ def test_method_capability_template_does_not_promote_grouped_candidate(
                 "[26] G. Hopper. Target Paper."
             ),
         )
-        TemplateService(db).create_custom_template(
+        template = TemplateService(db).create_custom_template(
             session_id=session_id,
             template_name="方法或能力概述",
             natural_language_goal="识别目标论文的方法或能力概述。",
             template_type="method_or_capability_summary",
             require_target_marker=True,
             allow_grouped_citation=False,
+        )
+        set_model_template_decision(
+            provider,
+            [template.id],
+            satisfied=False,
+            reason="The grouped statement does not attribute the method to the target alone.",
         )
         result = ScholarFulltextService(db).analyze_single_queue_item(
             queue_item_id=item_id,
@@ -5823,6 +7225,8 @@ def test_method_capability_template_does_not_promote_grouped_candidate(
 
     assert evidence["final_recommendation"] != "include"
     assert evidence["template_satisfied"] is False
+    assert evidence["template_match_level"] == "none"
+    assert evidence["template_strongly_satisfied"] is False
     assert strong_count == 0
 
 
@@ -5874,8 +7278,31 @@ def test_evidence_page_shows_review_candidate_layer_and_missing_dimension(
 
     assert response.status_code == 200
     assert "候选证据层" in response.text
-    assert "当前启用模板未覆盖或未满足" in response.text
+    assert "正向强证据" in response.text
+    assert "中性强证据" in response.text
+    assert "负面强证据" in response.text
+    assert "正文是方法或能力概述，但未满足当前评价模板的明确条件" in response.text
     assert quote in response.text
+
+
+def test_grouped_candidate_missing_dimension_is_decided_by_model(
+    db_session_factory,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        row = ScholarFulltextService(db)._direct_candidate_view_row(
+            {
+                "final_recommendation": "review",
+                "final_claim_type": "positive_evaluation",
+                "evidence_quote": "Target Paper [22], [23] is effective.",
+                "reference_alignment_status": "matched",
+                "grouped_citation": True,
+                "matched_template_ids": [1],
+                "template_satisfied": True,
+            }
+        )
+
+    assert row["missing_dimension"] == ""
+    assert "成组引用无法单独归因" not in row["missing_dimension"]
 
 
 def test_template_direct_filter_reasons_are_structured_and_aggregated(
@@ -5936,10 +7363,16 @@ def test_template_direct_filter_reasons_are_structured_and_aggregated(
     assert evidence["matched_template_ids"] == []
     assert evidence["filter_reason_codes"] == evidence["failure_reason_codes"]
     assert "ordinary_reference" in evidence["failure_reason_codes"]
-    assert "grouped_citation_not_allowed" in evidence["failure_reason_codes"]
+    assert "grouped_citation_not_allowed" not in evidence["failure_reason_codes"]
     assert summary["filtered_findings_count"] == 1
     assert summary["filter_reason_distribution"]["ordinary_reference"] == 1
-    assert diagnostics["filter_reason_distribution"]["grouped_citation_not_allowed"] == 1
+    assert (
+        diagnostics["filter_reason_distribution"].get(
+            "grouped_citation_not_allowed",
+            0,
+        )
+        == 0
+    )
     assert debug_row["filter_reason_distribution"]["ordinary_reference"] == 1
 
 

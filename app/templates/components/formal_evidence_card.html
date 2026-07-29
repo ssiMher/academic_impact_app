@@ -16,10 +16,6 @@
   <p>{{ formal_item.evaluation_zh or formal_item.copy_ready_zh }}</p>
   <h5>评价理由</h5>
   <p>{{ formal_item.why_this_judgment_zh }}</p>
-  {% if evidence_page and formal_item.copy_ready_zh %}
-    <h5>可复制表述</h5>
-    <p>{{ formal_item.copy_ready_zh }}</p>
-  {% endif %}
   {% if evidence_page %}
     <div class="action-row formal-evidence-actions">
       <button class="button button-secondary" type="button" data-copy-text="{{ formal_item.citation_text or '' }}">复制原文证据</button>

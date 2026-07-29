@@ -17,20 +17,6 @@ from app.analysis.citation_anchor import (
 )
 
 
-INCLUDE_CLAIM_TYPES = {
-    "first_or_seminal_claim",
-    "detailed_comparison",
-    "baseline_or_benchmark",
-    "positive_evaluation",
-    "submm_precision_claim",
-    "capability_recognition",
-    "through_wall_eavesdropping",
-    "rfid_loudspeaker_vibration",
-    "method_use",
-    "performance_comparison",
-    "custom_template_evidence",
-}
-
 CLAIM_PRIORITY = {
     "first_or_seminal_claim": 100,
     "detailed_comparison": 85,
@@ -176,12 +162,6 @@ def _normalize_evidence(
     recommendation = original_recommendation
     item["original_recommendation"] = original_recommendation
     item["original_claim_type"] = original_claim_type
-    reason_text = (
-        str(item.get("why_this_judgment_zh") or "")
-        + "\n"
-        + str(item.get("copy_ready_zh") or "")
-    )
-
     evidence_marker = _evidence_marker_for_quote(
         quote,
         context,
@@ -234,7 +214,6 @@ def _normalize_evidence(
     )
     grouped_citation = quote_has_other_marker
     title_alias_in_quote = _contains_title_alias(quote, cited_paper_title)
-    limitation_reason = _limitation_downgrade_reason(f"{combined}\n{reason_text}")
     body_author = _body_author_for_marker(target_scope, target_marker)
     reference_author = _reference_first_author(evidence_reference_entry_raw)
     attribution_conflict = bool(
@@ -254,24 +233,6 @@ def _normalize_evidence(
             reference_match_status = "mismatch"
             reference_match_reason = identity_match.reason_code
 
-    inferred_claim_type = _infer_stronger_claim_type(
-        claim_type=claim_type,
-        quote=quote,
-        combined=combined,
-        reason_text=reason_text,
-        has_target_marker=has_effective_target_anchor,
-        reference_match_status=reference_match_status,
-        grouped_citation=grouped_citation,
-        limitation_reason=limitation_reason,
-    )
-    if inferred_claim_type != claim_type:
-        claim_type = inferred_claim_type
-        item["claim_type"] = inferred_claim_type
-    if claim_type == "ordinary_reference":
-        summary_claim_type = _infer_summary_claim_type(target_scope)
-        if summary_claim_type:
-            claim_type = summary_claim_type
-            item["claim_type"] = summary_claim_type
     title_or_reference_only = _is_title_only_or_reference_only(quote, combined)
 
     if target_marker and evidence_marker and evidence_marker != target_marker and not quote_has_target_marker:
@@ -291,32 +252,20 @@ def _normalize_evidence(
     elif _looks_like_reference_entry(quote):
         item = _exclude(item, reason="reference_only")
     else:
-        if title_or_reference_only and claim_type == "submm_precision_claim":
-            item["recommendation"] = "review"
-            item["claim_type"] = "ordinary_reference"
-            claim_type = "ordinary_reference"
+        if title_or_reference_only:
+            item["recommendation"] = "exclude"
             reasons.append("title_or_reference_only_not_include")
         if recommendation == "include":
-            downgrade_reason = limitation_reason or _include_downgrade_reason(
-                    claim_type=claim_type,
-                    quote=quote,
-                    combined=combined,
-                    has_target_marker=has_effective_target_anchor,
-                    grouped_citation=grouped_citation,
-                    title_alias_in_quote=title_alias_in_quote,
-                    reference_match_status=reference_match_status,
-                    reason_text=reason_text,
-                )
+            downgrade_reason = _include_structural_downgrade_reason(
+                quote=quote,
+                combined=combined,
+                has_target_marker=has_effective_target_anchor,
+                reference_match_status=reference_match_status,
+            )
             if downgrade_reason:
                 item["recommendation"] = "review"
                 item["confidence"] = _lower_confidence(item.get("confidence"))
                 reasons.append(downgrade_reason)
-                if downgrade_reason.startswith("limitation_"):
-                    item["claim_type"] = "limitation_feedback"
-                    claim_type = "limitation_feedback"
-                elif downgrade_reason == "title_or_reference_only_not_include":
-                    item["claim_type"] = "ordinary_reference"
-                    claim_type = "ordinary_reference"
         if claim_type == "ordinary_reference" and item.get("recommendation") == "include":
             item["recommendation"] = "review"
             item["confidence"] = _lower_confidence(item.get("confidence"))
@@ -333,10 +282,8 @@ def _normalize_evidence(
         and item.get("claim_type") in {"method_summary", "capability_summary"}
         and reference_match_status == "matched"
         and has_effective_target_anchor
-        and not grouped_citation
         and not title_or_reference_only
         and not attribution_conflict
-        and not limitation_reason
     ):
         # The model recommendation is provisional in template-direct mode.
         # Preserve a safely aligned factual summary for deterministic template
@@ -344,11 +291,6 @@ def _normalize_evidence(
         item["recommendation"] = "review"
         item["confidence"] = _lower_confidence(item.get("confidence"))
         reasons.append("candidate_requires_matching_template")
-
-    if item.get("recommendation") == "include" and item.get("claim_type") not in INCLUDE_CLAIM_TYPES:
-        item["recommendation"] = "review"
-        item["confidence"] = _lower_confidence(item.get("confidence"))
-        reasons.append("include_claim_type_not_strong")
 
     item["final_recommendation"] = str(item.get("recommendation") or "review")
     item["final_claim_type"] = str(item.get("claim_type") or claim_type)
@@ -396,127 +338,20 @@ def _normalize_evidence(
     return item
 
 
-def _include_downgrade_reason(
+def _include_structural_downgrade_reason(
     *,
-    claim_type: str,
     quote: str,
     combined: str,
     has_target_marker: bool,
-    grouped_citation: bool,
-    title_alias_in_quote: bool,
     reference_match_status: str,
-    reason_text: str,
 ) -> str:
     if reference_match_status != "matched":
         return "reference_match_not_matched"
     if _is_title_only_or_reference_only(quote, combined):
         return "title_or_reference_only_not_include"
-    if claim_type not in INCLUDE_CLAIM_TYPES:
-        if claim_type == "ordinary_reference":
-            return "ordinary_reference_not_include"
-        return "include_claim_type_not_strong"
     if not has_target_marker:
         return "include_requires_body_target_marker"
-    if grouped_citation and not title_alias_in_quote:
-        return "grouped_citation_requires_review"
-    reverse_reason = _reverse_reason_downgrade(reason_text)
-    if reverse_reason:
-        return reverse_reason
-    text = _normalize(combined)
-    quote_text = _normalize(quote)
-    if claim_type == "submm_precision_claim":
-        if not _has_submm_term(quote_text):
-            return "submm_claim_missing_body_submm_term"
-        if not (
-            _has_capability_terms(quote_text)
-            or _has_method_use_terms(quote_text)
-            or _has_performance_comparison_terms(quote_text)
-        ):
-            return "submm_claim_missing_body_capability_term"
-    if claim_type == "through_wall_eavesdropping" and not _has_through_wall_term(text):
-        return "through_wall_claim_missing_body_term"
-    if claim_type == "rfid_loudspeaker_vibration" and not _has_loudspeaker_vibration_terms(text):
-        return "rfid_loudspeaker_claim_missing_body_terms"
-    if claim_type == "performance_comparison" and not _has_performance_comparison_terms(text):
-        return "performance_comparison_missing_concrete_terms"
-    if claim_type == "method_use" and not _has_method_use_terms(text):
-        return "method_use_missing_concrete_terms"
-    if claim_type == "capability_recognition" and not _has_capability_terms(text):
-        return "capability_recognition_missing_concrete_terms"
-    if claim_type == "first_or_seminal_claim" and not _has_targeted_first_claim(
-        quote,
-        target_marker_present=has_target_marker,
-    ):
-        return "first_claim_scope_not_targeted"
-    if claim_type == "detailed_comparison" and not _has_detailed_comparison_support(
-        quote,
-        combined,
-    ):
-        return "detailed_comparison_insufficient_detail"
-    if claim_type == "baseline_or_benchmark" and not _has_baseline_support(
-        quote,
-        combined,
-    ):
-        return "baseline_or_benchmark_not_experimental"
-    if claim_type == "positive_evaluation" and not _has_explicit_positive_support(
-        quote,
-        combined,
-    ):
-        return "positive_evaluation_not_explicit"
-    if claim_type in {"capability_recognition", "method_use"} and not (
-        _has_submm_term(quote_text)
-        or _has_through_wall_term(text)
-        or _has_loudspeaker_vibration_terms(text)
-        or _has_performance_comparison_terms(text)
-        or _has_specific_method_use_scope(text)
-    ):
-        return "generic_rfid_eavesdropping_not_include"
     return ""
-
-
-def _infer_stronger_claim_type(
-    *,
-    claim_type: str,
-    quote: str,
-    combined: str,
-    reason_text: str,
-    has_target_marker: bool,
-    reference_match_status: str,
-    grouped_citation: bool,
-    limitation_reason: str,
-) -> str:
-    """Promote obvious direct evidence categories after reference validation."""
-    if reference_match_status == "mismatch" or not has_target_marker:
-        return claim_type
-    if limitation_reason:
-        return "limitation_feedback"
-    if _submm_scope_negative_reason(reason_text):
-        return claim_type
-    if _is_title_only_or_reference_only(quote, combined):
-        return claim_type
-    quote_text = _normalize(quote)
-    combined_text = _normalize(combined)
-    if _has_submm_term(quote_text) and (
-        _has_capability_terms(quote_text)
-        or _has_method_use_terms(quote_text)
-        or _has_performance_comparison_terms(quote_text)
-    ):
-        return _stronger_claim_type(claim_type, "submm_precision_claim")
-    if _has_through_wall_term(quote_text) and _has_capability_terms(quote_text):
-        return _stronger_claim_type(claim_type, "through_wall_eavesdropping")
-    if (
-        _has_through_wall_term(combined_text)
-        and _has_capability_terms(combined_text)
-        and not grouped_citation
-    ):
-        return _stronger_claim_type(claim_type, "through_wall_eavesdropping")
-    if _has_loudspeaker_vibration_terms(combined_text):
-        return _stronger_claim_type(claim_type, "rfid_loudspeaker_vibration")
-    return claim_type
-
-
-def _stronger_claim_type(current: str, candidate: str) -> str:
-    return candidate if CLAIM_PRIORITY.get(candidate, 0) > CLAIM_PRIORITY.get(current, 0) else current
 
 
 def _deduplicate_evidences(
@@ -671,7 +506,6 @@ def _append_reason(item: Dict[str, Any], reason: str) -> None:
         "ordinary_reference_not_include": "普通相关工作不能作为推荐纳入强证据。",
         "include_claim_type_not_strong": "该 claim_type 不属于允许推荐纳入的强证据类型。",
         "include_requires_body_target_marker": "推荐纳入要求正文证据句直接包含目标引用编号。",
-        "grouped_citation_requires_review": "成组引用没有单独描述目标论文，需进入候选复核。",
         "reason_text_indicates_weak_evidence": "模型理由或表述承认该证据只是普通引用、列举、标题项或存在归因风险。",
         "title_or_reference_only_not_include": "证据仅来自题名、参考文献条目或标题列举，不是正文第三方评价。",
         "submm_claim_missing_body_submm_term": "正文证据句没有明确 sub-mm / millimeter-level 表达。",
@@ -747,14 +581,12 @@ def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
         )
     ):
         add("target_marker_missing")
-    if evidence.get("grouped_citation") or (
-        "grouped_citation" not in evidence and "grouped citation" in text
-    ):
-        add("grouped_citation_not_allowed")
     if "evidence type" in text and "not allowed" in text:
         add("evidence_type_not_allowed")
     if "candidate_requires_matching_template" in text:
         add("candidate_requires_matching_template")
+    if evidence.get("template_match_level") == "candidate":
+        add("template_candidate_requires_review")
     if "no explicit first/pioneering" in text:
         add("no_first_or_pioneering_expression")
     if "no required evidence pattern" in text:
@@ -765,7 +597,32 @@ def direct_evidence_failure_reason_codes(evidence: Dict[str, Any]) -> List[str]:
     )
     if "ordinary_reference" == final_claim_type or "ordinary reference" in text:
         add("ordinary_reference")
-    if final_claim_type == "limitation_feedback" or "limitation feedback" in text:
+    matched_template_types = {
+        str(value)
+        for value in evidence.get("matched_template_types", []) or []
+    }
+    negative_template_satisfied = (
+        "limitation_or_negative" in matched_template_types
+        or any(
+            isinstance(evaluation, dict)
+            and evaluation.get("template_type") == "limitation_or_negative"
+            and evaluation.get("template_satisfied") is True
+            for evaluation in evidence.get("template_evaluations", []) or []
+        )
+    )
+    if negative_template_satisfied:
+        codes = [
+            code
+            for code in codes
+            if code != "limitation_feedback_not_positive"
+        ]
+    if (
+        final_claim_type == "limitation_feedback"
+        and not negative_template_satisfied
+    ) or (
+        "limitation feedback" in text
+        and not negative_template_satisfied
+    ):
         add("limitation_feedback_not_positive")
     if "title-only" in text or "reference-only" in text or "reference_only" in text:
         add("reference_only")
@@ -875,153 +732,11 @@ def _normalize_author_name(value: str) -> str:
     return re.sub(r"[^a-z]", "", value.casefold())
 
 
-def _infer_summary_claim_type(target_scope: str) -> str:
-    """Give substantive target-specific summaries a reviewable semantic label."""
-    normalized = _normalize(target_scope)
-    if len(_meaningful_tokens(normalized)) < 5:
-        return ""
-    if re.search(
-        r"\b(achieve[sd]?|demonstrate[sd]?|enable[sd]?|detect\w*|measure[sd]?|"
-        r"capture[sd]?|recogniz\w*|support[sd]?)\b",
-        normalized,
-        flags=re.I,
-    ):
-        return "capability_summary"
-    if re.search(
-        r"\b(propose[sd]?|introduce[sd]?|present[sd]?|develop\w*|use[sd]?|using|"
-        r"employ\w*|leverag\w*|extend\w*|implement\w*|based\s+on)\b",
-        normalized,
-        flags=re.I,
-    ):
-        return "method_summary"
-    return ""
-
-
 def _clean_marker(marker: str) -> str:
     value = str(marker or "").strip()
     if value.startswith("[") and value.endswith("]"):
         value = value[1:-1].strip()
     return value
-
-
-def _has_submm_term(text: str) -> bool:
-    return bool(
-        re.search(
-            r"\b(sub\s*-?\s*mm|sub\s*-?\s*millimeter|sub\s*-?\s*millimetre|millimeter\s*-?\s*level|millimetre\s*-?\s*level|mm\s*-?\s*level)\b",
-            text,
-            flags=re.I,
-        )
-    )
-
-
-def _has_through_wall_term(text: str) -> bool:
-    return bool(re.search(r"\b(thr(?:ough|u)\s*-?\s*the\s*-?\s*wall|thr(?:ough|u)\s*-?\s*wall)\b", text, flags=re.I))
-
-
-def _has_loudspeaker_vibration_terms(text: str) -> bool:
-    has_rfid = "rfid" in text
-    has_speaker = bool(re.search(r"\b(loudspeaker|speaker|acoustic|voice|audio)\b", text, flags=re.I))
-    has_vibration = bool(re.search(r"\b(vibration|vibrations|vibrat\w+)\b", text, flags=re.I))
-    return has_rfid and has_speaker and has_vibration
-
-
-def _has_method_use_terms(text: str) -> bool:
-    return bool(
-        re.search(
-            r"\b(use[sd]?|using|adopt\w*|follow\w*|according\s+to|implement\w*|based\s+on|build\w*\s+on|extend\w*)\b",
-            text,
-            flags=re.I,
-        )
-    )
-
-
-def _has_specific_method_use_scope(text: str) -> bool:
-    return bool(
-        re.search(
-            r"\b(reconstruct\w*\s+audio|captur\w+\s+vibrations?\s+from\s+loudspeakers?|vibration\s+pattern|speaker\s+vibration|loudspeaker\s+vibration|cgan|baseline|implementation)\b",
-            text,
-            flags=re.I,
-        )
-    )
-
-
-def _has_performance_comparison_terms(text: str) -> bool:
-    return bool(
-        re.search(
-            r"\b(compare[sd]?|comparison|baseline|benchmark|performance|accuracy|error|outperform\w*|superior|inferior|improve\w*)\b",
-            text,
-            flags=re.I,
-        )
-    )
-
-
-def _has_capability_terms(text: str) -> bool:
-    return bool(
-        re.search(
-            r"\b(achieve[sd]?|demonstrate[sd]?|enable[sd]?|recogniz\w*|capabilit\w*|support[sd]?|measure[sd]?|detect\w*|captur\w*)\b",
-            text,
-            flags=re.I,
-        )
-    )
-
-
-def _has_targeted_first_claim(text: str, *, target_marker_present: bool) -> bool:
-    if not target_marker_present:
-        return False
-    return bool(
-        re.search(
-            r"\b(the\s+first|first[- ]of[- ]its[- ]kind|for\s+the\s+first\s+time|"
-            r"pioneering|seminal|earliest)\b|首次|开创性|率先|最早",
-            text or "",
-            re.I,
-        )
-    )
-
-
-def _has_detailed_comparison_support(quote: str, combined: str) -> bool:
-    has_comparison = bool(
-        re.search(r"\b(compar\w*|versus|vs\.?|relative\s+to)\b", combined, re.I)
-    )
-    has_detail = bool(
-        re.search(
-            r"\b(table|experiment\w*|performance|accuracy|error|latency|throughput|"
-            r"metric|result\w*|outperform\w*|higher|lower|faster|slower|whereas|however)\b|%",
-            combined,
-            re.I,
-        )
-    )
-    sentence_count = len(
-        [part for part in re.split(r"(?<=[.!?])\s+|[\r\n]+", combined) if part.strip()]
-    )
-    return has_comparison and has_detail and (
-        sentence_count >= 2 or len(combined) >= max(220, len(quote) + 80)
-    )
-
-
-def _has_baseline_support(quote: str, combined: str) -> bool:
-    return bool(re.search(r"\b(baseline|benchmark)\b", quote, re.I)) and bool(
-        re.search(
-            r"\b(table|experiment\w*|evaluat\w*|compar\w*|reproduc\w*|implement\w*|"
-            r"performance|accuracy|error|metric|result\w*)\b",
-            combined,
-            re.I,
-        )
-    )
-
-
-def _has_explicit_positive_support(quote: str, combined: str) -> bool:
-    if _limitation_downgrade_reason(combined):
-        return False
-    return bool(
-        re.search(
-            r"\b(effective\w*|demonstrat\w*|accurate|robust|valuable|significant|important|promising|"
-            r"novel|strong|superior|outperform\w*|improv\w*|high[- ]precision|"
-            r"high[- ]accuracy|state[- ]of[- ]the[- ]art)\b|"
-            r"(有效|准确|鲁棒|重要|显著|优越|领先|高精度|有价值)",
-            quote or "",
-            re.I,
-        )
-    )
 
 
 def _looks_like_reference_entry(text: str) -> bool:
@@ -1054,112 +769,6 @@ def _is_title_only_or_reference_only(quote: str, combined: str) -> bool:
     without_markers = re.sub(r"\[[^\]]+\]", "", quote).strip()
     token_count = len(_meaningful_tokens(_normalize(without_markers)))
     return token_count <= 3
-
-
-def _reverse_reason_downgrade(reason_text: str) -> str:
-    normalized = _normalize(reason_text)
-    raw_text = str(reason_text or "").casefold()
-    weak_phrases = (
-        "ordinary related work",
-        "ordinary reference",
-        "general reference",
-        "general listing",
-        "listed",
-        "not specifically mention",
-        "not specifically discussed",
-        "not explicitly mention sub mm",
-        "title itself",
-        "title only",
-        "reference only",
-        "attribution risk",
-        "grouped citation",
-        "limitation",
-        "limited",
-        "less practical",
-        "background",
-        "普通相关工作",
-        "普通引用",
-        "一般性引用",
-        "一般性列举",
-        "列举",
-        "未具体提及",
-        "未给出",
-        "未展开讨论",
-        "未明确提及 sub mm",
-        "没有明确",
-        "没有具体",
-        "no specific",
-        "does not provide",
-    )
-    weak_raw_phrases = (
-        "普通相关工作",
-        "普通引用",
-        "一般性引用",
-        "一般性列举",
-        "列举",
-        "未具体提及",
-        "未给出",
-        "未展开讨论",
-        "未明确提及 sub-mm",
-        "未明确提及 submm",
-        "没有明确",
-        "没有具体",
-        "标题本身",
-        "成组引用",
-        "分组引用",
-        "局限性",
-        "受限",
-        "不适合",
-        "仅作为例子",
-        "仅作为背景",
-    )
-    return (
-        "reason_text_indicates_weak_evidence"
-        if any(phrase in normalized for phrase in weak_phrases)
-        or any(phrase.casefold() in raw_text for phrase in weak_raw_phrases)
-        else ""
-    )
-
-
-def _submm_scope_negative_reason(reason_text: str) -> bool:
-    normalized = _normalize(reason_text)
-    phrases = (
-        "sub mm does not apply to target",
-        "sub mm is not attributed to target",
-        "sub mm modifies another system",
-        "sub mm 修饰 another system",
-        "sub mm 不修饰",
-        "未作用到目标论文",
-        "不作用到目标论文",
-        "未归因到目标论文",
-    )
-    return any(phrase in normalized for phrase in phrases)
-
-
-def _limitation_downgrade_reason(text: str) -> str:
-    normalized = _normalize(text)
-    limitation_phrases = (
-        "less practical",
-        "requires pre-installing",
-        "requires pre installing",
-        "requires pre-installed",
-        "requires pre installed",
-        "pre-installed tag",
-        "pre installed tag",
-        "pre-installing rfid tags",
-        "pre installing rfid tags",
-        "limited",
-        "not a good candidate",
-        "insufficient vibration resolution",
-        "accuracy is limited",
-        "long wavelength",
-        "lower packet rate",
-        "reduces practicality",
-        "requires stable wireless conditions",
-        "not practical",
-        "impractical",
-    )
-    return "limitation_language_not_include" if any(phrase in normalized for phrase in limitation_phrases) else ""
 
 
 def _lower_confidence(value: Any) -> str:

@@ -70,6 +70,46 @@ TEMPLATE_CONTRACTS = {
         "require_target_marker": True,
         "allow_grouped_citation": False,
     },
+    "limitation_or_negative": {
+        "allowed_evidence_types": [
+            "limitation_feedback",
+            "limitation_or_negative",
+        ],
+        "strict_rules": [
+            "requires target-anchored body text that states a limitation, drawback, failure condition, or practical constraint",
+            "ordinary related-work listing and neutral capability descriptions are insufficient",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
+    "theoretical_foundation": {
+        "allowed_evidence_types": [
+            "theoretical_foundation",
+            "method_foundation",
+            "method_summary",
+            "capability_summary",
+        ],
+        "strict_rules": [
+            "requires target-anchored body text about a model, theory, equation, mechanism, or derivation",
+            "plain listing and reference-only evidence are insufficient",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
+    "method_foundation": {
+        "allowed_evidence_types": [
+            "method_foundation",
+            "method_use",
+            "method_summary",
+        ],
+        "strict_rules": [
+            "requires target-anchored body text describing or using a concrete method from the target paper",
+            "plain listing and reference-only evidence are insufficient",
+            "a method summary without adoption or dependency is review-only",
+        ],
+        "require_target_marker": True,
+        "allow_grouped_citation": False,
+    },
     "method_or_capability_summary": {
         "allowed_evidence_types": [
             "method_summary",
@@ -191,8 +231,27 @@ def template_snapshot(template: AnalysisTemplate) -> dict:
 def format_template_snapshots_for_prompt(templates: List[AnalysisTemplate]) -> str:
     if not templates:
         return "(none)"
+    snapshots = []
+    for template in templates:
+        snapshot = template_snapshot(template)
+        snapshot["suggested_patterns"] = snapshot.pop("required_patterns", [])
+        snapshot["suggested_evidence_types"] = snapshot.pop(
+            "allowed_evidence_types",
+            [],
+        )
+        snapshot["advisory_notes"] = snapshot.pop("strict_rules", [])
+        snapshot["semantic_decision_policy"] = (
+            "Use the template goal and the full citation context. All keywords, "
+            "patterns, evidence types, and notes are advisory rather than hard gates."
+        )
+        snapshot["configured_allow_grouped_citation"] = snapshot.pop(
+            "allow_grouped_citation",
+            False,
+        )
+        snapshot["grouped_citation_policy"] = "model_semantic_attribution"
+        snapshots.append(snapshot)
     return json.dumps(
-        [template_snapshot(template) for template in templates],
+        snapshots,
         ensure_ascii=False,
         indent=2,
     )
@@ -216,6 +275,7 @@ def evaluate_templates_for_finding(
     evaluations = []
     matched_ids: List[int] = []
     matched_names: List[str] = []
+    strong_matched_ids: List[int] = []
     match_reasons: List[str] = []
     failure_reasons: List[str] = []
     text = " ".join(
@@ -236,23 +296,109 @@ def evaluate_templates_for_finding(
             target_reference_marker=target_reference_marker,
             cited_paper_title=cited_paper_title,
         )
+        if (
+            _is_grouped_citation(citation_text, target_reference_marker)
+            and evaluation.get("template_match_level") == "strong"
+            and not _model_accepts_grouped_attribution(finding_payload, template)
+        ):
+            evaluation = dict(evaluation)
+            evaluation.update(
+                {
+                    "template_match_level": "candidate",
+                    "template_strongly_satisfied": False,
+                    "template_match_reason": (
+                        f"{evaluation.get('template_match_reason') or 'template candidate'}; "
+                        "grouped citation attribution awaits model judgment"
+                    ),
+                    "match_score": min(
+                        float(evaluation.get("match_score") or 0.0),
+                        20.0,
+                    ),
+                }
+            )
         evaluations.append(evaluation)
         if evaluation["template_satisfied"]:
             matched_ids.append(template.id)
             matched_names.append(template.description or template.name)
             match_reasons.append(evaluation["template_match_reason"])
+            if evaluation.get("template_match_level") == "strong":
+                strong_matched_ids.append(template.id)
         else:
             failure_reasons.append(
                 f"{template.description or template.name}: {evaluation['template_failure_reason']}"
             )
+    match_level = (
+        "strong"
+        if strong_matched_ids
+        else "candidate"
+        if matched_ids
+        else "none"
+    )
     return {
         "matched_template_ids": matched_ids,
         "matched_template_names": matched_names,
+        "strong_matched_template_ids": strong_matched_ids,
         "template_match_reason": "; ".join(reason for reason in match_reasons if reason),
         "template_satisfied": bool(matched_ids),
+        "template_strongly_satisfied": bool(strong_matched_ids),
+        "template_match_level": match_level,
         "template_failure_reason": "; ".join(reason for reason in failure_reasons if reason),
         "template_evaluations": evaluations,
     }
+
+
+def _model_accepts_grouped_attribution(
+    finding_payload: dict,
+    template: AnalysisTemplate,
+) -> bool:
+    model_ids = {
+        int(value)
+        for value in finding_payload.get("matched_template_ids", []) or []
+        if str(value).isdigit()
+    }
+    if template.id in model_ids and finding_payload.get("template_satisfied") is not False:
+        return True
+    recommendation = str(
+        finding_payload.get("original_recommendation")
+        or finding_payload.get("recommendation")
+        or ""
+    ).lower()
+    claim_type = str(
+        finding_payload.get("original_claim_type")
+        or finding_payload.get("claim_type")
+        or ""
+    )
+    compatible_claim_types = {
+        "first_or_seminal_claim": {"first_or_seminal_claim", "first_or_pioneering_claim"},
+        "first_or_pioneering_claim": {"first_or_seminal_claim", "first_or_pioneering_claim"},
+        "detailed_comparison": {"detailed_comparison", "performance_comparison"},
+        "baseline_or_benchmark": {"baseline_or_benchmark"},
+        "theoretical_foundation": {"theoretical_foundation", "method_foundation"},
+        "method_foundation": {
+            "method_foundation",
+            "method_use",
+        },
+        "positive_evaluation": {
+            "positive_evaluation",
+            "capability_recognition",
+            "through_wall_eavesdropping",
+            "rfid_loudspeaker_vibration",
+        },
+        "limitation_or_negative": {
+            "limitation_feedback",
+            "limitation_or_negative",
+        },
+        "method_or_capability_summary": {
+            "method_summary",
+            "capability_summary",
+            "method_use",
+            "capability_recognition",
+        },
+    }
+    return (
+        recommendation == "include"
+        and claim_type in compatible_claim_types.get(template.template_type, set())
+    )
 
 
 def _evaluate_single_template(
@@ -307,6 +453,39 @@ def _evaluate_single_template(
         )
     if (
         is_template_direct_finding
+        and template.template_type == "limitation_or_negative"
+    ):
+        return _evaluate_limitation_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
+            evidence_context=evidence_context,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
+    if (
+        is_template_direct_finding
+        and template.template_type == "theoretical_foundation"
+    ):
+        return _evaluate_theoretical_foundation_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
+            evidence_context=evidence_context,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
+    if is_template_direct_finding and template.template_type == "method_foundation":
+        return _evaluate_method_foundation_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
+            evidence_context=evidence_context,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
+    if (
+        is_template_direct_finding
         and template.template_type == "method_or_capability_summary"
     ):
         return _evaluate_method_or_capability_summary_template(
@@ -314,6 +493,17 @@ def _evaluate_single_template(
             finding_payload=finding_payload,
             citation_text=citation_text,
             evidence_context=evidence_context,
+            target_reference_marker=target_reference_marker,
+            cited_paper_title=cited_paper_title,
+        )
+    if (
+        is_template_direct_finding
+        and template_stance_intent(template) == "neutral"
+    ):
+        return _evaluate_neutral_attitude_template(
+            template,
+            finding_payload=finding_payload,
+            citation_text=citation_text,
             target_reference_marker=target_reference_marker,
             cited_paper_title=cited_paper_title,
         )
@@ -325,6 +515,131 @@ def _evaluate_single_template(
         combined_text=combined_text,
         target_reference_marker=target_reference_marker,
         cited_paper_title=cited_paper_title,
+    )
+
+
+def template_stance_intent(template: AnalysisTemplate) -> str:
+    text = " ".join(
+        [
+            str(template.template_type or ""),
+            str(template.name or ""),
+            str(template.description or ""),
+            str(template.natural_language_goal or ""),
+        ]
+    ).casefold()
+    # A neutral goal commonly says "neither positive nor negative", so detect
+    # neutral intent before scanning those excluded sentiment words.
+    if any(term in text for term in ("中性", "neutral")):
+        return "neutral"
+    if template.template_type == "limitation_or_negative" or any(
+        term in text for term in ("负面", "局限", "negative evaluation")
+    ):
+        return "negative"
+    if template.template_type == "positive_evaluation" or any(
+        term in text for term in ("正向评价", "positive evaluation")
+    ):
+        return "positive"
+    return ""
+
+
+def _evaluate_neutral_attitude_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    reference_status = str(finding_payload.get("reference_match_status") or "")
+    claim_type = str(finding_payload.get("claim_type") or "")
+    has_anchor = _has_target_anchor(
+        citation_text,
+        target_reference_marker,
+        cited_paper_title,
+    ) or bool(finding_payload.get("target_anchor_inherited", False))
+    positive = bool(
+        re.search(
+            r"\b(effective\w*|robust|valuable|significant|important|promising|"
+            r"novel|superior|outperform\w*|improv\w*|high[- ]precision|"
+            r"high[- ]accuracy|success\w*)\b|"
+            r"(有效|鲁棒|重要|显著|优越|领先|高精度|有价值)",
+            citation_text,
+            re.I,
+        )
+    )
+    negative = bool(
+        re.search(
+            r"\b(limitation|limited|less practical|impractical|not practical|"
+            r"drawback|weakness|insufficient|fails? to|cannot|can only|"
+            r"constraint|shortcoming)\b|"
+            r"(局限|不足|受限|不实用|只能|无法|缺点)",
+            citation_text,
+            re.I,
+        )
+    )
+    substantive = (
+        _has_method_or_capability_statement(citation_text)
+        or _has_substantive_action(citation_text)
+    )
+    neutral_types = {
+        "method_summary",
+        "capability_summary",
+        "method_use",
+        "capability_recognition",
+        "theoretical_foundation",
+        "method_foundation",
+        "ordinary_reference",
+    }
+    strong = (
+        reference_status != "mismatch"
+        and has_anchor
+        and not positive
+        and not negative
+        and substantive
+        and claim_type in neutral_types - {"ordinary_reference"}
+    )
+    candidate = (
+        reference_status != "mismatch"
+        and has_anchor
+        and not positive
+        and not negative
+        and claim_type in neutral_types
+        and not strong
+    )
+    if reference_status == "mismatch":
+        failure = "reference mismatch"
+    elif not has_anchor:
+        failure = "citation_text does not anchor to target paper"
+    elif _looks_like_title_or_reference_only(citation_text, cited_paper_title):
+        failure = "title-only or reference-only evidence does not satisfy the template"
+        strong = candidate = False
+    elif positive:
+        failure = "explicit positive evaluation is not neutral evidence"
+    elif negative:
+        failure = "limitation or negative evaluation is not neutral evidence"
+    elif claim_type not in neutral_types:
+        failure = f"evidence type {claim_type or 'unknown'} is not neutral evidence"
+    elif not substantive:
+        failure = "neutral mention lacks a substantive target-specific description"
+    else:
+        failure = ""
+    return _template_evaluation(
+        template,
+        satisfied=strong or candidate,
+        reason=(
+            "target-anchored factual method or capability description without positive or negative evaluation"
+            if strong
+            else "neutral target mention requires review because it lacks a substantive method or capability statement"
+        ),
+        failure=failure,
+        matched_terms=(
+            ["neutral target-specific description"]
+            if strong
+            else ["neutral mention candidate"]
+            if candidate
+            else []
+        ),
+        match_level="strong" if strong else "candidate",
     )
 
 
@@ -469,8 +784,6 @@ def _evaluate_configured_template(
         failure = "title-only or reference-only evidence does not satisfy the template"
     elif marker_required and not has_anchor:
         failure = "citation_text does not anchor to target paper"
-    elif grouped and not bool(rules.get("allow_grouped_citation", False)):
-        failure = "grouped citation is not allowed by this template"
     elif min_chars and len(quote) < min_chars:
         failure = f"citation_text shorter than min_citation_chars={min_chars}"
     elif min_words and len(quote.split()) < min_words:
@@ -494,9 +807,38 @@ def _evaluate_configured_template(
     matched_terms = list(
         dict.fromkeys([*matched_required, *matched_positive, *matched_finding_keywords])
     )
-    satisfied = not failure
+    candidate_support = bool(
+        model_support
+        or matched_required
+        or builtin_type_support
+        or len(matched_positive) >= 2
+        or len(matched_finding_keywords) >= 2
+    )
+    hard_failure_prefixes = (
+        "no citation_text",
+        "reference mismatch",
+        "title-only",
+        "citation_text does not anchor",
+        "citation_text shorter",
+        "matched exclusion terms",
+        "plain related work",
+    )
+    candidate = bool(
+        failure
+        and candidate_support
+        and not failure.startswith(hard_failure_prefixes)
+    )
+    if not failure and grouped and not model_support:
+        failure = "grouped citation attribution awaits model judgment"
+        candidate = True
+    satisfied = not failure or candidate
+    match_level = "strong" if not failure else "candidate" if candidate else "none"
     reason = (
-        "body evidence satisfies the configured template"
+        (
+            "body evidence satisfies the configured template"
+            if match_level == "strong"
+            else f"body evidence is a configured-template candidate; strict review pending: {failure}"
+        )
         + (": " + ", ".join(matched_terms[:8]) if matched_terms else "")
         if satisfied
         else ""
@@ -506,10 +848,18 @@ def _evaluate_configured_template(
         "template_name": template.description or template.name,
         "template_type": template.template_type,
         "template_satisfied": satisfied,
+        "template_strongly_satisfied": match_level == "strong",
+        "template_match_level": match_level,
         "template_match_reason": reason,
-        "template_failure_reason": failure,
+        "template_failure_reason": "" if satisfied else failure,
         "matched_terms": matched_terms,
-        "match_score": min(30.0, 15.0 + len(matched_terms) * 5.0) if satisfied else 0.0,
+        "match_score": (
+            min(30.0, 15.0 + len(matched_terms) * 5.0)
+            if match_level == "strong"
+            else min(20.0, 10.0 + len(matched_terms) * 3.0)
+            if match_level == "candidate"
+            else 0.0
+        ),
         "auto_include_in_report": bool(rules.get("auto_include_in_report", False)),
     }
 
@@ -567,6 +917,8 @@ def _evaluate_first_pioneering_template(
         "template_name": template.description or template.name,
         "template_type": template.template_type,
         "template_satisfied": satisfied,
+        "template_strongly_satisfied": satisfied,
+        "template_match_level": "strong" if satisfied else "none",
         "template_match_reason": (
             "explicit first/pioneering expression targets cited paper: " + ", ".join(matched)
             if satisfied
@@ -608,30 +960,52 @@ def _evaluate_detailed_comparison_template(
         [part for part in re.split(r"(?<=[.!?])\s+|[\r\n]+", text) if part.strip()]
     )
     claim_type = str(finding_payload.get("claim_type") or "")
-    type_ok = claim_type in {"detailed_comparison", "performance_comparison"}
-    satisfied = (
+    candidate_type = claim_type in {
+        "detailed_comparison",
+        "performance_comparison",
+        "method_summary",
+        "capability_summary",
+        "ordinary_reference",
+    }
+    strong = (
         not guard_failure
-        and type_ok
+        and candidate_type
         and has_comparison
         and has_detail
         and (sentence_count >= 2 or len(evidence_context or "") >= 220)
     )
+    candidate = (
+        not guard_failure
+        and candidate_type
+        and has_comparison
+        and not strong
+    )
+    satisfied = strong or candidate
     if guard_failure:
         failure = guard_failure
-    elif not type_ok:
+    elif not candidate_type:
         failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
     elif not has_comparison:
         failure = "no explicit comparison expression in body text"
-    elif not has_detail or (sentence_count < 2 and len(evidence_context or "") < 220):
-        failure = "comparison is too brief or lacks concrete method/performance detail"
     else:
         failure = ""
     return _template_evaluation(
         template,
         satisfied=satisfied,
-        reason="target-anchored substantive comparison with concrete details",
+        reason=(
+            "target-anchored substantive comparison with concrete details"
+            if strong
+            else "target-anchored comparison candidate; detail or metric support requires review"
+        ),
         failure=failure,
-        matched_terms=["comparison", "concrete comparison detail"] if satisfied else [],
+        matched_terms=(
+            ["comparison", "concrete comparison detail"]
+            if strong
+            else ["comparison candidate"]
+            if candidate
+            else []
+        ),
+        match_level="strong" if strong else "candidate",
     )
 
 
@@ -662,24 +1036,50 @@ def _evaluate_baseline_template(
         )
     )
     claim_type = str(finding_payload.get("claim_type") or "")
-    type_ok = claim_type in {"baseline_or_benchmark", "performance_comparison"}
-    satisfied = not guard_failure and type_ok and has_baseline and has_evaluation
+    candidate_type = claim_type in {
+        "baseline_or_benchmark",
+        "performance_comparison",
+        "method_summary",
+        "ordinary_reference",
+    }
+    strong = (
+        not guard_failure
+        and candidate_type
+        and has_baseline
+        and has_evaluation
+    )
+    candidate = (
+        not guard_failure
+        and candidate_type
+        and has_baseline
+        and not strong
+    )
+    satisfied = strong or candidate
     if guard_failure:
         failure = guard_failure
-    elif not type_ok:
+    elif not candidate_type:
         failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
     elif not has_baseline:
         failure = "target paper is not explicitly used as a baseline or benchmark"
-    elif not has_evaluation:
-        failure = "baseline mention lacks experimental or performance-comparison context"
     else:
         failure = ""
     return _template_evaluation(
         template,
         satisfied=satisfied,
-        reason="target paper is explicitly used as an evaluated baseline or benchmark",
+        reason=(
+            "target paper is explicitly used as an evaluated baseline or benchmark"
+            if strong
+            else "target paper is described as a baseline or benchmark candidate; experimental use requires review"
+        ),
         failure=failure,
-        matched_terms=["baseline or benchmark", "evaluation context"] if satisfied else [],
+        matched_terms=(
+            ["baseline or benchmark", "evaluation context"]
+            if strong
+            else ["baseline or benchmark candidate"]
+            if candidate
+            else []
+        ),
+        match_level="strong" if strong else "candidate",
     )
 
 
@@ -707,7 +1107,9 @@ def _evaluate_positive_evaluation_template(
     has_positive_language = bool(
         re.search(
             r"\b(effective\w*|demonstrat\w*|accurate|robust|valuable|significant|important|promising|"
-            r"novel|strong|superior|outperform\w*|improv\w*|high[- ]precision|"
+            r"novel|strong|superior|outperform\w*|improv\w*|efficien\w*|"
+            r"enhanc\w*|mitigat\w*|reduc\w*|accelerat\w*|facilitat\w*|"
+            r"success\w*|high[- ]precision|"
             r"high[- ]accuracy|state[- ]of[- ]the[- ]art)\b|"
             r"(有效|准确|鲁棒|重要|显著|优越|领先|高精度|有价值)",
             text,
@@ -723,29 +1125,291 @@ def _evaluate_positive_evaluation_template(
             re.I,
         )
     )
-    type_ok = claim_type in allowed_types
-    satisfied = (
+    has_substantive_description = (
+        _has_method_or_capability_statement(citation_text)
+        or _has_substantive_action(citation_text)
+    )
+    candidate_type = claim_type in allowed_types or claim_type in {
+        "ordinary_reference",
+        "method_use",
+    }
+    strong = (
         not guard_failure
-        and type_ok
+        and candidate_type
         and has_positive_language
         and not has_limitation
     )
+    candidate = (
+        not guard_failure
+        and candidate_type
+        and has_substantive_description
+        and not has_limitation
+        and not strong
+    )
+    satisfied = strong or candidate
     if guard_failure:
         failure = guard_failure
-    elif not type_ok:
+    elif not candidate_type:
         failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
     elif has_limitation:
         failure = "limitation feedback cannot satisfy positive evaluation"
-    elif not has_positive_language:
-        failure = "no explicit positive evaluation of capability, contribution, effect, or value"
+    elif not has_substantive_description and not has_positive_language:
+        failure = "no target-specific capability, contribution, effect, or value statement"
     else:
         failure = ""
     return _template_evaluation(
         template,
         satisfied=satisfied,
-        reason="explicit target-anchored positive evaluation in body text",
+        reason=(
+            "explicit target-anchored positive evaluation in body text"
+            if strong
+            else "target-anchored method or capability description is a positive-evaluation candidate"
+        ),
         failure=failure,
-        matched_terms=["explicit positive evaluation"] if satisfied else [],
+        matched_terms=(
+            ["explicit positive evaluation"]
+            if strong
+            else ["target-specific capability candidate"]
+            if candidate
+            else []
+        ),
+        match_level="strong" if strong else "candidate",
+    )
+
+
+def _evaluate_limitation_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    evidence_context: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=citation_text,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
+    claim_type = str(finding_payload.get("claim_type") or "")
+    allowed_types = set(
+        TEMPLATE_CONTRACTS["limitation_or_negative"]["allowed_evidence_types"]
+    )
+    quote_has_limitation = bool(
+        re.search(
+            r"\b(limitation|limited|less practical|impractical|not practical|"
+            r"drawback|weakness|insufficient|fails? to|cannot|can only|"
+            r"requires? pre[- ]install\w*|constraint|shortcoming)\b|"
+            r"(局限|不足|受限|不实用|只能|无法|缺点)",
+            citation_text,
+            re.I,
+        )
+    )
+    context_has_limitation = bool(
+        re.search(
+            r"\b(limitation|limited|less practical|impractical|not practical|"
+            r"drawback|weakness|insufficient|fails? to|cannot|can only|"
+            r"requires? pre[- ]install\w*|constraint|shortcoming)\b|"
+            r"(局限|不足|受限|不实用|只能|无法|缺点)",
+            evidence_context,
+            re.I,
+        )
+    )
+    strong = (
+        not guard_failure
+        and claim_type in allowed_types
+        and quote_has_limitation
+    )
+    candidate = (
+        not guard_failure
+        and claim_type in allowed_types
+        and context_has_limitation
+        and not strong
+    )
+    if guard_failure:
+        failure = guard_failure
+    elif claim_type not in allowed_types:
+        failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
+    elif not quote_has_limitation and not context_has_limitation:
+        failure = "no explicit target-specific limitation or negative evaluation"
+    else:
+        failure = ""
+    return _template_evaluation(
+        template,
+        satisfied=strong or candidate,
+        reason=(
+            "target-anchored body evidence explicitly states a limitation or practical constraint"
+            if strong
+            else "the surrounding target context contains a limitation that requires scope review"
+        ),
+        failure=failure,
+        matched_terms=(
+            ["explicit limitation or negative evaluation"]
+            if strong
+            else ["contextual limitation candidate"]
+            if candidate
+            else []
+        ),
+        match_level="strong" if strong else "candidate",
+    )
+
+
+def _evaluate_theoretical_foundation_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    evidence_context: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=citation_text,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
+    text = f"{citation_text} {evidence_context}"
+    claim_type = str(finding_payload.get("claim_type") or "")
+    allowed_types = set(
+        TEMPLATE_CONTRACTS["theoretical_foundation"]["allowed_evidence_types"]
+    )
+    has_theory_terms = bool(
+        re.search(
+            r"\b(theor\w*|foundation|model|equation|formula|deriv\w*|"
+            r"framework|mechanism|phase|frequency|particle[- ]filter|"
+            r"based\s+on|builds?\s+on|following|integrat\w*)\b|"
+            r"(理论|模型|公式|推导|机制|基础)",
+            text,
+            re.I,
+        )
+    )
+    has_explicit_dependency = bool(
+        re.search(
+            r"\b(theoretical\s+foundation|derive[sd]?\s+from|builds?\s+on|"
+            r"following|based\s+on|adopt\w*|integrat\w*|extend\w*)\b|"
+            r"(理论基础|基于|沿用|采用|推导自)",
+            text,
+            re.I,
+        )
+    )
+    strong = (
+        not guard_failure
+        and claim_type in allowed_types
+        and has_theory_terms
+        and has_explicit_dependency
+    )
+    candidate = (
+        not guard_failure
+        and claim_type in allowed_types
+        and has_theory_terms
+        and not strong
+    )
+    satisfied = strong or candidate
+    if guard_failure:
+        failure = guard_failure
+    elif claim_type not in allowed_types:
+        failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
+    elif not has_theory_terms:
+        failure = "no target-specific model, theory, equation, mechanism, or derivation statement"
+    else:
+        failure = ""
+    return _template_evaluation(
+        template,
+        satisfied=satisfied,
+        reason=(
+            "target paper is explicitly used as a theoretical or methodological foundation"
+            if strong
+            else "target-anchored model or mechanism description is a theoretical-foundation candidate"
+        ),
+        failure=failure,
+        matched_terms=(
+            ["explicit theoretical dependency"]
+            if strong
+            else ["model or mechanism candidate"]
+            if candidate
+            else []
+        ),
+        match_level="strong" if strong else "candidate",
+    )
+
+
+def _evaluate_method_foundation_template(
+    template: AnalysisTemplate,
+    *,
+    finding_payload: dict,
+    citation_text: str,
+    evidence_context: str,
+    target_reference_marker: str,
+    cited_paper_title: str,
+) -> dict:
+    guard_failure = _strict_template_guard(
+        template,
+        finding_payload=finding_payload,
+        citation_text=citation_text,
+        target_reference_marker=target_reference_marker,
+        cited_paper_title=cited_paper_title,
+    )
+    claim_type = str(finding_payload.get("claim_type") or "")
+    allowed_types = set(
+        TEMPLATE_CONTRACTS["method_foundation"]["allowed_evidence_types"]
+    )
+    text = f"{citation_text} {evidence_context}"
+    has_method_description = (
+        _has_method_or_capability_statement(citation_text)
+        or _has_substantive_action(citation_text)
+    )
+    has_explicit_dependency = bool(
+        re.search(
+            r"\b(adopt\w*|use[sd]?|utiliz\w*|follow\w*|builds?\s+on|"
+            r"based\s+on|according\s+to|derive[sd]?\s+from|extend\w*|"
+            r"implement\w*|reuse\w*|leverag\w*)\b|"
+            r"(采用|沿用|基于|依据|源自|扩展|复现|使用)",
+            text,
+            re.I,
+        )
+    )
+    strong = (
+        not guard_failure
+        and claim_type in allowed_types
+        and claim_type != "method_summary"
+        and has_method_description
+        and has_explicit_dependency
+    )
+    candidate = (
+        not guard_failure
+        and claim_type in allowed_types
+        and has_method_description
+        and not strong
+    )
+    if guard_failure:
+        failure = guard_failure
+    elif claim_type not in allowed_types:
+        failure = f"evidence type {claim_type or 'unknown'} is not allowed by the template"
+    elif not has_method_description:
+        failure = "no concrete target-specific method description"
+    else:
+        failure = ""
+    return _template_evaluation(
+        template,
+        satisfied=strong or candidate,
+        reason=(
+            "the citing paper explicitly adopts or builds on the target paper's method"
+            if strong
+            else "the body describes a concrete target method, but adoption or dependency requires review"
+        ),
+        failure=failure,
+        matched_terms=(
+            ["explicit method adoption or dependency"]
+            if strong
+            else ["concrete method summary"]
+            if candidate
+            else []
+        ),
+        match_level="strong" if strong else "candidate",
     )
 
 
@@ -801,10 +1465,6 @@ def _strict_template_guard(
         and not has_safe_inherited_anchor
     ):
         return "citation_text does not anchor to target paper"
-    if _is_grouped_citation(citation_text, target_reference_marker) and not bool(
-        rules.get("allow_grouped_citation", False)
-    ):
-        return "grouped citation is not allowed by this template"
     return ""
 
 
@@ -815,16 +1475,26 @@ def _template_evaluation(
     reason: str,
     failure: str,
     matched_terms: List[str],
+    match_level: str = "strong",
 ) -> dict:
+    normalized_level = match_level if satisfied else "none"
     return {
         "template_id": template.id,
         "template_name": template.description or template.name,
         "template_type": template.template_type,
         "template_satisfied": satisfied,
+        "template_strongly_satisfied": satisfied and normalized_level == "strong",
+        "template_match_level": normalized_level,
         "template_match_reason": reason if satisfied else "",
         "template_failure_reason": failure,
         "matched_terms": matched_terms,
-        "match_score": 30.0 if satisfied else 0.0,
+        "match_score": (
+            30.0
+            if normalized_level == "strong"
+            else 15.0
+            if normalized_level == "candidate"
+            else 0.0
+        ),
         "auto_include_in_report": False,
     }
 
@@ -940,7 +1610,10 @@ def _is_weak_related_work(finding_payload: dict, citation_text: str) -> bool:
 def _has_substantive_action(citation_text: str) -> bool:
     return bool(
         re.search(
-            r"\b(achiev\w*|demonstrat\w*|detect\w*|measur\w*|captur\w*|enable\w*|use[sd]?|using|adopt\w*|extend\w*|compar\w*|outperform\w*|improv\w*|reconstruct\w*)\b",
+            r"\b(achiev\w*|demonstrat\w*|detect\w*|measur\w*|estimat\w*|captur\w*|"
+            r"enable\w*|use[sd]?|using|adopt\w*|extend\w*|compar\w*|"
+            r"outperform\w*|improv\w*|reconstruct\w*|extract\w*|"
+            r"distinguish\w*)\b",
             citation_text or "",
             flags=re.I,
         )
@@ -952,8 +1625,8 @@ def _has_method_or_capability_statement(text: str) -> bool:
         re.search(
             r"\b(propos\w*|present\w*|introduc\w*|develop\w*|design\w*|"
             r"utiliz\w*|use[sd]?|using|achiev\w*|enable\w*|detect\w*|"
-            r"measur\w*|implement\w*|extend\w*|improv\w*|captur\w*|"
-            r"reconstruct\w*)\b",
+            r"measur\w*|estimat\w*|implement\w*|extend\w*|improv\w*|captur\w*|"
+            r"reconstruct\w*|extract\w*|distinguish\w*)\b",
             text or "",
             flags=re.I,
         )

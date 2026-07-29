@@ -55,6 +55,8 @@ class TemplateDirectEvidence(BaseModel):
         "custom_template_evidence",
         "method_summary",
         "capability_summary",
+        "method_foundation",
+        "theoretical_foundation",
         "first_or_seminal_claim",
         "detailed_comparison",
         "baseline_or_benchmark",

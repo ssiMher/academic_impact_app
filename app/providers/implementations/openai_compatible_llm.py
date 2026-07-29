@@ -41,12 +41,14 @@ class OpenAICompatibleLlmProvider(LlmProvider):
         model: str,
         timeout_seconds: float,
         disable_thinking: bool,
+        max_output_tokens: int = 8192,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.disable_thinking = disable_thinking
+        self.max_output_tokens = max(1, int(max_output_tokens))
         self.last_request_log = None
         self.last_raw_response_text = ""
         self.last_normalized_response = {}
@@ -149,6 +151,7 @@ class OpenAICompatibleLlmProvider(LlmProvider):
         user_content = request.prompt_text or request.model_dump_json()
         body = {
             "model": self.model,
+            "max_tokens": self.max_output_tokens,
             "messages": [
                 {
                     "role": "system",

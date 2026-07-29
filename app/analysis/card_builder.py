@@ -32,6 +32,11 @@ def card_type_for_evidence(evidence: StrongEvidence) -> str:
         "baseline_or_benchmark",
     }:
         return "limitation_or_negative"
+    if (
+        evidence.stance == "neutral"
+        and evidence.aspect == "custom_template_evidence"
+    ):
+        return "neutral_evaluation"
     return CARD_TYPE_BY_ASPECT.get(evidence.aspect or "", "positive_evaluation")
 
 
@@ -265,6 +270,8 @@ def _title_for(card_type: str, cited_title: str, notable_author: Optional[Notabl
         return f"方法采用引用：{cited_title}"
     if card_type == "ordinary_citation":
         return f"普通引用：{cited_title}"
+    if card_type == "neutral_evaluation":
+        return f"中性评价：{cited_title}"
     if notable_author and notable_author.fellow_status != "unknown":
         return f"{notable_author.name} 引用评价：{cited_title}"
     label = card_type.replace("_", " ").title()
@@ -379,6 +386,12 @@ def _narrative_zh(
         return (
             f"{lead}{section_intro}{marker_text}对《{cited_title}》给出明确正向评价，"
             f"其依据来自 {evidence_basis or '正文原文表述'}，可作为亮点评价候选。"
+        )
+
+    if card_type == "neutral_evaluation":
+        return (
+            f"{lead}{section_intro}{marker_text}对《{cited_title}》作出事实性、中性描述，"
+            "该证据适合用于说明后续论文如何概括目标工作的技术内容，不应改写为正向或负面评价。"
         )
 
     if card_type == "ordinary_citation":
@@ -514,6 +527,7 @@ def _recommended_report_section(card_type: str) -> str:
         "detailed_comparison": "详细对比",
         "baseline_or_benchmark": "基线与比较对象",
         "positive_evaluation": "正向评价",
+        "neutral_evaluation": "中性评价",
         "ordinary_citation": "普通引用待复核",
         "background_reference": "背景引用待复核",
         "weak_mention": "弱证据待复核",

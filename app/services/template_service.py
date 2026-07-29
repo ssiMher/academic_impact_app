@@ -18,6 +18,34 @@ from app.models import AnalysisTemplate, DeepAnalysisQueueItem, FulltextAnalysis
 from app.repositories.template_repo import TemplateRepository
 
 
+POSITIVE_EVALUATION_LEGACY_GOAL = "Find positive evaluations of the target paper."
+POSITIVE_EVALUATION_GOAL = (
+    "Judge whether the citing paper's body text gives a concrete account of the "
+    "target paper's method, mechanism, capability, effect, or contribution. "
+    "Explicit praise is not required. Ordinary listing, reference-only evidence, "
+    "and evidence aligned to another paper do not satisfy this template."
+)
+POSITIVE_EVALUATION_LEGACY_PROMPT = (
+    "Prioritize positive evaluation evidence grounded in citation_text."
+)
+POSITIVE_EVALUATION_PROMPT = (
+    "Treat a concrete, target-anchored description of the cited paper's method, "
+    "mechanism, capability, effect, or contribution as satisfying evidence even "
+    "without praise words. Exclude ordinary lists, References entries, and "
+    "misaligned citations."
+)
+POSITIVE_EVALUATION_LEGACY_STRICT_RULES = [
+    "requires explicit positive evaluation of the target paper",
+    "capability description alone is insufficient",
+    "limitation feedback and ordinary related work are excluded",
+]
+POSITIVE_EVALUATION_ADVISORY_RULES = [
+    "a concrete target-anchored method, mechanism, capability, effect, or contribution description may satisfy the template without praise words",
+    "ordinary related-work listing and reference-only evidence are insufficient",
+    "evidence aligned to another paper is invalid",
+]
+
+
 BUILTIN_TEMPLATES = [
     {
         "name": "first_or_pioneering_claim",
@@ -132,7 +160,21 @@ BUILTIN_TEMPLATES = [
         "keywords": ["theoretical foundation", "理论基础"],
         "patterns": ["foundation follows"],
         "prompt": "Prioritize theoretical foundation evidence.",
-        "rules": {"template_bonus": 18},
+        "rules": {
+            "template_bonus": 18,
+            "allowed_evidence_types": [
+                "theoretical_foundation",
+                "method_foundation",
+                "method_summary",
+                "capability_summary",
+            ],
+            "strict_rules": [
+                "requires target-anchored body text about a model, theory, equation, mechanism, or derivation",
+                "plain listing and reference-only evidence are insufficient",
+            ],
+            "require_target_marker": True,
+            "allow_grouped_citation": False,
+        },
     },
     {
         "name": "method_foundation",
@@ -143,7 +185,21 @@ BUILTIN_TEMPLATES = [
         "keywords": ["method foundation", "method source", "方法来源"],
         "patterns": ["method foundation"],
         "prompt": "Prioritize method foundation evidence.",
-        "rules": {"template_bonus": 18},
+        "rules": {
+            "template_bonus": 18,
+            "allowed_evidence_types": [
+                "method_foundation",
+                "method_use",
+                "method_summary",
+            ],
+            "strict_rules": [
+                "requires target-anchored body text describing or using a concrete target-paper method",
+                "plain listing and reference-only evidence are excluded",
+                "method summary without adoption or dependency is review-only",
+            ],
+            "require_target_marker": True,
+            "allow_grouped_citation": False,
+        },
     },
     {
         "name": "application_extension",
@@ -193,11 +249,11 @@ BUILTIN_TEMPLATES = [
         "name": "positive_evaluation",
         "description": "正向评价",
         "template_type": "positive_evaluation",
-        "goal": "Find positive evaluations of the target paper.",
+        "goal": POSITIVE_EVALUATION_GOAL,
         "aspects": ["positive_evaluation"],
         "keywords": ["positive", "improves", "strong", "正向", "评价"],
         "patterns": ["positive evaluation"],
-        "prompt": "Prioritize positive evaluation evidence grounded in citation_text.",
+        "prompt": POSITIVE_EVALUATION_PROMPT,
         "rules": {
             "template_bonus": 12,
             "allowed_evidence_types": [
@@ -208,11 +264,7 @@ BUILTIN_TEMPLATES = [
                 "rfid_loudspeaker_vibration",
                 "through_wall_eavesdropping",
             ],
-            "strict_rules": [
-                "requires explicit positive evaluation of the target paper",
-                "capability description alone is insufficient",
-                "limitation feedback and ordinary related work are excluded",
-            ],
+            "strict_rules": POSITIVE_EVALUATION_ADVISORY_RULES,
             "require_target_marker": True,
             "allow_grouped_citation": False,
         },
@@ -226,7 +278,19 @@ BUILTIN_TEMPLATES = [
         "keywords": ["limitation", "negative", "局限", "不足"],
         "patterns": ["limitation"],
         "prompt": "Prioritize limitation or negative evaluation evidence with original citation_text.",
-        "rules": {"template_bonus": 12},
+        "rules": {
+            "template_bonus": 12,
+            "allowed_evidence_types": [
+                "limitation_feedback",
+                "limitation_or_negative",
+            ],
+            "strict_rules": [
+                "requires an explicit target-anchored limitation, drawback, failure condition, or practical constraint",
+                "ordinary related work and neutral capability descriptions are excluded",
+            ],
+            "require_target_marker": True,
+            "allow_grouped_citation": False,
+        },
     },
 ]
 
@@ -636,7 +700,27 @@ class TemplateService:
                 is_builtin=True,
                 is_active=True,
             )
+        self._upgrade_positive_evaluation_defaults()
         self.db.commit()
+
+    def _upgrade_positive_evaluation_defaults(self) -> None:
+        """Refresh untouched built-in clones without overwriting user edits."""
+        templates = self.db.query(AnalysisTemplate).filter(
+            AnalysisTemplate.name == "positive_evaluation",
+            AnalysisTemplate.template_type == "positive_evaluation",
+        )
+        for template in templates:
+            if template.natural_language_goal == POSITIVE_EVALUATION_LEGACY_GOAL:
+                template.natural_language_goal = POSITIVE_EVALUATION_GOAL
+            if template.prompt_fragment == POSITIVE_EVALUATION_LEGACY_PROMPT:
+                template.prompt_fragment = POSITIVE_EVALUATION_PROMPT
+            rules = _safe_json_dict(template.scoring_rules_json)
+            if rules.get("strict_rules") == POSITIVE_EVALUATION_LEGACY_STRICT_RULES:
+                rules["strict_rules"] = POSITIVE_EVALUATION_ADVISORY_RULES
+                template.scoring_rules_json = json.dumps(
+                    rules,
+                    ensure_ascii=False,
+                )
 
     def _clone_values(
         self,
@@ -672,6 +756,16 @@ def _safe_json_list(value: Optional[str]) -> List[str]:
         return []
     try:
         parsed = json.loads(value)
-    except json.JSONDecodeError:
+    except (TypeError, json.JSONDecodeError):
         return []
     return [str(item) for item in parsed] if isinstance(parsed, list) else []
+
+
+def _safe_json_dict(value: Optional[str]) -> dict:
+    if not value:
+        return {}
+    try:
+        parsed = json.loads(value)
+    except (TypeError, json.JSONDecodeError):
+        return {}
+    return parsed if isinstance(parsed, dict) else {}

@@ -539,7 +539,7 @@ def test_evidence_formal_card_shows_quote_reference_context_evaluation(client, d
     assert "原文上下文" in response.text
     assert "亮点评价" in response.text
     assert "评价理由" in response.text
-    assert "可复制表述" in response.text
+    assert "<h5>可复制表述</h5>" not in response.text
     assert "Before context" in response.text
     assert 'class="citation-marker">[23]</mark>' in response.text
     assert 'class="claim-phrase">through-wall eavesdropping</mark>' in response.text
@@ -1362,7 +1362,7 @@ def test_matched_submm_direct_claim_conclusion_is_verified(db_session_factory, t
         "evidences": [
             {
                 "recommendation": "include",
-                "claim_type": "capability_recognition",
+                "claim_type": "submm_precision_claim",
                 "evidence_quote": quote,
                 "evidence_context": quote,
                 "reference_entry": "[4] Target Paper.",

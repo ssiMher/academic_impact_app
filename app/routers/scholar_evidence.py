@@ -54,7 +54,13 @@ def scholar_evidence_page(
     service: ScholarFulltextService = Depends(get_scholar_fulltext_service),
 ):
     mode = "debug" if mode == "debug" else "formal"
-    evidence_items = service.list_scholar_evidence(session_id, filters={"view": view})
+    evidence_items = service.list_scholar_evidence(
+        session_id,
+        filters={
+            "view": view,
+            "latest_only": mode != "debug",
+        },
+    )
     formal_evidence_view = HighlightCardService(service.db).build_formal_evidence_view(
         evidence_items
     )

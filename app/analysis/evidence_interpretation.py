@@ -349,10 +349,23 @@ def _first_scope_kind(
     template_satisfied: Optional[bool],
     template_failure_reason: str,
 ) -> Optional[str]:
-    haystack = _norm(f"{evidence_quote} {template_match_reason} {template_failure_reason}")
-    if not _contains_any(haystack, ["first", "pioneering", "seminal", "earliest", "首次", "开创性", "率先", "最早"]):
+    quote = _norm(evidence_quote)
+    first_terms = [
+        "first",
+        "pioneering",
+        "seminal",
+        "earliest",
+        "首次",
+        "开创性",
+        "率先",
+        "最早",
+    ]
+    if not _contains_any(quote, first_terms):
         return None
-    if template_satisfied:
+    if template_satisfied and _contains_any(
+        _norm(template_match_reason),
+        first_terms,
+    ):
         return "satisfied"
     return "scope_unclear"
 

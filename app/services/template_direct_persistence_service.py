@@ -14,6 +14,7 @@ from app.models import (
 )
 from app.services.evidence_service import EvidenceService
 from app.services.highlight_card_service import HighlightCardService
+from app.services.template_service import TemplateService
 
 
 logger = logging.getLogger(__name__)
@@ -60,6 +61,7 @@ class TemplateDirectPersistenceService:
         summary = self.preview(fulltext_result_id)
         summary["applied"] = True
         persisted_evidence_ids: List[int] = []
+        direct_evidence_by_id: Dict[int, dict] = {}
 
         for evidence_index, evidence in candidates:
             try:
@@ -69,9 +71,11 @@ class TemplateDirectPersistenceService:
                     evidence=evidence,
                     evidence_index=evidence_index,
                 )
+                self._record_strong_template_matches(strong_evidence, evidence)
                 self.db.commit()
                 self.db.refresh(strong_evidence)
                 persisted_evidence_ids.append(strong_evidence.id)
+                direct_evidence_by_id[strong_evidence.id] = evidence
             except Exception:
                 self.db.rollback()
                 logger.exception(
@@ -91,10 +95,15 @@ class TemplateDirectPersistenceService:
         summary["generated_highlight_card_count"] = len(persisted_evidence_ids)
         for evidence_id in persisted_evidence_ids:
             try:
-                HighlightCardService(self.db).generate_card_from_evidence(
+                card = HighlightCardService(self.db).generate_card_from_evidence(
                     item.scholar_session_id,
                     evidence_id,
                 )
+                self._apply_direct_report_text(
+                    card,
+                    direct_evidence_by_id[evidence_id],
+                )
+                self.db.commit()
             except Exception:
                 self.db.rollback()
                 logger.exception(
@@ -130,6 +139,23 @@ class TemplateDirectPersistenceService:
             )
         self._record_summary(result.id, summary)
         return summary
+
+    def _apply_direct_report_text(
+        self,
+        card: HighlightCard,
+        evidence: dict,
+    ) -> None:
+        """Keep the LLM's evidence-specific prose instead of legacy card templates."""
+        if card.is_user_edited:
+            return
+        evaluation = str(evidence.get("copy_ready_zh") or "").strip()
+        reason = str(evidence.get("why_this_judgment_zh") or "").strip()
+        if evaluation:
+            card.narrative_zh = evaluation
+            card.body_markdown = evaluation
+        elif reason:
+            card.narrative_zh = reason
+            card.body_markdown = reason
 
     def _record_summary(
         self,
@@ -212,9 +238,20 @@ class TemplateDirectPersistenceService:
         confidence = str(evidence.get("confidence") or "medium").lower()
         score = {"high": 0.9, "medium": 0.75, "low": 0.6}.get(confidence, 0.75)
         claim_type = self._final_claim_type(evidence)
-        stance = str(evidence.get("stance") or "").strip() or (
-            "negative" if claim_type == "limitation_feedback" else "positive"
-        )
+        stance = str(evidence.get("stance") or "").strip().lower()
+        if stance not in {"positive", "neutral", "negative", "mixed"}:
+            stance = (
+                "negative"
+                if claim_type == "limitation_feedback"
+                else "positive"
+                if claim_type in {
+                    "positive_evaluation",
+                    "first_or_seminal_claim",
+                    "detailed_comparison",
+                    "baseline_or_benchmark",
+                }
+                else "neutral"
+            )
         keywords = self._keyword_list(evidence)
         return self.evidence_service.upsert_scholar_evidence(
             fulltext_result_id=result.id,
@@ -272,7 +309,11 @@ class TemplateDirectPersistenceService:
         )
 
     def _template_ids(self, evidence: dict) -> List[int]:
-        values = evidence.get("matched_template_ids") or []
+        values = (
+            evidence.get("strong_matched_template_ids")
+            or evidence.get("matched_template_ids")
+            or []
+        )
         result = []
         for value in values:
             try:
@@ -280,6 +321,23 @@ class TemplateDirectPersistenceService:
             except (TypeError, ValueError):
                 continue
         return list(dict.fromkeys(result))
+
+    def _record_strong_template_matches(
+        self,
+        strong_evidence: StrongEvidence,
+        evidence: dict,
+    ) -> None:
+        strong_ids = set(self._template_ids(evidence))
+        evaluations = [
+            evaluation
+            for evaluation in evidence.get("template_evaluations", []) or []
+            if isinstance(evaluation, dict)
+            and int(evaluation.get("template_id") or 0) in strong_ids
+        ]
+        TemplateService(self.db).record_template_result_for_evidence(
+            strong_evidence.id,
+            {"template_evaluations": evaluations},
+        )
 
     def _keyword_list(self, evidence: dict) -> List[str]:
         for key in ("key_phrases", "highlight_keywords", "keywords"):

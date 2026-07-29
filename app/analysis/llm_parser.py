@@ -78,10 +78,51 @@ def parse_llm_json_payload(raw_response: str) -> Dict[str, Any]:
     if _looks_like_no_evidence_text(cleaned):
         return {"findings": []}
     if cleaned.startswith(("{", "[")):
-        payload = json.loads(cleaned)
+        payload = _loads_with_safe_escape_repair(cleaned)
         return normalize_llm_json_payload(payload)
-    payload = extract_json_payload(cleaned)
+    payload = extract_json_payload(_repair_invalid_apostrophe_escapes(cleaned))
     return normalize_llm_json_payload(payload)
+
+
+def _loads_with_safe_escape_repair(value: str) -> Any:
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        repaired = _repair_invalid_apostrophe_escapes(value)
+        if repaired == value:
+            raise
+        return json.loads(repaired)
+
+
+def _repair_invalid_apostrophe_escapes(value: str) -> str:
+    """Remove only invalid JSON escaping before apostrophes.
+
+    Some compatible providers emit ``moir\'e`` inside a JSON string. JSON does
+    not define ``\'`` as an escape sequence, while the apostrophe itself is safe
+    in a double-quoted JSON string. Even-length backslash runs are already valid
+    and are preserved.
+    """
+    repaired = []
+    index = 0
+    while index < len(value):
+        if value[index] != "\\":
+            repaired.append(value[index])
+            index += 1
+            continue
+        run_end = index
+        while run_end < len(value) and value[run_end] == "\\":
+            run_end += 1
+        run_length = run_end - index
+        if (
+            run_end < len(value)
+            and value[run_end] == "'"
+            and run_length % 2 == 1
+        ):
+            repaired.append("\\" * (run_length - 1))
+        else:
+            repaired.append("\\" * run_length)
+        index = run_end
+    return "".join(repaired)
 
 
 def normalize_llm_json_payload(payload: Any) -> Dict[str, Any]:

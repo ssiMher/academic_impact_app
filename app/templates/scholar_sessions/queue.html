@@ -105,7 +105,7 @@
       <p>只有已选择且状态为 `manual_pdf`、`reused_pdf` 或 `local_library_pdf` 的条目可以分析。</p>
     </div>
     <form class="inline-form" action="/scholar-sessions/{{ session_id }}/queue/discover-pdfs" method="post">
-      {% set pdf_download_active = discover_task and discover_task.status in ["pending", "running"] %}
+      {% set pdf_download_active = discover_task and discover_task.status in ["pending", "running", "waiting_for_login", "challenge_blocked", "pause_requested", "paused"] %}
       <button
         class="button button-secondary"
         id="pdf-batch-download-button"

@@ -31,6 +31,9 @@ class TaskRunner:
             self.task_repository.db.rollback()
             return self.task_repository.mark_failed(task, str(exc))
 
+        self.task_repository.db.refresh(task)
+        if task.status != "running":
+            return task
         return self.task_repository.mark_succeeded(
             task,
             task.stage_message or "Task completed.",

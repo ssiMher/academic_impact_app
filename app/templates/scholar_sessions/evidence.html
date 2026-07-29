@@ -146,10 +146,18 @@
           <h2>候选证据层</h2>
           <p>StrongEvidence 标准未放宽。候选层说明正文事实为何尚未成为强证据。</p>
         </div>
-        <span class="badge">Result {{ direct_candidate_layers.result_id }}</span>
+        <span class="badge">
+          最新 {{ direct_candidate_layers.result_count }} 篇结果
+          {% if direct_candidate_layers.result_count == 1 %}
+            · Result {{ direct_candidate_layers.result_id }}
+          {% endif %}
+        </span>
       </div>
       <div class="stat-grid">
         {{ stat_card("强证据", direct_candidate_layers.counts.strong) }}
+        {{ stat_card("正向强证据", direct_candidate_layers.strong_stance_counts.positive or 0) }}
+        {{ stat_card("中性强证据", direct_candidate_layers.strong_stance_counts.neutral or 0) }}
+        {{ stat_card("负面强证据", direct_candidate_layers.strong_stance_counts.negative or 0) }}
         {{ stat_card("候选复核", direct_candidate_layers.counts.review) }}
         {{ stat_card("排除", direct_candidate_layers.counts.excluded) }}
       </div>

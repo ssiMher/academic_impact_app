@@ -1906,11 +1906,30 @@ class HighlightCardService:
             card_type = self._best_matched_template_type(evidence.id)
             if not card_type or card_type == "custom":
                 card_type = card_type_for_evidence(evidence)
-            key = self._business_key_for_evidence(item.id, card_type, evidence.citation_text or "")
-            current = groups.get(key)
-            if current is None or self._prefer_evidence(evidence, current[0]):
-                groups[key] = (evidence, item)
-        return list(groups.values())
+            group_key = (item.id, card_type)
+            equivalent_rows = groups.setdefault(group_key, [])
+            equivalent_index = next(
+                (
+                    index
+                    for index, (current, _current_item) in enumerate(equivalent_rows)
+                    if self._quotes_equivalent(
+                        current.citation_text or "",
+                        evidence.citation_text or "",
+                    )
+                ),
+                None,
+            )
+            if equivalent_index is None:
+                equivalent_rows.append((evidence, item))
+                continue
+            current, _current_item = equivalent_rows[equivalent_index]
+            if self._prefer_evidence(evidence, current):
+                equivalent_rows[equivalent_index] = (evidence, item)
+        return [
+            row
+            for equivalent_rows in groups.values()
+            for row in equivalent_rows
+        ]
 
     def _business_key_for_evidence(self, queue_item_id: int, card_type: str, citation_text: str) -> tuple:
         return queue_item_id, card_type, self._canonical_quote_key(citation_text)
@@ -2119,6 +2138,22 @@ class HighlightCardService:
             context_preview=context_preview,
             notable_author=self._find_notable_author_for_item(item.id, item.citing_authors_json) if item else None,
         ) if item else {}
+        direct_evidence = self._template_direct_evidence_for_strong_evidence(evidence)
+        if direct_evidence:
+            model_reason = str(
+                direct_evidence.get("why_this_judgment_zh") or ""
+            ).strip()
+            model_evaluation = str(
+                direct_evidence.get("copy_ready_zh") or ""
+            ).strip()
+            if model_reason:
+                narrative["why_this_judgment"] = model_reason
+                narrative["judgment_basis_zh"] = model_reason
+            if model_evaluation:
+                narrative["narrative_zh"] = model_evaluation
+                narrative["evidence_claim_zh"] = model_evaluation
+                narrative["copy_ready_statement"] = model_evaluation
+                narrative["copy_ready_statement_zh"] = model_evaluation
         anchor_validation = self._anchor_validation_for_evidence(evidence, item) if item else None
         return {
             "risk_note": narrative.get("risk_note", ""),
@@ -2151,6 +2186,23 @@ class HighlightCardService:
             else evidence.template_satisfied,
             "template_failure_reason": card.template_failure_reason or evidence.template_failure_reason or "",
         }
+
+    def _template_direct_evidence_for_strong_evidence(
+        self,
+        evidence: StrongEvidence,
+    ) -> dict:
+        result = self.db.get(FulltextAnalysisResult, evidence.fulltext_result_id)
+        if result is None or result.analysis_scope != "fulltext_template_direct":
+            return {}
+        payload = self._load_json(result.parsed_result_json)
+        evidences = payload.get("evidences")
+        if not isinstance(evidences, list):
+            return {}
+        index = evidence.span_index
+        if isinstance(index, int) and 0 <= index < len(evidences):
+            direct_evidence = evidences[index]
+            return direct_evidence if isinstance(direct_evidence, dict) else {}
+        return {}
 
     def _anchor_validation_for_evidence(self, evidence: StrongEvidence, item: DeepAnalysisQueueItem):
         result = self.db.get(FulltextAnalysisResult, evidence.fulltext_result_id)
@@ -2517,6 +2569,7 @@ class HighlightCardService:
             "detailed_comparison": "详细对比",
             "baseline_or_benchmark": "基线/Benchmark",
             "positive_evaluation": "正向评价",
+            "neutral_evaluation": "中性评价",
             "first_or_seminal_claim": "首次/开创性",
         }
         return labels.get(card_type, card_type)

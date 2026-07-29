@@ -1,5 +1,6 @@
 """Service layer for local task management."""
 
+import json
 from typing import List, Optional
 
 from fastapi import Depends
@@ -57,6 +58,29 @@ class TaskService:
             session_id=session_id,
             limit=limit,
         )
+
+    def resume(self, task_id: int) -> AnalysisTask:
+        task = self.repository.get_by_id(task_id)
+        if task is None:
+            raise ValueError("Task not found")
+        payload = {}
+        try:
+            payload = json.loads(task.payload_json or "{}")
+        except (TypeError, ValueError):
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        payload["resume_requested"] = True
+        task.payload_json = json.dumps(payload, ensure_ascii=False)
+        return self.repository.resume(task)
+
+    def pause(self, task_id: int) -> AnalysisTask:
+        task = self.repository.get_by_id(task_id)
+        if task is None:
+            raise ValueError("Task not found")
+        if task.status == "running":
+            return self.repository.request_pause(task)
+        return self.repository.pause(task)
 
 
 def get_task_service(db: Session = Depends(get_db)) -> TaskService:

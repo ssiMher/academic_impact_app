@@ -12,6 +12,7 @@ from app.pdf.security import PdfValidationError
 from app.models.constants import SCHOLAR_ANALYSIS_SESSION_KIND
 from app.services.pdf_service import PdfService, get_pdf_service
 from app.services.pdf_discovery_service import PdfDiscoveryService
+from app.services.ieee_session_service import IeeeSessionService
 from app.services.scholar_queue_service import (
     PdfAssetNotFoundError,
     QueueItemManualPdfExistsError,
@@ -196,6 +197,11 @@ def scholar_task_status(
     percent = round(min(max(current / total * 100, 0), 100), 1) if total else None
     result_summary = payload.get("result_summary")
     progress_summary = payload.get("progress_summary")
+    ieee_session_status = payload.get("ieee_session_status")
+    if task.task_type in {"discover_pdfs_for_queue", "download_ieee_pdf"}:
+        ieee_session_status = _ieee_session_status_payload(
+            IeeeSessionService().status()
+        )
     response_payload = {
         "task_id": task.id,
         "task_type": task.task_type,
@@ -210,11 +216,117 @@ def scholar_task_status(
         "progress_summary": (
             progress_summary if isinstance(progress_summary, dict) else None
         ),
-        "is_terminal": task.status in {"succeeded", "failed", "cancelled"},
+        "ieee_session_status": (
+            ieee_session_status
+            if isinstance(ieee_session_status, dict)
+            else None
+        ),
+        "is_terminal": task.status
+        in {
+            "succeeded",
+            "failed",
+            "cancelled",
+            "completed_with_warnings",
+            "partial_success",
+        },
     }
     return JSONResponse(
         content=response_payload,
         headers={"Cache-Control": "no-store"},
+    )
+
+
+@router.post("/{session_id}/ieee-session/open")
+def open_ieee_login_window(
+    session_id: int,
+    task_id: Optional[int] = Form(None),
+    task_service: TaskService = Depends(get_task_service),
+):
+    session_service = IeeeSessionService()
+    try:
+        status = session_service.open_login_window()
+    except Exception as exc:
+        status = session_service.record_failure(
+            f"IEEE 登录窗口启动失败：{type(exc).__name__}。"
+            "请检查下载器配置、DISPLAY 和服务器图形环境。"
+        )
+    _save_ieee_session_on_task(task_service, session_id, task_id, status)
+    return RedirectResponse(url=f"/scholar-sessions/{session_id}/queue", status_code=303)
+
+
+@router.post("/{session_id}/ieee-session/check")
+def check_ieee_login_status(
+    session_id: int,
+    task_id: Optional[int] = Form(None),
+    task_service: TaskService = Depends(get_task_service),
+):
+    status = IeeeSessionService().check_login_status()
+    _save_ieee_session_on_task(task_service, session_id, task_id, status)
+    return RedirectResponse(url=f"/scholar-sessions/{session_id}/queue", status_code=303)
+
+
+@router.post("/{session_id}/ieee-session/reset")
+def reset_ieee_session(
+    session_id: int,
+    task_id: Optional[int] = Form(None),
+    task_service: TaskService = Depends(get_task_service),
+):
+    status = IeeeSessionService().reset()
+    _save_ieee_session_on_task(task_service, session_id, task_id, status)
+    return RedirectResponse(url=f"/scholar-sessions/{session_id}/queue", status_code=303)
+
+
+@router.post("/{session_id}/ieee-session/close")
+def close_ieee_login_window(
+    session_id: int,
+    task_id: Optional[int] = Form(None),
+    task_service: TaskService = Depends(get_task_service),
+):
+    status = IeeeSessionService().close_login_window()
+    _save_ieee_session_on_task(task_service, session_id, task_id, status)
+    return RedirectResponse(url=f"/scholar-sessions/{session_id}/queue", status_code=303)
+
+
+@router.post("/{session_id}/tasks/{task_id}/resume")
+def resume_scholar_task(
+    session_id: int,
+    task_id: int,
+    task_service: TaskService = Depends(get_task_service),
+):
+    task = _task_for_session(task_service, session_id, task_id)
+    if task.task_type not in {"discover_pdfs_for_queue", "download_ieee_pdf"}:
+        raise HTTPException(status_code=400, detail="Task cannot be resumed here")
+    if task.status not in {"waiting_for_login", "challenge_blocked", "paused"}:
+        raise HTTPException(status_code=400, detail="Task is not ready to resume")
+    IeeeSessionService().clear_pause_request(task.id)
+    task_service.resume(task.id)
+    return RedirectResponse(
+        url=f"/scholar-sessions/{session_id}/queue?discover_task_id={task.id}",
+        status_code=303,
+    )
+
+
+@router.post("/{session_id}/tasks/{task_id}/pause")
+def pause_scholar_task(
+    session_id: int,
+    task_id: int,
+    task_service: TaskService = Depends(get_task_service),
+):
+    task = _task_for_session(task_service, session_id, task_id)
+    if task.task_type != "discover_pdfs_for_queue":
+        raise HTTPException(status_code=400, detail="Task cannot be paused here")
+    if task.status not in {
+        "pending",
+        "running",
+        "waiting_for_login",
+        "challenge_blocked",
+    }:
+        raise HTTPException(status_code=400, detail="Task is not active")
+    IeeeSessionService().request_pause(task.id)
+    task_service.pause(task.id)
+    return RedirectResponse(
+        url=f"/scholar-sessions/{session_id}/queue?discover_task_id={task.id}",
+        status_code=303,
     )
 
 
@@ -373,7 +485,11 @@ def _resolve_analyze_task(
         task for task in recent_tasks if task.task_type == "analyze_scholar_queue"
     ]
     active_task = next(
-        (task for task in analyze_tasks if task.status in {"pending", "running"}),
+        (
+            task
+            for task in analyze_tasks
+            if task.status in {"pending", "running", "paused"}
+        ),
         None,
     )
     task = active_task or (analyze_tasks[0] if analyze_tasks else None)
@@ -412,7 +528,19 @@ def _resolve_pdf_download_task(
             in {"discover_pdfs_for_queue", "download_open_access_pdfs"}
         ]
         task = next(
-            (value for value in tasks if value.status in {"pending", "running"}),
+            (
+                value
+                for value in tasks
+                if value.status
+                in {
+                    "pending",
+                    "running",
+                    "waiting_for_login",
+                    "challenge_blocked",
+                    "pause_requested",
+                    "paused",
+                }
+            ),
             tasks[0] if tasks else None,
         )
     return _hydrate_task_summaries(task)
@@ -430,6 +558,11 @@ def _hydrate_task_summaries(task):
     task.progress_summary = (
         payload.get("progress_summary")
         if isinstance(payload.get("progress_summary"), dict)
+        else None
+    )
+    task.ieee_session_status = (
+        payload.get("ieee_session_status")
+        if isinstance(payload.get("ieee_session_status"), dict)
         else None
     )
     return task
@@ -451,3 +584,48 @@ def _safe_task_error(error_message: Optional[str]) -> Optional[str]:
         "Task failed.",
     )
     return first_line[:1000]
+
+
+def _task_for_session(
+    task_service: TaskService,
+    session_id: int,
+    task_id: int,
+):
+    task = task_service.get_task(task_id)
+    if (
+        task is None
+        or task.session_kind != SCHOLAR_ANALYSIS_SESSION_KIND
+        or task.session_id != session_id
+    ):
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
+def _save_ieee_session_on_task(
+    task_service: TaskService,
+    session_id: int,
+    task_id: Optional[int],
+    status,
+) -> None:
+    if task_id is None:
+        return
+    task = _task_for_session(task_service, session_id, task_id)
+    payload = _task_payload(task)
+    payload["ieee_session_status"] = _ieee_session_status_payload(status)
+    task.payload_json = json.dumps(payload, ensure_ascii=False)
+    task_service.repository.db.commit()
+
+
+def _ieee_session_status_payload(status) -> dict:
+    return {
+        "status": status.status,
+        "personal_login": status.personal_login,
+        "institution_access": status.institution_access,
+        "institution_name": status.institution_name,
+        "challenge_detected": status.challenge_detected,
+        "profile_exists": status.profile_exists,
+        "profile_locked": status.profile_locked,
+        "login_window_open": status.login_window_open,
+        "message": status.message,
+        "last_successful_download_at": status.last_successful_download_at,
+    }

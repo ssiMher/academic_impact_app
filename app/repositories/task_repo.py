@@ -10,7 +10,14 @@ from sqlalchemy.orm import Session
 from app.models import AnalysisTask
 
 
-ACTIVE_TASK_STATUSES = {"pending", "running"}
+ACTIVE_TASK_STATUSES = {
+    "pending",
+    "running",
+    "waiting_for_login",
+    "challenge_blocked",
+    "pause_requested",
+    "paused",
+}
 
 
 class TaskRepository:
@@ -118,6 +125,34 @@ class TaskRepository:
         task.stage_message = "Task failed."
         task.error_message = error_message
         task.finished_at = datetime.utcnow()
+        task.updated_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(task)
+        return task
+
+    def resume(self, task: AnalysisTask) -> AnalysisTask:
+        task.status = "pending"
+        task.stage = "queued_for_resume"
+        task.error_message = None
+        task.finished_at = None
+        task.updated_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(task)
+        return task
+
+    def pause(self, task: AnalysisTask) -> AnalysisTask:
+        task.status = "paused"
+        task.stage = "paused"
+        task.stage_message = "任务已暂停；未完成条目和进度已保留。"
+        task.updated_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(task)
+        return task
+
+    def request_pause(self, task: AnalysisTask) -> AnalysisTask:
+        task.status = "pause_requested"
+        task.stage = "pause_requested"
+        task.stage_message = "正在安全暂停；当前论文完成后将停止后续访问。"
         task.updated_at = datetime.utcnow()
         self.db.commit()
         self.db.refresh(task)

@@ -4,10 +4,13 @@
 {% set task_created_message = "批量 PDF 下载任务已创建。" %}
 {% set task_disable_target = "#pdf-batch-download-button" %}
 {% set task_error_prefix = "" %}
-{% set task_pending_help = "任务正在等待或执行中。" %}
+{% set task_pending_help = "任务正在等待或执行中。遇到 IEEE 登录、challenge 或人工暂停时，可直接在下方继续处理。" %}
 {% set task_success_href = "" %}
 {% set task_success_message = "" %}
 {% set task_success_label = "" %}
+{% set task_poll_active_statuses = ["pending", "running", "waiting_for_login", "challenge_blocked", "pause_requested", "paused"] %}
+{% set show_ieee_session_controls = true %}
+{% set allow_task_pause_resume = true %}
 {% set task_summary_labels = [
   ("downloaded", "下载成功"),
   ("open_access_downloaded", "开放 PDF"),
