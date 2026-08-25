@@ -875,10 +875,13 @@ def test_queue_page_can_select_analysis_scope(client, db_session_factory, tmp_pa
     assert 'name="analysis_scope" value="candidate_spans"' in page.text
     assert 'name="analysis_scope" value="fulltext_direct"' in page.text
     assert 'name="analysis_scope" value="fulltext_anchor_direct"' in page.text
-    assert 'name="analysis_scope" value="fulltext_template_direct"' in page.text
-    assert "候选段分析，快但可能漏" in page.text
-    assert "全文直接分析，慢但更不容易漏" in page.text
-    assert "锚点优先全文分析，推荐用于引用证据验证" in page.text
+    assert (
+        'name="analysis_scope" value="fulltext_template_direct" checked'
+        in page.text
+    )
+    assert "候选段分析，速度快，但可能漏掉证据" in page.text
+    assert "全文直接分析，速度慢，但更不容易漏" in page.text
+    assert "fulltext_template_direct（推荐）" in page.text
 
 
 def test_queue_form_posts_fulltext_template_direct_scope(client, db_session_factory, tmp_path):
@@ -906,6 +909,30 @@ def test_queue_form_posts_fulltext_template_direct_scope(client, db_session_fact
     assert payload["analysis_scope"] == "fulltext_template_direct"
     assert payload["queue_item_id"] == item_id
     assert payload["queue_item_ids"] == [item_id]
+
+
+def test_queue_form_defaults_to_fulltext_template_direct_scope(
+    client,
+    db_session_factory,
+    tmp_path,
+):
+    with Session(db_session_factory.kw["bind"]) as db:
+        session_id, *_ = seed_scholar_edges(db)
+        item = make_queue_service(db, tmp_path).build_queue(session_id)[0]
+        item_id = item.id
+
+    response = client.post(
+        f"/scholar-sessions/{session_id}/queue/analyze",
+        data={"item_ids": [str(item_id)]},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 303
+    with Session(db_session_factory.kw["bind"]) as db:
+        task = db.query(AnalysisTask).one()
+        payload = json.loads(task.payload_json)
+
+    assert payload["analysis_scope"] == "fulltext_template_direct"
 
 
 def test_task_payload_keeps_fulltext_template_direct_scope(client, db_session_factory, tmp_path):

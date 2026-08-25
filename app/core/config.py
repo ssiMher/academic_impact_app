@@ -81,6 +81,8 @@ class Settings:
     llm_retry_backoff_seconds: float = field(default_factory=lambda: _env_float("ACADEMIC_IMPACT_LLM_RETRY_BACKOFF_SECONDS", 1.0))
     provider_timeout_seconds: float = field(default_factory=lambda: _env_float("ACADEMIC_IMPACT_PROVIDER_TIMEOUT_SECONDS", 20))
     provider_cache_enabled: bool = field(default_factory=lambda: _env_bool("ACADEMIC_IMPACT_PROVIDER_CACHE_ENABLED", True))
+    unpaywall_email: str = field(default_factory=lambda: _env("ACADEMIC_IMPACT_UNPAYWALL_EMAIL", "", "UNPAYWALL_EMAIL"))
+    unpaywall_timeout_seconds: float = field(default_factory=lambda: _env_float("ACADEMIC_IMPACT_UNPAYWALL_TIMEOUT_SECONDS", 8))
     llm_disable_thinking: bool = field(default_factory=lambda: _env_bool("ACADEMIC_IMPACT_LLM_DISABLE_THINKING", True))
     pdf_library_dirs: str = field(default_factory=lambda: _env("ACADEMIC_IMPACT_PDF_LIBRARY_DIRS", ""))
     pdf_index_path: str = field(default_factory=lambda: _env("ACADEMIC_IMPACT_PDF_INDEX_PATH", "var/pdf_library_index.json"))

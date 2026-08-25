@@ -9,6 +9,7 @@ os.environ["ACADEMIC_IMPACT_AUTHOR_PROVIDER"] = "fake"
 os.environ["ACADEMIC_IMPACT_CITATION_PROVIDER"] = "fake"
 os.environ["ACADEMIC_IMPACT_METADATA_PROVIDER"] = "fake"
 os.environ["ACADEMIC_IMPACT_LLM_PROVIDER"] = "fake"
+os.environ["ACADEMIC_IMPACT_UNPAYWALL_EMAIL"] = ""
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

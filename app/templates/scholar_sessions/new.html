@@ -7,30 +7,80 @@
     <div>
       <div class="eyebrow">新建工作台</div>
       <h1>创建学者分析会话</h1>
-      <p>输入学者名称、DBLP pid 或可解析标识。系统会根据当前配置选择 Fake、DBLP、OpenAlex 或 OpenAI-compatible provider。</p>
+      <p>输入学者英文姓名以搜索 DBLP，或直接输入明确的 DBLP PID。</p>
     </div>
   </header>
 
   <section class="card">
-    <form action="/scholar-sessions" method="post" class="inline-form">
-      <label class="form-label" for="author_ref">学者名称或标识</label>
-      <input class="form-control" id="author_ref" name="author_ref" type="text" required placeholder="例如：Grace Hopper 或 DBLP pid">
-      <button class="button button-primary" type="submit">创建学者分析会话</button>
+    <form action="/scholar-sessions/author-search" method="post" class="inline-form">
+      <label class="form-label" for="author_query">学者姓名或 DBLP PID</label>
+      <input class="form-control" id="author_query" name="author_query" type="text" required value="{{ author_query }}" placeholder="例如：Lei Xie 或 12/3456">
+      <button class="button button-primary" type="submit">搜索作者</button>
     </form>
+    {% if error_message %}
+      <p class="alert alert-error" role="alert">{{ error_message }}</p>
+    {% endif %}
+    {% if info_message %}
+      <p class="alert alert-info">{{ info_message }}</p>
+    {% endif %}
   </section>
 
-  <section class="stat-grid">
-    <article class="stat-card">
-      <div class="stat-label">第一步</div>
-      <p>解析学者身份并保存 publications。</p>
-    </article>
-    <article class="stat-card">
-      <div class="stat-label">第二步</div>
-      <p>选择 publications，扩展引用边。</p>
-    </article>
-    <article class="stat-card">
-      <div class="stat-label">第三步</div>
-      <p>构建深度分析队列，准备 PDF 并运行全文分析。</p>
-    </article>
-  </section>
+  {% if candidates %}
+    <section aria-labelledby="author-candidates-title">
+      <h2 id="author-candidates-title">DBLP 作者候选</h2>
+      <div class="card-grid">
+        {% for candidate in candidates %}
+          <article class="card">
+            <h3>{{ candidate.name }}</h3>
+            <p><strong>DBLP PID:</strong> {{ candidate.pid }}</p>
+            {% if candidate.aliases %}
+              <p><strong>别名:</strong> {{ candidate.aliases | join("、") }}</p>
+            {% endif %}
+            {% if candidate.affiliations %}
+              <p><strong>DBLP 机构信息:</strong></p>
+              <ul>
+                {% for affiliation in candidate.affiliations %}
+                  <li>{{ affiliation }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p><strong>DBLP 机构信息:</strong> 未提供，请打开 DBLP 页面核对。</p>
+            {% endif %}
+            <p>{{ candidate.short_description }}</p>
+            {% if candidate.recent_publications %}
+              <p><strong>近期论文:</strong></p>
+              <ul>
+                {% for publication in candidate.recent_publications %}
+                  <li>{{ publication }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+            {% if candidate.recent_venues %}
+              <p><strong>近期 venue:</strong> {{ candidate.recent_venues | join("、") }}</p>
+            {% endif %}
+            <p><a href="{{ candidate.dblp_url }}" target="_blank" rel="noopener noreferrer">打开 DBLP 页面</a></p>
+            <form action="/scholar-sessions" method="post">
+              <input type="hidden" name="dblp_pid" value="{{ candidate.pid }}">
+              <button class="button button-primary" type="submit">选择此作者并创建会话</button>
+            </form>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <section class="stat-grid">
+      <article class="stat-card">
+        <div class="stat-label">第一步</div>
+        <p>搜索并确认正确的 DBLP 作者记录。</p>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">第二步</div>
+        <p>选择 publications，扩展引用边。</p>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">第三步</div>
+        <p>构建深度分析队列，准备后续分析。</p>
+      </article>
+    </section>
+  {% endif %}
 {% endblock %}

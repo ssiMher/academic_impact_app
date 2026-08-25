@@ -11,6 +11,9 @@ from app.repositories.scholar_session_repo import ScholarSessionRepository
 from app.schemas.provider import ProviderPublication
 
 
+EDGE_WRITE_BATCH_SIZE = 100
+
+
 def handle_expand_scholar_citations(db: Session, task: AnalysisTask) -> None:
     if task.session_kind != "scholar_analysis":
         raise ValueError("expand_scholar_citations only supports scholar_analysis sessions")
@@ -25,14 +28,26 @@ def handle_expand_scholar_citations(db: Session, task: AnalysisTask) -> None:
     if not selected_publications:
         raise ValueError("No selected scholar publications found for citation expansion")
 
+    scholar_session_id = scholar_session.id
+    task_id = task.id
+    publication_snapshots = [
+        {
+            "publication_id": publication.publication_id,
+            "title": publication.title,
+            "year": publication.year,
+            "venue": publication.venue,
+            "doi": publication.doi,
+        }
+        for publication in selected_publications
+    ]
     provider = get_citation_provider()
     payload = _task_payload(task)
     limit_per_publication = int(payload.get("limit_per_publication") or 100)
-    task.progress_total = len(selected_publications)
+    task.progress_total = len(publication_snapshots)
     task.progress_current = 0
     task.stage = "expanding_citations"
     task.stage_message = f"Expanding scholar citations with provider={provider.provider_name}; limit={limit_per_publication}."
-    db.flush()
+    db.commit()
 
     fetched_count = 0
     saved_edges_count = 0
@@ -42,20 +57,20 @@ def handle_expand_scholar_citations(db: Session, task: AnalysisTask) -> None:
     cursor_pages = 0
     expansion_complete = True
     provider_metadata = {}
-    for index, scholar_publication in enumerate(selected_publications, start=1):
+    for index, publication in enumerate(publication_snapshots, start=1):
         if hasattr(provider, "list_citing_papers"):
             target_publication = ProviderPublication(
-                title=scholar_publication.title,
-                year=scholar_publication.year,
-                venue=scholar_publication.venue,
-                doi=scholar_publication.doi,
+                title=publication["title"],
+                year=publication["year"],
+                venue=publication["venue"],
+                doi=publication["doi"],
             )
             citation_edges = provider.list_citing_papers(  # type: ignore[attr-defined]
                 target_publication,
                 limit=limit_per_publication,
             )
         else:
-            citation_edges = provider.discover_citations(scholar_publication.title)
+            citation_edges = provider.discover_citations(publication["title"])
         provider_metadata = getattr(provider, "last_citation_expansion", {}) or {}
         fetched_count += int(provider_metadata.get("fetched_count") or len(citation_edges))
         cited_by_count = provider_metadata.get("openalex_cited_by_count")
@@ -64,16 +79,16 @@ def handle_expand_scholar_citations(db: Session, task: AnalysisTask) -> None:
         cursor_pages += int(provider_metadata.get("cursor_pages") or 0)
         if provider_metadata and provider_metadata.get("expansion_complete") is False:
             expansion_complete = False
-        for citation_edge in citation_edges:
+        for edge_index, citation_edge in enumerate(citation_edges, start=1):
             citing_publication = scholar_repo.get_or_create_publication(citation_edge.citing_paper)
             existing_edge = edge_repo.get_existing(
-                scholar_session_id=scholar_session.id,
-                cited_publication_id=scholar_publication.publication_id,
+                scholar_session_id=scholar_session_id,
+                cited_publication_id=publication["publication_id"],
                 citing_publication_id=citing_publication.id,
             )
             edge_repo.create(
-                scholar_session_id=scholar_session.id,
-                cited_publication_id=scholar_publication.publication_id,
+                scholar_session_id=scholar_session_id,
+                cited_publication_id=publication["publication_id"],
                 citing_publication_id=citing_publication.id,
                 provider_name=provider.provider_name,
                 edge_meta={
@@ -82,6 +97,28 @@ def handle_expand_scholar_citations(db: Session, task: AnalysisTask) -> None:
                     "citation_contexts": citation_edge.citing_paper.citation_contexts,
                     "openalex_cited_by_count": provider_metadata.get("openalex_cited_by_count"),
                     "openalex_work_id": provider_metadata.get("openalex_work_id"),
+                    "open_access_pdf_url": citation_edge.citing_paper.open_access_pdf_url,
+                    "open_access_landing_url": citation_edge.citing_paper.open_access_landing_url,
+                    "url_type": (
+                        "direct_pdf"
+                        if citation_edge.citing_paper.open_access_pdf_url
+                        else None
+                    ),
+                    "is_open_access": bool(
+                        citation_edge.citing_paper.open_access_pdf_url
+                        or citation_edge.citing_paper.open_access_landing_url
+                    )
+                    or None,
+                    "license": citation_edge.citing_paper.open_access_license,
+                    "pdf_source": (
+                        citation_edge.citing_paper.open_access_source
+                        or "openalex_oa"
+                        if (
+                            citation_edge.citing_paper.open_access_pdf_url
+                            or citation_edge.citing_paper.open_access_landing_url
+                        )
+                        else None
+                    ),
                     "citation_expansion_limit": limit_per_publication,
                     "citation_expansion_complete": provider_metadata.get("expansion_complete"),
                 },
@@ -90,9 +127,17 @@ def handle_expand_scholar_citations(db: Session, task: AnalysisTask) -> None:
                 saved_edges_count += 1
             else:
                 duplicate_count += 1
+            if edge_index % EDGE_WRITE_BATCH_SIZE == 0:
+                db.commit()
+        task = db.get(AnalysisTask, task_id)
         task.progress_current = index
+        db.commit()
 
-    scholar_session.citation_edge_count = edge_repo.count_for_session(scholar_session.id)
+    scholar_session = db.get(ScholarAnalysisSession, scholar_session_id)
+    task = db.get(AnalysisTask, task_id)
+    scholar_session.citation_edge_count = edge_repo.count_for_session(
+        scholar_session_id
+    )
     scholar_session.status = "expanded"
     task.stage_message = (
         f"provider={provider.provider_name}; "

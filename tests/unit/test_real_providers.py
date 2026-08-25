@@ -152,6 +152,13 @@ def test_openalex_provider_maps_citing_papers_to_schema(monkeypatch):
                 "publication_year": 2025,
                 "doi": "https://doi.org/10.5555/citing",
                 "primary_location": {"source": {"display_name": "Open Journal"}},
+                "best_oa_location": {
+                    "is_oa": True,
+                    "pdf_url": "https://repository.example/citing.pdf",
+                    "landing_page_url": "https://repository.example/citing",
+                    "license": "cc-by",
+                    "source": {"display_name": "Example Repository"},
+                },
                 "authorships": [
                     {"author": {"display_name": "Lin Chen"}},
                     {"author": {"display_name": "Maya Patel"}},
@@ -181,6 +188,12 @@ def test_openalex_provider_maps_citing_papers_to_schema(monkeypatch):
     assert edges[0].citing_paper.openalex_id == "W2"
     assert edges[0].citing_paper.authors == ["Lin Chen", "Maya Patel"]
     assert edges[0].citing_paper.source_url == "https://openalex.org/W2"
+    assert (
+        edges[0].citing_paper.open_access_pdf_url
+        == "https://repository.example/citing.pdf"
+    )
+    assert edges[0].citing_paper.open_access_license == "cc-by"
+    assert edges[0].citing_paper.open_access_source == "Example Repository"
 
 
 def test_openalex_citation_provider_paginates_beyond_first_page(monkeypatch):

@@ -232,7 +232,11 @@ class IeeeBrowserDownloader:
                 else (
                     "paused"
                     if session_status == "paused"
-                    else "requires_login"
+                    else (
+                        "requires_login"
+                        if session_status == "unauthenticated"
+                        else "failed"
+                    )
                 )
             )
             reason = (
@@ -241,7 +245,11 @@ class IeeeBrowserDownloader:
                 else (
                     "task_paused"
                     if status == "paused"
-                    else "ieee_session_required"
+                    else (
+                        "ieee_session_required"
+                        if status == "requires_login"
+                        else "ieee_session_probe_failed"
+                    )
                 )
             )
             for request in requests:

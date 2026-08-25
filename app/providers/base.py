@@ -5,6 +5,7 @@ from typing import List, Optional
 
 from app.schemas.llm import CitationAnalysisResponse, LlmCitationAnalysisRequest
 from app.schemas.provider import (
+    DblpAuthorCandidate,
     ProviderAuthorIdentity,
     ProviderCitationEdge,
     ProviderHealth,
@@ -21,9 +22,19 @@ class Provider(ABC):
 
 
 class AuthorProvider(Provider):
+    def search_authors(
+        self,
+        query: str,
+        limit: int = 10,
+    ) -> List[DblpAuthorCandidate]:
+        return []
+
     @abstractmethod
     def resolve_author(self, author_ref: str) -> ProviderAuthorIdentity:
         raise NotImplementedError
+
+    def resolve_author_by_pid(self, dblp_pid: str) -> ProviderAuthorIdentity:
+        return self.resolve_author(dblp_pid)
 
 
 class CitationProvider(Provider):

@@ -27,6 +27,7 @@ LOGIN_MARKERS = (
     "create account",
 )
 SESSION_VALIDATION_VERSION = 2
+SESSION_PROBE_ATTEMPTS = 3
 
 
 def load_tool(path: Path):
@@ -73,21 +74,39 @@ def classify_session_text(text: str) -> dict:
 
 
 def inspect_page(page) -> dict:
-    try:
-        page.goto(
-            "https://ieeexplore.ieee.org/",
-            wait_until="domcontentloaded",
-            timeout=120_000,
-        )
-        page.wait_for_timeout(2500)
-        text = page.locator("body").inner_text(timeout=10_000) or ""
-    except Exception as exc:
-        return {
-            "status": "failed",
-            "message": f"session probe failed: {type(exc).__name__}",
-            "session_validation_version": SESSION_VALIDATION_VERSION,
-        }
-    return classify_session_text(text)
+    last_error: Optional[Exception] = None
+    last_result: Optional[dict] = None
+    for attempt in range(SESSION_PROBE_ATTEMPTS):
+        try:
+            # IEEE occasionally leaves the DOMContentLoaded event pending even
+            # after the useful page has rendered. Waiting for the response
+            # commit lets us inspect the authentication markers independently.
+            page.goto(
+                "https://ieeexplore.ieee.org/",
+                wait_until="commit",
+                timeout=60_000,
+            )
+            page.wait_for_timeout(2500)
+            text = page.locator("body").inner_text(timeout=15_000) or ""
+            last_result = classify_session_text(text)
+            if last_result["status"] in {"authenticated", "challenge_blocked"}:
+                return last_result
+        except Exception as exc:
+            last_error = exc
+        if attempt + 1 < SESSION_PROBE_ATTEMPTS:
+            page.wait_for_timeout(1000)
+
+    if last_result is not None:
+        return last_result
+    return {
+        "status": "failed",
+        "message": (
+            "session probe failed"
+            if last_error is None
+            else f"session probe failed: {type(last_error).__name__}"
+        ),
+        "session_validation_version": SESSION_VALIDATION_VERSION,
+    }
 
 
 def emit(value: dict) -> None:
@@ -164,12 +183,21 @@ def run_batch(
 
 def inspect_current_page(page) -> str:
     try:
-        text = (page.locator("body").inner_text(timeout=5_000) or "").casefold()
+        text = page.locator("body").inner_text(timeout=5_000) or ""
     except Exception:
         return "failed"
-    if any(marker in text for marker in CHALLENGE_MARKERS):
+
+    session = classify_session_text(text)
+    if session["status"] == "challenge_blocked":
         return "challenge_blocked"
-    if any(marker in text for marker in LOGIN_MARKERS):
+    # Authenticated IEEE pages can still show "Institutional Sign In" in
+    # navigation. Only treat login prompts as expiry when no positive access
+    # marker (Sign Out / Access provided by) is present.
+    lowered = text.casefold()
+    if (
+        session["status"] == "unauthenticated"
+        and any(marker in lowered for marker in LOGIN_MARKERS)
+    ):
         return "requires_login"
     return "failed"
 

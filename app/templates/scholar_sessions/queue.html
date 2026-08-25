@@ -136,19 +136,19 @@
         <legend>Analysis scope</legend>
         <label>
           <input type="radio" name="analysis_scope" value="candidate_spans">
-          candidate_spans：候选段分析，速度快，但可能漏掉证据；候选段分析，快但可能漏
+          candidate_spans：候选段分析，速度快，但可能漏掉证据
         </label>
         <label>
           <input type="radio" name="analysis_scope" value="fulltext_direct">
-          fulltext_direct：全文直接分析，速度慢，但更不容易漏；全文直接分析，慢但更不容易漏
+          fulltext_direct：全文直接分析，速度慢，但更不容易漏
         </label>
         <label>
-          <input type="radio" name="analysis_scope" value="fulltext_anchor_direct" checked>
-          fulltext_anchor_direct：锚点优先全文分析，推荐用于引用证据验证
+          <input type="radio" name="analysis_scope" value="fulltext_anchor_direct">
+          fulltext_anchor_direct：锚点优先全文分析，适合引用证据验证
         </label>
         <label>
-          <input type="radio" name="analysis_scope" value="fulltext_template_direct">
-          fulltext_template_direct：全文 + 当前模板直接生成报告判断，不从候选段自动生成卡片
+          <input type="radio" name="analysis_scope" value="fulltext_template_direct" checked>
+          fulltext_template_direct（推荐）：全文 + 当前模板直接生成报告判断，不从候选段自动生成卡片
         </label>
         <label class="muted">
           <input type="radio" name="analysis_scope" value="fulltext_chunked" disabled>

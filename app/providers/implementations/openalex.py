@@ -154,6 +154,8 @@ class OpenAlexProvider(CitationProvider, MetadataProvider):
             )
         location = work.get("primary_location") or {}
         source = location.get("source") or {}
+        open_access_location = self._best_open_access_location(work)
+        open_access_source = open_access_location.get("source") or {}
         return ProviderPublication(
             title=title,
             year=work.get("publication_year"),
@@ -162,8 +164,28 @@ class OpenAlexProvider(CitationProvider, MetadataProvider):
             openalex_id=self._openalex_work_id(work.get("id") or ""),
             openalex_cited_by_count=work.get("cited_by_count"),
             openalex_cited_by_api_url=work.get("cited_by_api_url"),
+            open_access_pdf_url=open_access_location.get("pdf_url"),
+            open_access_landing_url=open_access_location.get("landing_page_url"),
+            open_access_license=open_access_location.get("license"),
+            open_access_source=open_access_source.get("display_name"),
             authors=self._authors_from_work(work),
             source_url=work.get("id"),
+        )
+
+    def _best_open_access_location(self, work: dict) -> dict:
+        locations = [
+            work.get("best_oa_location"),
+            work.get("primary_location"),
+            *(work.get("locations") or []),
+        ]
+        open_locations = [
+            location
+            for location in locations
+            if isinstance(location, dict) and location.get("is_oa")
+        ]
+        return next(
+            (location for location in open_locations if location.get("pdf_url")),
+            open_locations[0] if open_locations else {},
         )
 
     def _with_query_params(self, base_url: str, params: dict) -> str:

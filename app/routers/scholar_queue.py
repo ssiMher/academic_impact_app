@@ -143,7 +143,7 @@ def skip_queue_items(
 @router.post("/{session_id}/queue/bulk-analyze")
 def bulk_analyze_queue_items(
     session_id: int,
-    analysis_scope: str = Form("fulltext_anchor_direct"),
+    analysis_scope: str = Form("fulltext_template_direct"),
     service: ScholarFulltextService = Depends(get_scholar_fulltext_service),
     queue_service: ScholarQueueService = Depends(get_scholar_queue_service),
 ):

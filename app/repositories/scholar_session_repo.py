@@ -53,6 +53,66 @@ class ScholarSessionRepository:
         self.db.refresh(session)
         return session
 
+    def add_publications(
+        self,
+        session_id: int,
+        author_identity: ProviderAuthorIdentity,
+    ) -> ScholarAnalysisSession:
+        session = self.get_by_id(session_id)
+        if session is None:
+            raise ValueError(f"ScholarAnalysisSession {session_id} was not found")
+
+        existing = self.list_publications(session_id)
+        title_keys = {
+            (normalize_title(publication.title), publication.year)
+            for publication in existing
+        }
+        doi_keys = {
+            publication.doi.lower()
+            for publication in existing
+            if publication.doi
+        }
+        next_index = len(existing) + 1
+        for provider_publication in author_identity.publications:
+            title_key = (
+                normalize_title(provider_publication.title),
+                provider_publication.year,
+            )
+            doi_key = (
+                provider_publication.doi.lower()
+                if provider_publication.doi
+                else None
+            )
+            if title_key in title_keys or (doi_key and doi_key in doi_keys):
+                continue
+            publication = self.get_or_create_publication(provider_publication)
+            self.db.add(
+                ScholarPublication(
+                    scholar_session_id=session.id,
+                    publication_id=publication.id,
+                    local_code=f"S{next_index:03d}",
+                    title=provider_publication.title,
+                    year=provider_publication.year,
+                    venue=provider_publication.venue,
+                    doi=provider_publication.doi,
+                    selected_for_expansion=False,
+                )
+            )
+            next_index += 1
+            title_keys.add(title_key)
+            if doi_key:
+                doi_keys.add(doi_key)
+
+        session.publication_count = next_index - 1
+        session.status = (
+            "created" if session.publication_count else "no_publications"
+        )
+        if author_identity.display_name != "待解析":
+            session.display_name = author_identity.display_name
+        self.db.commit()
+        self.db.refresh(session)
+        return session
+
     def get_or_create_publication(self, provider_publication: ProviderPublication) -> Publication:
         existing = self.find_publication(provider_publication)
         if existing is not None:

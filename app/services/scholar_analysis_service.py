@@ -21,7 +21,9 @@ from app.models import (
 from app.models.constants import SCHOLAR_ANALYSIS_SESSION_KIND, is_pdf_ready_status
 from app.providers.author_provider import get_author_provider
 from app.providers.base import AuthorProvider
+from app.providers.implementations.dblp import extract_dblp_pid
 from app.repositories.scholar_session_repo import ScholarSessionRepository
+from app.schemas.provider import ProviderAuthorIdentity
 from app.repositories.task_repo import TaskRepository
 from app.schemas.scholar_session import ScholarSessionCreate
 from app.services.task_service import TaskService
@@ -37,13 +39,60 @@ class ScholarAnalysisService:
         self.repository = repository
         self.author_provider = author_provider or get_author_provider()
 
-    def create_scholar_session(self, author_ref: str) -> ScholarAnalysisSession:
-        data = ScholarSessionCreate(author_ref=author_ref.strip())
-        author_identity = self.author_provider.resolve_author(data.author_ref)
+    @property
+    def uses_dblp_author_provider(self) -> bool:
+        return getattr(self.author_provider, "provider_name", "") == "dblp"
+
+    def search_authors(self, query: str, limit: int = 10):
+        normalized_query = (query or "").strip()
+        if not normalized_query:
+            return []
+        return self.author_provider.search_authors(normalized_query, limit=limit)
+
+    def create_scholar_session(
+        self,
+        author_ref: str = "",
+        *,
+        dblp_pid: Optional[str] = None,
+    ) -> ScholarAnalysisSession:
+        selected_ref = (dblp_pid or author_ref or "").strip()
+        data = ScholarSessionCreate(author_ref=selected_ref)
+        if self.uses_dblp_author_provider:
+            pid = extract_dblp_pid(data.author_ref)
+            if pid is None:
+                from app.providers.implementations.dblp import InvalidDblpPidError
+
+                raise InvalidDblpPidError(
+                    "Select a DBLP author candidate before creating the session."
+                )
+            author_identity = self.author_provider.resolve_author_by_pid(pid)
+        else:
+            author_identity = self.author_provider.resolve_author(data.author_ref)
         return self.repository.create_with_publications(author_identity)
 
     def list_publications(self, session_id: int) -> List[ScholarPublication]:
         return self.repository.list_publications(session_id)
+
+    def refresh_dblp_publications(
+        self,
+        session_id: int,
+    ) -> ScholarAnalysisSession:
+        session = self.repository.get_by_id(session_id)
+        if session is None:
+            raise ValueError(f"ScholarAnalysisSession {session_id} was not found")
+        if not self.uses_dblp_author_provider:
+            raise ValueError("The active author provider is not DBLP.")
+        pid = extract_dblp_pid(session.dblp_id or "")
+        if pid is None:
+            raise ValueError("The scholar session has no valid DBLP PID.")
+
+        author_identity = self.author_provider.list_publications(
+            ProviderAuthorIdentity(
+                display_name=session.display_name,
+                dblp_id=pid,
+            )
+        )
+        return self.repository.add_publications(session_id, author_identity)
 
     def enqueue_expand_scholar_citations(
         self,

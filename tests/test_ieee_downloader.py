@@ -30,7 +30,11 @@ from app.tasks.handlers.discover_pdfs_for_queue import handle_discover_pdfs_for_
 from app.tasks.handlers.download_ieee_pdf import handle_download_ieee_pdf
 from app.tasks.runner import TaskRunner
 from app.tasks.task_manager import TaskManager
-from scripts.ieee_browser_session_helper import classify_session_text
+from scripts.ieee_browser_session_helper import (
+    classify_session_text,
+    inspect_current_page,
+    inspect_page,
+)
 from tests.test_scholar_evidence import seed_queue_item
 from tests.unit.test_pdf_service import VALID_PDF_BYTES
 
@@ -149,6 +153,42 @@ def test_ieee_batch_uses_one_helper_process_for_multiple_items(tmp_path, monkeyp
 
     assert len(calls) == 1
     assert [value["queue_item_id"] for value in results] == [1, 2]
+
+
+def test_ieee_batch_probe_failure_is_not_reported_as_login_loss(
+    tmp_path, monkeypatch
+):
+    tool = tmp_path / "ieee-download"
+    tool.touch()
+    (tmp_path / "ieee_download.py").touch()
+    python = tmp_path / ".venv" / "bin" / "python"
+    python.parent.mkdir(parents=True)
+    python.touch()
+    output = (
+        'IEEE_SESSION_JSON:{"event":"session","status":"failed",'
+        '"message":"session probe failed: TimeoutError"}'
+    )
+    monkeypatch.setattr(
+        "app.services.ieee_download_service.subprocess.run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=3, stdout=output),
+    )
+
+    results = IeeeBrowserDownloader(
+        command=str(tool),
+        work_dir=str(tmp_path),
+        download_dir=str(tmp_path / "downloads"),
+    ).download_many(
+        [
+            {"queue_item_id": 1, "query": "First"},
+            {"queue_item_id": 2, "query": "Second"},
+        ],
+        min_interval_seconds=0,
+    )
+
+    assert [value["status"] for value in results] == ["failed", "failed"]
+    assert {
+        value["reason"] for value in results
+    } == {"ieee_session_probe_failed"}
 
 
 def test_ieee_pause_files_are_task_scoped(tmp_path):
@@ -320,6 +360,60 @@ def test_ieee_access_provided_by_confirms_institution_access():
     assert status["status"] == "authenticated"
     assert status["institution_access"] is True
     assert "Nanjing University" in status["institution_name"]
+
+
+class _FakeBody:
+    def __init__(self, text):
+        self.text = text
+
+    def inner_text(self, timeout):
+        return self.text
+
+
+class _FakePage:
+    def __init__(self, text, goto_failures=0):
+        self.text = text
+        self.goto_failures = goto_failures
+        self.goto_calls = 0
+
+    def goto(self, *args, **kwargs):
+        self.goto_calls += 1
+        if self.goto_calls <= self.goto_failures:
+            raise TimeoutError("temporary IEEE timeout")
+
+    def wait_for_timeout(self, milliseconds):
+        return None
+
+    def locator(self, selector):
+        assert selector == "body"
+        return _FakeBody(self.text)
+
+
+def test_ieee_session_probe_retries_transient_navigation_failure():
+    page = _FakePage(
+        "Access provided by: Nanjing University | Sign Out",
+        goto_failures=1,
+    )
+
+    status = inspect_page(page)
+
+    assert status["status"] == "authenticated"
+    assert page.goto_calls == 2
+
+
+def test_ieee_authenticated_page_login_navigation_is_not_session_loss():
+    page = _FakePage(
+        "Access provided by: Nanjing University | Sign Out "
+        "Institutional Sign In"
+    )
+
+    assert inspect_current_page(page) == "failed"
+
+
+def test_ieee_anonymous_login_prompt_requires_login():
+    page = _FakePage("IEEE Xplore Institutional Sign In Create Account")
+
+    assert inspect_current_page(page) == "requires_login"
 
 
 def test_legacy_ieee_authenticated_state_requires_revalidation(tmp_path):

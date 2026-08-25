@@ -30,6 +30,19 @@ class CitationEdgeRepository:
             citing_publication_id=citing_publication_id,
         )
         if existing is not None:
+            if edge_meta:
+                try:
+                    existing_meta = json.loads(existing.edge_meta_json or "{}")
+                except json.JSONDecodeError:
+                    existing_meta = {}
+                existing_meta.update(
+                    {
+                        key: value
+                        for key, value in edge_meta.items()
+                        if value is not None
+                    }
+                )
+                existing.edge_meta_json = json.dumps(existing_meta)
             return existing
 
         edge = CitationEdge(

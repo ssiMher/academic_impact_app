@@ -1,5 +1,6 @@
 """Provider-facing normalized schemas."""
 
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional
 
@@ -42,6 +43,10 @@ class ProviderPublication(BaseModel):
     openalex_id: Optional[str] = None
     openalex_cited_by_count: Optional[int] = None
     openalex_cited_by_api_url: Optional[str] = None
+    open_access_pdf_url: Optional[str] = None
+    open_access_landing_url: Optional[str] = None
+    open_access_license: Optional[str] = None
+    open_access_source: Optional[str] = None
     authors: List[str] = Field(default_factory=list)
     source_url: Optional[str] = None
     citation_contexts: List[str] = Field(default_factory=list)
@@ -53,6 +58,19 @@ class ProviderAuthorIdentity(BaseModel):
     openalex_id: Optional[str] = None
     scopus_author_id: Optional[str] = None
     publications: List[ProviderPublication] = Field(default_factory=list)
+
+
+@dataclass
+class DblpAuthorCandidate:
+    pid: str
+    name: str
+    aliases: List[str] = field(default_factory=list)
+    affiliations: List[str] = field(default_factory=list)
+    dblp_url: str = ""
+    publication_count: Optional[int] = None
+    recent_publications: List[str] = field(default_factory=list)
+    recent_venues: List[str] = field(default_factory=list)
+    short_description: str = ""
 
 
 class ProviderCitationEdge(BaseModel):

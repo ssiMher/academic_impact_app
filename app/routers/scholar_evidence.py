@@ -25,7 +25,7 @@ templates = Jinja2Templates(
 def enqueue_analyze_scholar_queue(
     session_id: int,
     item_ids: List[int] = Form([]),
-    analysis_scope: str = Form("candidate_spans"),
+    analysis_scope: str = Form("fulltext_template_direct"),
     service: ScholarFulltextService = Depends(get_scholar_fulltext_service),
 ):
     try:

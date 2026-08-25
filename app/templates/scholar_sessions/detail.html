@@ -7,6 +7,13 @@
 {% block title %}学者分析会话详情{% endblock %}
 
 {% block content %}
+  {% if request.query_params.get("dblp_sync") == "success" %}
+    <p class="notice">DBLP 论文同步成功。</p>
+  {% elif request.query_params.get("dblp_sync") == "no_results" %}
+    <p class="notice notice-warning">DBLP 作者记录当前没有返回论文。</p>
+  {% elif request.query_params.get("dblp_sync") == "unavailable" %}
+    <p class="notice notice-warning">DBLP 当前暂时不可用，论文尚未同步，请稍后重试。</p>
+  {% endif %}
   <header class="page-header">
     <div>
       <div class="eyebrow">学者分析会话</div>
@@ -117,7 +124,7 @@
       <form action="/scholar-sessions/{{ session.id }}/expand-and-build-queue" method="post">
         <label class="form-label">
           每篇论文最多扩展引用数
-          <input class="form-control" type="number" name="limit_per_publication" value="100" min="1" max="1000">
+          <input class="form-control" type="number" name="limit_per_publication" value="500" min="1" max="1000">
         </label>
         <div class="table-wrap">
           <table class="table">
@@ -173,7 +180,12 @@
         </form>
       </section>
     {% else %}
-      {{ empty_state("暂无论文", "当前 provider 没有返回论文。") }}
+      {{ empty_state("暂无论文", "DBLP 作者搜索只返回姓名和 PID；作者详情请求尚未成功，因此论文还没有同步。DBLP 不需要 API 密钥。") }}
+      {% if session.dblp_id %}
+        <form action="/scholar-sessions/{{ session.id }}/refresh-dblp-publications" method="post">
+          <button class="button button-primary" type="submit">重新从 DBLP 同步论文</button>
+        </form>
+      {% endif %}
     {% endif %}
   </section>
 

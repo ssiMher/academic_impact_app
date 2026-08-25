@@ -297,6 +297,345 @@ def test_only_direct_pdf_open_access_can_auto_download(db_session_factory, tmp_p
         db.close()
 
 
+def test_unpaywall_email_fallback_returns_open_pdf_candidate(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    captured = {}
+    payload = {
+        "is_oa": True,
+        "best_oa_location": {
+            "url_for_pdf": "https://repository.example/paper.pdf",
+            "url_for_landing_page": "https://repository.example/paper",
+            "license": "cc-by",
+        },
+        "oa_locations": [],
+    }
+
+    def fake_urlopen(request, timeout):
+        captured["url"] = request.full_url
+        captured["user_agent"] = request.headers["User-agent"]
+        return FakeResponse(
+            json.dumps(payload).encode("utf-8"),
+            "application/json",
+        )
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    db = db_session_factory()
+    try:
+        _session_id, item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        publication = db.get(Publication, item.citing_publication_id)
+        publication.doi = "https://doi.org/10.1234/example"
+        db.commit()
+
+        candidates = PdfDiscoveryService(
+            db,
+            unpaywall_email="researcher+pdf@example.org",
+        ).discover_pdf_candidates_for_queue_item(
+            item_id,
+            include_remote_lookup=True,
+        )
+    finally:
+        db.close()
+
+    candidate = next(value for value in candidates if value.source == "unpaywall")
+    assert candidate.url == "https://repository.example/paper.pdf"
+    assert candidate.can_auto_download is True
+    assert candidate.license == "cc-by"
+    assert "10.1234/example" in captured["url"]
+    assert "email=researcher%2Bpdf%40example.org" in captured["url"]
+    assert "mailto:researcher+pdf@example.org" in captured["user_agent"]
+
+
+def test_pdf_download_uses_unpaywall_fallback(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    payload = {
+        "is_oa": True,
+        "best_oa_location": {
+            "url_for_pdf": "https://repository.example/paper.pdf",
+            "license": "cc-by",
+        },
+        "oa_locations": [],
+    }
+
+    def fake_urlopen(request, timeout):
+        if request.full_url.startswith("https://api.unpaywall.org/"):
+            return FakeResponse(
+                json.dumps(payload).encode("utf-8"),
+                "application/json",
+            )
+        assert request.full_url == "https://repository.example/paper.pdf"
+        return FakeResponse(VALID_PDF_BYTES, "application/pdf")
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        "app.services.pdf_service.extract_pdf_text",
+        lambda pdf_path, output_path: output_path.write_text(
+            "downloaded pdf text",
+            encoding="utf-8",
+        ),
+    )
+    db = db_session_factory()
+    try:
+        _session_id, item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        publication = db.get(Publication, item.citing_publication_id)
+        publication.doi = "10.1234/example"
+        db.commit()
+
+        result = PdfDiscoveryService(
+            db,
+            unpaywall_email="researcher@example.org",
+        ).discover_and_download_for_queue_item(
+            item_id=item_id,
+            pdf_service=_pdf_service(db, tmp_path),
+        )
+        source_type = result["asset"].source_type
+    finally:
+        db.close()
+
+    assert result["status"] == "downloaded"
+    assert source_type == "unpaywall"
+
+
+def test_pdf_download_finds_strict_title_and_author_match_on_arxiv(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    title = "Latent variable models in the era of industrial big data: Extension and beyond"
+    atom_feed = b"""<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>https://arxiv.org/abs/2208.10847v2</id>
+    <title>Latent Variable Models in the Era of Industrial Big Data:
+      Extension and Beyond</title>
+    <author><name>Xiangyin Kong</name></author>
+    <author><name>Xiaoyu Jiang</name></author>
+    <author><name>Bingxin Zhang</name></author>
+  </entry>
+</feed>"""
+    requested_urls = []
+
+    def fake_urlopen(request, timeout):
+        requested_urls.append(request.full_url)
+        if request.full_url.startswith("https://export.arxiv.org/api/query?"):
+            return FakeResponse(atom_feed, "application/atom+xml")
+        assert request.full_url == "https://arxiv.org/pdf/2208.10847v2.pdf"
+        return FakeResponse(VALID_PDF_BYTES, "application/pdf")
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        "app.services.pdf_service.extract_pdf_text",
+        lambda pdf_path, output_path: output_path.write_text(
+            "downloaded arxiv text",
+            encoding="utf-8",
+        ),
+    )
+    db = db_session_factory()
+    try:
+        _session_id, item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        publication = db.get(Publication, item.citing_publication_id)
+        publication.title = title
+        publication.doi = "10.1016/j.arcontrol.2022.09.005"
+        publication.authors_json = json.dumps(
+            [
+                "Xiangyin Kong",
+                "Xiaoyu Jiang",
+                "Bingxin Zhang",
+                "Jinsong Yuan",
+                "Zhiqiang Ge",
+            ]
+        )
+        edge = db.get(CitationEdge, item.citation_edge_id)
+        edge.edge_meta_json = json.dumps(
+            {
+                "source_url": "https://openalex.org/W4300960307",
+                "open_access_landing_url": (
+                    "https://doi.org/10.1016/j.arcontrol.2022.09.005"
+                ),
+                "is_open_access": True,
+                "license": "cc-by-nc-nd",
+            }
+        )
+        db.commit()
+
+        result = PdfDiscoveryService(
+            db,
+            unpaywall_email="",
+        ).discover_and_download_for_queue_item(
+            item_id=item_id,
+            pdf_service=_pdf_service(db, tmp_path),
+        )
+        source_type = result["asset"].source_type
+        source_url = result["asset"].source_url
+    finally:
+        db.close()
+
+    assert result["status"] == "downloaded"
+    assert source_type == "arxiv"
+    assert source_url == "https://arxiv.org/pdf/2208.10847v2.pdf"
+    assert "search_query=ti%3A%22latent+variable+models" in requested_urls[0]
+
+
+def test_arxiv_title_search_rejects_candidate_without_matching_authors(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    atom_feed = b"""<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>https://arxiv.org/abs/2208.10847</id>
+    <title>Latent Variable Models in the Era of Industrial Big Data:
+      Extension and Beyond</title>
+    <author><name>Different Author</name></author>
+  </entry>
+</feed>"""
+    requested_urls = []
+
+    def fake_urlopen(request, timeout):
+        requested_urls.append(request.full_url)
+        return FakeResponse(atom_feed, "application/atom+xml")
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    db = db_session_factory()
+    try:
+        _session_id, item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        publication = db.get(Publication, item.citing_publication_id)
+        publication.title = (
+            "Latent variable models in the era of industrial big data: "
+            "Extension and beyond"
+        )
+        publication.doi = "10.1016/j/arcontrol.2022.09.005"
+        publication.authors_json = json.dumps(["Xiangyin Kong", "Xiaoyu Jiang"])
+        edge = db.get(CitationEdge, item.citation_edge_id)
+        edge.edge_meta_json = json.dumps(
+            {
+                "is_open_access": True,
+                "open_access_landing_url": "https://doi.org/example",
+            }
+        )
+        db.commit()
+
+        candidates = PdfDiscoveryService(
+            db,
+            unpaywall_email="",
+        ).discover_pdf_candidates_for_queue_item(
+            item_id,
+            include_remote_lookup=True,
+        )
+    finally:
+        db.close()
+
+    assert all(candidate.source != "arxiv" for candidate in candidates)
+    assert requested_urls[0].startswith("https://export.arxiv.org/api/query?")
+
+
+def test_open_access_publisher_landing_page_is_not_marked_as_login_required(
+    db_session_factory,
+    tmp_path,
+):
+    db = db_session_factory()
+    try:
+        _session_id, item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        publication = db.get(Publication, item.citing_publication_id)
+        publication.doi = "10.1016/j.arcontrol.2022.09.005"
+        edge = db.get(CitationEdge, item.citation_edge_id)
+        edge.edge_meta_json = json.dumps(
+            {
+                "open_access_landing_url": (
+                    "https://doi.org/10.1016/j.arcontrol.2022.09.005"
+                ),
+                "is_open_access": True,
+                "license": "cc-by-nc-nd",
+            }
+        )
+        db.commit()
+
+        candidates = PdfDiscoveryService(db).discover_pdf_candidates_for_queue_item(
+            item_id
+        )
+    finally:
+        db.close()
+
+    publisher = next(
+        candidate
+        for candidate in candidates
+        if candidate.url == "https://doi.org/10.1016/j.arcontrol.2022.09.005"
+    )
+    assert publisher.is_open_access is True
+    assert publisher.requires_login is False
+    assert publisher.access_status == "open_access"
+
+
+def test_unpaywall_is_not_called_without_contact_email(
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("Unpaywall must not be called without an email")
+        ),
+    )
+    db = db_session_factory()
+    try:
+        _session_id, item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        publication = db.get(Publication, item.citing_publication_id)
+        publication.doi = "10.1234/example"
+        db.commit()
+
+        candidates = PdfDiscoveryService(
+            db,
+            unpaywall_email="",
+        ).discover_pdf_candidates_for_queue_item(
+            item_id,
+            include_remote_lookup=True,
+        )
+    finally:
+        db.close()
+
+    assert all(candidate.source != "unpaywall" for candidate in candidates)
+
+
+def test_queue_page_does_not_call_unpaywall(
+    client,
+    db_session_factory,
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("Queue rendering must not perform remote PDF lookup")
+        ),
+    )
+    db = db_session_factory()
+    try:
+        session_id, item_id = seed_queue_item(db, tmp_path, pdf_ready=False)
+        item = db.get(DeepAnalysisQueueItem, item_id)
+        publication = db.get(Publication, item.citing_publication_id)
+        publication.doi = "10.1234/example"
+        db.commit()
+    finally:
+        db.close()
+
+    response = client.get(f"/scholar-sessions/{session_id}/queue")
+
+    assert response.status_code == 200
+
+
 def test_metadata_page_not_auto_downloadable(db_session_factory, tmp_path):
     db = db_session_factory()
     try:

@@ -1,10 +1,13 @@
 """Discover and download only open-access PDF candidates."""
 
 import json
+import logging
 import re
 import socket
 import urllib.error
+import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
@@ -16,6 +19,7 @@ from app.core.config import settings
 from app.models import CitationEdge, DeepAnalysisQueueItem, PdfAsset, Publication
 from app.models.constants import PDF_STATUS_REUSED
 from app.pdf.arxiv import extract_arxiv_identifier, normalize_arxiv_identifier
+from app.pdf.match import normalize_title_for_match, title_similarity
 from app.pdf.publisher import PublisherInfo, classify_publisher_from_doi_or_url
 from app.repositories.pdf_repo import PdfRepository
 from app.services.pdf_inbox_service import (
@@ -27,6 +31,9 @@ from app.services.pdf_inbox_service import (
     ACCESS_REQUIRES_LOGIN,
 )
 from app.services.pdf_service import PdfService
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -56,11 +63,33 @@ class DownloadFailure(Exception):
 
 
 class PdfDiscoveryService:
-    def __init__(self, db: Session, *, timeout_seconds: float = 20.0) -> None:
+    def __init__(
+        self,
+        db: Session,
+        *,
+        timeout_seconds: float = 20.0,
+        unpaywall_email: Optional[str] = None,
+        unpaywall_timeout_seconds: Optional[float] = None,
+    ) -> None:
         self.db = db
         self.timeout_seconds = timeout_seconds
+        self.unpaywall_email = (
+            settings.unpaywall_email
+            if unpaywall_email is None
+            else unpaywall_email
+        ).strip()
+        self.unpaywall_timeout_seconds = (
+            settings.unpaywall_timeout_seconds
+            if unpaywall_timeout_seconds is None
+            else unpaywall_timeout_seconds
+        )
 
-    def discover_pdf_candidates_for_queue_item(self, item_id: int) -> List[PdfCandidate]:
+    def discover_pdf_candidates_for_queue_item(
+        self,
+        item_id: int,
+        *,
+        include_remote_lookup: bool = False,
+    ) -> List[PdfCandidate]:
         item = self.db.get(DeepAnalysisQueueItem, item_id)
         if item is None:
             return []
@@ -72,13 +101,30 @@ class PdfDiscoveryService:
         arxiv = self._arxiv_candidate(publication, edge)
         if arxiv is not None:
             candidates.append(arxiv)
+        if (
+            include_remote_lookup
+            and not any(candidate.can_auto_download for candidate in candidates)
+        ):
+            unpaywall = self._unpaywall_candidate(publication)
+            if unpaywall is not None:
+                candidates.append(unpaywall)
+        if (
+            include_remote_lookup
+            and not any(candidate.can_auto_download for candidate in candidates)
+            and self._should_search_arxiv(publication, edge)
+        ):
+            arxiv = self._search_arxiv_candidate(publication)
+            if arxiv is not None:
+                candidates.append(arxiv)
         publisher = self._publisher_info(publication, edge)
         if (
             publisher.landing_url
             and publisher.source != "arxiv"
             and publisher.publisher != "Publisher"
         ):
-            candidates.append(self._publisher_candidate(item, publication, publisher))
+            candidates.append(
+                self._publisher_candidate(item, publication, publisher, edge)
+            )
         return self._deduplicate_candidates(candidates)
 
     def download_if_allowed(
@@ -123,7 +169,10 @@ class PdfDiscoveryService:
             item.pdf_access_status = ACCESS_OPEN_ACCESS_DOWNLOADED
             self.db.commit()
             return {"status": "skipped_existing_pdf"}
-        candidates = self.discover_pdf_candidates_for_queue_item(item_id)
+        candidates = self.discover_pdf_candidates_for_queue_item(
+            item_id,
+            include_remote_lookup=True,
+        )
         if not candidates:
             item.pdf_discovery_status = "no_pdf_found"
             item.pdf_access_status = ACCESS_NO_PDF_FOUND
@@ -241,8 +290,11 @@ class PdfDiscoveryService:
         item: DeepAnalysisQueueItem,
         publication: Optional[Publication],
         publisher: PublisherInfo,
+        edge: Optional[CitationEdge],
     ) -> PdfCandidate:
-        requires_login = publisher.source in {
+        meta = self._edge_meta(edge)
+        is_open_access = bool(meta.get("is_open_access"))
+        requires_login = not is_open_access and publisher.source in {
             "acm_dl",
             "ieee_xplore",
             "springer",
@@ -253,17 +305,35 @@ class PdfDiscoveryService:
             doi=publication.doi if publication else None,
             source=publisher.source,
             url=publisher.landing_url,
-            is_open_access=False,
-            license=None,
+            is_open_access=is_open_access,
+            license=meta.get("license") if is_open_access else None,
             confidence=0.9,
             requires_login=requires_login,
-            reason="publisher_page_requires_login" if requires_login else "publisher_landing_page",
+            reason=(
+                "publisher_page_requires_login"
+                if requires_login
+                else (
+                    "publisher_open_access_landing_page"
+                    if is_open_access
+                    else "publisher_landing_page"
+                )
+            ),
             source_name=publisher.publisher,
-            access_status="requires_login" if requires_login else "unknown",
+            access_status=(
+                "requires_login"
+                if requires_login
+                else "open_access"
+                if is_open_access
+                else "unknown"
+            ),
             can_auto_download=False,
             url_type="landing_page",
             display_label=publisher.publisher,
-            user_action_hint=publisher.access_hint,
+            user_action_hint=(
+                "开放获取页面，但未提供可直接下载的 PDF 地址"
+                if is_open_access
+                else publisher.access_hint
+            ),
         )
 
     def _deduplicate_candidates(self, candidates: List[PdfCandidate]) -> List[PdfCandidate]:
@@ -273,6 +343,243 @@ class PdfDiscoveryService:
             if current is None or self._candidate_priority(candidate) < self._candidate_priority(current):
                 by_url[candidate.url] = candidate
         return sorted(by_url.values(), key=self._candidate_priority)
+
+    def _unpaywall_candidate(
+        self,
+        publication: Optional[Publication],
+    ) -> Optional[PdfCandidate]:
+        if publication is None or not publication.doi or not self.unpaywall_email:
+            return None
+        doi = self._normalize_doi(publication.doi)
+        if not doi:
+            return None
+        params = urllib.parse.urlencode({"email": self.unpaywall_email})
+        encoded_doi = urllib.parse.quote(doi, safe="/")
+        url = f"https://api.unpaywall.org/v2/{encoded_doi}?{params}"
+        request = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": (
+                    f"{settings.app_name}/pdf-discovery "
+                    f"(mailto:{self.unpaywall_email})"
+                ),
+            },
+        )
+        try:
+            with urllib.request.urlopen(
+                request,
+                timeout=self.unpaywall_timeout_seconds,
+            ) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            if exc.code != 404:
+                logger.warning("Unpaywall lookup failed for DOI %s: HTTP %s", doi, exc.code)
+            return None
+        except (
+            json.JSONDecodeError,
+            UnicodeDecodeError,
+            urllib.error.URLError,
+            socket.timeout,
+        ) as exc:
+            logger.warning("Unpaywall lookup failed for DOI %s: %s", doi, exc)
+            return None
+        location = self._best_unpaywall_location(payload)
+        if not location:
+            return None
+        pdf_url = str(location.get("url_for_pdf") or "").strip()
+        landing_url = str(
+            location.get("url_for_landing_page")
+            or location.get("url")
+            or ""
+        ).strip()
+        candidate_url = pdf_url or landing_url
+        if not candidate_url:
+            return None
+        is_direct_pdf = bool(pdf_url)
+        return PdfCandidate(
+            title=publication.title,
+            doi=doi,
+            source="unpaywall",
+            url=candidate_url,
+            is_open_access=True,
+            license=location.get("license"),
+            confidence=0.9,
+            requires_login=False,
+            reason=(
+                "unpaywall_open_access_pdf"
+                if is_direct_pdf
+                else "unpaywall_open_access_landing_page"
+            ),
+            source_name="Unpaywall",
+            access_status="open_access",
+            can_auto_download=is_direct_pdf,
+            url_type="direct_pdf" if is_direct_pdf else "landing_page",
+            display_label="Unpaywall 开放版本",
+            user_action_hint=(
+                "可自动下载开放 PDF"
+                if is_direct_pdf
+                else "Unpaywall 仅返回开放版本页面"
+            ),
+        )
+
+    def _should_search_arxiv(
+        self,
+        publication: Optional[Publication],
+        edge: Optional[CitationEdge],
+    ) -> bool:
+        if publication is None or not publication.title:
+            return False
+        if not self._publication_authors(publication):
+            return False
+        meta = self._edge_meta(edge)
+        return bool(
+            meta.get("is_open_access")
+            and (
+                meta.get("open_access_landing_url")
+                or meta.get("url")
+                or meta.get("source_url")
+            )
+        )
+
+    def _search_arxiv_candidate(
+        self,
+        publication: Optional[Publication],
+    ) -> Optional[PdfCandidate]:
+        if publication is None:
+            return None
+        expected_authors = self._publication_authors(publication)
+        if not publication.title or not expected_authors:
+            return None
+        query_title = normalize_title_for_match(publication.title)
+        if not query_title:
+            return None
+        params = urllib.parse.urlencode(
+            {
+                "search_query": f'ti:"{query_title}"',
+                "start": 0,
+                "max_results": 5,
+            }
+        )
+        request = urllib.request.Request(
+            f"https://export.arxiv.org/api/query?{params}",
+            headers={
+                "Accept": "application/atom+xml",
+                "User-Agent": (
+                    f"{settings.app_name}/pdf-discovery"
+                    + (
+                        f" (mailto:{self.unpaywall_email})"
+                        if self.unpaywall_email
+                        else ""
+                    )
+                ),
+            },
+        )
+        try:
+            with urllib.request.urlopen(
+                request,
+                timeout=self.timeout_seconds,
+            ) as response:
+                root = ET.fromstring(response.read())
+        except (
+            ET.ParseError,
+            UnicodeError,
+            urllib.error.HTTPError,
+            urllib.error.URLError,
+            socket.timeout,
+        ) as exc:
+            logger.warning(
+                "arXiv title lookup failed for %s: %s",
+                publication.title,
+                exc,
+            )
+            return None
+
+        namespace = {"atom": "http://www.w3.org/2005/Atom"}
+        required_author_matches = min(2, len(expected_authors))
+        for entry in root.findall("atom:entry", namespace):
+            entry_title = entry.findtext("atom:title", default="", namespaces=namespace)
+            score = title_similarity(publication.title, entry_title)
+            if score < 0.97:
+                continue
+            entry_authors = {
+                normalize_title_for_match(
+                    author.findtext("atom:name", default="", namespaces=namespace)
+                )
+                for author in entry.findall("atom:author", namespace)
+            }
+            entry_authors.discard("")
+            if len(expected_authors & entry_authors) < required_author_matches:
+                continue
+            identifier = extract_arxiv_identifier(
+                entry.findtext("atom:id", default="", namespaces=namespace)
+            )
+            if not identifier:
+                continue
+            return PdfCandidate(
+                title=publication.title,
+                doi=publication.doi,
+                source="arxiv",
+                url=f"https://arxiv.org/pdf/{identifier}.pdf",
+                is_open_access=True,
+                license="arXiv",
+                confidence=min(score, 0.99),
+                requires_login=False,
+                reason="arxiv_title_author_match",
+                source_name="arXiv",
+                access_status="open_access",
+                can_auto_download=True,
+                url_type="direct_pdf",
+                display_label="arXiv",
+                user_action_hint="通过标题和作者匹配，可自动下载开放 PDF",
+            )
+        return None
+
+    @staticmethod
+    def _publication_authors(publication: Publication) -> set:
+        try:
+            values = json.loads(publication.authors_json or "[]")
+        except (json.JSONDecodeError, TypeError):
+            return set()
+        if not isinstance(values, list):
+            return set()
+        authors = set()
+        for value in values:
+            if isinstance(value, dict):
+                value = value.get("name") or value.get("display_name") or ""
+            normalized = normalize_title_for_match(str(value or ""))
+            if normalized:
+                authors.add(normalized)
+        return authors
+
+    def _best_unpaywall_location(self, payload: dict) -> dict:
+        if not isinstance(payload, dict) or not payload.get("is_oa"):
+            return {}
+        locations = [
+            payload.get("best_oa_location"),
+            *(payload.get("oa_locations") or []),
+        ]
+        valid_locations = [
+            location
+            for location in locations
+            if isinstance(location, dict)
+        ]
+        return next(
+            (
+                location
+                for location in valid_locations
+                if location.get("url_for_pdf")
+            ),
+            valid_locations[0] if valid_locations else {},
+        )
+
+    def _normalize_doi(self, value: str) -> str:
+        doi = (value or "").strip()
+        lowered = doi.lower()
+        for prefix in ("https://doi.org/", "http://doi.org/", "doi:"):
+            if lowered.startswith(prefix):
+                return doi[len(prefix):].strip()
+        return doi
 
     def _candidate_priority(self, candidate: PdfCandidate) -> tuple:
         return (
@@ -289,7 +596,12 @@ class PdfDiscoveryService:
         except json.JSONDecodeError:
             return []
         candidates = []
-        for key in ("pdf_url", "open_access_pdf_url", "oa_pdf_url"):
+        for key in (
+            "pdf_url",
+            "open_access_pdf_url",
+            "oa_pdf_url",
+            "open_access_landing_url",
+        ):
             url = str(meta.get(key) or "").strip()
             if url:
                 arxiv_id = extract_arxiv_identifier(url)
@@ -300,10 +612,16 @@ class PdfDiscoveryService:
                 can_auto_download = url_type == "direct_pdf" and is_open_access
                 access_status = (
                     "open_access"
-                    if can_auto_download
+                    if is_open_access and url_type != "metadata_page"
                     else (
                         "requires_login"
-                        if url_type == "landing_page" and self._looks_like_restricted_publisher(publication, edge)
+                        if (
+                            url_type == "landing_page"
+                            and self._looks_like_restricted_publisher(
+                                publication,
+                                edge,
+                            )
+                        )
                         else "unknown"
                     )
                 )

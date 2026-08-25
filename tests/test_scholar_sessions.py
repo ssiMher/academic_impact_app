@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -46,9 +47,18 @@ class EmptyCitationProvider:
 class PagingCitationProvider:
     provider_name = "openalex"
 
-    def __init__(self, *, total_count: int = 40, available_count: int = 40):
+    def __init__(
+        self,
+        *,
+        total_count: int = 40,
+        available_count: int = 40,
+        on_request=None,
+        include_open_access: bool = False,
+    ):
         self.total_count = total_count
         self.available_count = available_count
+        self.on_request = on_request
+        self.include_open_access = include_open_access
         self.requested_limits = []
         self.last_citation_expansion = {}
 
@@ -56,6 +66,8 @@ class PagingCitationProvider:
         return self._edges(target_title, self.available_count)
 
     def list_citing_papers(self, publication: ProviderPublication, limit: int = 100):
+        if self.on_request is not None:
+            self.on_request()
         self.requested_limits.append(limit)
         count = min(limit, self.available_count)
         self.last_citation_expansion = {
@@ -81,6 +93,19 @@ class PagingCitationProvider:
                     doi=f"10.0000/openalex.{index}",
                     openalex_id=f"W{index}",
                     source_url=f"https://openalex.org/W{index}",
+                    open_access_pdf_url=(
+                        f"https://repository.example/download/openalex-{index}"
+                        if self.include_open_access
+                        else None
+                    ),
+                    open_access_license=(
+                        "cc-by" if self.include_open_access else None
+                    ),
+                    open_access_source=(
+                        "Example Repository"
+                        if self.include_open_access
+                        else None
+                    ),
                 ),
             )
             for index in range(1, count + 1)
@@ -275,6 +300,85 @@ def test_expand_citations_respects_user_limit(db_session_factory, monkeypatch):
     assert "complete=false" in task.stage_message
 
 
+def test_expand_citations_does_not_hold_transaction_during_provider_request(
+    db_session_factory,
+    monkeypatch,
+):
+    transaction_states = []
+    with Session(db_session_factory.kw["bind"]) as db:
+        provider = PagingCitationProvider(
+            total_count=1,
+            available_count=1,
+            on_request=lambda: transaction_states.append(db.in_transaction()),
+        )
+        monkeypatch.setattr(
+            "app.tasks.handlers.expand_scholar_citations.get_citation_provider",
+            lambda: provider,
+        )
+        service = ScholarAnalysisService(ScholarSessionRepository(db))
+        session = service.create_scholar_session("Grace Hopper")
+        selected_id = service.list_publications(session.id)[0].id
+        service.enqueue_expand_scholar_citations(
+            session.id,
+            [selected_id],
+            limit_per_publication=1,
+        )
+
+        task = TaskRunner(
+            task_repository=TaskRepository(db),
+            task_manager=TaskManager(),
+        ).run_once()
+
+    assert task.status == "succeeded"
+    assert transaction_states == [False]
+
+
+def test_reexpanding_citations_refreshes_open_access_pdf_metadata(
+    db_session_factory,
+    monkeypatch,
+):
+    provider = PagingCitationProvider(total_count=1, available_count=1)
+    monkeypatch.setattr(
+        "app.tasks.handlers.expand_scholar_citations.get_citation_provider",
+        lambda: provider,
+    )
+    with Session(db_session_factory.kw["bind"]) as db:
+        service = ScholarAnalysisService(ScholarSessionRepository(db))
+        session = service.create_scholar_session("Grace Hopper")
+        selected_id = service.list_publications(session.id)[0].id
+        service.enqueue_expand_scholar_citations(
+            session.id,
+            [selected_id],
+            limit_per_publication=1,
+        )
+        runner = TaskRunner(
+            task_repository=TaskRepository(db),
+            task_manager=TaskManager(),
+        )
+        runner.run_once()
+
+        provider.include_open_access = True
+        service.enqueue_expand_scholar_citations(
+            session.id,
+            [selected_id],
+            limit_per_publication=1,
+        )
+        runner.run_once()
+
+        edge = db.query(CitationEdge).filter_by(
+            scholar_session_id=session.id
+        ).one()
+        metadata = json.loads(edge.edge_meta_json)
+
+    assert (
+        metadata["open_access_pdf_url"]
+        == "https://repository.example/download/openalex-1"
+    )
+    assert metadata["is_open_access"] is True
+    assert metadata["license"] == "cc-by"
+    assert metadata["url_type"] == "direct_pdf"
+
+
 def test_expand_citations_reports_total_and_fetched_counts(db_session_factory, monkeypatch):
     provider = PagingCitationProvider(total_count=40, available_count=25)
     monkeypatch.setattr(
@@ -421,6 +525,7 @@ def test_scholar_detail_shows_one_click_expand_build_button(client):
 
     assert detail.status_code == 200
     assert "一键扩展引用并构建队列" in detail.text
+    assert 'name="limit_per_publication" value="500"' in detail.text
 
 
 def test_scholar_detail_shows_import_honor_csv_button(client):
